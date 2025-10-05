@@ -1,0 +1,93 @@
+# Flutter/Dart
+# Build outputs
+/build/
+/android/app/build/
+/ios/Runner.xcworkspace/
+/ios/Runner.xcarchive/
+
+# Environments and secrets
+.env
+*.env
+!.env.example
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+
+# Dependencies
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+/lib/generated/
+/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Web
+/web/packages/
+
+# macOS
+/macos/Flutter/ephemeral/
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.pbxuser
+!default.pbxuser
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+xcuserdata
+.symlinks/
+
+# Windows
+/windows/flutter/ephemeral/
+
+# Linux
+/linux/flutter/ephemeral/
+
+# Android
+/android/app/debug
+/android/app/profile
+/android/app/release
+*.jks
+key.properties
+
+# iOS
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/flutter_export_environment.sh
+/ios/ServiceDefinitions.json
+/ios/Runner/GoogleService-Info.plist
+
+# Firebase
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart

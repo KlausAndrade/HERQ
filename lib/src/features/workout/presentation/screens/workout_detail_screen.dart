@@ -1,0 +1,714 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+
+import '../../../../core/database/database.dart';
+import '../../../exercises/presentation/providers/exercise_providers.dart';
+import '../providers/workout_providers.dart';
+
+class WorkoutDetailScreen extends ConsumerWidget {
+  const WorkoutDetailScreen({
+    super.key,
+    required this.workoutId,
+  });
+  
+  final String workoutId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final workoutSessionAsync = ref.watch(workoutSessionByIdProvider(workoutId));
+    final setEntriesAsync = ref.watch(setEntriesBySessionProvider(workoutId));
+
+    return workoutSessionAsync.when(
+      data: (workoutSession) {
+        if (workoutSession == null) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Workout Not Found'),
+            ),
+            body: const Center(
+              child: Text('Workout session not found'),
+            ),
+          );
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(workoutSession.name),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  _showWorkoutMenu(context, workoutSession);
+                },
+                icon: const Icon(Icons.more_vert),
+              ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Workout Header
+                _WorkoutHeader(workoutSession: workoutSession),
+                
+                const SizedBox(height: 16),
+                
+                // Exercise Sets
+                setEntriesAsync.when(
+                  data: (setEntries) => _ExerciseSetsSection(
+                    setEntries: setEntries,
+                    workoutSession: workoutSession,
+                  ),
+                  loading: () => const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  error: (error, stack) => Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Text('Error loading sets: $error'),
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Workout Notes
+                if (workoutSession.notes != null && workoutSession.notes!.isNotEmpty)
+                  _WorkoutNotes(notes: workoutSession.notes!),
+                
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () => Scaffold(
+        appBar: AppBar(
+          title: const Text('Loading...'),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, stack) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Error'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 48, color: Colors.grey),
+              const SizedBox(height: 16),
+              Text(
+                'Error loading workout',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showWorkoutMenu(BuildContext context, WorkoutSession workoutSession) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.repeat),
+              title: const Text('Repeat Workout'),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Start new workout with same template
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.share),
+              title: const Text('Share Workout'),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Share workout functionality
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit Notes'),
+              onTap: () {
+                Navigator.pop(context);
+                _showEditNotesDialog(context, workoutSession);
+              },
+            ),
+            if (workoutSession.completedAt == null)
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete Workout', style: TextStyle(color: Colors.red)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmation(context, workoutSession);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditNotesDialog(BuildContext context, WorkoutSession workoutSession) {
+    final controller = TextEditingController(text: workoutSession.notes ?? '');
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Notes'),
+        content: TextField(
+          controller: controller,
+          maxLines: 4,
+          decoration: const InputDecoration(
+            hintText: 'Add workout notes...',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              // TODO: Update workout notes
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, WorkoutSession workoutSession) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Workout'),
+        content: const Text('Are you sure you want to delete this workout? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              // TODO: Delete workout
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WorkoutHeader extends StatelessWidget {
+  const _WorkoutHeader({required this.workoutSession});
+
+  final WorkoutSession workoutSession;
+
+  @override
+  Widget build(BuildContext context) {
+    final dateFormat = DateFormat('EEEE, MMMM d, y');
+    final timeFormat = DateFormat('h:mm a');
+    
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.all(16),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(workoutSession.completedAt != null),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      workoutSession.completedAt != null 
+                          ? Icons.check_circle 
+                          : Icons.fitness_center,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          workoutSession.name,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          dateFormat.format(workoutSession.startedAt),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(workoutSession.completedAt != null).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      workoutSession.completedAt != null ? 'COMPLETED' : 'IN PROGRESS',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: _getStatusColor(workoutSession.completedAt != null),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Workout Stats
+              Row(
+                children: [
+                  _StatItem(
+                    icon: Icons.schedule,
+                    label: 'Duration',
+                    value: _formatDuration(workoutSession.totalDurationSeconds),
+                  ),
+                  const SizedBox(width: 24),
+                  _StatItem(
+                    icon: Icons.fitness_center,
+                    label: 'Sets',
+                    value: '${workoutSession.totalSets}',
+                  ),
+                  const SizedBox(width: 24),
+                  _StatItem(
+                    icon: Icons.repeat,
+                    label: 'Reps',
+                    value: '${workoutSession.totalReps}',
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              Row(
+                children: [
+                  _StatItem(
+                    icon: Icons.monitor_weight,
+                    label: 'Volume',
+                    value: '${workoutSession.totalVolume.toStringAsFixed(1)} kg',
+                  ),
+                  const SizedBox(width: 24),
+                  _StatItem(
+                    icon: Icons.trending_up,
+                    label: 'Tonnage',
+                    value: '${workoutSession.totalTonnage.toStringAsFixed(1)} kg',
+                  ),
+                ],
+              ),
+              
+              if (workoutSession.completedAt != null) ...[
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.schedule,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Started: ${timeFormat.format(workoutSession.startedAt)}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Icon(
+                      Icons.check,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Finished: ${timeFormat.format(workoutSession.completedAt!)}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getStatusColor(bool isCompleted) {
+    return isCompleted ? Colors.green : Colors.orange;
+  }
+
+  String _formatDuration(int? seconds) {
+    if (seconds == null) return '--';
+    
+    final duration = Duration(seconds: seconds);
+    if (duration.inHours > 0) {
+      return '${duration.inHours}h ${duration.inMinutes % 60}m';
+    } else {
+      return '${duration.inMinutes}m';
+    }
+  }
+}
+
+class _StatItem extends StatelessWidget {
+  const _StatItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        const SizedBox(width: 4),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
+            ),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _ExerciseSetsSection extends ConsumerWidget {
+  const _ExerciseSetsSection({
+    required this.setEntries,
+    required this.workoutSession,
+  });
+
+  final List<SetEntry> setEntries;
+  final WorkoutSession workoutSession;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (setEntries.isEmpty) {
+      return Card(
+        margin: const EdgeInsets.all(16),
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            children: [
+              Icon(
+                Icons.fitness_center_outlined,
+                size: 48,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No exercises recorded',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'This workout doesn\'t have any recorded sets yet',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Group sets by exercise
+    final groupedSets = <String, List<SetEntry>>{};
+    for (final set in setEntries) {
+      groupedSets.putIfAbsent(set.exerciseId, () => []).add(set);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Exercises',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...groupedSets.entries.map((entry) {
+            final exerciseId = entry.key;
+            final exerciseSets = entry.value;
+            
+            return _ExerciseCard(
+              exerciseId: exerciseId,
+              sets: exerciseSets,
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+}
+
+class _ExerciseCard extends ConsumerWidget {
+  const _ExerciseCard({
+    required this.exerciseId,
+    required this.sets,
+  });
+
+  final String exerciseId;
+  final List<SetEntry> sets;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final exerciseAsync = ref.watch(exerciseByIdProvider(exerciseId));
+
+    return exerciseAsync.when(
+      data: (exercise) {
+        final exerciseName = exercise?.name ?? 'Unknown Exercise';
+        
+        return Card(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      exercise?.isBodyweight ?? false 
+                          ? Icons.accessibility 
+                          : Icons.fitness_center,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        exerciseName,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${sets.length} sets',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 12),
+                
+                // Sets table header
+                Row(
+                  children: [
+                    const SizedBox(width: 30),
+                    Expanded(flex: 2, child: Text('Weight', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600))),
+                    Expanded(flex: 2, child: Text('Reps', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600))),
+                    Expanded(flex: 2, child: Text('RPE', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600))),
+                  ],
+                ),
+                
+                const Divider(height: 8),
+                
+                // Sets
+                ...sets.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final set = entry.value;
+                  
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: _getSetTypeColor(set.setType),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${index + 1}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            set.weight != null ? '${set.weight!.toStringAsFixed(1)} kg' : '--',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            '${set.reps}',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            set.rpe != null ? '${set.rpe}' : '--',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () => Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: Container(
+          height: 80,
+          child: const Center(child: CircularProgressIndicator()),
+        ),
+      ),
+      error: (error, stack) => Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text('Error loading exercise: $error'),
+        ),
+      ),
+    );
+  }
+
+  Color _getSetTypeColor(String setType) {
+    switch (setType.toLowerCase()) {
+      case 'warmup':
+        return Colors.orange;
+      case 'working':
+        return Colors.blue;
+      case 'drop':
+        return Colors.purple;
+      case 'failure':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+}
+
+class _WorkoutNotes extends StatelessWidget {
+  const _WorkoutNotes({required this.notes});
+
+  final String notes;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.note,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Notes',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                notes,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

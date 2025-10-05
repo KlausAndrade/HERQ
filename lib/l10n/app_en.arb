@@ -1,0 +1,75 @@
+{
+  "@@locale": "en",
+  "appTitle": "GymAI",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "welcomeBack": "Welcome back!",
+  "@welcomeBack": {
+    "description": "Welcome message on home screen"
+  },
+  "readyForWorkout": "Ready for your next workout?",
+  "@readyForWorkout": {
+    "description": "Subtitle on home screen"
+  },
+  "quickActions": "Quick Actions",
+  "@quickActions": {
+    "description": "Section title for quick action buttons"
+  },
+  "startWorkout": "Start Workout",
+  "@startWorkout": {
+    "description": "Start workout button text"
+  },
+  "viewProgress": "View Progress",
+  "@viewProgress": {
+    "description": "View progress button text"
+  },
+  "exerciseLibrary": "Exercise Library",
+  "@exerciseLibrary": {
+    "description": "Exercise library button text"
+  },
+  "history": "History",
+  "@history": {
+    "description": "History button text"
+  },
+  "thisWeek": "This Week",
+  "@thisWeek": {
+    "description": "This week stats section title"
+  },
+  "workouts": "Workouts",
+  "@workouts": {
+    "description": "Workouts label"
+  },
+  "totalVolume": "Total Volume",
+  "@totalVolume": {
+    "description": "Total volume label"
+  },
+  "prsSet": "PRs Set",
+  "@prsSet": {
+    "description": "Personal records set label"
+  },
+  "recentWorkouts": "Recent Workouts",
+  "@recentWorkouts": {
+    "description": "Recent workouts section title"
+  },
+  "viewAll": "View All",
+  "@viewAll": {
+    "description": "View all button text"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home navigation label"
+  },
+  "exercises": "Exercises",
+  "@exercises": {
+    "description": "Exercises navigation label"
+  },
+  "progress": "Progress",
+  "@progress": {
+    "description": "Progress navigation label"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen title"
+  }
+}

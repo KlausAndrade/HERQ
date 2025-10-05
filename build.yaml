@@ -1,0 +1,16 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        enabled: true
+        options:
+          any_map: false
+          checked: true
+        generate_for:
+          exclude:
+            - lib/src/features/workout/presentation/screens/active_workout_screen.dart
+      drift_dev:
+        enabled: true
+        generate_for:
+          exclude:
+            - lib/src/features/workout/presentation/screens/active_workout_screen.dart
