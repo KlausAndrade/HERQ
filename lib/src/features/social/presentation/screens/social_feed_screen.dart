@@ -7,6 +7,7 @@ import '../../../../core/providers/auth_provider.dart';
 import '../providers/social_providers.dart';
 import '../widgets/create_post_sheet.dart';
 import '../widgets/post_card.dart';
+import '../widgets/profile_completion_banner.dart';
 
 class SocialFeedScreen extends HookConsumerWidget {
   const SocialFeedScreen({super.key});
@@ -47,7 +48,12 @@ class SocialFeedScreen extends HookConsumerWidget {
             body: TabBarView(
               controller: tabController,
               children: [
-                _FeedTab(currentUserId: currentUser.id),
+                Column(
+                  children: [
+                    const ProfileCompletionBanner(),
+                    Expanded(child: _FeedTab(currentUserId: currentUser.id)),
+                  ],
+                ),
                 _ExploreTab(currentUserId: currentUser.id),
               ],
             ),

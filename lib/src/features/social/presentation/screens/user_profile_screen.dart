@@ -36,11 +36,18 @@ class UserProfileScreen extends ConsumerWidget {
           error: (_, __) => const Text('Profile'),
         ),
         actions: [
-          if (isCurrentUser)
+          if (isCurrentUser) ...[
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () => context.push('/edit-profile'),
+              tooltip: 'Edit Profile',
+            ),
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () => context.go('/settings'),
+              tooltip: 'Settings',
             ),
+          ],
         ],
       ),
       body: RefreshIndicator(

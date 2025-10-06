@@ -52,6 +52,14 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                       const Divider(height: 1),
                       ListTile(
+                        leading: const Icon(Icons.edit),
+                        title: const Text('Edit Profile'),
+                        subtitle: const Text('Update your display name and bio'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => context.push('/edit-profile'),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
                         leading: const Icon(Icons.logout, color: Colors.red),
                         title: const Text('Sign Out'),
                         onTap: () async {

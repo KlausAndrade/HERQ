@@ -16,6 +16,7 @@ import '../../features/social/presentation/screens/social_feed_screen.dart';
 import '../../features/social/presentation/screens/leaderboards_screen.dart';
 import '../../features/social/presentation/screens/post_comments_screen.dart';
 import '../../features/social/presentation/screens/user_profile_screen.dart';
+import '../../features/social/presentation/screens/edit_profile_screen.dart';
 import '../../features/social/presentation/screens/followers_screen.dart';
 import '../../features/social/presentation/screens/following_screen.dart';
 import '../../features/ai/presentation/screens/ai_coaching_screen.dart';
@@ -98,6 +99,11 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
             final id = state.pathParameters['id']!;
             return UserProfileScreen(userId: id);
           },
+        ),
+        GoRoute(
+          path: '/edit-profile',
+          name: 'edit-profile',
+          builder: (context, state) => const EditProfileScreen(),
         ),
         GoRoute(
           path: '/user/:id/followers',
