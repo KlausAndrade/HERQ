@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/database/database.dart';
 import '../providers/workout_providers.dart';
 import '../providers/filter_providers.dart';
+import '../widgets/workout_calendar.dart';
 
 class WorkoutHistoryScreen extends ConsumerStatefulWidget {
   const WorkoutHistoryScreen({super.key});
@@ -14,13 +15,15 @@ class WorkoutHistoryScreen extends ConsumerStatefulWidget {
   ConsumerState<WorkoutHistoryScreen> createState() => _WorkoutHistoryScreenState();
 }
 
+enum HistoryViewMode { list, monthly, calendar }
+
 class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
-  bool _showGroupedByMonth = true;
+  HistoryViewMode _viewMode = HistoryViewMode.monthly;
 
   @override
   Widget build(BuildContext context) {
     final workoutStatsAsync = ref.watch(workoutStatsProvider);
-    final workoutSessionsAsync = _showGroupedByMonth 
+    final workoutSessionsAsync = _viewMode == HistoryViewMode.monthly
         ? ref.watch(workoutSessionsByMonthProvider)
         : ref.watch(filteredWorkoutSessionsProvider);
 
@@ -31,11 +34,15 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
           IconButton(
             onPressed: () {
               setState(() {
-                _showGroupedByMonth = !_showGroupedByMonth;
+                _viewMode = switch (_viewMode) {
+                  HistoryViewMode.list => HistoryViewMode.monthly,
+                  HistoryViewMode.monthly => HistoryViewMode.calendar,
+                  HistoryViewMode.calendar => HistoryViewMode.list,
+                };
               });
             },
-            icon: Icon(_showGroupedByMonth ? Icons.list : Icons.calendar_month),
-            tooltip: _showGroupedByMonth ? 'List View' : 'Monthly View',
+            icon: Icon(_getViewIcon()),
+            tooltip: _getViewTooltip(),
           ),
           IconButton(
             onPressed: () {
@@ -56,13 +63,61 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
           
           // Workout History List
           Expanded(
-            child: _showGroupedByMonth 
-                ? _buildGroupedView(workoutSessionsAsync)
-                : _buildListView(workoutSessionsAsync),
+            child: switch (_viewMode) {
+              HistoryViewMode.list => _buildListView(workoutSessionsAsync),
+              HistoryViewMode.monthly => _buildGroupedView(workoutSessionsAsync),
+              HistoryViewMode.calendar => _buildCalendarView(workoutSessionsAsync),
+            },
           ),
         ],
       ),
       bottomNavigationBar: _buildBottomNavigation(context),
+    );
+  }
+
+  IconData _getViewIcon() {
+    return switch (_viewMode) {
+      HistoryViewMode.list => Icons.calendar_month,
+      HistoryViewMode.monthly => Icons.calendar_view_month,
+      HistoryViewMode.calendar => Icons.list,
+    };
+  }
+
+  String _getViewTooltip() {
+    return switch (_viewMode) {
+      HistoryViewMode.list => 'Monthly View',
+      HistoryViewMode.monthly => 'Calendar View',
+      HistoryViewMode.calendar => 'List View',
+    };
+  }
+
+  Widget _buildCalendarView(AsyncValue workoutSessionsAsync) {
+    return workoutSessionsAsync.when(
+      data: (data) {
+        // For calendar view, we need the flat list of sessions
+        List<WorkoutSession> sessions;
+        if (data is Map<String, List<WorkoutSession>>) {
+          // If data comes from monthly provider, flatten it
+          sessions = data.values.expand((list) => list).toList();
+        } else {
+          sessions = data as List<WorkoutSession>;
+        }
+
+        if (sessions.isEmpty) {
+          return _buildEmptyState();
+        }
+
+        return WorkoutCalendar(
+          workouts: sessions,
+          onWorkoutTap: (workout) {
+            context.push('/workout/${workout.id}');
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Text('Error loading workouts: $error'),
+      ),
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/providers/database_provider.dart';
 import '../../providers/data_export_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/workout_settings_provider.dart';
@@ -139,9 +140,7 @@ class SettingsScreen extends ConsumerWidget {
                   title: const Text('Sync Data'),
                   subtitle: const Text('Last synced: Never'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    // TODO: Show sync settings
-                  },
+                  onTap: () => _showSyncDialog(context),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -157,9 +156,7 @@ class SettingsScreen extends ConsumerWidget {
                   title: const Text('Delete Account'),
                   subtitle: const Text('Permanently delete all data'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    // TODO: Show delete account dialog
-                  },
+                  onTap: () => _showDeleteAccountDialog(context, ref),
                 ),
               ],
             ),
@@ -187,18 +184,14 @@ class SettingsScreen extends ConsumerWidget {
                   leading: const Icon(Icons.description_outlined),
                   title: const Text('Privacy Policy'),
                   trailing: const Icon(Icons.open_in_new),
-                  onTap: () {
-                    // TODO: Open privacy policy
-                  },
+                  onTap: () => _showPrivacyPolicy(context),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.gavel_outlined),
                   title: const Text('Terms of Service'),
                   trailing: const Icon(Icons.open_in_new),
-                  onTap: () {
-                    // TODO: Open terms of service
-                  },
+                  onTap: () => _showTermsOfService(context),
                 ),
               ],
             ),
@@ -522,5 +515,253 @@ class SettingsScreen extends ConsumerWidget {
         );
       }
     }
+  }
+
+  void _showSyncDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sync Data'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Cloud sync is not yet configured.'),
+            SizedBox(height: 16),
+            Text(
+              'This feature will allow you to:',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 8),
+            Text('• Backup your data to the cloud'),
+            Text('• Sync across multiple devices'),
+            Text('• Restore data if you lose your device'),
+            SizedBox(height: 16),
+            Text('Coming soon!'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Got it'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
+    final confirmController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Account'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '⚠️ Warning: This action cannot be undone!',
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('This will permanently delete:'),
+            const SizedBox(height: 8),
+            const Text('• All your workout history'),
+            const Text('• All workout templates'),
+            const Text('• All personal records'),
+            const Text('• All settings and preferences'),
+            const SizedBox(height: 24),
+            const Text(
+              'Type DELETE to confirm:',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: confirmController,
+              decoration: const InputDecoration(
+                hintText: 'DELETE',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              if (confirmController.text == 'DELETE') {
+                final database = ref.read(databaseProvider);
+                if (database == null) return;
+                
+                try {
+                  // Delete all data
+                  await database.delete(database.workoutSessions).go();
+                  await database.delete(database.workoutTemplates).go();
+                  await database.delete(database.setEntries).go();
+                  await database.delete(database.personalRecords).go();
+                  await database.delete(database.exerciseFavorites).go();
+                  
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Account data deleted'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please type DELETE to confirm'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete Everything'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPrivacyPolicy(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Privacy Policy'),
+        content: const SingleChildScrollView(
+          child: Text(
+            '''GymAI Privacy Policy
+
+Last updated: October 6, 2025
+
+1. Data Collection
+We collect and store your workout data locally on your device, including:
+• Workout sessions and history
+• Exercise performance data
+• Personal records and achievements
+• User preferences and settings
+
+2. Data Storage
+All data is stored locally on your device using encrypted storage. We do not transmit your personal workout data to external servers unless you explicitly enable cloud sync features.
+
+3. Data Usage
+Your data is used solely to:
+• Track your fitness progress
+• Generate insights and recommendations
+• Provide personalized workout experiences
+
+4. Data Sharing
+We do not share, sell, or distribute your personal workout data to third parties.
+
+5. Your Rights
+You have the right to:
+• Export your data at any time
+• Delete your account and all associated data
+• Request information about stored data
+
+6. Contact
+For privacy concerns, please contact: privacy@gymai.app
+
+By using GymAI, you agree to this privacy policy.''',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTermsOfService(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Terms of Service'),
+        content: const SingleChildScrollView(
+          child: Text(
+            '''GymAI Terms of Service
+
+Last updated: October 6, 2025
+
+1. Acceptance of Terms
+By using GymAI, you agree to these Terms of Service.
+
+2. Service Description
+GymAI is a fitness tracking application that helps users:
+• Track workout sessions
+• Monitor progress and achievements
+• Create and manage workout templates
+• Record personal records
+
+3. User Responsibilities
+You agree to:
+• Provide accurate information
+• Use the app for lawful purposes only
+• Not attempt to reverse engineer the software
+• Take responsibility for your own fitness decisions
+
+4. Health Disclaimer
+• GymAI is not a substitute for professional medical advice
+• Consult healthcare professionals before starting new fitness programs
+• We are not liable for injuries or health issues
+• Use the app at your own risk
+
+5. Data and Privacy
+• Your data is stored locally on your device
+• You can export or delete your data at any time
+• See our Privacy Policy for more details
+
+6. Intellectual Property
+All app content, design, and features are owned by GymAI and protected by copyright laws.
+
+7. Disclaimer of Warranties
+The app is provided "as is" without warranties of any kind.
+
+8. Limitation of Liability
+We are not liable for any damages arising from app use.
+
+9. Changes to Terms
+We may update these terms. Continued use constitutes acceptance of changes.
+
+10. Contact
+For questions: support@gymai.app
+
+By using GymAI, you agree to these terms.''',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 }

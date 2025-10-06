@@ -151,7 +151,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
               title: const Text('Edit Notes'),
               onTap: () {
                 Navigator.pop(context);
-                _showEditNotesDialog(context, workoutSession);
+                _showEditNotesDialog(context, ref, workoutSession);
               },
             ),
             if (workoutSession.completedAt == null)
@@ -160,7 +160,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
                 title: const Text('Delete Workout', style: TextStyle(color: Colors.red)),
                 onTap: () {
                   Navigator.pop(context);
-                  _showDeleteConfirmation(context, workoutSession);
+                  _showDeleteConfirmation(context, ref, workoutSession);
                 },
               ),
           ],
@@ -169,7 +169,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showEditNotesDialog(BuildContext context, WorkoutSession workoutSession) {
+  void _showEditNotesDialog(BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
     final controller = TextEditingController(text: workoutSession.notes ?? '');
     
     showDialog(
@@ -190,9 +190,29 @@ class WorkoutDetailScreen extends ConsumerWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              // TODO: Update workout notes
-              Navigator.pop(context);
+            onPressed: () async {
+              final database = ref.read(databaseProvider);
+              if (database == null) return;
+              
+              try {
+                await database.update(database.workoutSessions).replace(
+                  workoutSession.copyWith(notes: Value(controller.text)),
+                );
+                
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Notes updated')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error updating notes: $e')),
+                  );
+                }
+              }
             },
             child: const Text('Save'),
           ),
@@ -300,7 +320,7 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
     }
   }
 
-  void _showDeleteConfirmation(BuildContext context, WorkoutSession workoutSession) {
+  void _showDeleteConfirmation(BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -312,10 +332,34 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              // TODO: Delete workout
-              Navigator.pop(context);
-              Navigator.pop(context);
+            onPressed: () async {
+              final database = ref.read(databaseProvider);
+              if (database == null) return;
+              
+              try {
+                // Delete associated set entries first
+                await (database.delete(database.setEntries)
+                      ..where((tbl) => tbl.workoutSessionId.equals(workoutSession.id)))
+                    .go();
+                
+                // Delete the workout session
+                await database.delete(database.workoutSessions).delete(workoutSession);
+                
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Workout deleted')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error deleting workout: $e')),
+                  );
+                }
+              }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Delete'),

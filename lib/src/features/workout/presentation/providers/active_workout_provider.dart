@@ -5,6 +5,7 @@ import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../domain/models/active_workout.dart';
 import 'exercise_timer_preferences_provider.dart';
+import '../../../gamification/data/providers/gamification_provider.dart';
 
 // Provider for active workout state with real template data
 final activeWorkoutProvider = StateNotifierProvider<ActiveWorkoutNotifier, ActiveWorkout?>((ref) {
@@ -276,7 +277,30 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     });
   }
 
-  void finishWorkout() {
+  Future<void> finishWorkout() async {
+    if (state == null) return;
+    
+    // Calculate workout stats for gamification
+    final totalSets = _calculateTotalSets(state!.exercises);
+    final totalVolume = _calculateTotalVolume(state!.exercises);
+    final durationMinutes = state!.elapsedTime.inMinutes;
+    
+    // Update gamification stats
+    final gamificationService = _ref.read(gamificationServiceProvider);
+    if (gamificationService != null) {
+      try {
+        await gamificationService.onWorkoutCompleted(
+          workoutId: 0, // Placeholder - real workout ID would come from database
+          setsCompleted: totalSets,
+          volumeLifted: totalVolume,
+          durationMinutes: durationMinutes,
+        );
+      } catch (e) {
+        // Log error but don't block workout completion
+        print('Error updating gamification stats: $e');
+      }
+    }
+    
     state = null;
   }
 }

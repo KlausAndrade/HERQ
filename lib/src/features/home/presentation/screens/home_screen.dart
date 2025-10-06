@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
+import '../../../gamification/presentation/widgets/gamification_widgets.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -41,6 +42,11 @@ class HomeScreen extends ConsumerWidget {
                     ],
                   ),
                   const Spacer(),
+                  // Gamification badges
+                  const StreakBadge(size: 36, showText: true),
+                  const SizedBox(width: 12),
+                  const LevelIndicator(size: 48, showProgress: false),
+                  const SizedBox(width: 12),
                   IconButton(
                     onPressed: () => context.go('/settings'),
                     icon: const Icon(Icons.settings_outlined),
@@ -88,6 +94,20 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 12),
+            Expanded(
+              child: _QuickActionCard(
+                title: 'Achievements',
+                subtitle: 'Track your progress',
+                icon: Icons.emoji_events,
+                color: Colors.amber,
+                onTap: () => context.go('/gamification'),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
             Expanded(
               child: _QuickActionCard(
                 title: 'View Progress',

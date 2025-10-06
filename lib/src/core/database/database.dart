@@ -13,6 +13,8 @@ import '../models/exercise_favorite.dart';
 import '../models/personal_record.dart';
 import '../models/set_entry.dart';
 import '../models/user.dart';
+import '../models/user_achievement.dart';
+import '../models/user_stats.dart';
 import '../models/workout_session.dart';
 import '../models/workout_template.dart';
 
@@ -27,13 +29,15 @@ part 'database.g.dart';
     WorkoutSessions,
     SetEntries,
     PersonalRecords,
+    UserAchievements,
+    UserStats,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -45,7 +49,11 @@ class AppDatabase extends _$AppDatabase {
         await _insertDefaultData();
       },
       onUpgrade: (migrator, from, to) async {
-        if (to == 7) {
+        if (to == 8) {
+          // Add gamification tables
+          await migrator.createTable(userAchievements);
+          await migrator.createTable(userStats);
+        } else if (to == 7) {
           // Add exercise favorites table
           await migrator.createTable(exerciseFavorites);
         } else if (to == 6) {

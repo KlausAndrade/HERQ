@@ -15,6 +15,7 @@ import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/social/presentation/screens/social_feed_screen.dart';
 import '../../features/social/presentation/screens/leaderboards_screen.dart';
 import '../../features/ai/presentation/screens/ai_coaching_screen.dart';
+import '../../features/gamification/presentation/screens/gamification_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) => GoRouter(
     initialLocation: '/',
@@ -100,6 +101,11 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/gamification',
+        name: 'gamification',
+        builder: (context, state) => const GamificationScreen(),
       ),
     ],
   ));
