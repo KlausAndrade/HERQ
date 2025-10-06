@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/database/database.dart';
 import '../providers/exercise_providers.dart';
+import '../providers/exercise_favorites_provider.dart';
 
 class ExerciseLibraryScreen extends ConsumerStatefulWidget {
   const ExerciseLibraryScreen({super.key});
@@ -17,6 +18,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
   String _selectedCategory = 'All';
   String _searchQuery = '';
   bool _showVariants = false;
+  bool _showOnlyFavorites = false;
 
   @override
   Widget build(BuildContext context) {
@@ -66,21 +68,55 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // Show variants toggle
+                // Favorites and variants toggles
                 Row(
                   children: [
-                    Text(
-                      'Show Variants',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                    // Favorites filter
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.favorite,
+                            size: 20,
+                            color: _showOnlyFavorites ? Colors.red : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Favorites Only',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const Spacer(),
+                          Switch(
+                            value: _showOnlyFavorites,
+                            onChanged: (value) {
+                              setState(() {
+                                _showOnlyFavorites = value;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                    const Spacer(),
-                    Switch(
-                      value: _showVariants,
-                      onChanged: (value) {
-                        setState(() {
-                          _showVariants = value;
-                        });
-                      },
+                    const SizedBox(width: 16),
+                    // Show variants toggle
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Text(
+                            'Show Variants',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const Spacer(),
+                          Switch(
+                            value: _showVariants,
+                            onChanged: (value) {
+                              setState(() {
+                                _showVariants = value;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -221,6 +257,45 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
   }
 
   AsyncValue<List<Exercise>> _getFilteredExercises() {
+    // If showing favorites only
+    if (_showOnlyFavorites) {
+      final favoritesAsync = ref.watch(favoriteExercisesProvider);
+      return favoritesAsync.when(
+        data: (exercises) {
+          var filtered = exercises;
+          
+          // Apply category filter
+          if (_selectedCategory != 'All') {
+            filtered = filtered.where((e) => e.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
+          }
+          
+          // Apply muscle group filter
+          if (_selectedMuscleGroup != 'All') {
+            filtered = filtered.where((e) => e.primaryMuscleGroup.toLowerCase() == _selectedMuscleGroup.toLowerCase()).toList();
+          }
+          
+          // Apply search query
+          if (_searchQuery.isNotEmpty) {
+            final query = _searchQuery.toLowerCase();
+            filtered = filtered.where((e) => 
+              e.name.toLowerCase().contains(query) ||
+              e.primaryMuscleGroup.toLowerCase().contains(query) ||
+              e.equipment.toLowerCase().contains(query)
+            ).toList();
+          }
+          
+          // Apply variants filter
+          if (!_showVariants) {
+            filtered = filtered.where((e) => e.parentExerciseId == null).toList();
+          }
+          
+          return AsyncValue.data(filtered);
+        },
+        loading: () => const AsyncValue.loading(),
+        error: (error, stack) => AsyncValue.error(error, stack),
+      );
+    }
+    
     if (_searchQuery.isNotEmpty) {
       return ref.watch(exerciseSearchProvider(_searchQuery));
     }

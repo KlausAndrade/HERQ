@@ -9,6 +9,7 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
 import '../converters/json_converters.dart';
 import '../models/exercise.dart';
+import '../models/exercise_favorite.dart';
 import '../models/personal_record.dart';
 import '../models/set_entry.dart';
 import '../models/user.dart';
@@ -21,6 +22,7 @@ part 'database.g.dart';
   tables: [
     Users,
     Exercises,
+    ExerciseFavorites,
     WorkoutTemplates,
     WorkoutSessions,
     SetEntries,
@@ -31,7 +33,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -43,7 +45,10 @@ class AppDatabase extends _$AppDatabase {
         await _insertDefaultData();
       },
       onUpgrade: (migrator, from, to) async {
-        if (to == 6) {
+        if (to == 7) {
+          // Add exercise favorites table
+          await migrator.createTable(exerciseFavorites);
+        } else if (to == 6) {
           // Force recreate all tables with new schema for version 6
           await migrator.deleteTable('exercises');
           await migrator.deleteTable('set_entries');

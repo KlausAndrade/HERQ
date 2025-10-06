@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/exercise_providers.dart';
+import '../providers/exercise_favorites_provider.dart';
 
 class ExerciseDetailScreen extends ConsumerWidget {
   const ExerciseDetailScreen({
@@ -15,6 +16,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final exerciseAsync = ref.watch(exerciseByIdProvider(exerciseId));
+    final isFavoritedAsync = ref.watch(isExerciseFavorited(exerciseId));
 
     return exerciseAsync.when(
       data: (exercise) {
@@ -33,11 +35,25 @@ class ExerciseDetailScreen extends ConsumerWidget {
           appBar: AppBar(
             title: Text(exercise.name),
             actions: [
-              IconButton(
-                onPressed: () {
-                  // TODO: Add to favorites
-                },
-                icon: const Icon(Icons.favorite_border),
+              isFavoritedAsync.when(
+                data: (isFavorited) => IconButton(
+                  onPressed: () async {
+                    await ref.read(favoritesNotifierProvider).toggleFavorite(exerciseId);
+                  },
+                  icon: Icon(
+                    isFavorited ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorited ? Colors.red : null,
+                  ),
+                  tooltip: isFavorited ? 'Remove from favorites' : 'Add to favorites',
+                ),
+                loading: () => const IconButton(
+                  onPressed: null,
+                  icon: Icon(Icons.favorite_border),
+                ),
+                error: (_, __) => const IconButton(
+                  onPressed: null,
+                  icon: Icon(Icons.favorite_border),
+                ),
               ),
             ],
           ),
