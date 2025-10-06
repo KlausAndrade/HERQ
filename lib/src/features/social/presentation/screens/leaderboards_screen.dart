@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../domain/models/social_models.dart';
+import '../../domain/models/leaderboard_models.dart';
+import '../providers/leaderboard_providers.dart';
 
 class LeaderboardsScreen extends HookConsumerWidget {
   const LeaderboardsScreen({super.key});
@@ -51,8 +52,8 @@ class LeaderboardTab extends HookConsumerWidget {
     return ValueListenableBuilder<Period>(
       valueListenable: selectedPeriod,
       builder: (context, period, child) {
-        // final params = const {}; // LeaderboardParams(type: type, period: period);
-        final leaderboardAsync = AsyncValue<Leaderboard>.error('Not implemented', StackTrace.current); // ref.watch(leaderboardProvider(params));
+        final params = LeaderboardParams(type: type, period: period);
+        final leaderboardAsync = ref.watch(leaderboardProvider(params));
 
         return Column(
           children: [
@@ -82,7 +83,7 @@ class LeaderboardTab extends HookConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: () {}, // ref.invalidate(leaderboardProvider),
+                        onPressed: () => ref.invalidate(leaderboardProvider),
                         child: const Text('Retry'),
                       ),
                     ],
@@ -260,7 +261,7 @@ class LeaderboardTab extends HookConsumerWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          _formatScore(entry.score, type),
+          entry.formattedValue,
           style: TextStyle(
             fontSize: 11,
             color: Colors.grey[600],
@@ -328,55 +329,15 @@ class LeaderboardTab extends HookConsumerWidget {
           entry.displayName,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        subtitle: entry.change != null
-            ? Row(
-                children: [
-                  Icon(
-                    entry.change! > 0
-                        ? Icons.trending_up
-                        : entry.change! < 0
-                            ? Icons.trending_down
-                            : Icons.remove,
-                    size: 16,
-                    color: entry.change! > 0
-                        ? Colors.green
-                        : entry.change! < 0
-                            ? Colors.red
-                            : Colors.grey,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    entry.change! == 0
-                        ? 'No change'
-                        : '${entry.change!.abs()} ${entry.change! > 0 ? 'up' : 'down'}',
-                    style: TextStyle(
-                      color: entry.change! > 0
-                          ? Colors.green
-                          : entry.change! < 0
-                              ? Colors.red
-                              : Colors.grey,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              )
-            : null,
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              _formatScore(entry.score, type),
+              entry.formattedValue,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-              ),
-            ),
-            Text(
-              _getScoreUnit(type),
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
               ),
             ),
           ],
@@ -387,41 +348,14 @@ class LeaderboardTab extends HookConsumerWidget {
 
   String _formatPeriod(Period period) {
     switch (period) {
+      case Period.daily:
+        return 'Day';
       case Period.weekly:
         return 'Week';
       case Period.monthly:
         return 'Month';
-      case Period.yearly:
-        return 'Year';
       case Period.allTime:
         return 'All Time';
-    }
-  }
-
-  String _formatScore(double score, LeaderboardType type) {
-    switch (type) {
-      case LeaderboardType.totalVolume:
-        if (score >= 1000) {
-          return '${(score / 1000).toStringAsFixed(1)}k';
-        }
-        return score.toStringAsFixed(0);
-      case LeaderboardType.workoutCount:
-      case LeaderboardType.streak:
-      case LeaderboardType.prCount:
-        return score.toStringAsFixed(0);
-    }
-  }
-
-  String _getScoreUnit(LeaderboardType type) {
-    switch (type) {
-      case LeaderboardType.totalVolume:
-        return 'kg';
-      case LeaderboardType.workoutCount:
-        return 'workouts';
-      case LeaderboardType.streak:
-        return 'days';
-      case LeaderboardType.prCount:
-        return 'PRs';
     }
   }
 }
