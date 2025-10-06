@@ -1,7 +1,10 @@
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/database/database.dart';
+import '../../../../core/providers/database_provider.dart';
 import '../providers/exercise_providers.dart';
 import '../providers/exercise_favorites_provider.dart';
 
@@ -370,7 +373,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
                       children: [
                         ElevatedButton.icon(
                           onPressed: () {
-                            // TODO: Start quick workout with this exercise
+                            _startQuickWorkout(context, ref, exercise);
                           },
                           icon: const Icon(Icons.play_arrow),
                           label: const Text('Quick Workout'),
@@ -378,7 +381,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
                         const SizedBox(height: 8),
                         OutlinedButton.icon(
                           onPressed: () {
-                            // TODO: Add to workout template
+                            _showAddToTemplateDialog(context, ref, exercise);
                           },
                           icon: const Icon(Icons.add),
                           label: const Text('Add to Workout'),
@@ -633,6 +636,112 @@ class _VariantChip extends StatelessWidget {
 
 // Extension methods for the ExerciseDetailScreen
 extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
+  void _startQuickWorkout(BuildContext context, WidgetRef ref, Exercise exercise) async {
+    // Create a quick workout template with this exercise
+    final database = ref.read(databaseProvider);
+    if (database == null) return;
+
+    try {
+      // Create a temporary quick workout template
+      final templateId = 'quick_${DateTime.now().millisecondsSinceEpoch}';
+      await database.into(database.workoutTemplates).insert(
+        WorkoutTemplatesCompanion.insert(
+          id: templateId,
+          name: 'Quick: ${exercise.name}',
+          exerciseIds: [exercise.id],
+          tags: const [],
+          category: const Value('Quick Start'),
+        ),
+      );
+
+      // Navigate to active workout screen with this template
+      if (context.mounted) {
+        context.go('/workout/active?templateId=$templateId');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error starting workout: $e')),
+        );
+      }
+    }
+  }
+
+  void _showAddToTemplateDialog(BuildContext context, WidgetRef ref, Exercise exercise) async {
+    final database = ref.read(databaseProvider);
+    if (database == null) return;
+
+    // Get all user templates
+    final templates = await database.select(database.workoutTemplates).get();
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add to Workout Template'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: templates.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text('No templates available. Create a template first.'),
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: templates.length,
+                  itemBuilder: (context, index) {
+                    final template = templates[index];
+                    final alreadyAdded = template.exerciseIds.contains(exercise.id);
+                    
+                    return ListTile(
+                      leading: Icon(
+                        alreadyAdded ? Icons.check_circle : Icons.fitness_center,
+                        color: alreadyAdded ? Colors.green : null,
+                      ),
+                      title: Text(template.name),
+                      subtitle: Text('${template.exerciseIds.length} exercises'),
+                      enabled: !alreadyAdded,
+                      onTap: alreadyAdded
+                          ? null
+                          : () async {
+                              // Add exercise to template
+                              final updatedIds = [...template.exerciseIds, exercise.id];
+                              await database.update(database.workoutTemplates).replace(
+                                template.copyWith(exerciseIds: updatedIds),
+                              );
+                              
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Added ${exercise.name} to ${template.name}'),
+                                  ),
+                                );
+                              }
+                            },
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          if (templates.isEmpty)
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.go('/template-builder');
+              },
+              child: const Text('Create Template'),
+            ),
+        ],
+      ),
+    );
+  }
+
   IconData _getCategoryIcon(String? category) {
     switch (category?.toLowerCase()) {
       case 'strength':

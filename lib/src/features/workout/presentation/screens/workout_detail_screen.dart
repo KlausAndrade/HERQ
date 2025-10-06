@@ -1,8 +1,11 @@
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/database/database.dart';
+import '../../../../core/providers/database_provider.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
 import '../providers/workout_providers.dart';
 
@@ -38,7 +41,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
             actions: [
               IconButton(
                 onPressed: () {
-                  _showWorkoutMenu(context, workoutSession);
+                  _showWorkoutMenu(context, ref, workoutSession);
                 },
                 icon: const Icon(Icons.more_vert),
               ),
@@ -120,7 +123,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showWorkoutMenu(BuildContext context, WorkoutSession workoutSession) {
+  void _showWorkoutMenu(BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -132,7 +135,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
               title: const Text('Repeat Workout'),
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Start new workout with same template
+                _startNewWorkoutWithTemplate(context, ref, workoutSession);
               },
             ),
             ListTile(
@@ -140,7 +143,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
               title: const Text('Share Workout'),
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Share workout functionality
+                _shareWorkout(context, workoutSession);
               },
             ),
             ListTile(
@@ -196,6 +199,105 @@ class WorkoutDetailScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _startNewWorkoutWithTemplate(BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
+    // Navigate to active workout with the same template or exercises
+    if (workoutSession.templateId != null && workoutSession.templateId!.isNotEmpty) {
+      // Use the existing template
+      context.go('/workout/active?templateId=${workoutSession.templateId}');
+    } else {
+      // Create a temporary template from this workout's exercises
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Repeat Workout'),
+          content: Text('Start a new workout with the same exercises as "${workoutSession.name}"?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                
+                final database = ref.read(databaseProvider);
+                if (database == null) return;
+                
+                try {
+                  // Create a quick template from this workout
+                  final templateId = 'repeat_${DateTime.now().millisecondsSinceEpoch}';
+                  await database.into(database.workoutTemplates).insert(
+                    WorkoutTemplatesCompanion.insert(
+                      id: templateId,
+                      name: 'Repeat: ${workoutSession.name}',
+                      exerciseIds: [], // Will be populated based on set entries
+                      tags: const [],
+                      category: const Value('Quick Start'),
+                    ),
+                  );
+                  
+                  if (context.mounted) {
+                    context.go('/workout/active?templateId=$templateId');
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
+                    );
+                  }
+                }
+              },
+              child: const Text('Start Workout'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _shareWorkout(BuildContext context, WorkoutSession workoutSession) {
+    // Simple share functionality using dialog for now
+    // In a real app, you'd use share_plus package
+    final shareText = '''
+${workoutSession.name}
+Completed: ${workoutSession.completedAt != null ? DateFormat('MMM d, y').format(workoutSession.completedAt!) : 'In Progress'}
+
+Stats:
+• Duration: ${_formatDuration(workoutSession.totalDurationSeconds)}
+• Total Sets: ${workoutSession.totalSets}
+• Volume: ${workoutSession.totalVolume.toStringAsFixed(1)}kg
+
+${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n${workoutSession.notes}' : ''}
+    '''.trim();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Share Workout'),
+        content: SingleChildScrollView(
+          child: SelectableText(shareText),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDuration(int? seconds) {
+    if (seconds == null) return '--';
+    
+    final duration = Duration(seconds: seconds);
+    if (duration.inHours > 0) {
+      return '${duration.inHours}h ${duration.inMinutes % 60}m';
+    } else {
+      return '${duration.inMinutes}m ${duration.inSeconds % 60}s';
+    }
   }
 
   void _showDeleteConfirmation(BuildContext context, WorkoutSession workoutSession) {
