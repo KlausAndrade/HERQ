@@ -86,12 +86,14 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                                     .onSurface
                                     .withOpacity(0.6),
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Favorites Only',
-                            style: Theme.of(context).textTheme.bodyMedium,
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              'Favorites Only',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          const Spacer(),
                           Switch(
                             value: _showOnlyFavorites,
                             onChanged: (value) {
@@ -103,16 +105,18 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 8),
                     // Show variants toggle
                     Expanded(
                       child: Row(
                         children: [
-                          Text(
-                            'Show Variants',
-                            style: Theme.of(context).textTheme.bodyMedium,
+                          Flexible(
+                            child: Text(
+                              'Show Variants',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          const Spacer(),
                           Switch(
                             value: _showVariants,
                             onChanged: (value) {
@@ -459,6 +463,8 @@ class _ExerciseCard extends StatelessWidget {
                 child: Text(
                   exercise.name,
                   style: const TextStyle(fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
               if (exercise.parentExerciseId != null) ...[
@@ -487,6 +493,8 @@ class _ExerciseCard extends StatelessWidget {
             children: [
               Text(
                 '${exercise.primaryMuscleGroup[0].toUpperCase() + exercise.primaryMuscleGroup.substring(1)} • ${exercise.equipment[0].toUpperCase() + exercise.equipment.substring(1).replaceAll('_', ' ')}',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
               const SizedBox(height: 4),
               Wrap(
@@ -712,8 +720,11 @@ class _ExerciseProgressionsView extends ConsumerWidget {
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
+                        const SizedBox(width: 8),
                         Text(
                           '${variants.length + 1} variations',
                           style:
@@ -840,6 +851,8 @@ class _ProgressionItem extends StatelessWidget {
                         fontWeight:
                             isParent ? FontWeight.bold : FontWeight.w500,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                     const SizedBox(height: 4),
                     Wrap(

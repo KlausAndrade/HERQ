@@ -258,7 +258,12 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
               color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(width: 8),
-            const Text('Incomplete Exercises'),
+            const Flexible(
+              child: Text(
+                'Incomplete Exercises',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
         content: Column(
@@ -282,6 +287,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onErrorContainer,
                 ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(height: 12),
