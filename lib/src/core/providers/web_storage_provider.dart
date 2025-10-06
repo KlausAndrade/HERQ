@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Conditional import for web storage service
-import '../services/web_storage_service.dart' if (dart.library.io) '../services/mobile_storage_stub.dart';
+import '../services/web_storage_service.dart'
+    if (dart.library.io) '../services/mobile_storage_stub.dart';
 
 /// Provider for web storage service
 final webStorageServiceProvider = Provider<WebStorageService?>((ref) {
@@ -26,7 +27,8 @@ final storageInfoProvider = FutureProvider<Map<String, dynamic>>((ref) async {
 });
 
 /// State notifier for managing web storage operations
-class WebStorageNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
+class WebStorageNotifier
+    extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
   WebStorageNotifier() : super(const AsyncValue.loading()) {
     _loadInitialData();
   }
@@ -40,7 +42,7 @@ class WebStorageNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>>
 
       // Initialize default data if needed
       await WebStorageService.initializeDefaultData();
-      
+
       // Load current storage info
       final info = WebStorageService.getStorageInfo();
       state = AsyncValue.data(info);
@@ -52,18 +54,18 @@ class WebStorageNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>>
   /// Save workout session to storage
   Future<bool> saveWorkoutSession(Map<String, dynamic> session) async {
     if (!kIsWeb || !WebStorageService.isSupported) return false;
-    
+
     try {
       final sessions = await WebStorageService.getWorkoutSessions();
       sessions.add(session);
       final success = await WebStorageService.saveWorkoutSessions(sessions);
-      
+
       if (success) {
         // Update storage info
         final info = WebStorageService.getStorageInfo();
         state = AsyncValue.data(info);
       }
-      
+
       return success;
     } catch (e) {
       debugPrint('Error saving workout session: $e');
@@ -74,25 +76,26 @@ class WebStorageNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>>
   /// Save custom exercise to storage
   Future<bool> saveCustomExercise(Map<String, dynamic> exercise) async {
     if (!kIsWeb || !WebStorageService.isSupported) return false;
-    
+
     try {
       final exercises = await WebStorageService.getExercises();
-      
+
       // Check if exercise already exists and update, or add new
-      final existingIndex = exercises.indexWhere((e) => e['id'] == exercise['id']);
+      final existingIndex =
+          exercises.indexWhere((e) => e['id'] == exercise['id']);
       if (existingIndex >= 0) {
         exercises[existingIndex] = exercise;
       } else {
         exercises.add(exercise);
       }
-      
+
       final success = await WebStorageService.saveExercises(exercises);
-      
+
       if (success) {
         final info = WebStorageService.getStorageInfo();
         state = AsyncValue.data(info);
       }
-      
+
       return success;
     } catch (e) {
       debugPrint('Error saving exercise: $e');
@@ -103,25 +106,26 @@ class WebStorageNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>>
   /// Save workout template to storage
   Future<bool> saveTemplate(Map<String, dynamic> template) async {
     if (!kIsWeb || !WebStorageService.isSupported) return false;
-    
+
     try {
       final templates = await WebStorageService.getTemplates();
-      
+
       // Check if template already exists and update, or add new
-      final existingIndex = templates.indexWhere((t) => t['id'] == template['id']);
+      final existingIndex =
+          templates.indexWhere((t) => t['id'] == template['id']);
       if (existingIndex >= 0) {
         templates[existingIndex] = template;
       } else {
         templates.add(template);
       }
-      
+
       final success = await WebStorageService.saveTemplates(templates);
-      
+
       if (success) {
         final info = WebStorageService.getStorageInfo();
         state = AsyncValue.data(info);
       }
-      
+
       return success;
     } catch (e) {
       debugPrint('Error saving template: $e');
@@ -132,18 +136,18 @@ class WebStorageNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>>
   /// Update user preferences
   Future<bool> updatePreferences(Map<String, dynamic> preferences) async {
     if (!kIsWeb || !WebStorageService.isSupported) return false;
-    
+
     try {
       final currentPrefs = await WebStorageService.getUserPreferences();
       final updatedPrefs = {...currentPrefs, ...preferences};
-      
+
       final success = await WebStorageService.saveUserPreferences(updatedPrefs);
-      
+
       if (success) {
         final info = WebStorageService.getStorageInfo();
         state = AsyncValue.data(info);
       }
-      
+
       return success;
     } catch (e) {
       debugPrint('Error updating preferences: $e');
@@ -154,17 +158,17 @@ class WebStorageNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>>
   /// Clear all storage data
   Future<bool> clearAllData() async {
     if (!kIsWeb || !WebStorageService.isSupported) return false;
-    
+
     try {
       final success = await WebStorageService.clearAll();
-      
+
       if (success) {
         // Reinitialize with default data
         await WebStorageService.initializeDefaultData();
         final info = WebStorageService.getStorageInfo();
         state = AsyncValue.data(info);
       }
-      
+
       return success;
     } catch (e) {
       debugPrint('Error clearing storage: $e');
@@ -175,7 +179,7 @@ class WebStorageNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>>
   /// Export all data
   Future<Map<String, dynamic>?> exportData() async {
     if (!kIsWeb || !WebStorageService.isSupported) return null;
-    
+
     try {
       return await WebStorageService.exportAllData();
     } catch (e) {
@@ -187,15 +191,15 @@ class WebStorageNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>>
   /// Import data
   Future<bool> importData(Map<String, dynamic> data) async {
     if (!kIsWeb || !WebStorageService.isSupported) return false;
-    
+
     try {
       final success = await WebStorageService.importData(data);
-      
+
       if (success) {
         final info = WebStorageService.getStorageInfo();
         state = AsyncValue.data(info);
       }
-      
+
       return success;
     } catch (e) {
       debugPrint('Error importing data: $e');
@@ -210,36 +214,43 @@ class WebStorageNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>>
 }
 
 /// Provider for web storage state management
-final webStorageProvider = StateNotifierProvider<WebStorageNotifier, AsyncValue<Map<String, dynamic>>>((ref) {
+final webStorageProvider =
+    StateNotifierProvider<WebStorageNotifier, AsyncValue<Map<String, dynamic>>>(
+        (ref) {
   return WebStorageNotifier();
 });
 
 /// Provider for workout sessions from web storage
-final webWorkoutSessionsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final webWorkoutSessionsProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
   if (!kIsWeb || !WebStorageService.isSupported) return [];
   return WebStorageService.getWorkoutSessions();
 });
 
 /// Provider for exercises from web storage
-final webExercisesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final webExercisesProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
   if (!kIsWeb || !WebStorageService.isSupported) return [];
   return WebStorageService.getExercises();
 });
 
 /// Provider for templates from web storage
-final webTemplatesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final webTemplatesProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
   if (!kIsWeb || !WebStorageService.isSupported) return [];
   return WebStorageService.getTemplates();
 });
 
 /// Provider for user preferences from web storage
-final webUserPreferencesProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+final webUserPreferencesProvider =
+    FutureProvider<Map<String, dynamic>>((ref) async {
   if (!kIsWeb || !WebStorageService.isSupported) return {};
   return WebStorageService.getUserPreferences();
 });
 
 /// Provider for personal records from web storage
-final webPersonalRecordsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final webPersonalRecordsProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
   if (!kIsWeb || !WebStorageService.isSupported) return [];
   return WebStorageService.getPersonalRecords();
 });

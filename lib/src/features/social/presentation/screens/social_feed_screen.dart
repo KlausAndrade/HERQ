@@ -11,11 +11,11 @@ class SocialFeedScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
-    
+
     return authState.when(
       data: (user) {
         final feedAsync = ref.watch(socialFeedProvider('current_user'));
-        
+
         return Scaffold(
           appBar: AppBar(
             title: const Text('Social Feed'),
@@ -172,7 +172,7 @@ class SocialFeedScreen extends HookConsumerWidget {
   Widget _buildFeedTypeIcon(FeedItemType type) {
     IconData icon;
     Color color;
-    
+
     switch (type) {
       case FeedItemType.workoutCompleted:
         icon = Icons.fitness_center;
@@ -195,7 +195,7 @@ class SocialFeedScreen extends HookConsumerWidget {
         color = Colors.purple;
         break;
     }
-    
+
     return Icon(icon, color: color, size: 20);
   }
 
@@ -216,7 +216,7 @@ class SocialFeedScreen extends HookConsumerWidget {
             ),
           ],
         );
-      
+
       case FeedItemType.prAchieved:
         final achievement = item.achievement;
         if (achievement != null) {
@@ -238,7 +238,9 @@ class SocialFeedScreen extends HookConsumerWidget {
                   children: [
                     Icon(
                       Icons.emoji_events,
-                      color: Color(int.parse(achievement.badgeColor?.replaceFirst('#', '0xff') ?? '0xFFD700')),
+                      color: Color(int.parse(
+                          achievement.badgeColor?.replaceFirst('#', '0xff') ??
+                              '0xFFD700')),
                       size: 24,
                     ),
                     const SizedBox(width: 12),
@@ -253,7 +255,10 @@ class SocialFeedScreen extends HookConsumerWidget {
                           Text(
                             achievement.description,
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.7),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer
+                                  .withOpacity(0.7),
                             ),
                           ),
                         ],
@@ -266,7 +271,7 @@ class SocialFeedScreen extends HookConsumerWidget {
           );
         }
         break;
-      
+
       case FeedItemType.streakMilestone:
         final achievement = item.achievement;
         if (achievement != null) {
@@ -286,20 +291,20 @@ class SocialFeedScreen extends HookConsumerWidget {
           );
         }
         break;
-      
+
       case FeedItemType.friendJoined:
         return const Text(
           'Joined GymAI! Welcome to the community! 🎉',
           style: TextStyle(fontWeight: FontWeight.w500),
         );
-      
+
       case FeedItemType.challengeCompleted:
         return const Text(
           'Completed a fitness challenge! 🏆',
           style: TextStyle(fontWeight: FontWeight.w500),
         );
     }
-    
+
     return const SizedBox.shrink();
   }
 
@@ -316,7 +321,7 @@ class SocialFeedScreen extends HookConsumerWidget {
   String _formatTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inHours < 1) {
@@ -353,7 +358,7 @@ class UserSearchSheet extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchResults = ref.watch(userSearchProvider);
-    
+
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
       minChildSize: 0.5,
@@ -388,7 +393,9 @@ class UserSearchSheet extends HookConsumerWidget {
                         ),
                       ),
                       onChanged: (query) {
-                        ref.read(userSearchProvider.notifier).searchUsers(query);
+                        ref
+                            .read(userSearchProvider.notifier)
+                            .searchUsers(query);
                       },
                     ),
                   ],
@@ -402,7 +409,7 @@ class UserSearchSheet extends HookConsumerWidget {
                         child: Text('No users found'),
                       );
                     }
-                    
+
                     return ListView.builder(
                       controller: scrollController,
                       itemCount: users.length,
@@ -424,7 +431,8 @@ class UserSearchSheet extends HookConsumerWidget {
                               // Send friend request
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Friend request sent to ${user.displayName}'),
+                                  content: Text(
+                                      'Friend request sent to ${user.displayName}'),
                                 ),
                               );
                               Navigator.pop(context);
@@ -435,7 +443,8 @@ class UserSearchSheet extends HookConsumerWidget {
                       },
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (error, stack) => Center(
                     child: Text('Error: $error'),
                   ),

@@ -96,7 +96,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            
+
             // Feature Demo Grid
             const Text(
               'Demo Screens',
@@ -106,7 +106,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -148,9 +148,9 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -195,7 +195,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
             const Text(
               'Note: Full database features available on mobile/desktop platforms.',
@@ -210,7 +210,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildDemoCard(
     BuildContext context,
     String title,
@@ -271,7 +271,7 @@ class _DemoAuthScreenState extends State<DemoAuthScreen> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _isSignUp = false;
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -295,24 +295,21 @@ class _DemoAuthScreenState extends State<DemoAuthScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 40),
-                
                 Icon(
                   Icons.fitness_center,
                   size: 80,
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(height: 24),
-                
                 Text(
                   'GymAI',
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 48),
-
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
@@ -321,13 +318,15 @@ class _DemoAuthScreenState extends State<DemoAuthScreen> {
                       children: [
                         Text(
                           _isSignUp ? 'Create Account' : 'Welcome Back',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
-
                         if (_isSignUp) ...[
                           TextFormField(
                             controller: _nameController,
@@ -336,7 +335,8 @@ class _DemoAuthScreenState extends State<DemoAuthScreen> {
                               prefixIcon: Icon(Icons.person_outline),
                             ),
                             validator: (value) {
-                              if (_isSignUp && (value == null || value.trim().isEmpty)) {
+                              if (_isSignUp &&
+                                  (value == null || value.trim().isEmpty)) {
                                 return 'Please enter your name';
                               }
                               return null;
@@ -344,7 +344,6 @@ class _DemoAuthScreenState extends State<DemoAuthScreen> {
                           ),
                           const SizedBox(height: 16),
                         ],
-
                         TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
@@ -356,14 +355,14 @@ class _DemoAuthScreenState extends State<DemoAuthScreen> {
                             if (value == null || value.trim().isEmpty) {
                               return 'Please enter your email';
                             }
-                            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                .hasMatch(value)) {
                               return 'Please enter a valid email';
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 16),
-
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
@@ -377,7 +376,9 @@ class _DemoAuthScreenState extends State<DemoAuthScreen> {
                                 });
                               },
                               icon: Icon(
-                                _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                _obscurePassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                               ),
                             ),
                           ),
@@ -392,7 +393,6 @@ class _DemoAuthScreenState extends State<DemoAuthScreen> {
                           },
                         ),
                         const SizedBox(height: 24),
-
                         ElevatedButton(
                           onPressed: _isLoading ? null : _handleSubmit,
                           style: ElevatedButton.styleFrom(
@@ -402,12 +402,12 @@ class _DemoAuthScreenState extends State<DemoAuthScreen> {
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2),
                                 )
                               : Text(_isSignUp ? 'Create Account' : 'Sign In'),
                         ),
                         const SizedBox(height: 16),
-
                         TextButton(
                           onPressed: () {
                             setState(() {
@@ -446,14 +446,14 @@ class _DemoAuthScreenState extends State<DemoAuthScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _isSignUp 
-                ? 'Account created successfully! (Demo)' 
+            _isSignUp
+                ? 'Account created successfully! (Demo)'
                 : 'Signed in successfully! (Demo)',
           ),
           backgroundColor: Colors.green,
         ),
       );
-      
+
       setState(() {
         _isLoading = false;
       });
@@ -472,7 +472,7 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
   bool _workoutActive = false;
   int _currentExercise = 0;
   int _restTimeLeft = 0;
-  
+
   final List<Map<String, dynamic>> _exercises = [
     {
       'name': 'Bench Press',
@@ -541,7 +541,6 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
             ),
           ),
           const SizedBox(height: 32),
-          
           Expanded(
             child: ListView.builder(
               itemCount: _exercises.length,
@@ -558,7 +557,6 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
               },
             ),
           ),
-          
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
@@ -579,7 +577,7 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
   Widget _buildActiveWorkout() {
     final exercise = _exercises[_currentExercise];
     final sets = exercise['sets'] as List;
-    
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -606,9 +604,9 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Sets List
           Expanded(
             child: ListView.builder(
@@ -619,7 +617,8 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
                   color: set['completed'] ? Colors.green[50] : null,
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: set['completed'] ? Colors.green : Colors.grey,
+                      backgroundColor:
+                          set['completed'] ? Colors.green : Colors.grey,
                       child: Text('${setIndex + 1}'),
                     ),
                     title: Text('${set['weight']} lbs × ${set['reps']} reps'),
@@ -634,7 +633,7 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
               },
             ),
           ),
-          
+
           // Rest Timer
           if (_restTimeLeft > 0)
             Card(
@@ -663,9 +662,9 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
                 ),
               ),
             ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Navigation
           Row(
             children: [
@@ -680,7 +679,8 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
                     child: const Text('Previous'),
                   ),
                 ),
-              if (_currentExercise > 0 && _currentExercise < _exercises.length - 1)
+              if (_currentExercise > 0 &&
+                  _currentExercise < _exercises.length - 1)
                 const SizedBox(width: 16),
               if (_currentExercise < _exercises.length - 1)
                 Expanded(
@@ -705,10 +705,10 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
       _exercises[_currentExercise]['sets'][setIndex]['completed'] = true;
       _restTimeLeft = 90; // 90 second rest
     });
-    
+
     // Start rest timer
     _startRestTimer();
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Set completed! Rest timer started.'),
@@ -736,7 +736,7 @@ class _DemoWorkoutScreenState extends State<DemoWorkoutScreen> {
       _currentExercise = 0;
       _restTimeLeft = 0;
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Workout completed! Great job!'),
@@ -773,35 +773,39 @@ class DemoProgressScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             Row(
               children: [
                 Expanded(
-                  child: _buildStatCard('Workouts', '3', Icons.fitness_center, Colors.blue),
+                  child: _buildStatCard(
+                      'Workouts', '3', Icons.fitness_center, Colors.blue),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildStatCard('Volume', '12.5k kg', Icons.scale, Colors.green),
+                  child: _buildStatCard(
+                      'Volume', '12.5k kg', Icons.scale, Colors.green),
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             Row(
               children: [
                 Expanded(
-                  child: _buildStatCard('PRs', '2', Icons.emoji_events, Colors.orange),
+                  child: _buildStatCard(
+                      'PRs', '2', Icons.emoji_events, Colors.orange),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildStatCard('Duration', '4.2h', Icons.schedule, Colors.purple),
+                  child: _buildStatCard(
+                      'Duration', '4.2h', Icons.schedule, Colors.purple),
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Chart Section
             const Text(
               'Volume Progress',
@@ -811,7 +815,7 @@ class DemoProgressScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -835,9 +839,9 @@ class DemoProgressScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Personal Records
             const Text(
               'Recent Personal Records',
@@ -847,13 +851,13 @@ class DemoProgressScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             _buildPRCard('Bench Press', '145 lbs', '1RM', '2 days ago'),
             _buildPRCard('Deadlift', '225 lbs', '5RM', '1 week ago'),
             _buildPRCard('Squat', '185 lbs', '3RM', '2 weeks ago'),
-            
+
             const SizedBox(height: 32),
-            
+
             // Workout History
             const Text(
               'Recent Workouts',
@@ -863,17 +867,21 @@ class DemoProgressScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
-            _buildWorkoutHistoryCard('Push Day', 'Oct 5, 2025', '65 min', '3.2k kg'),
-            _buildWorkoutHistoryCard('Pull Day', 'Oct 3, 2025', '58 min', '2.8k kg'),
-            _buildWorkoutHistoryCard('Leg Day', 'Oct 1, 2025', '72 min', '4.1k kg'),
+
+            _buildWorkoutHistoryCard(
+                'Push Day', 'Oct 5, 2025', '65 min', '3.2k kg'),
+            _buildWorkoutHistoryCard(
+                'Pull Day', 'Oct 3, 2025', '58 min', '2.8k kg'),
+            _buildWorkoutHistoryCard(
+                'Leg Day', 'Oct 1, 2025', '72 min', '4.1k kg'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+      String label, String value, IconData icon, Color color) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -920,7 +928,8 @@ class DemoProgressScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildWorkoutHistoryCard(String workout, String date, String duration, String volume) {
+  Widget _buildWorkoutHistoryCard(
+      String workout, String date, String duration, String volume) {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.fitness_center),
@@ -973,8 +982,10 @@ class DemoProgressScreen extends StatelessWidget {
         ),
         titlesData: FlTitlesData(
           show: true,
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -1113,14 +1124,18 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
           'name': 'Bench Press',
           'primaryMuscleGroup': 'chest',
           'equipment': 'barbell',
-          'created': DateTime.now().subtract(const Duration(days: 5)).toIso8601String(),
+          'created': DateTime.now()
+              .subtract(const Duration(days: 5))
+              .toIso8601String(),
         },
         {
           'id': 'custom_curl',
           'name': 'Hammer Curls',
           'primaryMuscleGroup': 'biceps',
           'equipment': 'dumbbells',
-          'created': DateTime.now().subtract(const Duration(days: 2)).toIso8601String(),
+          'created': DateTime.now()
+              .subtract(const Duration(days: 2))
+              .toIso8601String(),
         },
       ];
 
@@ -1128,7 +1143,9 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
         {
           'id': 'workout_1',
           'name': 'Push Day',
-          'date': DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
+          'date': DateTime.now()
+              .subtract(const Duration(days: 1))
+              .toIso8601String(),
           'duration': 65,
           'volume': 3250,
           'exercises': ['bench_press', 'custom_curl'],
@@ -1136,7 +1153,9 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
         {
           'id': 'workout_2',
           'name': 'Pull Day',
-          'date': DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
+          'date': DateTime.now()
+              .subtract(const Duration(days: 3))
+              .toIso8601String(),
           'duration': 58,
           'volume': 2890,
           'exercises': ['bench_press'],
@@ -1205,13 +1224,18 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _storageInfo['supported'] == true ? Colors.green : Colors.red,
+                    color: _storageInfo['supported'] == true
+                        ? Colors.green
+                        : Colors.red,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    _storageInfo['supported'] == true ? 'SUPPORTED' : 'NOT SUPPORTED',
+                    _storageInfo['supported'] == true
+                        ? 'SUPPORTED'
+                        : 'NOT SUPPORTED',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -1222,10 +1246,10 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            
             if (_storageInfo['supported'] == true) ...[
               _buildInfoRow('Total Size', '${_storageInfo['totalSize']} bytes'),
-              _buildInfoRow('Storage Used', '${_storageInfo['estimatedMB']} MB'),
+              _buildInfoRow(
+                  'Storage Used', '${_storageInfo['estimatedMB']} MB'),
               _buildInfoRow('Keys Stored', '${_storageInfo['keyCount']} items'),
               _buildInfoRow('Namespace', 'gymai_*'),
             ] else ...[
@@ -1268,7 +1292,6 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        
         Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -1312,31 +1335,41 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        
         ExpansionTile(
           title: Text('Exercises (${_exercises.length})'),
           leading: const Icon(Icons.fitness_center),
-          children: _exercises.map((exercise) => ListTile(
-            title: Text(exercise['name']),
-            subtitle: Text('${exercise['primaryMuscleGroup']} • ${exercise['equipment']}'),
-            trailing: Text(
-              DateTime.parse(exercise['created']).toLocal().toString().split(' ')[0],
-              style: const TextStyle(fontSize: 12),
-            ),
-          )).toList(),
+          children: _exercises
+              .map((exercise) => ListTile(
+                    title: Text(exercise['name']),
+                    subtitle: Text(
+                        '${exercise['primaryMuscleGroup']} • ${exercise['equipment']}'),
+                    trailing: Text(
+                      DateTime.parse(exercise['created'])
+                          .toLocal()
+                          .toString()
+                          .split(' ')[0],
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ))
+              .toList(),
         ),
-        
         ExpansionTile(
           title: Text('Workouts (${_workouts.length})'),
           leading: const Icon(Icons.list_alt),
-          children: _workouts.map((workout) => ListTile(
-            title: Text(workout['name']),
-            subtitle: Text('${workout['duration']} min • ${workout['volume']} kg'),
-            trailing: Text(
-              DateTime.parse(workout['date']).toLocal().toString().split(' ')[0],
-              style: const TextStyle(fontSize: 12),
-            ),
-          )).toList(),
+          children: _workouts
+              .map((workout) => ListTile(
+                    title: Text(workout['name']),
+                    subtitle: Text(
+                        '${workout['duration']} min • ${workout['volume']} kg'),
+                    trailing: Text(
+                      DateTime.parse(workout['date'])
+                          .toLocal()
+                          .toString()
+                          .split(' ')[0],
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ))
+              .toList(),
         ),
       ],
     );
@@ -1355,7 +1388,8 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
     setState(() {
       _workouts.insert(0, newWorkout);
       _storageInfo['totalSize'] = (_storageInfo['totalSize'] ?? 0) + 200;
-      _storageInfo['estimatedMB'] = ((_storageInfo['totalSize'] ?? 0) / (1024 * 1024)).toStringAsFixed(2);
+      _storageInfo['estimatedMB'] =
+          ((_storageInfo['totalSize'] ?? 0) / (1024 * 1024)).toStringAsFixed(2);
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1378,7 +1412,8 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
     setState(() {
       _exercises.insert(0, newExercise);
       _storageInfo['totalSize'] = (_storageInfo['totalSize'] ?? 0) + 150;
-      _storageInfo['estimatedMB'] = ((_storageInfo['totalSize'] ?? 0) / (1024 * 1024)).toStringAsFixed(2);
+      _storageInfo['estimatedMB'] =
+          ((_storageInfo['totalSize'] ?? 0) / (1024 * 1024)).toStringAsFixed(2);
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1411,7 +1446,8 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
                 content: SingleChildScrollView(
                   child: Text(
                     exportData.toString(),
-                    style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                    style:
+                        const TextStyle(fontFamily: 'monospace', fontSize: 12),
                   ),
                 ),
                 actions: [
@@ -1433,7 +1469,8 @@ class _DemoStorageScreenState extends State<DemoStorageScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear Storage'),
-        content: const Text('This will delete all stored workout data. Are you sure?'),
+        content: const Text(
+            'This will delete all stored workout data. Are you sure?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

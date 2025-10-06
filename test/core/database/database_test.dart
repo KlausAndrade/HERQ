@@ -45,7 +45,7 @@ void main() {
         // Retrieve and verify
         final exercises = await database.select(database.exercises).get();
         expect(exercises.length, greaterThan(0));
-        
+
         final insertedExercise = exercises.firstWhere(
           (e) => e.name == 'Test Bench Press',
         );
@@ -58,16 +58,16 @@ void main() {
         // Insert exercise
         final exerciseId = const Uuid().v4();
         await database.into(database.exercises).insert(
-          ExercisesCompanion.insert(
-            id: exerciseId,
-            name: 'Test Squat',
-            primaryMuscleGroup: 'Legs',
-            secondaryMuscleGroups: const ['Glutes'],
-            equipment: 'Barbell',
-            instructions: 'Squat down',
-            tags: const ['compound'],
-          ),
-        );
+              ExercisesCompanion.insert(
+                id: exerciseId,
+                name: 'Test Squat',
+                primaryMuscleGroup: 'Legs',
+                secondaryMuscleGroups: const ['Glutes'],
+                equipment: 'Barbell',
+                instructions: 'Squat down',
+                tags: const ['compound'],
+              ),
+            );
 
         // Update exercise
         await (database.update(database.exercises)
@@ -91,16 +91,16 @@ void main() {
         // Insert exercise
         final exerciseId = const Uuid().v4();
         await database.into(database.exercises).insert(
-          ExercisesCompanion.insert(
-            id: exerciseId,
-            name: 'Test Deadlift',
-            primaryMuscleGroup: 'Back',
-            secondaryMuscleGroups: const ['Legs'],
-            equipment: 'Barbell',
-            instructions: 'Lift from ground',
-            tags: const ['compound'],
-          ),
-        );
+              ExercisesCompanion.insert(
+                id: exerciseId,
+                name: 'Test Deadlift',
+                primaryMuscleGroup: 'Back',
+                secondaryMuscleGroups: const ['Legs'],
+                equipment: 'Barbell',
+                instructions: 'Lift from ground',
+                tags: const ['compound'],
+              ),
+            );
 
         // Delete exercise
         await (database.delete(database.exercises)
@@ -136,7 +136,7 @@ void main() {
         final sessions = await (database.select(database.workoutSessions)
               ..where((s) => s.id.equals(sessionId)))
             .get();
-        
+
         expect(sessions.length, equals(1));
         expect(sessions.first.name, equals('Test Workout'));
         expect(sessions.first.totalVolume, equals(5000.0));
@@ -147,12 +147,12 @@ void main() {
         // Create session
         final sessionId = const Uuid().v4();
         await database.into(database.workoutSessions).insert(
-          WorkoutSessionsCompanion.insert(
-            id: sessionId,
-            name: 'Progressive Workout',
-            startedAt: DateTime.now(),
-          ),
-        );
+              WorkoutSessionsCompanion.insert(
+                id: sessionId,
+                name: 'Progressive Workout',
+                startedAt: DateTime.now(),
+              ),
+            );
 
         // Update stats
         await (database.update(database.workoutSessions)
@@ -178,47 +178,47 @@ void main() {
         // Create exercise first
         final exerciseId = const Uuid().v4();
         await database.into(database.exercises).insert(
-          ExercisesCompanion.insert(
-            id: exerciseId,
-            name: 'Test Press',
-            primaryMuscleGroup: 'Chest',
-            secondaryMuscleGroups: const [],
-            equipment: 'Barbell',
-            instructions: 'Press weight',
-            tags: const [],
-          ),
-        );
+              ExercisesCompanion.insert(
+                id: exerciseId,
+                name: 'Test Press',
+                primaryMuscleGroup: 'Chest',
+                secondaryMuscleGroups: const [],
+                equipment: 'Barbell',
+                instructions: 'Press weight',
+                tags: const [],
+              ),
+            );
 
         // Create session
         final sessionId = const Uuid().v4();
         await database.into(database.workoutSessions).insert(
-          WorkoutSessionsCompanion.insert(
-            id: sessionId,
-            name: 'Chest Day',
-            startedAt: DateTime.now(),
-          ),
-        );
+              WorkoutSessionsCompanion.insert(
+                id: sessionId,
+                name: 'Chest Day',
+                startedAt: DateTime.now(),
+              ),
+            );
 
         // Add sets to session
         for (int i = 1; i <= 3; i++) {
           await database.into(database.setEntries).insert(
-            SetEntriesCompanion.insert(
-              id: const Uuid().v4(),
-              workoutSessionId: sessionId,
-              exerciseId: exerciseId,
-              setNumber: i,
-              reps: 10,
-              completedAt: DateTime.now(),
-              weight: Value(100.0 + (i * 5)),
-            ),
-          );
+                SetEntriesCompanion.insert(
+                  id: const Uuid().v4(),
+                  workoutSessionId: sessionId,
+                  exerciseId: exerciseId,
+                  setNumber: i,
+                  reps: 10,
+                  completedAt: DateTime.now(),
+                  weight: Value(100.0 + (i * 5)),
+                ),
+              );
         }
 
         // Verify sets were created
         final sets = await (database.select(database.setEntries)
               ..where((s) => s.workoutSessionId.equals(sessionId)))
             .get();
-        
+
         expect(sets.length, equals(3));
         expect(sets.first.exerciseId, equals(exerciseId));
         expect(sets.every((s) => s.weight != null), isTrue);
@@ -230,37 +230,37 @@ void main() {
         // Create exercise
         final exerciseId = const Uuid().v4();
         await database.into(database.exercises).insert(
-          ExercisesCompanion.insert(
-            id: exerciseId,
-            name: 'Test Squat',
-            primaryMuscleGroup: 'Legs',
-            secondaryMuscleGroups: const [],
-            equipment: 'Barbell',
-            instructions: 'Squat',
-            tags: const [],
-          ),
-        );
+              ExercisesCompanion.insert(
+                id: exerciseId,
+                name: 'Test Squat',
+                primaryMuscleGroup: 'Legs',
+                secondaryMuscleGroups: const [],
+                equipment: 'Barbell',
+                instructions: 'Squat',
+                tags: const [],
+              ),
+            );
 
         // Create PR
         final prId = const Uuid().v4();
         await database.into(database.personalRecords).insert(
-          PersonalRecordsCompanion.insert(
-            id: prId,
-            exerciseId: exerciseId,
-            recordType: '1rm',
-            value: 225.0,
-            unit: 'kg',
-            achievedAt: DateTime.now(),
-            weight: const Value(200.0),
-            reps: const Value(5),
-          ),
-        );
+              PersonalRecordsCompanion.insert(
+                id: prId,
+                exerciseId: exerciseId,
+                recordType: '1rm',
+                value: 225.0,
+                unit: 'kg',
+                achievedAt: DateTime.now(),
+                weight: const Value(200.0),
+                reps: const Value(5),
+              ),
+            );
 
         // Retrieve PR
         final prs = await (database.select(database.personalRecords)
               ..where((pr) => pr.exerciseId.equals(exerciseId)))
             .get();
-        
+
         expect(prs.length, equals(1));
         expect(prs.first.weight, equals(200.0));
         expect(prs.first.value, equals(225.0));
@@ -272,28 +272,29 @@ void main() {
         // Create exercise
         final exerciseId = const Uuid().v4();
         await database.into(database.exercises).insert(
-          ExercisesCompanion.insert(
-            id: exerciseId,
-            name: 'Favorite Exercise',
-            primaryMuscleGroup: 'Back',
-            secondaryMuscleGroups: const [],
-            equipment: 'Barbell',
-            instructions: 'Instructions',
-            tags: const [],
-          ),
-        );
+              ExercisesCompanion.insert(
+                id: exerciseId,
+                name: 'Favorite Exercise',
+                primaryMuscleGroup: 'Back',
+                secondaryMuscleGroups: const [],
+                equipment: 'Barbell',
+                instructions: 'Instructions',
+                tags: const [],
+              ),
+            );
 
         // Add to favorites
         const userId = 'test-user-id';
         await database.into(database.exerciseFavorites).insert(
-          ExerciseFavoritesCompanion.insert(
-            userId: userId,
-            exerciseId: exerciseId,
-          ),
-        );
+              ExerciseFavoritesCompanion.insert(
+                userId: userId,
+                exerciseId: exerciseId,
+              ),
+            );
 
         // Verify favorite exists
-        final favorites = await database.select(database.exerciseFavorites).get();
+        final favorites =
+            await database.select(database.exerciseFavorites).get();
         expect(favorites.any((f) => f.exerciseId == exerciseId), isTrue);
 
         // Remove from favorites
@@ -302,7 +303,8 @@ void main() {
             .go();
 
         // Verify removed
-        final afterRemoval = await database.select(database.exerciseFavorites).get();
+        final afterRemoval =
+            await database.select(database.exerciseFavorites).get();
         expect(afterRemoval.any((f) => f.exerciseId == exerciseId), isFalse);
       });
     });
@@ -312,22 +314,22 @@ void main() {
         // Create user stats
         final userId = const Uuid().v4();
         await database.into(database.userStats).insert(
-          UserStatsCompanion.insert(
-            userId: userId,
-            totalWorkouts: const Value(10),
-            totalVolumeLifted: const Value(50000.0),
-            currentStreak: const Value(5),
-            longestStreak: const Value(10),
-            experiencePoints: const Value(500),
-            level: const Value(5),
-          ),
-        );
+              UserStatsCompanion.insert(
+                userId: userId,
+                totalWorkouts: const Value(10),
+                totalVolumeLifted: const Value(50000.0),
+                currentStreak: const Value(5),
+                longestStreak: const Value(10),
+                experiencePoints: const Value(500),
+                level: const Value(5),
+              ),
+            );
 
         // Retrieve and verify
         final stats = await (database.select(database.userStats)
               ..where((s) => s.userId.equals(userId)))
             .getSingle();
-        
+
         expect(stats.totalWorkouts, equals(10));
         expect(stats.currentStreak, equals(5));
         expect(stats.level, equals(5));
@@ -356,20 +358,20 @@ void main() {
         // Create achievement
         final userId = const Uuid().v4();
         final achievementId = 'first_workout';
-        
+
         await database.into(database.userAchievements).insert(
-          UserAchievementsCompanion.insert(
-            userId: userId,
-            achievementId: achievementId,
-            unlockedAt: Value(DateTime.now()),
-          ),
-        );
+              UserAchievementsCompanion.insert(
+                userId: userId,
+                achievementId: achievementId,
+                unlockedAt: Value(DateTime.now()),
+              ),
+            );
 
         // Verify achievement
         final achievements = await (database.select(database.userAchievements)
               ..where((a) => a.userId.equals(userId)))
             .get();
-        
+
         expect(achievements.length, equals(1));
         expect(achievements.first.achievementId, equals(achievementId));
       });
@@ -380,20 +382,20 @@ void main() {
         // Create template
         final templateId = const Uuid().v4();
         await database.into(database.workoutTemplates).insert(
-          WorkoutTemplatesCompanion.insert(
-            id: templateId,
-            name: 'Push Day Template',
-            exerciseIds: const [],
-            tags: const ['push', 'strength'],
-            description: const Value('Chest, Shoulders, Triceps'),
-          ),
-        );
+              WorkoutTemplatesCompanion.insert(
+                id: templateId,
+                name: 'Push Day Template',
+                exerciseIds: const [],
+                tags: const ['push', 'strength'],
+                description: const Value('Chest, Shoulders, Triceps'),
+              ),
+            );
 
         // Retrieve template
         final templates = await (database.select(database.workoutTemplates)
               ..where((t) => t.id.equals(templateId)))
             .get();
-        
+
         expect(templates.length, equals(1));
         expect(templates.first.name, equals('Push Day Template'));
       });
@@ -402,13 +404,13 @@ void main() {
         // Create template
         final templateId = const Uuid().v4();
         await database.into(database.workoutTemplates).insert(
-          WorkoutTemplatesCompanion.insert(
-            id: templateId,
-            name: 'Original Template',
-            exerciseIds: const [],
-            tags: const [],
-          ),
-        );
+              WorkoutTemplatesCompanion.insert(
+                id: templateId,
+                name: 'Original Template',
+                exerciseIds: const [],
+                tags: const [],
+              ),
+            );
 
         // Update template
         await (database.update(database.workoutTemplates)

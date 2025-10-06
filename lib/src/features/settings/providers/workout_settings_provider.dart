@@ -26,7 +26,8 @@ class WorkoutSettings {
     bool? showExerciseVideos,
   }) {
     return WorkoutSettings(
-      defaultRestTimerSeconds: defaultRestTimerSeconds ?? this.defaultRestTimerSeconds,
+      defaultRestTimerSeconds:
+          defaultRestTimerSeconds ?? this.defaultRestTimerSeconds,
       weightUnit: weightUnit ?? this.weightUnit,
       hapticFeedback: hapticFeedback ?? this.hapticFeedback,
       autoStartRestTimer: autoStartRestTimer ?? this.autoStartRestTimer,
@@ -56,7 +57,8 @@ class WorkoutSettings {
 }
 
 /// Provider for workout settings
-final workoutSettingsProvider = StateNotifierProvider<WorkoutSettingsNotifier, WorkoutSettings>((ref) {
+final workoutSettingsProvider =
+    StateNotifierProvider<WorkoutSettingsNotifier, WorkoutSettings>((ref) {
   return WorkoutSettingsNotifier(ref);
 });
 
@@ -72,7 +74,7 @@ class WorkoutSettingsNotifier extends StateNotifier<WorkoutSettings> {
     try {
       final prefs = await _ref.read(userPreferencesProvider.future);
       final workoutPrefs = prefs['workoutSettings'] as Map<String, dynamic>?;
-      
+
       if (workoutPrefs != null) {
         state = WorkoutSettings.fromJson(workoutPrefs);
       }
@@ -116,7 +118,7 @@ class WorkoutSettingsNotifier extends StateNotifier<WorkoutSettings> {
   String getFormattedRestTime() {
     final minutes = state.defaultRestTimerSeconds ~/ 60;
     final seconds = state.defaultRestTimerSeconds % 60;
-    
+
     if (seconds == 0) {
       return '$minutes ${minutes == 1 ? 'minute' : 'minutes'}';
     } else if (minutes == 0) {

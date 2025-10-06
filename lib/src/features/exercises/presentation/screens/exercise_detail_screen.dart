@@ -41,13 +41,17 @@ class ExerciseDetailScreen extends ConsumerWidget {
               isFavoritedAsync.when(
                 data: (isFavorited) => IconButton(
                   onPressed: () async {
-                    await ref.read(favoritesNotifierProvider).toggleFavorite(exerciseId);
+                    await ref
+                        .read(favoritesNotifierProvider)
+                        .toggleFavorite(exerciseId);
                   },
                   icon: Icon(
                     isFavorited ? Icons.favorite : Icons.favorite_border,
                     color: isFavorited ? Colors.red : null,
                   ),
-                  tooltip: isFavorited ? 'Remove from favorites' : 'Add to favorites',
+                  tooltip: isFavorited
+                      ? 'Remove from favorites'
+                      : 'Add to favorites',
                 ),
                 loading: () => const IconButton(
                   onPressed: null,
@@ -76,7 +80,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: _getCategoryColor(context, exercise.category),
+                                color: _getCategoryColor(
+                                    context, exercise.category),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
@@ -92,16 +97,25 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                 children: [
                                   Text(
                                     exercise.name,
-                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     'Primary: ${exercise.primaryMuscleGroup[0].toUpperCase() + exercise.primaryMuscleGroup.substring(1)}',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withOpacity(0.7),
+                                        ),
                                   ),
                                 ],
                               ),
@@ -113,13 +127,19 @@ class ExerciseDetailScreen extends ConsumerWidget {
                           children: [
                             _InfoChip(
                               icon: Icons.fitness_center,
-                              label: exercise.equipment[0].toUpperCase() + 
-                                     exercise.equipment.substring(1).replaceAll('_', ' '),
+                              label: exercise.equipment[0].toUpperCase() +
+                                  exercise.equipment
+                                      .substring(1)
+                                      .replaceAll('_', ' '),
                             ),
                             const SizedBox(width: 8),
                             _InfoChip(
-                              icon: exercise.isBodyweight ? Icons.accessibility : Icons.monitor_weight,
-                              label: exercise.isBodyweight ? 'Bodyweight' : 'Weighted',
+                              icon: exercise.isBodyweight
+                                  ? Icons.accessibility
+                                  : Icons.monitor_weight,
+                              label: exercise.isBodyweight
+                                  ? 'Bodyweight'
+                                  : 'Weighted',
                             ),
                             const SizedBox(width: 8),
                             _DifficultyChip(difficulty: exercise.difficulty),
@@ -130,11 +150,13 @@ class ExerciseDetailScreen extends ConsumerWidget {
                           children: [
                             _InfoChip(
                               icon: _getCategoryIcon(exercise.category),
-                              label: exercise.category[0].toUpperCase() + exercise.category.substring(1),
+                              label: exercise.category[0].toUpperCase() +
+                                  exercise.category.substring(1),
                             ),
                             const SizedBox(width: 8),
                             _ExerciseTypeChip(type: exercise.exerciseType),
-                            if (exercise.parentExerciseId != null && exercise.variantType != null) ...[
+                            if (exercise.parentExerciseId != null &&
+                                exercise.variantType != null) ...[
                               const SizedBox(width: 8),
                               _VariantChip(variantType: exercise.variantType!),
                             ],
@@ -150,8 +172,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
                 // Exercise Progression/Variants
                 Consumer(
                   builder: (context, ref, child) {
-                    final progressionChainAsync = ref.watch(exerciseProgressionChainProvider(exerciseId));
-                    
+                    final progressionChainAsync =
+                        ref.watch(exerciseProgressionChainProvider(exerciseId));
+
                     return progressionChainAsync.when(
                       data: (progressionChain) {
                         if (progressionChain.length > 1) {
@@ -161,39 +184,52 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
                                           Icon(
                                             Icons.trending_up,
-                                            color: Theme.of(context).colorScheme.primary,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
                                           ),
                                           const SizedBox(width: 8),
                                           Text(
                                             'Exercise Progression',
-                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                           ),
                                         ],
                                       ),
                                       const SizedBox(height: 12),
-                                      ...progressionChain.asMap().entries.map((entry) {
+                                      ...progressionChain
+                                          .asMap()
+                                          .entries
+                                          .map((entry) {
                                         final index = entry.key;
                                         final exerciseInChain = entry.value;
-                                        final isCurrentExercise = exerciseInChain.id == exercise.id;
-                                        
+                                        final isCurrentExercise =
+                                            exerciseInChain.id == exercise.id;
+
                                         return Padding(
-                                          padding: const EdgeInsets.only(bottom: 8),
+                                          padding:
+                                              const EdgeInsets.only(bottom: 8),
                                           child: Row(
                                             children: [
                                               Container(
                                                 width: 24,
                                                 height: 24,
                                                 decoration: BoxDecoration(
-                                                  color: isCurrentExercise 
-                                                      ? Theme.of(context).colorScheme.primary
+                                                  color: isCurrentExercise
+                                                      ? Theme.of(context)
+                                                          .colorScheme
+                                                          .primary
                                                       : Colors.grey[300],
                                                   shape: BoxShape.circle,
                                                 ),
@@ -202,8 +238,11 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                     '${index + 1}',
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: isCurrentExercise ? Colors.white : Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: isCurrentExercise
+                                                          ? Colors.white
+                                                          : Colors.black,
                                                     ),
                                                   ),
                                                 ),
@@ -211,41 +250,77 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                               const SizedBox(width: 12),
                                               Expanded(
                                                 child: GestureDetector(
-                                                  onTap: isCurrentExercise ? null : () {
-                                                    context.go('/exercise/${exerciseInChain.id}');
-                                                  },
+                                                  onTap: isCurrentExercise
+                                                      ? null
+                                                      : () {
+                                                          context.go(
+                                                              '/exercise/${exerciseInChain.id}');
+                                                        },
                                                   child: Container(
-                                                    padding: const EdgeInsets.all(12),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            12),
                                                     decoration: BoxDecoration(
-                                                      color: isCurrentExercise 
-                                                          ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                                                          : Theme.of(context).colorScheme.surface,
-                                                      borderRadius: BorderRadius.circular(8),
+                                                      color: isCurrentExercise
+                                                          ? Theme.of(context)
+                                                              .colorScheme
+                                                              .primary
+                                                              .withOpacity(0.1)
+                                                          : Theme.of(context)
+                                                              .colorScheme
+                                                              .surface,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
                                                       border: Border.all(
-                                                        color: isCurrentExercise 
-                                                            ? Theme.of(context).colorScheme.primary
-                                                            : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                                                        color: isCurrentExercise
+                                                            ? Theme.of(context)
+                                                                .colorScheme
+                                                                .primary
+                                                            : Theme.of(context)
+                                                                .colorScheme
+                                                                .outline
+                                                                .withOpacity(
+                                                                    0.2),
                                                       ),
                                                     ),
                                                     child: Row(
                                                       children: [
                                                         Expanded(
                                                           child: Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
                                                             children: [
                                                               Text(
-                                                                exerciseInChain.name,
-                                                                style: TextStyle(
-                                                                  fontWeight: isCurrentExercise ? FontWeight.bold : FontWeight.w500,
+                                                                exerciseInChain
+                                                                    .name,
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight: isCurrentExercise
+                                                                      ? FontWeight
+                                                                          .bold
+                                                                      : FontWeight
+                                                                          .w500,
                                                                 ),
                                                               ),
-                                                              const SizedBox(height: 4),
+                                                              const SizedBox(
+                                                                  height: 4),
                                                               Row(
                                                                 children: [
-                                                                  _DifficultyChip(difficulty: exerciseInChain.difficulty),
-                                                                  if (exerciseInChain.variantType != null) ...[
-                                                                    const SizedBox(width: 8),
-                                                                    _VariantChip(variantType: exerciseInChain.variantType!),
+                                                                  _DifficultyChip(
+                                                                      difficulty:
+                                                                          exerciseInChain
+                                                                              .difficulty),
+                                                                  if (exerciseInChain
+                                                                          .variantType !=
+                                                                      null) ...[
+                                                                    const SizedBox(
+                                                                        width:
+                                                                            8),
+                                                                    _VariantChip(
+                                                                        variantType:
+                                                                            exerciseInChain.variantType!),
                                                                   ],
                                                                 ],
                                                               ),
@@ -253,7 +328,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                           ),
                                                         ),
                                                         if (!isCurrentExercise)
-                                                          const Icon(Icons.chevron_right),
+                                                          const Icon(Icons
+                                                              .chevron_right),
                                                       ],
                                                     ),
                                                   ),
@@ -289,18 +365,25 @@ class ExerciseDetailScreen extends ConsumerWidget {
                         children: [
                           Text(
                             'Secondary Muscles',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           const SizedBox(height: 8),
                           Wrap(
                             spacing: 8,
                             runSpacing: 4,
-                            children: exercise.secondaryMuscleGroups.map((muscle) => Chip(
-                              label: Text(muscle[0].toUpperCase() + muscle.substring(1)),
-                              backgroundColor: Theme.of(context).colorScheme.surface,
-                            )).toList(),
+                            children: exercise.secondaryMuscleGroups
+                                .map((muscle) => Chip(
+                                      label: Text(muscle[0].toUpperCase() +
+                                          muscle.substring(1)),
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.surface,
+                                    ))
+                                .toList(),
                           ),
                         ],
                       ),
@@ -318,9 +401,10 @@ class ExerciseDetailScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'Instructions',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -344,18 +428,28 @@ class ExerciseDetailScreen extends ConsumerWidget {
                         children: [
                           Text(
                             'Tags',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           const SizedBox(height: 8),
                           Wrap(
                             spacing: 8,
                             runSpacing: 4,
-                            children: exercise.tags.map((tag) => Chip(
-                              label: Text(tag.replaceAll('_', ' ').toUpperCase()),
-                              backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                            )).toList(),
+                            children: exercise.tags
+                                .map((tag) => Chip(
+                                      label: Text(tag
+                                          .replaceAll('_', ' ')
+                                          .toUpperCase()),
+                                      backgroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary
+                                          .withOpacity(0.1),
+                                    ))
+                                .toList(),
                           ),
                         ],
                       ),
@@ -442,32 +536,35 @@ class _InfoChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-      ),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 16,
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
           ),
         ),
-      ],
-    ),
-  );
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
+                  ),
+            ),
+          ],
+        ),
+      );
 }
 
 class _DifficultyChip extends StatelessWidget {
@@ -578,7 +675,7 @@ class _VariantChip extends StatelessWidget {
   Widget build(BuildContext context) {
     Color color;
     IconData icon;
-    
+
     switch (variantType.toLowerCase()) {
       case 'progression':
         color = Colors.green;
@@ -636,7 +733,8 @@ class _VariantChip extends StatelessWidget {
 
 // Extension methods for the ExerciseDetailScreen
 extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
-  void _startQuickWorkout(BuildContext context, WidgetRef ref, Exercise exercise) async {
+  void _startQuickWorkout(
+      BuildContext context, WidgetRef ref, Exercise exercise) async {
     // Create a quick workout template with this exercise
     final database = ref.read(databaseProvider);
     if (database == null) return;
@@ -645,14 +743,14 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
       // Create a temporary quick workout template
       final templateId = 'quick_${DateTime.now().millisecondsSinceEpoch}';
       await database.into(database.workoutTemplates).insert(
-        WorkoutTemplatesCompanion.insert(
-          id: templateId,
-          name: 'Quick: ${exercise.name}',
-          exerciseIds: [exercise.id],
-          tags: const [],
-          category: const Value('Quick Start'),
-        ),
-      );
+            WorkoutTemplatesCompanion.insert(
+              id: templateId,
+              name: 'Quick: ${exercise.name}',
+              exerciseIds: [exercise.id],
+              tags: const [],
+              category: const Value('Quick Start'),
+            ),
+          );
 
       // Navigate to active workout screen with this template
       if (context.mounted) {
@@ -667,7 +765,8 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
     }
   }
 
-  void _showAddToTemplateDialog(BuildContext context, WidgetRef ref, Exercise exercise) async {
+  void _showAddToTemplateDialog(
+      BuildContext context, WidgetRef ref, Exercise exercise) async {
     final database = ref.read(databaseProvider);
     if (database == null) return;
 
@@ -685,37 +784,48 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
           child: templates.isEmpty
               ? const Padding(
                   padding: EdgeInsets.all(16),
-                  child: Text('No templates available. Create a template first.'),
+                  child:
+                      Text('No templates available. Create a template first.'),
                 )
               : ListView.builder(
                   shrinkWrap: true,
                   itemCount: templates.length,
                   itemBuilder: (context, index) {
                     final template = templates[index];
-                    final alreadyAdded = template.exerciseIds.contains(exercise.id);
-                    
+                    final alreadyAdded =
+                        template.exerciseIds.contains(exercise.id);
+
                     return ListTile(
                       leading: Icon(
-                        alreadyAdded ? Icons.check_circle : Icons.fitness_center,
+                        alreadyAdded
+                            ? Icons.check_circle
+                            : Icons.fitness_center,
                         color: alreadyAdded ? Colors.green : null,
                       ),
                       title: Text(template.name),
-                      subtitle: Text('${template.exerciseIds.length} exercises'),
+                      subtitle:
+                          Text('${template.exerciseIds.length} exercises'),
                       enabled: !alreadyAdded,
                       onTap: alreadyAdded
                           ? null
                           : () async {
                               // Add exercise to template
-                              final updatedIds = [...template.exerciseIds, exercise.id];
-                              await database.update(database.workoutTemplates).replace(
-                                template.copyWith(exerciseIds: updatedIds),
-                              );
-                              
+                              final updatedIds = [
+                                ...template.exerciseIds,
+                                exercise.id
+                              ];
+                              await database
+                                  .update(database.workoutTemplates)
+                                  .replace(
+                                    template.copyWith(exerciseIds: updatedIds),
+                                  );
+
                               if (context.mounted) {
                                 Navigator.of(context).pop();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('Added ${exercise.name} to ${template.name}'),
+                                    content: Text(
+                                        'Added ${exercise.name} to ${template.name}'),
                                   ),
                                 );
                               }

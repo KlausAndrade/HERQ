@@ -6,7 +6,7 @@ final supabaseClientProvider = Provider<SupabaseClient>((ref) {
   return Supabase.instance.client;
 });
 
-// Authentication state provider  
+// Authentication state provider
 final authStateProvider = StreamProvider<AuthState>((ref) {
   final client = ref.read(supabaseClientProvider);
   return client.auth.onAuthStateChange;
@@ -26,7 +26,7 @@ final authServiceProvider = Provider<AuthService>((ref) {
 
 class AuthService {
   const AuthService(this._client);
-  
+
   final SupabaseClient _client;
 
   // Sign in with email and password

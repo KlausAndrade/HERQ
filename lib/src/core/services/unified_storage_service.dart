@@ -7,7 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../database/database.dart';
 import '../providers/database_provider.dart';
 // Conditional import for web storage service
-import '../services/web_storage_service.dart' if (dart.library.io) '../services/mobile_storage_stub.dart';
+import '../services/web_storage_service.dart'
+    if (dart.library.io) '../services/mobile_storage_stub.dart';
 
 /// Unified storage interface that works across platforms
 abstract class UnifiedStorageService {
@@ -27,7 +28,7 @@ abstract class UnifiedStorageService {
 /// Mobile implementation using Drift database
 class MobileStorageService implements UnifiedStorageService {
   final AppDatabase database;
-  
+
   MobileStorageService(this.database);
 
   @override
@@ -84,11 +85,11 @@ class MobileStorageService implements UnifiedStorageService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final prefsJson = prefs.getString('gymai_user_preferences');
-      
+
       if (prefsJson != null) {
         return Map<String, dynamic>.from(jsonDecode(prefsJson));
       }
-      
+
       // Return default preferences if none exist
       return {
         'theme': 'dark', // Match our new default
@@ -113,12 +114,10 @@ class MobileStorageService implements UnifiedStorageService {
       final prefs = await SharedPreferences.getInstance();
       final currentPrefs = await getUserPreferences();
       final updatedPrefs = {...currentPrefs, ...preferences};
-      
+
       final success = await prefs.setString(
-        'gymai_user_preferences', 
-        jsonEncode(updatedPrefs)
-      );
-      
+          'gymai_user_preferences', jsonEncode(updatedPrefs));
+
       return success;
     } catch (e) {
       debugPrint('Error updating user preferences: $e');
@@ -191,14 +190,15 @@ class WebStorageServiceImpl implements UnifiedStorageService {
   @override
   Future<bool> saveExercise(Map<String, dynamic> exercise) async {
     final exercises = await getExercises();
-    final existingIndex = exercises.indexWhere((e) => e['id'] == exercise['id']);
-    
+    final existingIndex =
+        exercises.indexWhere((e) => e['id'] == exercise['id']);
+
     if (existingIndex >= 0) {
       exercises[existingIndex] = exercise;
     } else {
       exercises.add(exercise);
     }
-    
+
     return WebStorageService.saveExercises(exercises);
   }
 
@@ -210,14 +210,15 @@ class WebStorageServiceImpl implements UnifiedStorageService {
   @override
   Future<bool> saveTemplate(Map<String, dynamic> template) async {
     final templates = await getTemplates();
-    final existingIndex = templates.indexWhere((t) => t['id'] == template['id']);
-    
+    final existingIndex =
+        templates.indexWhere((t) => t['id'] == template['id']);
+
     if (existingIndex >= 0) {
       templates[existingIndex] = template;
     } else {
       templates.add(template);
     }
-    
+
     return WebStorageService.saveTemplates(templates);
   }
 
@@ -269,8 +270,9 @@ final unifiedStorageProvider = Provider<UnifiedStorageService>((ref) {
 /// Helper extension for easy data access
 extension UnifiedStorageHelper on WidgetRef {
   UnifiedStorageService get storage => read(unifiedStorageProvider);
-  
-  Future<List<Map<String, dynamic>>> getWorkouts() => storage.getWorkoutSessions();
+
+  Future<List<Map<String, dynamic>>> getWorkouts() =>
+      storage.getWorkoutSessions();
   Future<List<Map<String, dynamic>>> getExercises() => storage.getExercises();
   Future<List<Map<String, dynamic>>> getTemplates() => storage.getTemplates();
   Future<Map<String, dynamic>> getPreferences() => storage.getUserPreferences();

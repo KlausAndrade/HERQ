@@ -16,7 +16,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _isSignUp = false;
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -41,7 +41,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 40),
-                
+
                 // Logo and title
                 Icon(
                   Icons.fitness_center,
@@ -49,22 +49,25 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(height: 24),
-                
+
                 Text(
                   'GymAI',
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                
+
                 Text(
                   'Your intelligent workout companion',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                  ),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 48),
@@ -78,9 +81,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       children: [
                         Text(
                           _isSignUp ? 'Create Account' : 'Welcome Back',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
@@ -94,7 +100,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               prefixIcon: Icon(Icons.person_outline),
                             ),
                             validator: (value) {
-                              if (_isSignUp && (value == null || value.trim().isEmpty)) {
+                              if (_isSignUp &&
+                                  (value == null || value.trim().isEmpty)) {
                                 return 'Please enter your name';
                               }
                               return null;
@@ -115,7 +122,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             if (value == null || value.trim().isEmpty) {
                               return 'Please enter your email';
                             }
-                            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                .hasMatch(value)) {
                               return 'Please enter a valid email';
                             }
                             return null;
@@ -137,7 +145,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 });
                               },
                               icon: Icon(
-                                _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                _obscurePassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                               ),
                             ),
                           ),
@@ -163,7 +173,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2),
                                 )
                               : Text(_isSignUp ? 'Create Account' : 'Sign In'),
                         ),
@@ -204,32 +215,39 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       children: [
                         Text(
                           'Or continue with',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.7),
+                                  ),
                         ),
                         const SizedBox(height: 16),
-                        
                         Row(
                           children: [
                             Expanded(
                               child: OutlinedButton.icon(
-                                onPressed: _isLoading ? null : _handleGoogleSignIn,
+                                onPressed:
+                                    _isLoading ? null : _handleGoogleSignIn,
                                 icon: const Icon(Icons.g_mobiledata, size: 24),
                                 label: const Text('Google'),
                                 style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
                                 ),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: OutlinedButton.icon(
-                                onPressed: _isLoading ? null : _handleAppleSignIn,
+                                onPressed:
+                                    _isLoading ? null : _handleAppleSignIn,
                                 icon: const Icon(Icons.apple, size: 24),
                                 label: const Text('Apple'),
                                 style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
                                 ),
                               ),
                             ),
@@ -263,20 +281,21 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     try {
       final authService = ref.read(authServiceProvider);
-      
+
       if (_isSignUp) {
         await authService.signUpWithEmail(
           email: _emailController.text.trim(),
           password: _passwordController.text,
-          displayName: _nameController.text.trim().isNotEmpty 
-              ? _nameController.text.trim() 
+          displayName: _nameController.text.trim().isNotEmpty
+              ? _nameController.text.trim()
               : null,
         );
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Account created successfully! Please check your email to verify.'),
+              content: Text(
+                  'Account created successfully! Please check your email to verify.'),
               backgroundColor: Colors.green,
             ),
           );
@@ -286,7 +305,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
-        
+
         if (mounted) {
           context.go('/');
         }
@@ -317,7 +336,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     try {
       final authService = ref.read(authServiceProvider);
       final success = await authService.signInWithGoogle();
-      
+
       if (success && mounted) {
         context.go('/');
       }
@@ -347,7 +366,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     try {
       final authService = ref.read(authServiceProvider);
       final success = await authService.signInWithApple();
-      
+
       if (success && mounted) {
         context.go('/');
       }
@@ -382,7 +401,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     try {
       final authService = ref.read(authServiceProvider);
       await authService.resetPassword(_emailController.text.trim());
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

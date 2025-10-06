@@ -8,7 +8,8 @@ import 'exercise_timer_preferences_provider.dart';
 import '../../../gamification/data/providers/gamification_provider.dart';
 
 // Provider for active workout state with real template data
-final activeWorkoutProvider = StateNotifierProvider<ActiveWorkoutNotifier, ActiveWorkout?>((ref) {
+final activeWorkoutProvider =
+    StateNotifierProvider<ActiveWorkoutNotifier, ActiveWorkout?>((ref) {
   final database = ref.watch(databaseProvider);
   return ActiveWorkoutNotifier(database, ref);
 });
@@ -16,7 +17,7 @@ final activeWorkoutProvider = StateNotifierProvider<ActiveWorkoutNotifier, Activ
 class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   final AppDatabase? database;
   final Ref _ref;
-  
+
   ActiveWorkoutNotifier(this.database, this._ref) : super(null);
 
   Future<void> startWorkoutFromTemplate(String templateId) async {
@@ -24,7 +25,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     if (db == null) {
       throw Exception('Database not available');
     }
-    
+
     try {
       // Fetch template from database
       final template = await (db.select(db.workoutTemplates)
@@ -53,7 +54,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         final exercise = exerciseMap[id]!;
         // Load saved timer preference or use default (90s)
         final savedTimer = timerPrefs[exercise.id] ?? 90;
-        
+
         // Start with 3 empty sets for each exercise
         return ActiveExercise(
           id: exercise.id,
@@ -108,14 +109,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final exercise = exercises[exerciseIndex];
       final sets = List<ActiveSet>.from(exercise.sets);
       sets[setIndex] = updatedSet;
-      
+
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
         name: exercise.name,
         sets: sets,
         restTimerSeconds: exercise.restTimerSeconds,
       );
-      
+
       state = ActiveWorkout(
         id: state!.id,
         name: state!.name,
@@ -133,7 +134,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       final exercise = exercises[exerciseIndex];
       final sets = List<ActiveSet>.from(exercise.sets);
-      
+
       // Add new set with previous set's values as template
       final lastSet = sets.isNotEmpty ? sets.last : null;
       sets.add(ActiveSet(
@@ -142,14 +143,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         reps: lastSet?.reps ?? 0,
         isCompleted: false,
       ));
-      
+
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
         name: exercise.name,
         sets: sets,
         restTimerSeconds: exercise.restTimerSeconds,
       );
-      
+
       state = ActiveWorkout(
         id: state!.id,
         name: state!.name,
@@ -177,13 +178,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             .getSingleOrNull();
 
         final exercises = List<ActiveExercise>.from(state!.exercises);
-        
+
         if (exercise != null) {
           // Add exercise from database with initial weight if provided
           final initialSet = initialWeight != null
-              ? ActiveSet(number: 1, weight: initialWeight, reps: 0, isCompleted: false)
+              ? ActiveSet(
+                  number: 1, weight: initialWeight, reps: 0, isCompleted: false)
               : const ActiveSet(number: 1, reps: 0, isCompleted: false);
-          
+
           exercises.add(ActiveExercise(
             id: exercise.id,
             name: exercise.name,
@@ -233,17 +235,19 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   }
 
   void updateExerciseRestTimer(int exerciseIndex, int newRestTimerSeconds) {
-    if (state != null && exerciseIndex >= 0 && exerciseIndex < state!.exercises.length) {
+    if (state != null &&
+        exerciseIndex >= 0 &&
+        exerciseIndex < state!.exercises.length) {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       final exercise = exercises[exerciseIndex];
-      
+
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
         name: exercise.name,
         sets: exercise.sets,
         restTimerSeconds: newRestTimerSeconds,
       );
-      
+
       state = ActiveWorkout(
         id: state!.id,
         name: state!.name,
@@ -253,12 +257,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalSets: state!.totalSets,
         totalVolume: state!.totalVolume,
       );
-      
+
       // Save timer preference for this exercise
       _ref.read(exerciseTimerPreferencesProvider.notifier).setTimerForExercise(
-        exercise.id,
-        newRestTimerSeconds,
-      );
+            exercise.id,
+            newRestTimerSeconds,
+          );
     }
   }
 
@@ -268,29 +272,31 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
   double _calculateTotalVolume(List<ActiveExercise> exercises) {
     return exercises.fold(0.0, (total, exercise) {
-      return total + exercise.sets.fold(0.0, (exerciseTotal, set) {
-        if (set.isCompleted && set.weight != null) {
-          return exerciseTotal + (set.weight! * set.reps);
-        }
-        return exerciseTotal;
-      });
+      return total +
+          exercise.sets.fold(0.0, (exerciseTotal, set) {
+            if (set.isCompleted && set.weight != null) {
+              return exerciseTotal + (set.weight! * set.reps);
+            }
+            return exerciseTotal;
+          });
     });
   }
 
   Future<void> finishWorkout() async {
     if (state == null) return;
-    
+
     // Calculate workout stats for gamification
     final totalSets = _calculateTotalSets(state!.exercises);
     final totalVolume = _calculateTotalVolume(state!.exercises);
     final durationMinutes = state!.elapsedTime.inMinutes;
-    
+
     // Update gamification stats
     final gamificationService = _ref.read(gamificationServiceProvider);
     if (gamificationService != null) {
       try {
         await gamificationService.onWorkoutCompleted(
-          workoutId: 0, // Placeholder - real workout ID would come from database
+          workoutId:
+              0, // Placeholder - real workout ID would come from database
           setsCompleted: totalSets,
           volumeLifted: totalVolume,
           durationMinutes: durationMinutes,
@@ -300,13 +306,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         print('Error updating gamification stats: $e');
       }
     }
-    
+
     state = null;
   }
 }
 
 // Rest timer provider
-final restTimerProvider = StateNotifierProvider<RestTimerNotifier, RestTimerState>((ref) => RestTimerNotifier());
+final restTimerProvider =
+    StateNotifierProvider<RestTimerNotifier, RestTimerState>(
+        (ref) => RestTimerNotifier());
 
 class RestTimerNotifier extends StateNotifier<RestTimerState> {
   RestTimerNotifier() : super(const RestTimerState());
@@ -319,7 +327,7 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
       remainingSeconds: durationSeconds,
       totalSeconds: durationSeconds,
     );
-    
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.remainingSeconds > 0) {
         state = RestTimerState(
@@ -338,7 +346,7 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
     _timer?.cancel();
     state = const RestTimerState();
   }
-  
+
   @override
   void dispose() {
     _timer?.cancel();

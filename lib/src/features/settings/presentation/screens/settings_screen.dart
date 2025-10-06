@@ -31,8 +31,8 @@ class SettingsScreen extends ConsumerWidget {
           Text(
             'Account',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 12),
           Card(
@@ -49,13 +49,13 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Appearance Section
           Text(
             'Appearance',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 12),
           Card(
@@ -77,8 +77,8 @@ class SettingsScreen extends ConsumerWidget {
           Text(
             'Workout Settings',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 12),
           Card(
@@ -87,7 +87,9 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: const Icon(Icons.timer_outlined),
                   title: const Text('Default Rest Timer'),
-                  subtitle: Text(ref.read(workoutSettingsProvider.notifier).getFormattedRestTime()),
+                  subtitle: Text(ref
+                      .read(workoutSettingsProvider.notifier)
+                      .getFormattedRestTime()),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showRestTimerDialog(context, ref),
                 ),
@@ -95,7 +97,9 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: const Icon(Icons.scale_outlined),
                   title: const Text('Weight Unit'),
-                  subtitle: Text(ref.read(workoutSettingsProvider.notifier).getWeightUnitDisplay()),
+                  subtitle: Text(ref
+                      .read(workoutSettingsProvider.notifier)
+                      .getWeightUnitDisplay()),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showWeightUnitDialog(context, ref),
                 ),
@@ -106,7 +110,9 @@ class SettingsScreen extends ConsumerWidget {
                   subtitle: const Text('Vibrate on timer completion'),
                   value: workoutSettings.hapticFeedback,
                   onChanged: (value) {
-                    ref.read(workoutSettingsProvider.notifier).setHapticFeedback(value);
+                    ref
+                        .read(workoutSettingsProvider.notifier)
+                        .setHapticFeedback(value);
                   },
                 ),
                 const Divider(height: 1),
@@ -116,7 +122,9 @@ class SettingsScreen extends ConsumerWidget {
                   subtitle: const Text('Start timer after completing a set'),
                   value: workoutSettings.autoStartRestTimer,
                   onChanged: (value) {
-                    ref.read(workoutSettingsProvider.notifier).setAutoStartRestTimer(value);
+                    ref
+                        .read(workoutSettingsProvider.notifier)
+                        .setAutoStartRestTimer(value);
                   },
                 ),
               ],
@@ -128,8 +136,8 @@ class SettingsScreen extends ConsumerWidget {
           Text(
             'Data & Privacy',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 12),
           Card(
@@ -167,8 +175,8 @@ class SettingsScreen extends ConsumerWidget {
           Text(
             'About',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 12),
           Card(
@@ -290,7 +298,8 @@ class SettingsScreen extends ConsumerWidget {
                         width: 60,
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Theme.of(context).dividerColor),
+                          border:
+                              Border.all(color: Theme.of(context).dividerColor),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -328,7 +337,8 @@ class SettingsScreen extends ConsumerWidget {
                         width: 60,
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Theme.of(context).dividerColor),
+                          border:
+                              Border.all(color: Theme.of(context).dividerColor),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -362,7 +372,9 @@ class SettingsScreen extends ConsumerWidget {
               onPressed: () {
                 final totalSeconds = (selectedMinutes * 60) + selectedSeconds;
                 if (totalSeconds > 0) {
-                  ref.read(workoutSettingsProvider.notifier).setDefaultRestTimer(totalSeconds);
+                  ref
+                      .read(workoutSettingsProvider.notifier)
+                      .setDefaultRestTimer(totalSeconds);
                   Navigator.of(context).pop();
                 }
               },
@@ -390,7 +402,9 @@ class SettingsScreen extends ConsumerWidget {
               groupValue: currentUnit,
               onChanged: (value) {
                 if (value != null) {
-                  ref.read(workoutSettingsProvider.notifier).setWeightUnit(value);
+                  ref
+                      .read(workoutSettingsProvider.notifier)
+                      .setWeightUnit(value);
                   Navigator.of(context).pop();
                 }
               },
@@ -401,7 +415,9 @@ class SettingsScreen extends ConsumerWidget {
               groupValue: currentUnit,
               onChanged: (value) {
                 if (value != null) {
-                  ref.read(workoutSettingsProvider.notifier).setWeightUnit(value);
+                  ref
+                      .read(workoutSettingsProvider.notifier)
+                      .setWeightUnit(value);
                   Navigator.of(context).pop();
                 }
               },
@@ -467,9 +483,9 @@ class SettingsScreen extends ConsumerWidget {
     try {
       final exportService = ref.read(dataExportServiceProvider);
       final jsonData = await exportService.exportAllData();
-      
+
       await Clipboard.setData(ClipboardData(text: jsonData));
-      
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -494,9 +510,9 @@ class SettingsScreen extends ConsumerWidget {
     try {
       final exportService = ref.read(dataExportServiceProvider);
       final csvData = await exportService.exportWorkoutsAsCsv();
-      
+
       await Clipboard.setData(ClipboardData(text: csvData));
-      
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -552,7 +568,7 @@ class SettingsScreen extends ConsumerWidget {
 
   void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
     final confirmController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -600,7 +616,7 @@ class SettingsScreen extends ConsumerWidget {
               if (confirmController.text == 'DELETE') {
                 final database = ref.read(databaseProvider);
                 if (database == null) return;
-                
+
                 try {
                   // Delete all data
                   await database.delete(database.workoutSessions).go();
@@ -608,7 +624,7 @@ class SettingsScreen extends ConsumerWidget {
                   await database.delete(database.setEntries).go();
                   await database.delete(database.personalRecords).go();
                   await database.delete(database.exerciseFavorites).go();
-                  
+
                   if (context.mounted) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(

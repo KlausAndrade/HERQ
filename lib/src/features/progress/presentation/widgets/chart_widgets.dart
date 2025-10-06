@@ -50,8 +50,10 @@ class VolumeChart extends StatelessWidget {
           ),
           titlesData: FlTitlesData(
             show: true,
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -66,7 +68,10 @@ class VolumeChart extends StatelessWidget {
                       child: Text(
                         DateFormat('M/d').format(date),
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.6),
                           fontSize: 11,
                         ),
                       ),
@@ -87,7 +92,10 @@ class VolumeChart extends StatelessWidget {
                     child: Text(
                       '${(value / 1000).toStringAsFixed(1)}k',
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.6),
                         fontSize: 11,
                       ),
                     ),
@@ -214,8 +222,10 @@ class FrequencyChart extends StatelessWidget {
           ),
           titlesData: FlTitlesData(
             show: true,
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -228,7 +238,10 @@ class FrequencyChart extends StatelessWidget {
                       child: Text(
                         DateFormat('M/d').format(date),
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.6),
                           fontSize: 11,
                         ),
                       ),
@@ -249,7 +262,10 @@ class FrequencyChart extends StatelessWidget {
                     child: Text(
                       value.toInt().toString(),
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.6),
                         fontSize: 11,
                       ),
                     ),
@@ -323,8 +339,10 @@ class ExerciseProgressChart extends StatelessWidget {
       );
     }
 
-    final maxOneRM = data.map((d) => d.oneRepMax).reduce((a, b) => a > b ? a : b);
-    final minOneRM = data.map((d) => d.oneRepMax).reduce((a, b) => a < b ? a : b);
+    final maxOneRM =
+        data.map((d) => d.oneRepMax).reduce((a, b) => a > b ? a : b);
+    final minOneRM =
+        data.map((d) => d.oneRepMax).reduce((a, b) => a < b ? a : b);
     final oneRMRange = maxOneRM - minOneRM;
 
     return SizedBox(
@@ -344,8 +362,10 @@ class ExerciseProgressChart extends StatelessWidget {
           ),
           titlesData: FlTitlesData(
             show: true,
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -360,7 +380,10 @@ class ExerciseProgressChart extends StatelessWidget {
                       child: Text(
                         DateFormat('M/d').format(date),
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.6),
                           fontSize: 11,
                         ),
                       ),
@@ -381,7 +404,10 @@ class ExerciseProgressChart extends StatelessWidget {
                     child: Text(
                       value.toStringAsFixed(0),
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.6),
                         fontSize: 11,
                       ),
                     ),

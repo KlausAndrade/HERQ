@@ -9,7 +9,6 @@ import '../widgets/rest_timer_widget.dart';
 import '../widgets/set_entry_widget.dart';
 
 class ActiveWorkoutScreen extends ConsumerStatefulWidget {
-
   const ActiveWorkoutScreen({
     super.key,
     this.templateId,
@@ -17,19 +16,22 @@ class ActiveWorkoutScreen extends ConsumerStatefulWidget {
   final String? templateId;
 
   @override
-  ConsumerState<ActiveWorkoutScreen> createState() => _ActiveWorkoutScreenState();
+  ConsumerState<ActiveWorkoutScreen> createState() =>
+      _ActiveWorkoutScreenState();
 }
 
 class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   final Set<int> _expandedExercises = {};
-  
+
   @override
   void initState() {
     super.initState();
     if (widget.templateId != null) {
       // Initialize workout from template
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await ref.read(activeWorkoutProvider.notifier).startWorkoutFromTemplate(widget.templateId!);
+        await ref
+            .read(activeWorkoutProvider.notifier)
+            .startWorkoutFromTemplate(widget.templateId!);
         // Auto-expand first exercise
         setState(() {
           _expandedExercises.add(0);
@@ -73,15 +75,24 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                             children: [
                               Text(
                                 activeWorkout.name,
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                               ),
                               Text(
                                 _formatDuration(activeWorkout.elapsedTime),
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.7),
+                                    ),
                               ),
                             ],
                           ),
@@ -94,8 +105,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                 ),
 
                 // Rest Timer (if active)
-                if (restTimer.isActive)
-                  const RestTimerWidget(),
+                if (restTimer.isActive) const RestTimerWidget(),
 
                 // Exercise List
                 Expanded(
@@ -118,10 +128,14 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                           });
                         },
                         onSetChanged: (setIndex, updatedSet) {
-                          ref.read(activeWorkoutProvider.notifier).updateSet(index, setIndex, updatedSet);
+                          ref
+                              .read(activeWorkoutProvider.notifier)
+                              .updateSet(index, setIndex, updatedSet);
                         },
                         onAddSet: () {
-                          ref.read(activeWorkoutProvider.notifier).addSet(index);
+                          ref
+                              .read(activeWorkoutProvider.notifier)
+                              .addSet(index);
                         },
                       );
                     },
@@ -153,19 +167,20 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     );
   }
 
-  Widget _buildWorkoutStats(BuildContext context, ActiveWorkout workout) => Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          '${workout.totalSets} sets',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        Text(
-          '${workout.totalVolume.toStringAsFixed(1)}kg',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
-    );
+  Widget _buildWorkoutStats(BuildContext context, ActiveWorkout workout) =>
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            '${workout.totalSets} sets',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          Text(
+            '${workout.totalVolume.toStringAsFixed(1)}kg',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      );
 
   void _showAddExerciseDialog(BuildContext context) async {
     final result = await showDialog<Map<String, dynamic>>(
@@ -180,11 +195,11 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       final isAssisted = result['isAssisted'] as bool? ?? false;
 
       await ref.read(activeWorkoutProvider.notifier).addExercise(
-        exercise.id,
-        initialWeight: initialWeight,
-        restTimerSeconds: restTimerSeconds,
-        isAssisted: isAssisted,
-      );
+            exercise.id,
+            initialWeight: initialWeight,
+            restTimerSeconds: restTimerSeconds,
+            isAssisted: isAssisted,
+          );
     }
   }
 
@@ -226,7 +241,6 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 }
 
 class _ExerciseCard extends ConsumerWidget {
-
   const _ExerciseCard({
     required this.exercise,
     required this.exerciseIndex,
@@ -244,136 +258,150 @@ class _ExerciseCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        children: [
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+        margin: const EdgeInsets.only(bottom: 12),
+        child: Column(
+          children: [
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.fitness_center,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
               ),
-              child: Icon(
-                Icons.fitness_center,
-                color: Theme.of(context).colorScheme.primary,
-                size: 20,
+              title: Text(
+                exercise.name,
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
+              subtitle: Text('${exercise.sets.length} sets'),
+              trailing: Icon(
+                isExpanded ? Icons.expand_less : Icons.expand_more,
+              ),
+              onTap: onTap,
             ),
-            title: Text(
-              exercise.name,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text('${exercise.sets.length} sets'),
-            trailing: Icon(
-              isExpanded ? Icons.expand_less : Icons.expand_more,
-            ),
-            onTap: onTap,
-          ),
-          if (isExpanded) ...[
-            const Divider(height: 1),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Rest Timer Controls
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            if (isExpanded) ...[
+              const Divider(height: 1),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    // Rest Timer Controls
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.2),
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.timer_outlined,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Rest Timer',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.timer_outlined,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.remove_circle_outline),
-                          iconSize: 20,
-                          onPressed: exercise.restTimerSeconds > 15
-                              ? () {
-                                  ref.read(activeWorkoutProvider.notifier).updateExerciseRestTimer(
-                                    exerciseIndex,
-                                    exercise.restTimerSeconds - 15,
-                                  );
-                                }
-                              : null,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Rest Timer',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
                           ),
-                          child: Text(
-                            '${exercise.restTimerSeconds}s',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.primary,
-                              fontSize: 14,
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.remove_circle_outline),
+                            iconSize: 20,
+                            onPressed: exercise.restTimerSeconds > 15
+                                ? () {
+                                    ref
+                                        .read(activeWorkoutProvider.notifier)
+                                        .updateExerciseRestTimer(
+                                          exerciseIndex,
+                                          exercise.restTimerSeconds - 15,
+                                        );
+                                  }
+                                : null,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '${exercise.restTimerSeconds}s',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.primary,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add_circle_outline),
-                          iconSize: 20,
-                          onPressed: () {
-                            ref.read(activeWorkoutProvider.notifier).updateExerciseRestTimer(
-                              exerciseIndex,
-                              exercise.restTimerSeconds + 15,
-                            );
+                          IconButton(
+                            icon: const Icon(Icons.add_circle_outline),
+                            iconSize: 20,
+                            onPressed: () {
+                              ref
+                                  .read(activeWorkoutProvider.notifier)
+                                  .updateExerciseRestTimer(
+                                    exerciseIndex,
+                                    exercise.restTimerSeconds + 15,
+                                  );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Sets List
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: exercise.sets.length,
+                      itemBuilder: (context, index) {
+                        final set = exercise.sets[index];
+                        return SetEntryWidget(
+                          set: set,
+                          setNumber: index + 1,
+                          restTimerSeconds: exercise.restTimerSeconds,
+                          onChanged: (updatedSet) {
+                            onSetChanged(index, updatedSet);
                           },
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Sets List
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: exercise.sets.length,
-                    itemBuilder: (context, index) {
-                      final set = exercise.sets[index];
-                      return SetEntryWidget(
-                        set: set,
-                        setNumber: index + 1,
-                        restTimerSeconds: exercise.restTimerSeconds,
-                        onChanged: (updatedSet) {
-                          onSetChanged(index, updatedSet);
-                        },
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  // Add Set Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: onAddSet,
-                      icon: const Icon(Icons.add),
-                      label: const Text('Add Set'),
+                    const SizedBox(height: 12),
+                    // Add Set Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: onAddSet,
+                        icon: const Icon(Icons.add),
+                        label: const Text('Add Set'),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ],
-        ],
-      ),
-    );
-  }
+        ),
+      );
+}

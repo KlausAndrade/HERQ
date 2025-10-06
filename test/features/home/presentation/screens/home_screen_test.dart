@@ -18,7 +18,8 @@ void main() {
       expect(find.text('Ready for your next workout?'), findsOneWidget);
     });
 
-    testWidgets('should display quick action buttons', (WidgetTester tester) async {
+    testWidgets('should display quick action buttons',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: ProviderScope(
@@ -33,7 +34,8 @@ void main() {
       expect(find.text('History'), findsOneWidget);
     });
 
-    testWidgets('should display bottom navigation', (WidgetTester tester) async {
+    testWidgets('should display bottom navigation',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: ProviderScope(

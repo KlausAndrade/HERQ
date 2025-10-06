@@ -34,15 +34,14 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       children: [
         // Month Navigation
         _buildMonthNavigation(),
-        
+
         // Calendar Grid
         Expanded(
           child: _buildCalendarGrid(),
         ),
-        
+
         // Selected Day Workouts
-        if (_selectedDay != null)
-          _buildSelectedDayWorkouts(),
+        if (_selectedDay != null) _buildSelectedDayWorkouts(),
       ],
     );
   }
@@ -105,9 +104,10 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   Widget _buildCalendarGrid() {
     final daysInMonth = _getDaysInMonth();
-    final firstDayOfMonth = DateTime(_focusedMonth.year, _focusedMonth.month, 1);
+    final firstDayOfMonth =
+        DateTime(_focusedMonth.year, _focusedMonth.month, 1);
     final firstWeekday = firstDayOfMonth.weekday % 7; // 0 = Sunday
-    
+
     final workoutsByDate = _groupWorkoutsByDate();
 
     return GridView.builder(
@@ -140,9 +140,11 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
         // Day cells
         final dayNumber = index - 6 - firstWeekday;
-        final date = DateTime(_focusedMonth.year, _focusedMonth.month, dayNumber);
+        final date =
+            DateTime(_focusedMonth.year, _focusedMonth.month, dayNumber);
         final isToday = _isToday(date);
-        final isSelected = _selectedDay != null && _isSameDay(date, _selectedDay!);
+        final isSelected =
+            _selectedDay != null && _isSameDay(date, _selectedDay!);
         final workoutsOnDay = workoutsByDate[_dateKey(date)] ?? [];
         final hasWorkout = workoutsOnDay.isNotEmpty;
         final isFutureDate = date.isAfter(DateTime.now());
@@ -208,7 +210,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             child: Text(
               '$day',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: hasWorkout ? FontWeight.bold : FontWeight.normal,
+                    fontWeight:
+                        hasWorkout ? FontWeight.bold : FontWeight.normal,
                     color: textColor,
                   ),
             ),
@@ -269,7 +272,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     if (_selectedDay == null) return const SizedBox.shrink();
 
     final workoutsOnDay = _groupWorkoutsByDate()[_dateKey(_selectedDay!)] ?? [];
-    
+
     if (workoutsOnDay.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(16),
@@ -388,7 +391,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
       final date = workout.completedAt!;
       // Only include workouts from the focused month
-      if (date.year == _focusedMonth.year && date.month == _focusedMonth.month) {
+      if (date.year == _focusedMonth.year &&
+          date.month == _focusedMonth.month) {
         final key = _dateKey(date);
         grouped.putIfAbsent(key, () => []);
         grouped[key]!.add(workout);

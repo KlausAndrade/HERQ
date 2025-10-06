@@ -8,7 +8,8 @@ class ExercisePickerDialog extends ConsumerStatefulWidget {
   const ExercisePickerDialog({super.key});
 
   @override
-  ConsumerState<ExercisePickerDialog> createState() => _ExercisePickerDialogState();
+  ConsumerState<ExercisePickerDialog> createState() =>
+      _ExercisePickerDialogState();
 }
 
 class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
@@ -16,7 +17,7 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
   String _searchQuery = '';
   String? _selectedCategory;
   Exercise? _selectedExercise;
-  
+
   // Exercise settings
   double? _initialWeight;
   int _restTimerSeconds = 90;
@@ -45,7 +46,8 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                 color: Theme.of(context).colorScheme.surface,
                 border: Border(
                   bottom: BorderSide(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                    color:
+                        Theme.of(context).colorScheme.outline.withOpacity(0.2),
                   ),
                 ),
               ),
@@ -57,8 +59,8 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                       Text(
                         'Add Exercise',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                       const Spacer(),
                       IconButton(
@@ -77,7 +79,8 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -103,7 +106,8 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                               selected: isSelected,
                               onSelected: (selected) {
                                 setState(() {
-                                  _selectedCategory = selected ? category : null;
+                                  _selectedCategory =
+                                      selected ? category : null;
                                 });
                               },
                             ),
@@ -122,9 +126,14 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
             Expanded(
               child: exercisesAsync.when(
                 data: (exercises) {
-                  final filteredExercises = _selectedCategory == null || _selectedCategory == 'All'
-                      ? exercises
-                      : exercises.where((e) => e.category.toLowerCase() == _selectedCategory!.toLowerCase()).toList();
+                  final filteredExercises =
+                      _selectedCategory == null || _selectedCategory == 'All'
+                          ? exercises
+                          : exercises
+                              .where((e) =>
+                                  e.category.toLowerCase() ==
+                                  _selectedCategory!.toLowerCase())
+                              .toList();
 
                   if (filteredExercises.isEmpty) {
                     return const Center(
@@ -144,7 +153,10 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
@@ -158,7 +170,9 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                         title: Text(
                           exercise.name,
                           style: TextStyle(
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.normal,
                           ),
                         ),
                         subtitle: Text(
@@ -190,7 +204,10 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                   color: Theme.of(context).colorScheme.surface,
                   border: Border(
                     top: BorderSide(
-                      color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withOpacity(0.2),
                     ),
                   ),
                 ),
@@ -200,11 +217,11 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                     Text(
                       'Exercise Settings',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Initial Weight (optional)
                     if (_selectedExercise!.exerciseType == 'reps')
                       TextField(
@@ -221,10 +238,10 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                           _initialWeight = double.tryParse(value);
                         },
                       ),
-                    
+
                     if (_selectedExercise!.exerciseType == 'reps')
                       const SizedBox(height: 12),
-                    
+
                     // Rest Timer
                     Row(
                       children: [
@@ -245,9 +262,13 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                               : null,
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -268,14 +289,15 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Assisted Toggle (for bodyweight exercises)
                     if (_selectedExercise!.isBodyweight)
                       SwitchListTile(
                         title: const Text('Assisted'),
-                        subtitle: const Text('Use assistance (e.g., resistance band)'),
+                        subtitle: const Text(
+                            'Use assistance (e.g., resistance band)'),
                         value: _isAssisted,
                         onChanged: (value) {
                           setState(() {

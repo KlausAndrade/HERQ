@@ -33,11 +33,11 @@ class WebStorageService {
   /// Get storage usage information
   static Map<String, dynamic> getStorageInfo() {
     if (!isSupported) return {'supported': false};
-    
+
     final storage = html.window.localStorage;
     int totalSize = 0;
     final keys = <String>[];
-    
+
     // Iterate through localStorage keys
     storage.keys.forEach((key) {
       if (key.startsWith(_keyPrefix)) {
@@ -45,7 +45,7 @@ class WebStorageService {
         totalSize += (storage[key]?.length ?? 0);
       }
     });
-    
+
     return {
       'supported': true,
       'totalSize': totalSize,
@@ -56,7 +56,8 @@ class WebStorageService {
   }
 
   /// Store workout sessions
-  static Future<bool> saveWorkoutSessions(List<Map<String, dynamic>> sessions) async {
+  static Future<bool> saveWorkoutSessions(
+      List<Map<String, dynamic>> sessions) async {
     return _saveJson(_workoutSessionsKey, sessions);
   }
 
@@ -67,7 +68,8 @@ class WebStorageService {
   }
 
   /// Store exercises
-  static Future<bool> saveExercises(List<Map<String, dynamic>> exercises) async {
+  static Future<bool> saveExercises(
+      List<Map<String, dynamic>> exercises) async {
     return _saveJson(_exercisesKey, exercises);
   }
 
@@ -78,7 +80,8 @@ class WebStorageService {
   }
 
   /// Store workout templates
-  static Future<bool> saveTemplates(List<Map<String, dynamic>> templates) async {
+  static Future<bool> saveTemplates(
+      List<Map<String, dynamic>> templates) async {
     return _saveJson(_templatesKey, templates);
   }
 
@@ -89,7 +92,8 @@ class WebStorageService {
   }
 
   /// Store user preferences
-  static Future<bool> saveUserPreferences(Map<String, dynamic> preferences) async {
+  static Future<bool> saveUserPreferences(
+      Map<String, dynamic> preferences) async {
     return _saveJson(_userPreferencesKey, preferences);
   }
 
@@ -100,7 +104,8 @@ class WebStorageService {
   }
 
   /// Store personal records
-  static Future<bool> savePersonalRecords(List<Map<String, dynamic>> records) async {
+  static Future<bool> savePersonalRecords(
+      List<Map<String, dynamic>> records) async {
     return _saveJson(_personalRecordsKey, records);
   }
 
@@ -130,23 +135,23 @@ class WebStorageService {
   /// Clear all stored data
   static Future<bool> clearAll() async {
     if (!isSupported) return false;
-    
+
     try {
       final storage = html.window.localStorage;
       final keysToRemove = <String>[];
-      
+
       // Collect keys that start with our prefix
       storage.keys.forEach((key) {
         if (key.startsWith(_keyPrefix)) {
           keysToRemove.add(key);
         }
       });
-      
+
       // Remove collected keys
       for (final key in keysToRemove) {
         storage.remove(key);
       }
-      
+
       return true;
     } catch (e) {
       debugPrint('Error clearing localStorage: $e');
@@ -177,7 +182,7 @@ class WebStorageService {
   /// Export all data as JSON
   static Future<Map<String, dynamic>> exportAllData() async {
     if (!isSupported) return {};
-    
+
     return {
       'workoutSessions': await getWorkoutSessions(),
       'exercises': await getExercises(),
@@ -193,40 +198,43 @@ class WebStorageService {
   /// Import data from JSON
   static Future<bool> importData(Map<String, dynamic> data) async {
     if (!isSupported) return false;
-    
+
     try {
       // Validate data structure
       if (!_validateImportData(data)) {
         throw ArgumentError('Invalid import data structure');
       }
-      
+
       // Import each data type
       if (data.containsKey('workoutSessions')) {
-        await saveWorkoutSessions(List<Map<String, dynamic>>.from(data['workoutSessions']));
+        await saveWorkoutSessions(
+            List<Map<String, dynamic>>.from(data['workoutSessions']));
       }
-      
+
       if (data.containsKey('exercises')) {
         await saveExercises(List<Map<String, dynamic>>.from(data['exercises']));
       }
-      
+
       if (data.containsKey('templates')) {
         await saveTemplates(List<Map<String, dynamic>>.from(data['templates']));
       }
-      
+
       if (data.containsKey('userPreferences')) {
-        await saveUserPreferences(Map<String, dynamic>.from(data['userPreferences']));
+        await saveUserPreferences(
+            Map<String, dynamic>.from(data['userPreferences']));
       }
-      
+
       if (data.containsKey('personalRecords')) {
-        await savePersonalRecords(List<Map<String, dynamic>>.from(data['personalRecords']));
+        await savePersonalRecords(
+            List<Map<String, dynamic>>.from(data['personalRecords']));
       }
-      
+
       // Update metadata with import info
       await saveAppMetadata({
         'lastImport': DateTime.now().toIso8601String(),
         'importVersion': data['version'] ?? 'unknown',
       });
-      
+
       return true;
     } catch (e) {
       debugPrint('Error importing data: $e');
@@ -237,11 +245,11 @@ class WebStorageService {
   /// Initialize default data
   static Future<void> initializeDefaultData() async {
     if (!isSupported) return;
-    
+
     // Check if data already exists
     final metadata = await getAppMetadata();
     if (metadata.containsKey('initialized')) return;
-    
+
     // Default exercises
     const defaultExercises = [
       {
@@ -261,7 +269,8 @@ class WebStorageService {
         'primaryMuscleGroup': 'legs',
         'secondaryMuscleGroups': ['glutes', 'core'],
         'equipment': 'barbell',
-        'instructions': 'Stand with feet shoulder-width apart, squat down keeping chest up',
+        'instructions':
+            'Stand with feet shoulder-width apart, squat down keeping chest up',
         'tags': ['compound', 'lower_body'],
         'isBodyweight': false,
         'createdAt': '2025-10-05T00:00:00.000Z',
@@ -278,7 +287,7 @@ class WebStorageService {
         'createdAt': '2025-10-05T00:00:00.000Z',
       },
     ];
-    
+
     // Default templates
     const defaultTemplates = [
       {
@@ -287,12 +296,13 @@ class WebStorageService {
         'description': 'Chest, shoulders, and triceps workout',
         'exerciseIds': ['bench_press'],
         'tags': ['push', 'upper_body'],
-        'estimatedDurationMinutes': 60, // Using reasonable default since we need const here
+        'estimatedDurationMinutes':
+            60, // Using reasonable default since we need const here
         'isDefault': true,
         'createdAt': '2025-10-05T00:00:00.000Z',
       },
     ];
-    
+
     // Default preferences from app configuration
     final defaultPreferences = {
       'units': 'metric', // 'metric' or 'imperial'
@@ -307,12 +317,12 @@ class WebStorageService {
       'maxSetsPerExercise': AppConfig.maxSets,
       'autoSaveInterval': AppConfig.autoSaveIntervalSeconds,
     };
-    
+
     // Save default data
     await saveExercises(defaultExercises);
     await saveTemplates(defaultTemplates);
     await saveUserPreferences(defaultPreferences);
-    
+
     // Mark as initialized
     await saveAppMetadata({
       'initialized': true,
@@ -324,7 +334,7 @@ class WebStorageService {
   // Private helper methods
   static bool _saveJson(String key, dynamic data) {
     if (!isSupported) return false;
-    
+
     try {
       final jsonString = jsonEncode(data);
       html.window.localStorage[key] = jsonString;
@@ -337,7 +347,7 @@ class WebStorageService {
 
   static dynamic _getJson(String key) {
     if (!isSupported) return null;
-    
+
     try {
       final jsonString = html.window.localStorage[key];
       if (jsonString == null) return null;
@@ -350,7 +360,7 @@ class WebStorageService {
 
   static bool _removeKey(String key) {
     if (!isSupported) return false;
-    
+
     try {
       html.window.localStorage.remove(key);
       return true;
@@ -364,19 +374,19 @@ class WebStorageService {
     // Basic validation - ensure required fields exist and are correct types
     final validKeys = [
       'workoutSessions',
-      'exercises', 
+      'exercises',
       'templates',
       'userPreferences',
       'personalRecords',
       'appMetadata'
     ];
-    
+
     for (final key in data.keys) {
       if (!validKeys.contains(key) && key != 'exportedAt' && key != 'version') {
         return false;
       }
     }
-    
+
     return true;
   }
 }

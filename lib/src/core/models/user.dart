@@ -5,7 +5,8 @@ class Users extends Table {
   TextColumn get email => text().nullable()();
   TextColumn get displayName => text()();
   TextColumn get avatarUrl => text().nullable()();
-  TextColumn get preferences => text().map(const JsonConverter()).withDefault(const Constant('{}'))();
+  TextColumn get preferences =>
+      text().map(const JsonConverter()).withDefault(const Constant('{}'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get lastSyncAt => dateTime().nullable()();

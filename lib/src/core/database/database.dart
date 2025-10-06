@@ -35,7 +35,7 @@ part 'database.g.dart';
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
-  
+
   // Test constructor for in-memory database
   AppDatabase.forTesting(QueryExecutor e) : super(e);
 
@@ -44,50 +44,50 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-      beforeOpen: (details) async {
-        await customStatement('PRAGMA foreign_keys = ON');
-      },
-      onCreate: (migrator) async {
-        await migrator.createAll();
-        await _insertDefaultData();
-      },
-      onUpgrade: (migrator, from, to) async {
-        if (to == 8) {
-          // Add gamification tables
-          await migrator.createTable(userAchievements);
-          await migrator.createTable(userStats);
-        } else if (to == 7) {
-          // Add exercise favorites table
-          await migrator.createTable(exerciseFavorites);
-        } else if (to == 6) {
-          // Force recreate all tables with new schema for version 6
-          await migrator.deleteTable('exercises');
-          await migrator.deleteTable('set_entries');
-          await migrator.deleteTable('workout_templates');
-          await migrator.deleteTable('workout_sessions');
-          await migrator.deleteTable('personal_records');
-          
-          await migrator.createTable(exercises);
-          await migrator.createTable(setEntries);
-          await migrator.createTable(workoutTemplates);
-          await migrator.createTable(workoutSessions);
-          await migrator.createTable(personalRecords);
-          
+        beforeOpen: (details) async {
+          await customStatement('PRAGMA foreign_keys = ON');
+        },
+        onCreate: (migrator) async {
+          await migrator.createAll();
           await _insertDefaultData();
-        } else if (to == 5) {
-          // Legacy migration for version 5
-          await migrator.deleteTable('exercises');
-          await migrator.deleteTable('set_entries');
-          await migrator.deleteTable('workout_templates');
-          
-          await migrator.createTable(exercises);
-          await migrator.createTable(setEntries);
-          await migrator.createTable(workoutTemplates);
-          
-          await _insertDefaultData();
-        }
-      },
-    );
+        },
+        onUpgrade: (migrator, from, to) async {
+          if (to == 8) {
+            // Add gamification tables
+            await migrator.createTable(userAchievements);
+            await migrator.createTable(userStats);
+          } else if (to == 7) {
+            // Add exercise favorites table
+            await migrator.createTable(exerciseFavorites);
+          } else if (to == 6) {
+            // Force recreate all tables with new schema for version 6
+            await migrator.deleteTable('exercises');
+            await migrator.deleteTable('set_entries');
+            await migrator.deleteTable('workout_templates');
+            await migrator.deleteTable('workout_sessions');
+            await migrator.deleteTable('personal_records');
+
+            await migrator.createTable(exercises);
+            await migrator.createTable(setEntries);
+            await migrator.createTable(workoutTemplates);
+            await migrator.createTable(workoutSessions);
+            await migrator.createTable(personalRecords);
+
+            await _insertDefaultData();
+          } else if (to == 5) {
+            // Legacy migration for version 5
+            await migrator.deleteTable('exercises');
+            await migrator.deleteTable('set_entries');
+            await migrator.deleteTable('workout_templates');
+
+            await migrator.createTable(exercises);
+            await migrator.createTable(setEntries);
+            await migrator.createTable(workoutTemplates);
+
+            await _insertDefaultData();
+          }
+        },
+      );
 
   // Method to force repopulate exercises (for debugging)
   Future<void> forceRepopulateExercises() async {
@@ -98,9 +98,8 @@ class AppDatabase extends _$AppDatabase {
   Future<void> _insertDefaultData() async {
     // Insert comprehensive exercise library with all categories
     final defaultExercises = [
-      
       // ===== STRENGTH TRAINING =====
-      
+
       // CHEST EXERCISES
       const ExercisesCompanion(
         id: Value('bench_press'),
@@ -121,7 +120,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('chest'),
         secondaryMuscleGroups: Value(['shoulders', 'triceps', 'core']),
         equipment: Value('bodyweight'),
-        instructions: Value('Start in plank, lower chest to ground, push back up'),
+        instructions:
+            Value('Start in plank, lower chest to ground, push back up'),
         tags: Value(['compound', 'upper_body', 'bodyweight']),
         isBodyweight: Value(true),
         exerciseType: Value('reps'),
@@ -162,7 +162,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('chest'),
         secondaryMuscleGroups: Value(['triceps', 'shoulders']),
         equipment: Value('assistance_machine'),
-        instructions: Value('Perform dips with assistance to reduce body weight'),
+        instructions:
+            Value('Perform dips with assistance to reduce body weight'),
         tags: Value(['compound', 'upper_body', 'assisted']),
         isBodyweight: Value(true),
         exerciseType: Value('assisted'),
@@ -173,7 +174,7 @@ class AppDatabase extends _$AppDatabase {
       ),
 
       // ===== CALISTHENICS =====
-      
+
       // Advanced Calisthenics
       const ExercisesCompanion(
         id: Value('muscle_up'),
@@ -181,7 +182,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('back'),
         secondaryMuscleGroups: Value(['chest', 'shoulders', 'triceps', 'core']),
         equipment: Value('pull_up_bar'),
-        instructions: Value('Pull up and transition over the bar in one fluid motion'),
+        instructions:
+            Value('Pull up and transition over the bar in one fluid motion'),
         tags: Value(['advanced', 'compound', 'explosive']),
         isBodyweight: Value(true),
         exerciseType: Value('reps'),
@@ -224,7 +226,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('shoulders'),
         secondaryMuscleGroups: Value(['chest', 'triceps', 'core', 'back']),
         equipment: Value('bodyweight'),
-        instructions: Value('Hold body horizontal with hands on ground, legs extended'),
+        instructions:
+            Value('Hold body horizontal with hands on ground, legs extended'),
         tags: Value(['expert', 'isometric', 'balance']),
         isBodyweight: Value(true),
         exerciseType: Value('timer'),
@@ -237,7 +240,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('shoulders'),
         secondaryMuscleGroups: Value(['chest', 'triceps', 'core', 'back']),
         equipment: Value('bodyweight'),
-        instructions: Value('Perfect horizontal body position with straight arms and legs'),
+        instructions: Value(
+            'Perfect horizontal body position with straight arms and legs'),
         tags: Value(['expert', 'isometric', 'balance']),
         isBodyweight: Value(true),
         exerciseType: Value('timer'),
@@ -416,7 +420,7 @@ class AppDatabase extends _$AppDatabase {
       ),
 
       // ===== YOGA EXERCISES =====
-      
+
       // Sun Salutation Series
       const ExercisesCompanion(
         id: Value('mountain_pose'),
@@ -424,7 +428,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('core'),
         secondaryMuscleGroups: Value(['legs', 'back']),
         equipment: Value('yoga_mat'),
-        instructions: Value('Stand tall with feet together, arms at sides, spine straight'),
+        instructions: Value(
+            'Stand tall with feet together, arms at sides, spine straight'),
         tags: Value(['standing', 'foundation', 'balance']),
         isBodyweight: Value(true),
         exerciseType: Value('timer'),
@@ -450,7 +455,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('back'),
         secondaryMuscleGroups: Value(['chest', 'shoulders', 'arms']),
         equipment: Value('yoga_mat'),
-        instructions: Value('Open chest, straight arms, tops of feet on ground'),
+        instructions:
+            Value('Open chest, straight arms, tops of feet on ground'),
         tags: Value(['backbend', 'chest_opener', 'strength']),
         isBodyweight: Value(true),
         exerciseType: Value('timer'),
@@ -476,7 +482,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('back'),
         secondaryMuscleGroups: Value(['hips', 'shoulders']),
         equipment: Value('yoga_mat'),
-        instructions: Value('Kneel and fold forward, arms extended or at sides'),
+        instructions:
+            Value('Kneel and fold forward, arms extended or at sides'),
         tags: Value(['restorative', 'hip_opener', 'relaxation']),
         isBodyweight: Value(true),
         exerciseType: Value('timer'),
@@ -684,7 +691,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('full_body'),
         secondaryMuscleGroups: Value(['all']),
         equipment: Value('yoga_mat'),
-        instructions: Value('Complete sequence: Mountain -> Forward Fold -> Low Push-up -> Upward Dog -> Downward Dog'),
+        instructions: Value(
+            'Complete sequence: Mountain -> Forward Fold -> Low Push-up -> Upward Dog -> Downward Dog'),
         tags: Value(['flow', 'sequence', 'vinyasa']),
         isBodyweight: Value(true),
         exerciseType: Value('reps'),
@@ -693,7 +701,7 @@ class AppDatabase extends _$AppDatabase {
       ),
 
       // ===== CARDIO/CONDITIONING =====
-      
+
       const ExercisesCompanion(
         id: Value('treadmill_walk'),
         name: Value('Treadmill Walk'),
@@ -726,7 +734,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('full_body'),
         secondaryMuscleGroups: Value(['cardiovascular']),
         equipment: Value('bodyweight'),
-        instructions: Value('Squat, jump back to plank, push-up, jump forward, jump up'),
+        instructions:
+            Value('Squat, jump back to plank, push-up, jump forward, jump up'),
         tags: Value(['cardio', 'full_body', 'explosive']),
         isBodyweight: Value(true),
         exerciseType: Value('reps'),
@@ -739,7 +748,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('core'),
         secondaryMuscleGroups: Value(['legs', 'shoulders', 'cardiovascular']),
         equipment: Value('bodyweight'),
-        instructions: Value('Plank position, alternate bringing knees to chest'),
+        instructions:
+            Value('Plank position, alternate bringing knees to chest'),
         tags: Value(['cardio', 'core', 'dynamic']),
         isBodyweight: Value(true),
         exerciseType: Value('reps'),
@@ -748,7 +758,7 @@ class AppDatabase extends _$AppDatabase {
       ),
 
       // ===== BASIC STRENGTH EXERCISES =====
-      
+
       const ExercisesCompanion(
         id: Value('pull_up'),
         name: Value('Pull-up'),
@@ -768,7 +778,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('legs'),
         secondaryMuscleGroups: Value(['glutes', 'core']),
         equipment: Value('barbell'),
-        instructions: Value('Stand with feet shoulder-width apart, squat down keeping chest up'),
+        instructions: Value(
+            'Stand with feet shoulder-width apart, squat down keeping chest up'),
         tags: Value(['compound', 'lower_body']),
         isBodyweight: Value(false),
         exerciseType: Value('reps'),
@@ -781,7 +792,8 @@ class AppDatabase extends _$AppDatabase {
         primaryMuscleGroup: Value('back'),
         secondaryMuscleGroups: Value(['legs', 'glutes', 'core']),
         equipment: Value('barbell'),
-        instructions: Value('Stand over bar, grip and lift keeping back straight'),
+        instructions:
+            Value('Stand over bar, grip and lift keeping back straight'),
         tags: Value(['compound', 'full_body']),
         isBodyweight: Value(false),
         exerciseType: Value('reps'),
@@ -812,8 +824,16 @@ class AppDatabase extends _$AppDatabase {
       const WorkoutTemplatesCompanion(
         id: Value('push_pull_legs'),
         name: Value('Push Pull Legs'),
-        description: Value('Classic 3-day split focusing on push, pull, and leg movements'),
-        exerciseIds: Value(['bench_press', 'overhead_press', 'chest_dips', 'pull_up', 'deadlift', 'squat']),
+        description: Value(
+            'Classic 3-day split focusing on push, pull, and leg movements'),
+        exerciseIds: Value([
+          'bench_press',
+          'overhead_press',
+          'chest_dips',
+          'pull_up',
+          'deadlift',
+          'squat'
+        ]),
         tags: Value(['strength', 'split', 'intermediate']),
         estimatedDurationMinutes: Value(60),
         isDefault: Value(true),
@@ -821,8 +841,10 @@ class AppDatabase extends _$AppDatabase {
       const WorkoutTemplatesCompanion(
         id: Value('calisthenics_beginner'),
         name: Value('Calisthenics Basics'),
-        description: Value('Foundation bodyweight movements for building strength'),
-        exerciseIds: Value(['push_up', 'pull_up', 'squat', 'handstand', 'burpees']),
+        description:
+            Value('Foundation bodyweight movements for building strength'),
+        exerciseIds:
+            Value(['push_up', 'pull_up', 'squat', 'handstand', 'burpees']),
         tags: Value(['calisthenics', 'bodyweight', 'beginner']),
         estimatedDurationMinutes: Value(45),
         isDefault: Value(true),
@@ -831,7 +853,13 @@ class AppDatabase extends _$AppDatabase {
         id: Value('calisthenics_advanced'),
         name: Value('Advanced Calisthenics'),
         description: Value('Advanced bodyweight skills and progressions'),
-        exerciseIds: Value(['muscle_up', 'planche', 'human_flag', 'front_lever', 'handstand_push_up']),
+        exerciseIds: Value([
+          'muscle_up',
+          'planche',
+          'human_flag',
+          'front_lever',
+          'handstand_push_up'
+        ]),
         tags: Value(['calisthenics', 'advanced', 'skills']),
         estimatedDurationMinutes: Value(60),
         isDefault: Value(true),
@@ -840,7 +868,14 @@ class AppDatabase extends _$AppDatabase {
         id: Value('yoga_flow'),
         name: Value('Morning Yoga Flow'),
         description: Value('Energizing yoga sequence to start your day'),
-        exerciseIds: Value(['mountain_pose', 'downward_dog', 'warrior_1', 'warrior_2', 'triangle_pose', 'child_pose']),
+        exerciseIds: Value([
+          'mountain_pose',
+          'downward_dog',
+          'warrior_1',
+          'warrior_2',
+          'triangle_pose',
+          'child_pose'
+        ]),
         tags: Value(['yoga', 'flexibility', 'morning']),
         estimatedDurationMinutes: Value(30),
         isDefault: Value(true),
@@ -854,15 +889,15 @@ class AppDatabase extends _$AppDatabase {
 }
 
 LazyDatabase _openConnection() => LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'gym_ai.db'));
+      final dbFolder = await getApplicationDocumentsDirectory();
+      final file = File(p.join(dbFolder.path, 'gym_ai.db'));
 
-    if (Platform.isAndroid) {
-      await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
-    }
+      if (Platform.isAndroid) {
+        await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
+      }
 
-    final cachebase = (await getTemporaryDirectory()).path;
-    sqlite3.tempDirectory = cachebase;
+      final cachebase = (await getTemporaryDirectory()).path;
+      sqlite3.tempDirectory = cachebase;
 
-    return NativeDatabase.createInBackground(file);
-  });
+      return NativeDatabase.createInBackground(file);
+    });

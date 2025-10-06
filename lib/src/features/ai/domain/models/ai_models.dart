@@ -31,14 +31,24 @@ class AISuggestion extends Equatable {
   final Map<String, dynamic>? metadata;
   final bool actionable;
 
-  factory AISuggestion.fromJson(Map<String, dynamic> json) => _$AISuggestionFromJson(json);
+  factory AISuggestion.fromJson(Map<String, dynamic> json) =>
+      _$AISuggestionFromJson(json);
   Map<String, dynamic> toJson() => _$AISuggestionToJson(this);
 
   @override
   List<Object?> get props => [
-    id, type, title, description, confidence, createdAt,
-    workoutId, exerciseId, reasoning, metadata, actionable,
-  ];
+        id,
+        type,
+        title,
+        description,
+        confidence,
+        createdAt,
+        workoutId,
+        exerciseId,
+        reasoning,
+        metadata,
+        actionable,
+      ];
 }
 
 enum SuggestionType {
@@ -86,15 +96,24 @@ class WorkoutRecommendation extends Equatable {
   final List<String>? requiredEquipment;
   final List<String>? alternatives;
 
-  factory WorkoutRecommendation.fromJson(Map<String, dynamic> json) => _$WorkoutRecommendationFromJson(json);
+  factory WorkoutRecommendation.fromJson(Map<String, dynamic> json) =>
+      _$WorkoutRecommendationFromJson(json);
   Map<String, dynamic> toJson() => _$WorkoutRecommendationToJson(this);
 
   @override
   List<Object?> get props => [
-    id, name, description, exercises, estimatedDuration,
-    difficulty, targetMuscleGroups, reasoning, confidence,
-    requiredEquipment, alternatives,
-  ];
+        id,
+        name,
+        description,
+        exercises,
+        estimatedDuration,
+        difficulty,
+        targetMuscleGroups,
+        reasoning,
+        confidence,
+        requiredEquipment,
+        alternatives,
+      ];
 }
 
 enum Difficulty {
@@ -130,14 +149,22 @@ class RecommendedExercise extends Equatable {
   final String? notes;
   final List<String>? substitutions;
 
-  factory RecommendedExercise.fromJson(Map<String, dynamic> json) => _$RecommendedExerciseFromJson(json);
+  factory RecommendedExercise.fromJson(Map<String, dynamic> json) =>
+      _$RecommendedExerciseFromJson(json);
   Map<String, dynamic> toJson() => _$RecommendedExerciseToJson(this);
 
   @override
   List<Object?> get props => [
-    exerciseId, name, sets, reps, weight, rpe,
-    restSeconds, notes, substitutions,
-  ];
+        exerciseId,
+        name,
+        sets,
+        reps,
+        weight,
+        rpe,
+        restSeconds,
+        notes,
+        substitutions,
+      ];
 }
 
 @JsonSerializable()
@@ -166,15 +193,23 @@ class ProgressiveOverloadSuggestion extends Equatable {
   final double confidence;
   final String? timeframe;
 
-  factory ProgressiveOverloadSuggestion.fromJson(Map<String, dynamic> json) => _$ProgressiveOverloadSuggestionFromJson(json);
+  factory ProgressiveOverloadSuggestion.fromJson(Map<String, dynamic> json) =>
+      _$ProgressiveOverloadSuggestionFromJson(json);
   Map<String, dynamic> toJson() => _$ProgressiveOverloadSuggestionToJson(this);
 
   @override
   List<Object?> get props => [
-    exerciseId, currentWeight, currentReps, currentSets,
-    suggestedWeight, suggestedReps, suggestedSets,
-    reasoning, confidence, timeframe,
-  ];
+        exerciseId,
+        currentWeight,
+        currentReps,
+        currentSets,
+        suggestedWeight,
+        suggestedReps,
+        suggestedSets,
+        reasoning,
+        confidence,
+        timeframe,
+      ];
 }
 
 @JsonSerializable()
@@ -201,15 +236,22 @@ class RecoveryAnalysis extends Equatable {
   final double? stressLevel; // 0.0 to 1.0
   final double? nutritionScore; // 0.0 to 1.0
 
-  factory RecoveryAnalysis.fromJson(Map<String, dynamic> json) => _$RecoveryAnalysisFromJson(json);
+  factory RecoveryAnalysis.fromJson(Map<String, dynamic> json) =>
+      _$RecoveryAnalysisFromJson(json);
   Map<String, dynamic> toJson() => _$RecoveryAnalysisToJson(this);
 
   @override
   List<Object?> get props => [
-    userId, analysisDate, fatigueLevel, recoveryScore,
-    recommendations, nextWorkoutSuggestion, sleepQuality,
-    stressLevel, nutritionScore,
-  ];
+        userId,
+        analysisDate,
+        fatigueLevel,
+        recoveryScore,
+        recommendations,
+        nextWorkoutSuggestion,
+        sleepQuality,
+        stressLevel,
+        nutritionScore,
+      ];
 }
 
 enum FatigueLevel {
@@ -237,7 +279,8 @@ class RecoveryRecommendation extends Equatable {
   final String description;
   final Priority priority;
 
-  factory RecoveryRecommendation.fromJson(Map<String, dynamic> json) => _$RecoveryRecommendationFromJson(json);
+  factory RecoveryRecommendation.fromJson(Map<String, dynamic> json) =>
+      _$RecoveryRecommendationFromJson(json);
   Map<String, dynamic> toJson() => _$RecoveryRecommendationToJson(this);
 
   @override

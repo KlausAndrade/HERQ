@@ -9,10 +9,12 @@ class WorkoutTemplatesScreen extends ConsumerStatefulWidget {
   const WorkoutTemplatesScreen({super.key});
 
   @override
-  ConsumerState<WorkoutTemplatesScreen> createState() => _WorkoutTemplatesScreenState();
+  ConsumerState<WorkoutTemplatesScreen> createState() =>
+      _WorkoutTemplatesScreenState();
 }
 
-class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen> {
+class _WorkoutTemplatesScreenState
+    extends ConsumerState<WorkoutTemplatesScreen> {
   String? _selectedCategory;
   bool _isEditing = false;
 
@@ -73,11 +75,12 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
                 loading: () => const SizedBox(height: 48),
                 error: (_, __) => const SizedBox(height: 48),
               ),
-              
+
               // Templates List
               Expanded(
                 child: _selectedCategory != null
-                    ? _buildCategoryTemplates(templatesByCategory[_selectedCategory] ?? [])
+                    ? _buildCategoryTemplates(
+                        templatesByCategory[_selectedCategory] ?? [])
                     : _buildAllTemplates(templatesByCategory),
               ),
             ],
@@ -99,7 +102,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
           if (index == 0) {
             return _buildCategoryTab('All', _selectedCategory == null);
           }
-          
+
           final category = categories[index - 1];
           return _buildCategoryTab(category, _selectedCategory == category);
         },
@@ -115,29 +118,32 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
         selected: isSelected,
         onSelected: (selected) {
           setState(() {
-            _selectedCategory = selected ? (category == 'All' ? null : category) : null;
+            _selectedCategory =
+                selected ? (category == 'All' ? null : category) : null;
           });
         },
       ),
     );
   }
 
-  Widget _buildAllTemplates(Map<String, List<WorkoutTemplate>> templatesByCategory) {
+  Widget _buildAllTemplates(
+      Map<String, List<WorkoutTemplate>> templatesByCategory) {
     final sortedCategories = templatesByCategory.keys.toList()..sort();
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: sortedCategories.length,
       itemBuilder: (context, index) {
         final category = sortedCategories[index];
         final templates = templatesByCategory[category]!;
-        
+
         return _buildCategorySection(category, templates);
       },
     );
   }
 
-  Widget _buildCategorySection(String category, List<WorkoutTemplate> templates) {
+  Widget _buildCategorySection(
+      String category, List<WorkoutTemplate> templates) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -148,8 +154,8 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
               Text(
                 category,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
               const Spacer(),
               if (_isEditing)
@@ -187,8 +193,11 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
             Text(
               'Create a new template to get started',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-              ),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
+                  ),
             ),
           ],
         ),
@@ -218,7 +227,8 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: _getCategoryColor(template.category).withOpacity(0.1),
+                      color:
+                          _getCategoryColor(template.category).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -234,17 +244,24 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
                       children: [
                         Text(
                           template.name,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                         if (template.description?.isNotEmpty == true) ...[
                           const SizedBox(height: 4),
                           Text(
                             template.description!,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.7),
+                                ),
                           ),
                         ],
                       ],
@@ -285,7 +302,10 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
                   Icon(
                     Icons.schedule,
                     size: 16,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -293,30 +313,40 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
                         ? '${template.estimatedDurationMinutes} min'
                         : 'No duration set',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                    ),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.7),
+                        ),
                   ),
                   const Spacer(),
                   Text(
                     '${template.exerciseIds.length} exercises',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                    ),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.7),
+                        ),
                   ),
                   if (template.isDefault) ...[
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .secondary
+                            .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         'DEFAULT',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ),
                   ],
@@ -350,8 +380,11 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
             Text(
               'Create your first template to get started with structured workouts',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-              ),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -372,47 +405,47 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
   }
 
   Widget _buildBottomNavigation(BuildContext context) => BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 1,
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            context.go('/');
-            break;
-          case 1:
-            // Already on templates screen
-            break;
-          case 2:
-            context.go('/exercises');
-            break;
-          case 3:
-            context.go('/progress');
-            break;
-        }
-      },
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.fitness_center_outlined),
-          activeIcon: Icon(Icons.fitness_center),
-          label: 'Workouts',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search_outlined),
-          activeIcon: Icon(Icons.search),
-          label: 'Exercises',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.trending_up_outlined),
-          activeIcon: Icon(Icons.trending_up),
-          label: 'Progress',
-        ),
-      ],
-    );
+        type: BottomNavigationBarType.fixed,
+        currentIndex: 1,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              context.go('/');
+              break;
+            case 1:
+              // Already on templates screen
+              break;
+            case 2:
+              context.go('/exercises');
+              break;
+            case 3:
+              context.go('/progress');
+              break;
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center_outlined),
+            activeIcon: Icon(Icons.fitness_center),
+            label: 'Workouts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search_outlined),
+            activeIcon: Icon(Icons.search),
+            label: 'Exercises',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.trending_up_outlined),
+            activeIcon: Icon(Icons.trending_up),
+            label: 'Progress',
+          ),
+        ],
+      );
 
   void _startWorkout(String templateId) {
     context.go('/active-workout?templateId=$templateId');
@@ -491,7 +524,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
 
   void _showRenameDialog(BuildContext context, WorkoutTemplate template) {
     final controller = TextEditingController(text: template.name);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -524,7 +557,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
 
   void _showDuplicateDialog(BuildContext context, WorkoutTemplate template) {
     final controller = TextEditingController(text: '${template.name} (Copy)');
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -557,7 +590,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
 
   void _showMoveCategoryDialog(BuildContext context, WorkoutTemplate template) {
     String selectedCategory = template.category;
-    
+
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -565,7 +598,15 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
           title: const Text('Move to Category'),
           content: DropdownButtonFormField<String>(
             value: selectedCategory,
-            items: ['Custom', 'Push Pull Legs', 'Full Body', 'Upper Lower', 'PHUL', 'Strength', 'Bodybuilding']
+            items: [
+              'Custom',
+              'Push Pull Legs',
+              'Full Body',
+              'Upper Lower',
+              'PHUL',
+              'Strength',
+              'Bodybuilding'
+            ]
                 .map((category) => DropdownMenuItem(
                       value: category,
                       child: Text(category),
@@ -600,7 +641,8 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Template'),
-        content: Text('Are you sure you want to delete "${template.name}"? This action cannot be undone.'),
+        content: Text(
+            'Are you sure you want to delete "${template.name}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -622,7 +664,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
   void _renameTemplate(String templateId, String newName) async {
     final actions = ref.read(templateActionsProvider);
     final success = await actions.renameTemplate(templateId, newName);
-    
+
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
@@ -636,7 +678,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
   void _duplicateTemplate(String templateId, String newName) async {
     final actions = ref.read(templateActionsProvider);
     final success = await actions.duplicateTemplate(templateId, newName);
-    
+
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
@@ -650,7 +692,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
   void _moveTemplate(String templateId, String newCategory) async {
     final actions = ref.read(templateActionsProvider);
     final success = await actions.moveTemplate(templateId, newCategory, 0);
-    
+
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
@@ -664,7 +706,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
   void _deleteTemplate(String templateId) async {
     final actions = ref.read(templateActionsProvider);
     final success = await actions.deleteTemplate(templateId);
-    
+
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
@@ -678,12 +720,13 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
   void _initializeDefaultTemplates() async {
     final actions = ref.read(templateActionsProvider);
     final success = await actions.initializeDefaultTemplates();
-    
+
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Default templates loaded successfully')),
+          const SnackBar(
+              content: Text('Default templates loaded successfully')),
         );
       }
     }

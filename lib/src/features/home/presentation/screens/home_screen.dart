@@ -11,192 +11,199 @@ import '../../../gamification/presentation/widgets/gamification_widgets.dart';
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-    @override
+  @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Welcome back!',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Welcome back!',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Ready for your next workout?',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Ready for your next workout?',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.7),
+                                  ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  // Gamification badges
-                  const StreakBadge(size: 36, showText: true),
-                  const SizedBox(width: 12),
-                  const LevelIndicator(size: 48, showProgress: false),
-                  const SizedBox(width: 12),
-                  IconButton(
-                    onPressed: () => context.go('/settings'),
-                    icon: const Icon(Icons.settings_outlined),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
+                      ],
+                    ),
+                    const Spacer(),
+                    // Gamification badges
+                    const StreakBadge(size: 36, showText: true),
+                    const SizedBox(width: 12),
+                    const LevelIndicator(size: 48, showProgress: false),
+                    const SizedBox(width: 12),
+                    IconButton(
+                      onPressed: () => context.go('/settings'),
+                      icon: const Icon(Icons.settings_outlined),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
 
-              // Quick Actions
-              _buildQuickActions(context),
-              const SizedBox(height: 24),
+                // Quick Actions
+                _buildQuickActions(context),
+                const SizedBox(height: 24),
 
-              // Current Stats
-              _buildCurrentStats(context, ref),
-              const SizedBox(height: 24),
+                // Current Stats
+                _buildCurrentStats(context, ref),
+                const SizedBox(height: 24),
 
-              // Recent Workouts
-              _buildRecentWorkouts(context, ref),
-            ],
+                // Recent Workouts
+                _buildRecentWorkouts(context, ref),
+              ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: _buildBottomNavigation(context),
-    );
+        bottomNavigationBar: _buildBottomNavigation(context),
+      );
 
   Widget _buildQuickActions(BuildContext context) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Quick Actions',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Quick Actions',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _QuickActionCard(
-                title: 'Start Workout',
-                subtitle: 'Begin a new session',
-                icon: Icons.play_arrow,
-                color: AppTheme.primaryColor,
-                onTap: () => context.go('/workout-templates'),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickActionCard(
+                  title: 'Start Workout',
+                  subtitle: 'Begin a new session',
+                  icon: Icons.play_arrow,
+                  color: AppTheme.primaryColor,
+                  onTap: () => context.go('/workout-templates'),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _QuickActionCard(
-                title: 'Achievements',
-                subtitle: 'Track your progress',
-                icon: Icons.emoji_events,
-                color: Colors.amber,
-                onTap: () => context.go('/gamification'),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _QuickActionCard(
+                  title: 'Achievements',
+                  subtitle: 'Track your progress',
+                  icon: Icons.emoji_events,
+                  color: Colors.amber,
+                  onTap: () => context.go('/gamification'),
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _QuickActionCard(
-                title: 'View Progress',
-                subtitle: 'Check your stats',
-                icon: Icons.trending_up,
-                color: AppTheme.secondaryColor,
-                onTap: () => context.go('/progress'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickActionCard(
+                  title: 'View Progress',
+                  subtitle: 'Check your stats',
+                  icon: Icons.trending_up,
+                  color: AppTheme.secondaryColor,
+                  onTap: () => context.go('/progress'),
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _QuickActionCard(
-                title: 'Exercise Library',
-                subtitle: 'Browse exercises',
-                icon: Icons.fitness_center,
-                color: AppTheme.accentColor,
-                onTap: () => context.go('/exercises'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickActionCard(
+                  title: 'Exercise Library',
+                  subtitle: 'Browse exercises',
+                  icon: Icons.fitness_center,
+                  color: AppTheme.accentColor,
+                  onTap: () => context.go('/exercises'),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _QuickActionCard(
-                title: 'History',
-                subtitle: 'Past workouts',
-                icon: Icons.history,
-                color: Colors.purple,
-                onTap: () => context.go('/workout-history'),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _QuickActionCard(
+                  title: 'History',
+                  subtitle: 'Past workouts',
+                  icon: Icons.history,
+                  color: Colors.purple,
+                  onTap: () => context.go('/workout-history'),
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _QuickActionCard(
-                title: 'Social Feed',
-                subtitle: 'Friends & activity',
-                icon: Icons.people,
-                color: Colors.blue,
-                onTap: () => context.go('/social'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickActionCard(
+                  title: 'Social Feed',
+                  subtitle: 'Friends & activity',
+                  icon: Icons.people,
+                  color: Colors.blue,
+                  onTap: () => context.go('/social'),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _QuickActionCard(
-                title: 'Leaderboards',
-                subtitle: 'Compare & compete',
-                icon: Icons.emoji_events,
-                color: Colors.amber,
-                onTap: () => context.go('/leaderboards'),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _QuickActionCard(
+                  title: 'Leaderboards',
+                  subtitle: 'Compare & compete',
+                  icon: Icons.emoji_events,
+                  color: Colors.amber,
+                  onTap: () => context.go('/leaderboards'),
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _QuickActionCard(
-                title: 'AI Coach',
-                subtitle: 'Smart recommendations',
-                icon: Icons.psychology,
-                color: Colors.teal,
-                onTap: () => context.go('/ai-coach'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickActionCard(
+                  title: 'AI Coach',
+                  subtitle: 'Smart recommendations',
+                  icon: Icons.psychology,
+                  color: Colors.teal,
+                  onTap: () => context.go('/ai-coach'),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _QuickActionCard(
-                title: 'Settings',
-                subtitle: 'App preferences',
-                icon: Icons.settings,
-                color: Colors.grey,
-                onTap: () => context.go('/settings'),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _QuickActionCard(
+                  title: 'Settings',
+                  subtitle: 'App preferences',
+                  icon: Icons.settings,
+                  color: Colors.grey,
+                  onTap: () => context.go('/settings'),
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
-    );
+            ],
+          ),
+        ],
+      );
 
   Widget _buildCurrentStats(BuildContext context, WidgetRef ref) {
     final weeklyStatsAsync = ref.watch(weeklyStatsProvider);
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -206,8 +213,8 @@ class HomeScreen extends ConsumerWidget {
             Text(
               'This Week',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const SizedBox(height: 16),
             weeklyStatsAsync.when(
@@ -295,7 +302,7 @@ class HomeScreen extends ConsumerWidget {
 
   Widget _buildRecentWorkouts(BuildContext context, WidgetRef ref) {
     final recentWorkoutsAsync = ref.watch(recentWorkoutSessionsProvider);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -304,8 +311,8 @@ class HomeScreen extends ConsumerWidget {
             Text(
               'Recent Workouts',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const Spacer(),
             TextButton(
@@ -336,8 +343,8 @@ class HomeScreen extends ConsumerWidget {
                       Text(
                         'Start your first workout to see your progress here',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -345,9 +352,10 @@ class HomeScreen extends ConsumerWidget {
                 ),
               );
             }
-            
-            final displayWorkouts = workouts.take(AppConfig.homeRecentWorkoutsLimit).toList();
-            
+
+            final displayWorkouts =
+                workouts.take(AppConfig.homeRecentWorkoutsLimit).toList();
+
             return ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -355,15 +363,17 @@ class HomeScreen extends ConsumerWidget {
               separatorBuilder: (context, index) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final workout = displayWorkouts[index];
-                final duration = workout.completedAt != null 
+                final duration = workout.completedAt != null
                     ? workout.completedAt!.difference(workout.startedAt)
                     : Duration.zero;
-                
+
                 return _RecentWorkoutCard(
                   workoutId: workout.id,
                   name: workout.name,
                   date: DateFormat('MMM d').format(workout.startedAt),
-                  duration: duration.inMinutes > 0 ? '${duration.inMinutes}m' : 'In progress',
+                  duration: duration.inMinutes > 0
+                      ? '${duration.inMinutes}m'
+                      : 'In progress',
                   onTap: () => context.go('/workout-detail/${workout.id}'),
                 );
               },
@@ -393,51 +403,50 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildBottomNavigation(BuildContext context) => BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 0,
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            context.go('/');
-            break;
-          case 1:
-            context.go('/workout-templates');
-            break;
-          case 2:
-            context.go('/exercises');
-            break;
-          case 3:
-            context.go('/progress');
-            break;
-        }
-      },
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.fitness_center_outlined),
-          activeIcon: Icon(Icons.fitness_center),
-          label: 'Workouts',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search_outlined),
-          activeIcon: Icon(Icons.search),
-          label: 'Exercises',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.trending_up_outlined),
-          activeIcon: Icon(Icons.trending_up),
-          label: 'Progress',
-        ),
-      ],
-    );
+        type: BottomNavigationBarType.fixed,
+        currentIndex: 0,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              context.go('/');
+              break;
+            case 1:
+              context.go('/workout-templates');
+              break;
+            case 2:
+              context.go('/exercises');
+              break;
+            case 3:
+              context.go('/progress');
+              break;
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center_outlined),
+            activeIcon: Icon(Icons.fitness_center),
+            label: 'Workouts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search_outlined),
+            activeIcon: Icon(Icons.search),
+            label: 'Exercises',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.trending_up_outlined),
+            activeIcon: Icon(Icons.trending_up),
+            label: 'Progress',
+          ),
+        ],
+      );
 }
 
 class _QuickActionCard extends StatelessWidget {
-
   const _QuickActionCard({
     required this.title,
     required this.subtitle,
@@ -453,49 +462,51 @@ class _QuickActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 24,
+                  ),
                 ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 24,
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
+                      ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
 }
 
 class _StatItem extends StatelessWidget {
-
   const _StatItem({
     required this.label,
     required this.value,
@@ -507,33 +518,33 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-      children: [
-        Icon(
-          icon,
-          size: 24,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+        children: [
+          Icon(
+            icon,
+            size: 24,
+            color: Theme.of(context).colorScheme.primary,
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      );
 }
 
 class _RecentWorkoutCard extends ConsumerWidget {
-
   const _RecentWorkoutCard({
     required this.workoutId,
     required this.name,
@@ -541,7 +552,7 @@ class _RecentWorkoutCard extends ConsumerWidget {
     required this.duration,
     this.onTap,
   });
-  
+
   final String workoutId;
   final String name;
   final String date;
@@ -550,7 +561,8 @@ class _RecentWorkoutCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final exerciseCountAsync = ref.watch(exerciseCountBySessionProvider(workoutId));
+    final exerciseCountAsync =
+        ref.watch(exerciseCountBySessionProvider(workoutId));
 
     return Card(
       child: ListTile(
@@ -578,8 +590,8 @@ class _RecentWorkoutCard extends ConsumerWidget {
         trailing: Text(
           date,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-          ),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              ),
         ),
         onTap: onTap,
       ),

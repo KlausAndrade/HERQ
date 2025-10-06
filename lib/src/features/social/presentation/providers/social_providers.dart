@@ -9,7 +9,9 @@ final socialServiceProvider = Provider<SocialService>((ref) {
 });
 
 // User search provider
-final userSearchProvider = StateNotifierProvider<UserSearchNotifier, AsyncValue<List<UserProfile>>>((ref) {
+final userSearchProvider =
+    StateNotifierProvider<UserSearchNotifier, AsyncValue<List<UserProfile>>>(
+        (ref) {
   return UserSearchNotifier(ref.read(socialServiceProvider));
 });
 
@@ -25,7 +27,7 @@ class UserSearchNotifier extends StateNotifier<AsyncValue<List<UserProfile>>> {
     }
 
     state = const AsyncValue.loading();
-    
+
     try {
       final users = await _socialService.searchUsers(query);
       state = AsyncValue.data(users);
@@ -40,31 +42,36 @@ class UserSearchNotifier extends StateNotifier<AsyncValue<List<UserProfile>>> {
 }
 
 // Friends provider
-final friendsProvider = FutureProvider.family<List<UserProfile>, String>((ref, userId) async {
+final friendsProvider =
+    FutureProvider.family<List<UserProfile>, String>((ref, userId) async {
   final socialService = ref.read(socialServiceProvider);
   return socialService.getFriends(userId);
 });
 
 // Friend requests provider
-final friendRequestsProvider = FutureProvider.family<List<FriendConnection>, String>((ref, userId) async {
+final friendRequestsProvider =
+    FutureProvider.family<List<FriendConnection>, String>((ref, userId) async {
   final socialService = ref.read(socialServiceProvider);
   return socialService.getFriendRequests(userId);
 });
 
 // Social feed provider
-final socialFeedProvider = FutureProvider.family<List<FeedItem>, String>((ref, userId) async {
+final socialFeedProvider =
+    FutureProvider.family<List<FeedItem>, String>((ref, userId) async {
   final socialService = ref.read(socialServiceProvider);
   return socialService.getFeed(userId);
 });
 
 // Leaderboards provider
-final leaderboardProvider = FutureProvider.family<Leaderboard, LeaderboardParams>((ref, params) async {
+final leaderboardProvider =
+    FutureProvider.family<Leaderboard, LeaderboardParams>((ref, params) async {
   final socialService = ref.read(socialServiceProvider);
   return socialService.getLeaderboard(params.type, params.period);
 });
 
 // User achievements provider
-final userAchievementsProvider = FutureProvider.family<List<Achievement>, String>((ref, userId) async {
+final userAchievementsProvider =
+    FutureProvider.family<List<Achievement>, String>((ref, userId) async {
   final socialService = ref.read(socialServiceProvider);
   return socialService.getUserAchievements(userId);
 });

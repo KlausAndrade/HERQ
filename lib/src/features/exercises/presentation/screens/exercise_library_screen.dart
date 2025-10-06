@@ -10,7 +10,8 @@ class ExerciseLibraryScreen extends ConsumerStatefulWidget {
   const ExerciseLibraryScreen({super.key});
 
   @override
-  ConsumerState<ExerciseLibraryScreen> createState() => _ExerciseLibraryScreenState();
+  ConsumerState<ExerciseLibraryScreen> createState() =>
+      _ExerciseLibraryScreenState();
 }
 
 class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
@@ -24,7 +25,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
   Widget build(BuildContext context) {
     final muscleGroupsAsync = ref.watch(muscleGroupsProvider);
     final categoriesAsync = ref.watch(exerciseCategoriesProvider);
-    
+
     final exercisesAsync = _getFilteredExercises();
 
     return Scaffold(
@@ -78,7 +79,12 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                           Icon(
                             Icons.favorite,
                             size: 20,
-                            color: _showOnlyFavorites ? Colors.red : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                            color: _showOnlyFavorites
+                                ? Colors.red
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.6),
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -121,7 +127,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                
+
                 // Category Filter Chips
                 categoriesAsync.when(
                   data: (categories) => SizedBox(
@@ -139,7 +145,8 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                             onSelected: (selected) {
                               setState(() {
                                 _selectedCategory = category;
-                                _selectedMuscleGroup = 'All'; // Reset muscle group filter
+                                _selectedMuscleGroup =
+                                    'All'; // Reset muscle group filter
                               });
                             },
                             avatar: _getCategoryIcon(category),
@@ -151,9 +158,9 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                   loading: () => const SizedBox(height: 40),
                   error: (error, stack) => const SizedBox(height: 40),
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // Muscle Group Filter Chips
                 muscleGroupsAsync.when(
                   data: (muscleGroups) => SizedBox(
@@ -171,7 +178,8 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                             onSelected: (selected) {
                               setState(() {
                                 _selectedMuscleGroup = group;
-                                _selectedCategory = 'All'; // Reset category filter
+                                _selectedCategory =
+                                    'All'; // Reset category filter
                               });
                             },
                           ),
@@ -263,65 +271,76 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
       return favoritesAsync.when(
         data: (exercises) {
           var filtered = exercises;
-          
+
           // Apply category filter
           if (_selectedCategory != 'All') {
-            filtered = filtered.where((e) => e.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
+            filtered = filtered
+                .where((e) =>
+                    e.category.toLowerCase() == _selectedCategory.toLowerCase())
+                .toList();
           }
-          
+
           // Apply muscle group filter
           if (_selectedMuscleGroup != 'All') {
-            filtered = filtered.where((e) => e.primaryMuscleGroup.toLowerCase() == _selectedMuscleGroup.toLowerCase()).toList();
+            filtered = filtered
+                .where((e) =>
+                    e.primaryMuscleGroup.toLowerCase() ==
+                    _selectedMuscleGroup.toLowerCase())
+                .toList();
           }
-          
+
           // Apply search query
           if (_searchQuery.isNotEmpty) {
             final query = _searchQuery.toLowerCase();
-            filtered = filtered.where((e) => 
-              e.name.toLowerCase().contains(query) ||
-              e.primaryMuscleGroup.toLowerCase().contains(query) ||
-              e.equipment.toLowerCase().contains(query)
-            ).toList();
+            filtered = filtered
+                .where((e) =>
+                    e.name.toLowerCase().contains(query) ||
+                    e.primaryMuscleGroup.toLowerCase().contains(query) ||
+                    e.equipment.toLowerCase().contains(query))
+                .toList();
           }
-          
+
           // Apply variants filter
           if (!_showVariants) {
-            filtered = filtered.where((e) => e.parentExerciseId == null).toList();
+            filtered =
+                filtered.where((e) => e.parentExerciseId == null).toList();
           }
-          
+
           return AsyncValue.data(filtered);
         },
         loading: () => const AsyncValue.loading(),
         error: (error, stack) => AsyncValue.error(error, stack),
       );
     }
-    
+
     if (_searchQuery.isNotEmpty) {
       return ref.watch(exerciseSearchProvider(_searchQuery));
     }
-    
+
     if (_selectedCategory != 'All') {
-      final categoryExercises = ref.watch(exercisesByCategoryProvider(_selectedCategory.toLowerCase()));
+      final categoryExercises = ref
+          .watch(exercisesByCategoryProvider(_selectedCategory.toLowerCase()));
       if (!_showVariants) {
-        return categoryExercises.whenData((exercises) => 
-          exercises.where((e) => e.parentExerciseId == null).toList());
+        return categoryExercises.whenData((exercises) =>
+            exercises.where((e) => e.parentExerciseId == null).toList());
       }
       return categoryExercises;
     }
-    
+
     if (_selectedMuscleGroup != 'All') {
-      final muscleExercises = ref.watch(exercisesByMuscleGroupProvider(_selectedMuscleGroup.toLowerCase()));
+      final muscleExercises = ref.watch(
+          exercisesByMuscleGroupProvider(_selectedMuscleGroup.toLowerCase()));
       if (!_showVariants) {
-        return muscleExercises.whenData((exercises) => 
-          exercises.where((e) => e.parentExerciseId == null).toList());
+        return muscleExercises.whenData((exercises) =>
+            exercises.where((e) => e.parentExerciseId == null).toList());
       }
       return muscleExercises;
     }
-    
+
     final allExercises = ref.watch(exercisesProvider);
     if (!_showVariants) {
-      return allExercises.whenData((exercises) => 
-        exercises.where((e) => e.parentExerciseId == null).toList());
+      return allExercises.whenData((exercises) =>
+          exercises.where((e) => e.parentExerciseId == null).toList());
     }
     return allExercises;
   }
@@ -350,12 +369,13 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
               Text(
                 'Exercise Progressions',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 16),
               Expanded(
-                child: _ExerciseProgressionsView(scrollController: scrollController),
+                child: _ExerciseProgressionsView(
+                    scrollController: scrollController),
               ),
             ],
           ),
@@ -365,47 +385,47 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
   }
 
   Widget _buildBottomNavigation(BuildContext context) => BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 2,
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            context.go('/');
-            break;
-          case 1:
-            context.go('/workout-templates');
-            break;
-          case 2:
-            context.go('/exercises');
-            break;
-          case 3:
-            context.go('/progress');
-            break;
-        }
-      },
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.fitness_center_outlined),
-          activeIcon: Icon(Icons.fitness_center),
-          label: 'Workouts',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search_outlined),
-          activeIcon: Icon(Icons.search),
-          label: 'Exercises',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.trending_up_outlined),
-          activeIcon: Icon(Icons.trending_up),
-          label: 'Progress',
-        ),
-      ],
-    );
+        type: BottomNavigationBarType.fixed,
+        currentIndex: 2,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              context.go('/');
+              break;
+            case 1:
+              context.go('/workout-templates');
+              break;
+            case 2:
+              context.go('/exercises');
+              break;
+            case 3:
+              context.go('/progress');
+              break;
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center_outlined),
+            activeIcon: Icon(Icons.fitness_center),
+            label: 'Workouts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search_outlined),
+            activeIcon: Icon(Icons.search),
+            label: 'Exercises',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.trending_up_outlined),
+            activeIcon: Icon(Icons.trending_up),
+            label: 'Progress',
+          ),
+        ],
+      );
 }
 
 class _ExerciseCard extends StatelessWidget {
@@ -419,85 +439,87 @@ class _ExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: _getCategoryColor(context, exercise.category),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            _getCategoryIcon(exercise.category),
-            color: Colors.white,
-            size: 20,
-          ),
-        ),
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(
-                exercise.name,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
+        margin: const EdgeInsets.only(bottom: 8),
+        child: ListTile(
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: _getCategoryColor(context, exercise.category),
+              borderRadius: BorderRadius.circular(8),
             ),
-            if (exercise.parentExerciseId != null) ...[
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: _getVariantColor(context, exercise.variantType),
-                  borderRadius: BorderRadius.circular(4),
-                ),
+            child: Icon(
+              _getCategoryIcon(exercise.category),
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          title: Row(
+            children: [
+              Expanded(
                 child: Text(
-                  exercise.variantType?.toUpperCase() ?? 'VARIANT',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  exercise.name,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+              if (exercise.parentExerciseId != null) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: _getVariantColor(context, exercise.variantType),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    exercise.variantType?.toUpperCase() ?? 'VARIANT',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${exercise.primaryMuscleGroup[0].toUpperCase() + exercise.primaryMuscleGroup.substring(1)} • ${exercise.equipment[0].toUpperCase() + exercise.equipment.substring(1).replaceAll('_', ' ')}',
-            ),
-            const SizedBox(height: 4),
-            Wrap(
-              spacing: 8,
-              runSpacing: 4,
-              children: [
-                _DifficultyChip(difficulty: exercise.difficulty),
-                _ExerciseTypeChip(type: exercise.exerciseType),
-                if (exercise.isBodyweight)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      'BODYWEIGHT',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${exercise.primaryMuscleGroup[0].toUpperCase() + exercise.primaryMuscleGroup.substring(1)} • ${exercise.equipment[0].toUpperCase() + exercise.equipment.substring(1).replaceAll('_', ' ')}',
+              ),
+              const SizedBox(height: 4),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  _DifficultyChip(difficulty: exercise.difficulty),
+                  _ExerciseTypeChip(type: exercise.exerciseType),
+                  if (exercise.isBodyweight)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text(
+                        'BODYWEIGHT',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: onTap,
         ),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
-      ),
-    );
+      );
 
   IconData _getCategoryIcon(String? category) {
     switch (category?.toLowerCase()) {
@@ -684,21 +706,25 @@ class _ExerciseProgressionsView extends ConsumerWidget {
                         Expanded(
                           child: Text(
                             parent.name,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ),
                         Text(
                           '${variants.length + 1} variations',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey,
+                                  ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    
+
                     // Parent exercise
                     _ProgressionItem(
                       exercise: parent,
@@ -708,16 +734,18 @@ class _ExerciseProgressionsView extends ConsumerWidget {
                         context.go('/exercise/${parent.id}');
                       },
                     ),
-                    
+
                     // Variants
-                    ...variants.map((variant) => _ProgressionItem(
-                      exercise: variant,
-                      isParent: false,
-                      onTap: () {
-                        Navigator.pop(context);
-                        context.go('/exercise/${variant.id}');
-                      },
-                    )).toList(),
+                    ...variants
+                        .map((variant) => _ProgressionItem(
+                              exercise: variant,
+                              isParent: false,
+                              onTap: () {
+                                Navigator.pop(context);
+                                context.go('/exercise/${variant.id}');
+                              },
+                            ))
+                        .toList(),
                   ],
                 ),
               ),
@@ -784,7 +812,7 @@ class _ProgressionItem extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isParent 
+            color: isParent
                 ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
                 : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
@@ -809,7 +837,8 @@ class _ProgressionItem extends StatelessWidget {
                     Text(
                       exercise.name,
                       style: TextStyle(
-                        fontWeight: isParent ? FontWeight.bold : FontWeight.w500,
+                        fontWeight:
+                            isParent ? FontWeight.bold : FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -820,7 +849,8 @@ class _ProgressionItem extends StatelessWidget {
                         _DifficultyChip(difficulty: exercise.difficulty),
                         if (!isParent && exercise.variantType != null)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: _getVariantColor(exercise.variantType),
                               borderRadius: BorderRadius.circular(4),
@@ -874,21 +904,21 @@ class ExerciseSearchDelegate extends SearchDelegate<String> {
 
   @override
   List<Widget> buildActions(BuildContext context) => [
-    IconButton(
-      onPressed: () {
-        query = '';
-      },
-      icon: const Icon(Icons.clear),
-    ),
-  ];
+        IconButton(
+          onPressed: () {
+            query = '';
+          },
+          icon: const Icon(Icons.clear),
+        ),
+      ];
 
   @override
   Widget buildLeading(BuildContext context) => IconButton(
-    onPressed: () {
-      close(context, '');
-    },
-    icon: const Icon(Icons.arrow_back),
-  );
+        onPressed: () {
+          close(context, '');
+        },
+        icon: const Icon(Icons.arrow_back),
+      );
 
   @override
   Widget buildResults(BuildContext context) => _buildSearchResults();
@@ -921,7 +951,9 @@ class ExerciseSearchDelegate extends SearchDelegate<String> {
                 final exercise = exercises[index];
                 return ListTile(
                   leading: Icon(
-                    exercise.isBodyweight ? Icons.accessibility : Icons.fitness_center,
+                    exercise.isBodyweight
+                        ? Icons.accessibility
+                        : Icons.fitness_center,
                   ),
                   title: Text(exercise.name),
                   subtitle: Text(

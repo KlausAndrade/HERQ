@@ -35,7 +35,8 @@ class UserProfile extends Equatable {
   final bool isPublic;
   final UserPreferences? preferences;
 
-  factory UserProfile.fromJson(Map<String, dynamic> json) => _$UserProfileFromJson(json);
+  factory UserProfile.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileFromJson(json);
   Map<String, dynamic> toJson() => _$UserProfileToJson(this);
 
   UserProfile copyWith({
@@ -72,10 +73,20 @@ class UserProfile extends Equatable {
 
   @override
   List<Object?> get props => [
-    id, displayName, email, avatarUrl, bio, location,
-    joinedAt, totalWorkouts, totalVolume, currentStreak,
-    maxStreak, isPublic, preferences,
-  ];
+        id,
+        displayName,
+        email,
+        avatarUrl,
+        bio,
+        location,
+        joinedAt,
+        totalWorkouts,
+        totalVolume,
+        currentStreak,
+        maxStreak,
+        isPublic,
+        preferences,
+      ];
 }
 
 @JsonSerializable()
@@ -96,7 +107,8 @@ class UserPreferences extends Equatable {
   final bool notifyOnFriendPR;
   final bool notifyOnFriendWorkout;
 
-  factory UserPreferences.fromJson(Map<String, dynamic> json) => _$UserPreferencesFromJson(json);
+  factory UserPreferences.fromJson(Map<String, dynamic> json) =>
+      _$UserPreferencesFromJson(json);
   Map<String, dynamic> toJson() => _$UserPreferencesToJson(this);
 
   UserPreferences copyWith({
@@ -113,15 +125,20 @@ class UserPreferences extends Equatable {
       allowFriendRequests: allowFriendRequests ?? this.allowFriendRequests,
       showInLeaderboards: showInLeaderboards ?? this.showInLeaderboards,
       notifyOnFriendPR: notifyOnFriendPR ?? this.notifyOnFriendPR,
-      notifyOnFriendWorkout: notifyOnFriendWorkout ?? this.notifyOnFriendWorkout,
+      notifyOnFriendWorkout:
+          notifyOnFriendWorkout ?? this.notifyOnFriendWorkout,
     );
   }
 
   @override
   List<Object?> get props => [
-    shareWorkouts, sharePRs, allowFriendRequests,
-    showInLeaderboards, notifyOnFriendPR, notifyOnFriendWorkout,
-  ];
+        shareWorkouts,
+        sharePRs,
+        allowFriendRequests,
+        showInLeaderboards,
+        notifyOnFriendPR,
+        notifyOnFriendWorkout,
+      ];
 }
 
 @JsonSerializable()
@@ -142,11 +159,13 @@ class FriendConnection extends Equatable {
   final DateTime createdAt;
   final DateTime? acceptedAt;
 
-  factory FriendConnection.fromJson(Map<String, dynamic> json) => _$FriendConnectionFromJson(json);
+  factory FriendConnection.fromJson(Map<String, dynamic> json) =>
+      _$FriendConnectionFromJson(json);
   Map<String, dynamic> toJson() => _$FriendConnectionToJson(this);
 
   @override
-  List<Object?> get props => [id, userId, friendId, status, createdAt, acceptedAt];
+  List<Object?> get props =>
+      [id, userId, friendId, status, createdAt, acceptedAt];
 }
 
 enum FriendStatus {
@@ -182,11 +201,21 @@ class FeedItem extends Equatable {
   final Achievement? achievement;
   final Map<String, dynamic>? metadata;
 
-  factory FeedItem.fromJson(Map<String, dynamic> json) => _$FeedItemFromJson(json);
+  factory FeedItem.fromJson(Map<String, dynamic> json) =>
+      _$FeedItemFromJson(json);
   Map<String, dynamic> toJson() => _$FeedItemToJson(this);
 
   @override
-  List<Object?> get props => [id, userId, type, createdAt, workoutId, exerciseId, achievement, metadata];
+  List<Object?> get props => [
+        id,
+        userId,
+        type,
+        createdAt,
+        workoutId,
+        exerciseId,
+        achievement,
+        metadata
+      ];
 }
 
 enum FeedItemType {
@@ -222,11 +251,13 @@ class Achievement extends Equatable {
   final String? iconUrl;
   final String? badgeColor;
 
-  factory Achievement.fromJson(Map<String, dynamic> json) => _$AchievementFromJson(json);
+  factory Achievement.fromJson(Map<String, dynamic> json) =>
+      _$AchievementFromJson(json);
   Map<String, dynamic> toJson() => _$AchievementToJson(this);
 
   @override
-  List<Object?> get props => [id, name, description, type, unlockedAt, iconUrl, badgeColor];
+  List<Object?> get props =>
+      [id, name, description, type, unlockedAt, iconUrl, badgeColor];
 }
 
 enum AchievementType {
@@ -260,7 +291,8 @@ class Leaderboard extends Equatable {
   final List<LeaderboardEntry> entries;
   final DateTime updatedAt;
 
-  factory Leaderboard.fromJson(Map<String, dynamic> json) => _$LeaderboardFromJson(json);
+  factory Leaderboard.fromJson(Map<String, dynamic> json) =>
+      _$LeaderboardFromJson(json);
   Map<String, dynamic> toJson() => _$LeaderboardToJson(this);
 
   @override
@@ -307,9 +339,11 @@ class LeaderboardEntry extends Equatable {
   final String? avatarUrl;
   final int? change; // Position change from previous period
 
-  factory LeaderboardEntry.fromJson(Map<String, dynamic> json) => _$LeaderboardEntryFromJson(json);
+  factory LeaderboardEntry.fromJson(Map<String, dynamic> json) =>
+      _$LeaderboardEntryFromJson(json);
   Map<String, dynamic> toJson() => _$LeaderboardEntryToJson(this);
 
   @override
-  List<Object?> get props => [userId, displayName, rank, score, avatarUrl, change];
+  List<Object?> get props =>
+      [userId, displayName, rank, score, avatarUrl, change];
 }

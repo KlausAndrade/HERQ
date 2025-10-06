@@ -55,7 +55,8 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
           statsAsync.when(
             data: (stats) => stats != null
                 ? _buildStatsTab(stats)
-                : const Center(child: Text('Start working out to see your stats!')),
+                : const Center(
+                    child: Text('Start working out to see your stats!')),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (_, __) => const Center(child: Text('Error loading stats')),
           ),
@@ -63,24 +64,28 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
           achievementsAsync.when(
             data: (achievements) => _buildAchievementsTab(achievements),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, __) => const Center(child: Text('Error loading achievements')),
+            error: (_, __) =>
+                const Center(child: Text('Error loading achievements')),
           ),
           // Calendar Tab
           workoutsAsync.when(
             data: (workouts) {
-              final completedWorkouts = workouts.where((w) => w.completedAt != null).toList();
+              final completedWorkouts =
+                  workouts.where((w) => w.completedAt != null).toList();
               return completedWorkouts.isNotEmpty
                   ? WorkoutCalendar(
                       workouts: completedWorkouts,
                       onWorkoutTap: (workout) {
                         Navigator.of(context).pop();
-                        Navigator.of(context).pushNamed('/workout/${workout.id}');
+                        Navigator.of(context)
+                            .pushNamed('/workout/${workout.id}');
                       },
                     )
                   : const Center(child: Text('No workout history yet!'));
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, __) => const Center(child: Text('Error loading calendar')),
+            error: (_, __) =>
+                const Center(child: Text('Error loading calendar')),
           ),
         ],
       ),
@@ -113,7 +118,8 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                 const LevelIndicator(size: 100),
                 const SizedBox(height: 24),
                 LinearProgressIndicator(
-                  value: gamificationService.calculateLevelProgress(totalXp, level),
+                  value: gamificationService.calculateLevelProgress(
+                      totalXp, level),
                   minHeight: 8,
                   backgroundColor: Colors.grey.shade200,
                 ),
@@ -226,15 +232,17 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
 
   Widget _buildAchievementsTab(List<UserAchievement> userAchievements) {
     // Group achievements by category
-    final Map<AchievementCategory, List<MapEntry<Achievement, UserAchievement?>>> grouped = {};
+    final Map<AchievementCategory,
+        List<MapEntry<Achievement, UserAchievement?>>> grouped = {};
 
     for (final achievement in Achievements.all) {
       final userAchievement = userAchievements
           .where((ua) => ua.achievementId == achievement.id)
           .firstOrNull;
-      
+
       grouped.putIfAbsent(achievement.category, () => []);
-      grouped[achievement.category]!.add(MapEntry(achievement, userAchievement));
+      grouped[achievement.category]!
+          .add(MapEntry(achievement, userAchievement));
     }
 
     // Sort each category: completed last, then by progress
@@ -242,11 +250,11 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
       grouped[category]!.sort((a, b) {
         final aCompleted = a.value?.isCompleted ?? false;
         final bCompleted = b.value?.isCompleted ?? false;
-        
+
         if (aCompleted != bCompleted) {
           return aCompleted ? 1 : -1; // Completed items last
         }
-        
+
         final aProgress = a.value?.progress ?? 0;
         final bProgress = b.value?.progress ?? 0;
         return bProgress.compareTo(aProgress); // Higher progress first
@@ -310,7 +318,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
             ...grouped[category]!.map((entry) {
               final achievement = entry.key;
               final userAchievement = entry.value;
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: AchievementCard(
@@ -345,7 +353,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
   String _formatDuration(int minutes) {
     final hours = minutes ~/ 60;
     final mins = minutes % 60;
-    
+
     if (hours > 0) {
       return '${hours}h ${mins}m';
     }

@@ -22,7 +22,7 @@ void main() {
     test('should create workout from template', () {
       final notifier = container.read(activeWorkoutProvider.notifier);
       notifier.startWorkoutFromTemplate('push_day');
-      
+
       final activeWorkout = container.read(activeWorkoutProvider);
       expect(activeWorkout, isNotNull);
       expect(activeWorkout!.name, equals('Push Day'));
@@ -33,7 +33,7 @@ void main() {
       final notifier = container.read(activeWorkoutProvider.notifier);
       notifier.startWorkoutFromTemplate('push_day');
       notifier.setCurrentExercise(1);
-      
+
       final activeWorkout = container.read(activeWorkoutProvider);
       expect(activeWorkout!.currentExerciseIndex, equals(1));
     });
@@ -42,7 +42,7 @@ void main() {
       final notifier = container.read(activeWorkoutProvider.notifier);
       notifier.startWorkoutFromTemplate('push_day');
       notifier.finishWorkout();
-      
+
       final activeWorkout = container.read(activeWorkoutProvider);
       expect(activeWorkout, isNull);
     });
@@ -68,7 +68,7 @@ void main() {
     test('should start timer correctly', () {
       final notifier = container.read(restTimerProvider.notifier);
       notifier.startTimer(120);
-      
+
       final restTimer = container.read(restTimerProvider);
       expect(restTimer.isActive, isTrue);
       expect(restTimer.totalSeconds, equals(120));
@@ -79,7 +79,7 @@ void main() {
       final notifier = container.read(restTimerProvider.notifier);
       notifier.startTimer(120);
       notifier.stopTimer();
-      
+
       final restTimer = container.read(restTimerProvider);
       expect(restTimer.isActive, isFalse);
     });

@@ -48,11 +48,13 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
       availableEquipment: ['barbell', 'dumbbell', 'bench'],
       maxDuration: 60,
     );
-    
-    final recommendationsAsync = ref.watch(workoutRecommendationsProvider(params));
+
+    final recommendationsAsync =
+        ref.watch(workoutRecommendationsProvider(params));
 
     return recommendationsAsync.when(
-      data: (recommendations) => _buildRecommendationsList(context, recommendations),
+      data: (recommendations) =>
+          _buildRecommendationsList(context, recommendations),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(
         child: Column(
@@ -84,7 +86,8 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildRecommendationsList(BuildContext context, List<WorkoutRecommendation> recommendations) {
+  Widget _buildRecommendationsList(
+      BuildContext context, List<WorkoutRecommendation> recommendations) {
     if (recommendations.isEmpty) {
       return Center(
         child: Column(
@@ -119,7 +122,8 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildRecommendationCard(BuildContext context, WorkoutRecommendation recommendation) {
+  Widget _buildRecommendationCard(
+      BuildContext context, WorkoutRecommendation recommendation) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -151,9 +155,11 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _getDifficultyColor(recommendation.difficulty).withOpacity(0.2),
+                    color: _getDifficultyColor(recommendation.difficulty)
+                        .withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -185,7 +191,8 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.green.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
@@ -226,7 +233,8 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
               ),
             ),
             const SizedBox(height: 8),
-            ...recommendation.exercises.map((exercise) => _buildExerciseItem(exercise)),
+            ...recommendation.exercises
+                .map((exercise) => _buildExerciseItem(exercise)),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -321,7 +329,8 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildRecoveryAnalysis(BuildContext context, RecoveryAnalysis analysis) {
+  Widget _buildRecoveryAnalysis(
+      BuildContext context, RecoveryAnalysis analysis) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -377,9 +386,11 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: _getFatigueColor(analysis.fatigueLevel).withOpacity(0.2),
+                      color: _getFatigueColor(analysis.fatigueLevel)
+                          .withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -395,7 +406,9 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          if (analysis.sleepQuality != null || analysis.stressLevel != null || analysis.nutritionScore != null)
+          if (analysis.sleepQuality != null ||
+              analysis.stressLevel != null ||
+              analysis.nutritionScore != null)
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -408,11 +421,14 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     if (analysis.sleepQuality != null)
-                      _buildMetricRow('Sleep Quality', analysis.sleepQuality!, Icons.bedtime),
+                      _buildMetricRow('Sleep Quality', analysis.sleepQuality!,
+                          Icons.bedtime),
                     if (analysis.stressLevel != null)
-                      _buildMetricRow('Stress Level', 1 - analysis.stressLevel!, Icons.psychology),
+                      _buildMetricRow('Stress Level', 1 - analysis.stressLevel!,
+                          Icons.psychology),
                     if (analysis.nutritionScore != null)
-                      _buildMetricRow('Nutrition', analysis.nutritionScore!, Icons.restaurant),
+                      _buildMetricRow('Nutrition', analysis.nutritionScore!,
+                          Icons.restaurant),
                   ],
                 ),
               ),
@@ -445,7 +461,8 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
-          ...analysis.recommendations.map((rec) => _buildRecommendationItem(rec)),
+          ...analysis.recommendations
+              .map((rec) => _buildRecommendationItem(rec)),
         ],
       ),
     );
@@ -499,7 +516,8 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: _getPriorityColor(recommendation.priority).withOpacity(0.2),
+                color:
+                    _getPriorityColor(recommendation.priority).withOpacity(0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -530,7 +548,8 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: _getPriorityColor(recommendation.priority).withOpacity(0.2),
+                color:
+                    _getPriorityColor(recommendation.priority).withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -614,7 +633,7 @@ class ProgressAnalysisTab extends HookConsumerWidget {
       userId: 'current_user',
       exerciseId: 'bench_press',
     );
-    
+
     final progressAsync = ref.watch(progressiveOverloadProvider(params));
 
     return progressAsync.when(
@@ -626,7 +645,8 @@ class ProgressAnalysisTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildProgressAnalysis(BuildContext context, List<ProgressiveOverloadSuggestion> suggestions) {
+  Widget _buildProgressAnalysis(
+      BuildContext context, List<ProgressiveOverloadSuggestion> suggestions) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: suggestions.length,
@@ -637,7 +657,8 @@ class ProgressAnalysisTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildProgressCard(BuildContext context, ProgressiveOverloadSuggestion suggestion) {
+  Widget _buildProgressCard(
+      BuildContext context, ProgressiveOverloadSuggestion suggestion) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -653,7 +674,8 @@ class ProgressAnalysisTab extends HookConsumerWidget {
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.blue.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
@@ -758,22 +780,34 @@ class ProgressAnalysisTab extends HookConsumerWidget {
         Text(
           '${suggestion.suggestedWeight}kg',
           style: TextStyle(
-            color: suggestion.suggestedWeight != suggestion.currentWeight ? Colors.blue : null,
-            fontWeight: suggestion.suggestedWeight != suggestion.currentWeight ? FontWeight.bold : null,
+            color: suggestion.suggestedWeight != suggestion.currentWeight
+                ? Colors.blue
+                : null,
+            fontWeight: suggestion.suggestedWeight != suggestion.currentWeight
+                ? FontWeight.bold
+                : null,
           ),
         ),
         Text(
           '${suggestion.suggestedReps} reps',
           style: TextStyle(
-            color: suggestion.suggestedReps != suggestion.currentReps ? Colors.blue : null,
-            fontWeight: suggestion.suggestedReps != suggestion.currentReps ? FontWeight.bold : null,
+            color: suggestion.suggestedReps != suggestion.currentReps
+                ? Colors.blue
+                : null,
+            fontWeight: suggestion.suggestedReps != suggestion.currentReps
+                ? FontWeight.bold
+                : null,
           ),
         ),
         Text(
           '${suggestion.suggestedSets} sets',
           style: TextStyle(
-            color: suggestion.suggestedSets != suggestion.currentSets ? Colors.blue : null,
-            fontWeight: suggestion.suggestedSets != suggestion.currentSets ? FontWeight.bold : null,
+            color: suggestion.suggestedSets != suggestion.currentSets
+                ? Colors.blue
+                : null,
+            fontWeight: suggestion.suggestedSets != suggestion.currentSets
+                ? FontWeight.bold
+                : null,
           ),
         ),
       ],
@@ -797,7 +831,8 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildSuggestionsList(BuildContext context, List<AISuggestion> suggestions) {
+  Widget _buildSuggestionsList(
+      BuildContext context, List<AISuggestion> suggestions) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: suggestions.length,
@@ -833,7 +868,8 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.green.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),

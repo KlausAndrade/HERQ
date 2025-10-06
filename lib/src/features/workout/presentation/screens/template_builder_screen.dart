@@ -13,19 +13,20 @@ class TemplateBuilderScreen extends ConsumerStatefulWidget {
   const TemplateBuilderScreen({super.key, this.templateId});
 
   @override
-  ConsumerState<TemplateBuilderScreen> createState() => _TemplateBuilderScreenState();
+  ConsumerState<TemplateBuilderScreen> createState() =>
+      _TemplateBuilderScreenState();
 }
 
 class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   String _selectedCategory = 'Custom';
   final List<String> _selectedExerciseIds = [];
   final List<String> _tags = [];
   int? _estimatedDuration;
-  
+
   bool _isLoading = false;
 
   @override
@@ -45,11 +46,12 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
 
   Future<void> _loadTemplate() async {
     setState(() => _isLoading = true);
-    
+
     final templatesAsync = ref.read(workoutTemplatesProvider);
     templatesAsync.whenData((templatesByCategory) {
       for (final templates in templatesByCategory.values) {
-        final template = templates.where((t) => t.id == widget.templateId).firstOrNull;
+        final template =
+            templates.where((t) => t.id == widget.templateId).firstOrNull;
         if (template != null) {
           _nameController.text = template.name;
           _descriptionController.text = template.description ?? '';
@@ -62,7 +64,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
         }
       }
     });
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -72,7 +74,8 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.templateId == null ? 'Create Template' : 'Edit Template'),
+        title: Text(
+            widget.templateId == null ? 'Create Template' : 'Edit Template'),
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _saveTemplate,
@@ -131,10 +134,11 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                       'PHUL',
                       'Strength',
                       'Bodybuilding',
-                    ].map((category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(category),
-                        ))
+                    ]
+                        .map((category) => DropdownMenuItem(
+                              value: category,
+                              child: Text(category),
+                            ))
                         .toList(),
                     onChanged: (value) {
                       if (value != null) {
@@ -218,7 +222,8 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                         onReorder: (oldIndex, newIndex) {
                           setState(() {
                             if (newIndex > oldIndex) newIndex--;
-                            final item = _selectedExerciseIds.removeAt(oldIndex);
+                            final item =
+                                _selectedExerciseIds.removeAt(oldIndex);
                             _selectedExerciseIds.insert(newIndex, item);
                           });
                         },
@@ -259,7 +264,8 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                           );
                         },
                       ),
-                      loading: () => const Center(child: CircularProgressIndicator()),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
                       error: (_, __) => const Text('Error loading exercises'),
                     ),
                   const SizedBox(height: 24),
@@ -327,7 +333,8 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                   itemCount: exercises.length,
                   itemBuilder: (context, index) {
                     final exercise = exercises[index];
-                    final isSelected = _selectedExerciseIds.contains(exercise.id);
+                    final isSelected =
+                        _selectedExerciseIds.contains(exercise.id);
 
                     return CheckboxListTile(
                       value: isSelected,

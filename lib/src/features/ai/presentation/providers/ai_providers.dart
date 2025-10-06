@@ -9,7 +9,9 @@ final aiCoachingServiceProvider = Provider<AICoachingService>((ref) {
 });
 
 // Workout recommendations provider
-final workoutRecommendationsProvider = FutureProvider.family<List<WorkoutRecommendation>, WorkoutRecommendationParams>((ref, params) async {
+final workoutRecommendationsProvider = FutureProvider.family<
+    List<WorkoutRecommendation>,
+    WorkoutRecommendationParams>((ref, params) async {
   final aiService = ref.read(aiCoachingServiceProvider);
   return aiService.getWorkoutRecommendations(
     params.userId,
@@ -20,25 +22,32 @@ final workoutRecommendationsProvider = FutureProvider.family<List<WorkoutRecomme
 });
 
 // Progressive overload suggestions provider
-final progressiveOverloadProvider = FutureProvider.family<List<ProgressiveOverloadSuggestion>, ProgressiveOverloadParams>((ref, params) async {
+final progressiveOverloadProvider = FutureProvider.family<
+    List<ProgressiveOverloadSuggestion>,
+    ProgressiveOverloadParams>((ref, params) async {
   final aiService = ref.read(aiCoachingServiceProvider);
-  return aiService.getProgressiveOverloadSuggestions(params.userId, params.exerciseId);
+  return aiService.getProgressiveOverloadSuggestions(
+      params.userId, params.exerciseId);
 });
 
 // Recovery analysis provider
-final recoveryAnalysisProvider = FutureProvider.family<RecoveryAnalysis, String>((ref, userId) async {
+final recoveryAnalysisProvider =
+    FutureProvider.family<RecoveryAnalysis, String>((ref, userId) async {
   final aiService = ref.read(aiCoachingServiceProvider);
   return aiService.getRecoveryAnalysis(userId);
 });
 
 // General AI suggestions provider
-final aiSuggestionsProvider = FutureProvider.family<List<AISuggestion>, String>((ref, userId) async {
+final aiSuggestionsProvider =
+    FutureProvider.family<List<AISuggestion>, String>((ref, userId) async {
   final aiService = ref.read(aiCoachingServiceProvider);
   return aiService.getGeneralSuggestions(userId);
 });
 
 // Exercise substitutions provider
-final exerciseSubstitutionsProvider = FutureProvider.family<List<String>, ExerciseSubstitutionParams>((ref, params) async {
+final exerciseSubstitutionsProvider =
+    FutureProvider.family<List<String>, ExerciseSubstitutionParams>(
+        (ref, params) async {
   final aiService = ref.read(aiCoachingServiceProvider);
   return aiService.getExerciseSubstitutions(
     params.exerciseId,
@@ -48,7 +57,8 @@ final exerciseSubstitutionsProvider = FutureProvider.family<List<String>, Exerci
 });
 
 // Workout pattern analysis provider
-final workoutPatternAnalysisProvider = FutureProvider.family<List<AISuggestion>, String>((ref, userId) async {
+final workoutPatternAnalysisProvider =
+    FutureProvider.family<List<AISuggestion>, String>((ref, userId) async {
   final aiService = ref.read(aiCoachingServiceProvider);
   return aiService.analyzeWorkoutPatterns(userId);
 });

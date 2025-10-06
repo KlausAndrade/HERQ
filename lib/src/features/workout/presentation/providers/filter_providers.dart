@@ -48,12 +48,14 @@ class WorkoutFilterNotifier extends StateNotifier<WorkoutFilterState> {
   }
 }
 
-final workoutFilterProvider = StateNotifierProvider<WorkoutFilterNotifier, WorkoutFilterState>(
+final workoutFilterProvider =
+    StateNotifierProvider<WorkoutFilterNotifier, WorkoutFilterState>(
   (ref) => WorkoutFilterNotifier(),
 );
 
 // Provider for filtered workout sessions
-final filteredWorkoutSessionsProvider = FutureProvider<List<WorkoutSession>>((ref) async {
+final filteredWorkoutSessionsProvider =
+    FutureProvider<List<WorkoutSession>>((ref) async {
   final database = ref.read(databaseProvider);
   if (database == null) {
     return [];
@@ -61,7 +63,8 @@ final filteredWorkoutSessionsProvider = FutureProvider<List<WorkoutSession>>((re
 
   final filterState = ref.watch(workoutFilterProvider);
   final sessions = await (database.select(database.workoutSessions)
-    ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)])).get();
+        ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)]))
+      .get();
 
   var filteredSessions = sessions.where((session) {
     // Apply filter
@@ -73,7 +76,8 @@ final filteredWorkoutSessionsProvider = FutureProvider<List<WorkoutSession>>((re
       case WorkoutFilter.thisWeek:
         final now = DateTime.now();
         final weekStart = now.subtract(Duration(days: now.weekday - 1));
-        final weekStartDate = DateTime(weekStart.year, weekStart.month, weekStart.day);
+        final weekStartDate =
+            DateTime(weekStart.year, weekStart.month, weekStart.day);
         return session.startedAt.isAfter(weekStartDate);
       case WorkoutFilter.thisMonth:
         final now = DateTime.now();
@@ -89,7 +93,7 @@ final filteredWorkoutSessionsProvider = FutureProvider<List<WorkoutSession>>((re
     final query = filterState.searchQuery.toLowerCase();
     filteredSessions = filteredSessions.where((session) {
       return session.name.toLowerCase().contains(query) ||
-             session.notes?.toLowerCase().contains(query) == true;
+          session.notes?.toLowerCase().contains(query) == true;
     });
   }
 

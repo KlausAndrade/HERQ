@@ -84,7 +84,7 @@ class Achievements {
       xpReward: 1000,
       category: AchievementCategory.workouts,
     ),
-    
+
     // Streak achievements
     Achievement(
       id: 'streak_3',
@@ -126,7 +126,7 @@ class Achievements {
       xpReward: 1000,
       category: AchievementCategory.streaks,
     ),
-    
+
     // Volume achievements
     Achievement(
       id: 'volume_1000',
@@ -158,8 +158,8 @@ class Achievements {
       xpReward: 800,
       category: AchievementCategory.volume,
     ),
-    
-    // Consistency achievements  
+
+    // Consistency achievements
     Achievement(
       id: 'consistency_3_weeks',
       title: 'Building Habits',
@@ -170,7 +170,7 @@ class Achievements {
       xpReward: 250,
       category: AchievementCategory.consistency,
     ),
-    
+
     // Milestone achievements
     Achievement(
       id: 'sets_100',

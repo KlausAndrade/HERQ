@@ -20,7 +20,7 @@ class StreakBadge extends ConsumerWidget {
     return statsAsync.when(
       data: (stats) {
         if (stats == null) return const SizedBox.shrink();
-        
+
         final currentStreak = stats.currentStreak;
         final isActive = currentStreak > 0;
 
@@ -53,7 +53,9 @@ class StreakBadge extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                isActive ? Icons.local_fire_department : Icons.local_fire_department_outlined,
+                isActive
+                    ? Icons.local_fire_department
+                    : Icons.local_fire_department_outlined,
                 color: Colors.white,
                 size: size * 0.6,
               ),
@@ -111,7 +113,8 @@ class LevelIndicator extends ConsumerWidget {
 
         final level = stats.level;
         final totalXp = stats.experiencePoints;
-        final progress = gamificationService.calculateLevelProgress(totalXp, level);
+        final progress =
+            gamificationService.calculateLevelProgress(totalXp, level);
         final nextLevelXp = gamificationService.xpRequiredForLevel(level + 1);
         final currentLevelXp = gamificationService.xpRequiredForLevel(level);
         final xpIntoLevel = totalXp - currentLevelXp;
@@ -153,7 +156,10 @@ class LevelIndicator extends ConsumerWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -228,9 +234,7 @@ class AchievementCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: isCompleted
-                    ? achievement.color
-                    : Colors.grey.shade300,
+                color: isCompleted ? achievement.color : Colors.grey.shade300,
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -318,14 +322,17 @@ class AchievementCard extends StatelessWidget {
                   Icon(
                     Icons.star,
                     size: 16,
-                    color: isCompleted ? achievement.color : Colors.grey.shade600,
+                    color:
+                        isCompleted ? achievement.color : Colors.grey.shade600,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '+${achievement.xpReward}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: isCompleted ? achievement.color : Colors.grey.shade600,
+                      color: isCompleted
+                          ? achievement.color
+                          : Colors.grey.shade600,
                     ),
                   ),
                 ],

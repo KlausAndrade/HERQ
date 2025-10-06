@@ -48,7 +48,7 @@ class LeaderboardTab extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedPeriod = ValueNotifier<Period>(Period.monthly);
-    
+
     return ValueListenableBuilder<Period>(
       valueListenable: selectedPeriod,
       builder: (context, period, child) {
@@ -157,8 +157,9 @@ class LeaderboardTab extends HookConsumerWidget {
     return Column(
       children: [
         // Top 3 podium
-        if (leaderboard.entries.length >= 3) _buildPodium(leaderboard.entries.take(3).toList()),
-        
+        if (leaderboard.entries.length >= 3)
+          _buildPodium(leaderboard.entries.take(3).toList()),
+
         // Rest of the leaderboard
         Expanded(
           child: ListView.builder(
@@ -197,7 +198,7 @@ class LeaderboardTab extends HookConsumerWidget {
   Widget _buildPodiumPlace(LeaderboardEntry entry, int place, double height) {
     Color podiumColor;
     IconData medalIcon;
-    
+
     switch (place) {
       case 1:
         podiumColor = Colors.amber;
@@ -290,8 +291,10 @@ class LeaderboardTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildLeaderboardEntry(BuildContext context, LeaderboardEntry entry, bool isTopThree) {
-    if (isTopThree) return const SizedBox.shrink(); // Skip top 3 as they're shown in podium
+  Widget _buildLeaderboardEntry(
+      BuildContext context, LeaderboardEntry entry, bool isTopThree) {
+    if (isTopThree)
+      return const SizedBox.shrink(); // Skip top 3 as they're shown in podium
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -330,22 +333,29 @@ class LeaderboardTab extends HookConsumerWidget {
             ? Row(
                 children: [
                   Icon(
-                    entry.change! > 0 ? Icons.trending_up : 
-                    entry.change! < 0 ? Icons.trending_down : 
-                    Icons.remove,
+                    entry.change! > 0
+                        ? Icons.trending_up
+                        : entry.change! < 0
+                            ? Icons.trending_down
+                            : Icons.remove,
                     size: 16,
-                    color: entry.change! > 0 ? Colors.green : 
-                           entry.change! < 0 ? Colors.red : 
-                           Colors.grey,
+                    color: entry.change! > 0
+                        ? Colors.green
+                        : entry.change! < 0
+                            ? Colors.red
+                            : Colors.grey,
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    entry.change! == 0 ? 'No change' :
-                    '${entry.change!.abs()} ${entry.change! > 0 ? 'up' : 'down'}',
+                    entry.change! == 0
+                        ? 'No change'
+                        : '${entry.change!.abs()} ${entry.change! > 0 ? 'up' : 'down'}',
                     style: TextStyle(
-                      color: entry.change! > 0 ? Colors.green : 
-                             entry.change! < 0 ? Colors.red : 
-                             Colors.grey,
+                      color: entry.change! > 0
+                          ? Colors.green
+                          : entry.change! < 0
+                              ? Colors.red
+                              : Colors.grey,
                       fontSize: 12,
                     ),
                   ),

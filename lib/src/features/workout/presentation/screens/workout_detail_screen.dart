@@ -14,12 +14,13 @@ class WorkoutDetailScreen extends ConsumerWidget {
     super.key,
     required this.workoutId,
   });
-  
+
   final String workoutId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final workoutSessionAsync = ref.watch(workoutSessionByIdProvider(workoutId));
+    final workoutSessionAsync =
+        ref.watch(workoutSessionByIdProvider(workoutId));
     final setEntriesAsync = ref.watch(setEntriesBySessionProvider(workoutId));
 
     return workoutSessionAsync.when(
@@ -53,9 +54,9 @@ class WorkoutDetailScreen extends ConsumerWidget {
               children: [
                 // Workout Header
                 _WorkoutHeader(workoutSession: workoutSession),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Exercise Sets
                 setEntriesAsync.when(
                   data: (setEntries) => _ExerciseSetsSection(
@@ -75,13 +76,14 @@ class WorkoutDetailScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Workout Notes
-                if (workoutSession.notes != null && workoutSession.notes!.isNotEmpty)
+                if (workoutSession.notes != null &&
+                    workoutSession.notes!.isNotEmpty)
                   _WorkoutNotes(notes: workoutSession.notes!),
-                
+
                 const SizedBox(height: 32),
               ],
             ),
@@ -123,7 +125,8 @@ class WorkoutDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showWorkoutMenu(BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
+  void _showWorkoutMenu(
+      BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -157,7 +160,8 @@ class WorkoutDetailScreen extends ConsumerWidget {
             if (workoutSession.completedAt == null)
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text('Delete Workout', style: TextStyle(color: Colors.red)),
+                title: const Text('Delete Workout',
+                    style: TextStyle(color: Colors.red)),
                 onTap: () {
                   Navigator.pop(context);
                   _showDeleteConfirmation(context, ref, workoutSession);
@@ -169,9 +173,10 @@ class WorkoutDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showEditNotesDialog(BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
+  void _showEditNotesDialog(
+      BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
     final controller = TextEditingController(text: workoutSession.notes ?? '');
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -193,12 +198,12 @@ class WorkoutDetailScreen extends ConsumerWidget {
             onPressed: () async {
               final database = ref.read(databaseProvider);
               if (database == null) return;
-              
+
               try {
                 await database.update(database.workoutSessions).replace(
-                  workoutSession.copyWith(notes: Value(controller.text)),
-                );
-                
+                      workoutSession.copyWith(notes: Value(controller.text)),
+                    );
+
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -221,9 +226,11 @@ class WorkoutDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _startNewWorkoutWithTemplate(BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
+  void _startNewWorkoutWithTemplate(
+      BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
     // Navigate to active workout with the same template or exercises
-    if (workoutSession.templateId != null && workoutSession.templateId!.isNotEmpty) {
+    if (workoutSession.templateId != null &&
+        workoutSession.templateId!.isNotEmpty) {
       // Use the existing template
       context.go('/workout/active?templateId=${workoutSession.templateId}');
     } else {
@@ -232,7 +239,8 @@ class WorkoutDetailScreen extends ConsumerWidget {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Repeat Workout'),
-          content: Text('Start a new workout with the same exercises as "${workoutSession.name}"?'),
+          content: Text(
+              'Start a new workout with the same exercises as "${workoutSession.name}"?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -241,23 +249,24 @@ class WorkoutDetailScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () async {
                 Navigator.pop(context);
-                
+
                 final database = ref.read(databaseProvider);
                 if (database == null) return;
-                
+
                 try {
                   // Create a quick template from this workout
-                  final templateId = 'repeat_${DateTime.now().millisecondsSinceEpoch}';
+                  final templateId =
+                      'repeat_${DateTime.now().millisecondsSinceEpoch}';
                   await database.into(database.workoutTemplates).insert(
-                    WorkoutTemplatesCompanion.insert(
-                      id: templateId,
-                      name: 'Repeat: ${workoutSession.name}',
-                      exerciseIds: [], // Will be populated based on set entries
-                      tags: const [],
-                      category: const Value('Quick Start'),
-                    ),
-                  );
-                  
+                        WorkoutTemplatesCompanion.insert(
+                          id: templateId,
+                          name: 'Repeat: ${workoutSession.name}',
+                          exerciseIds: [], // Will be populated based on set entries
+                          tags: const [],
+                          category: const Value('Quick Start'),
+                        ),
+                      );
+
                   if (context.mounted) {
                     context.go('/workout/active?templateId=$templateId');
                   }
@@ -290,7 +299,8 @@ Stats:
 • Volume: ${workoutSession.totalVolume.toStringAsFixed(1)}kg
 
 ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n${workoutSession.notes}' : ''}
-    '''.trim();
+    '''
+        .trim();
 
     showDialog(
       context: context,
@@ -311,7 +321,7 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
 
   String _formatDuration(int? seconds) {
     if (seconds == null) return '--';
-    
+
     final duration = Duration(seconds: seconds);
     if (duration.inHours > 0) {
       return '${duration.inHours}h ${duration.inMinutes % 60}m';
@@ -320,12 +330,14 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
     }
   }
 
-  void _showDeleteConfirmation(BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
+  void _showDeleteConfirmation(
+      BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Workout'),
-        content: const Text('Are you sure you want to delete this workout? This action cannot be undone.'),
+        content: const Text(
+            'Are you sure you want to delete this workout? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -335,16 +347,19 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
             onPressed: () async {
               final database = ref.read(databaseProvider);
               if (database == null) return;
-              
+
               try {
                 // Delete associated set entries first
                 await (database.delete(database.setEntries)
-                      ..where((tbl) => tbl.workoutSessionId.equals(workoutSession.id)))
+                      ..where((tbl) =>
+                          tbl.workoutSessionId.equals(workoutSession.id)))
                     .go();
-                
+
                 // Delete the workout session
-                await database.delete(database.workoutSessions).delete(workoutSession);
-                
+                await database
+                    .delete(database.workoutSessions)
+                    .delete(workoutSession);
+
                 if (context.mounted) {
                   Navigator.pop(context);
                   Navigator.pop(context);
@@ -379,7 +394,7 @@ class _WorkoutHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('EEEE, MMMM d, y');
     final timeFormat = DateFormat('h:mm a');
-    
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.all(16),
@@ -394,12 +409,13 @@ class _WorkoutHeader extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(workoutSession.completedAt != null),
+                      color:
+                          _getStatusColor(workoutSession.completedAt != null),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      workoutSession.completedAt != null 
-                          ? Icons.check_circle 
+                      workoutSession.completedAt != null
+                          ? Icons.check_circle
                           : Icons.fitness_center,
                       color: Colors.white,
                       size: 24,
@@ -412,40 +428,50 @@ class _WorkoutHeader extends StatelessWidget {
                       children: [
                         Text(
                           workoutSession.name,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           dateFormat.format(workoutSession.startedAt),
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.7),
+                                  ),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(workoutSession.completedAt != null).withOpacity(0.1),
+                      color: _getStatusColor(workoutSession.completedAt != null)
+                          .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      workoutSession.completedAt != null ? 'COMPLETED' : 'IN PROGRESS',
+                      workoutSession.completedAt != null
+                          ? 'COMPLETED'
+                          : 'IN PROGRESS',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: _getStatusColor(workoutSession.completedAt != null),
+                        color:
+                            _getStatusColor(workoutSession.completedAt != null),
                       ),
                     ),
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Workout Stats
               Row(
                 children: [
@@ -468,25 +494,27 @@ class _WorkoutHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               Row(
                 children: [
                   _StatItem(
                     icon: Icons.monitor_weight,
                     label: 'Volume',
-                    value: '${workoutSession.totalVolume.toStringAsFixed(1)} kg',
+                    value:
+                        '${workoutSession.totalVolume.toStringAsFixed(1)} kg',
                   ),
                   const SizedBox(width: 24),
                   _StatItem(
                     icon: Icons.trending_up,
                     label: 'Tonnage',
-                    value: '${workoutSession.totalTonnage.toStringAsFixed(1)} kg',
+                    value:
+                        '${workoutSession.totalTonnage.toStringAsFixed(1)} kg',
                   ),
                 ],
               ),
-              
+
               if (workoutSession.completedAt != null) ...[
                 const SizedBox(height: 16),
                 Row(
@@ -494,27 +522,39 @@ class _WorkoutHeader extends StatelessWidget {
                     Icon(
                       Icons.schedule,
                       size: 16,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'Started: ${timeFormat.format(workoutSession.startedAt)}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                      ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
+                          ),
                     ),
                     const SizedBox(width: 16),
                     Icon(
                       Icons.check,
                       size: 16,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'Finished: ${timeFormat.format(workoutSession.completedAt!)}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                      ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
+                          ),
                     ),
                   ],
                 ),
@@ -532,7 +572,7 @@ class _WorkoutHeader extends StatelessWidget {
 
   String _formatDuration(int? seconds) {
     if (seconds == null) return '--';
-    
+
     final duration = Duration(seconds: seconds);
     if (duration.inHours > 0) {
       return '${duration.inHours}h ${duration.inMinutes % 60}m';
@@ -570,14 +610,17 @@ class _StatItem extends StatelessWidget {
             Text(
               label,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-              ),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.6),
+                  ),
             ),
             Text(
               value,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ],
         ),
@@ -618,8 +661,11 @@ class _ExerciseSetsSection extends ConsumerWidget {
               Text(
                 'This workout doesn\'t have any recorded sets yet',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                ),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.7),
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -642,14 +688,14 @@ class _ExerciseSetsSection extends ConsumerWidget {
           Text(
             'Exercises',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
           ...groupedSets.entries.map((entry) {
             final exerciseId = entry.key;
             final exerciseSets = entry.value;
-            
+
             return _ExerciseCard(
               exerciseId: exerciseId,
               sets: exerciseSets,
@@ -677,7 +723,7 @@ class _ExerciseCard extends ConsumerWidget {
     return exerciseAsync.when(
       data: (exercise) {
         final exerciseName = exercise?.name ?? 'Unknown Exercise';
-        
+
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           child: Padding(
@@ -688,8 +734,8 @@ class _ExerciseCard extends ConsumerWidget {
                 Row(
                   children: [
                     Icon(
-                      exercise?.isBodyweight ?? false 
-                          ? Icons.accessibility 
+                      exercise?.isBodyweight ?? false
+                          ? Icons.accessibility
                           : Icons.fitness_center,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -697,39 +743,61 @@ class _ExerciseCard extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         exerciseName,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                       ),
                     ),
                     Text(
                       '${sets.length} sets',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                      ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
+                          ),
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Sets table header
                 Row(
                   children: [
                     const SizedBox(width: 30),
-                    Expanded(flex: 2, child: Text('Weight', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600))),
-                    Expanded(flex: 2, child: Text('Reps', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600))),
-                    Expanded(flex: 2, child: Text('RPE', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600))),
+                    Expanded(
+                        flex: 2,
+                        child: Text('Weight',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(fontWeight: FontWeight.w600))),
+                    Expanded(
+                        flex: 2,
+                        child: Text('Reps',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(fontWeight: FontWeight.w600))),
+                    Expanded(
+                        flex: 2,
+                        child: Text('RPE',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(fontWeight: FontWeight.w600))),
                   ],
                 ),
-                
+
                 const Divider(height: 8),
-                
+
                 // Sets
                 ...sets.asMap().entries.map((entry) {
                   final index = entry.key;
                   final set = entry.value;
-                  
+
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
@@ -756,7 +824,9 @@ class _ExerciseCard extends ConsumerWidget {
                         Expanded(
                           flex: 2,
                           child: Text(
-                            set.weight != null ? '${set.weight!.toStringAsFixed(1)} kg' : '--',
+                            set.weight != null
+                                ? '${set.weight!.toStringAsFixed(1)} kg'
+                                : '--',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
@@ -841,8 +911,8 @@ class _WorkoutNotes extends StatelessWidget {
                   Text(
                     'Notes',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ],
               ),

@@ -11,15 +11,16 @@ const String kDefaultUserId = 'default_user';
 final userStatsProvider = StreamProvider.autoDispose<UserStat?>((ref) {
   final database = ref.watch(databaseProvider);
   if (database == null) return Stream.value(null);
-  
+
   return database.watchUserStats(kDefaultUserId);
 });
 
 // Provider for user achievements
-final userAchievementsProvider = StreamProvider.autoDispose<List<UserAchievement>>((ref) {
+final userAchievementsProvider =
+    StreamProvider.autoDispose<List<UserAchievement>>((ref) {
   final database = ref.watch(databaseProvider);
   if (database == null) return Stream.value([]);
-  
+
   return database.watchUserAchievements(kDefaultUserId);
 });
 
@@ -56,14 +57,14 @@ class GamificationService {
     final nextLevelXp = xpRequiredForLevel(currentLevel + 1);
     final xpIntoCurrentLevel = totalXp - currentLevelXp;
     final xpNeededForNextLevel = nextLevelXp - currentLevelXp;
-    
+
     return xpIntoCurrentLevel / xpNeededForNextLevel;
   }
 
   // Initialize user stats if they don't exist
   Future<UserStat> initializeUserStats({String? userId}) async {
     final uid = userId ?? kDefaultUserId;
-    
+
     final existing = await database.getUserStats(uid);
     if (existing != null) {
       return existing;
@@ -102,7 +103,7 @@ class GamificationService {
     for (final session in sessions) {
       final completedAt = session.completedAt;
       if (completedAt == null) continue;
-      
+
       final sessionDate = DateTime(
         completedAt.year,
         completedAt.month,
@@ -172,7 +173,8 @@ class GamificationService {
 
     // Calculate new streak
     final newStreak = await calculateCurrentStreak(userId: uid);
-    final newLongestStreak = newStreak > stats.longestStreak ? newStreak : stats.longestStreak;
+    final newLongestStreak =
+        newStreak > stats.longestStreak ? newStreak : stats.longestStreak;
 
     // Update stats
     final updatedStats = stats.copyWith(
@@ -245,9 +247,10 @@ class GamificationService {
           .where((a) => a.achievementId == achievement.id)
           .firstOrNull;
 
-      final progressPercentage = ((currentProgress / achievement.requiredProgress) * 100)
-          .clamp(0, 100)
-          .toInt();
+      final progressPercentage =
+          ((currentProgress / achievement.requiredProgress) * 100)
+              .clamp(0, 100)
+              .toInt();
 
       if (currentProgress >= achievement.requiredProgress) {
         // Achievement unlocked!
@@ -305,7 +308,8 @@ class GamificationService {
 
     final completed = userAchievements.where((a) => a.isCompleted).length;
     final total = Achievements.all.length;
-    final inProgress = userAchievements.where((a) => !a.isCompleted && a.progress > 0).length;
+    final inProgress =
+        userAchievements.where((a) => !a.isCompleted && a.progress > 0).length;
 
     return {
       'completed': completed,

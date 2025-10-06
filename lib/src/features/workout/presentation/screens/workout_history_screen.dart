@@ -12,7 +12,8 @@ class WorkoutHistoryScreen extends ConsumerStatefulWidget {
   const WorkoutHistoryScreen({super.key});
 
   @override
-  ConsumerState<WorkoutHistoryScreen> createState() => _WorkoutHistoryScreenState();
+  ConsumerState<WorkoutHistoryScreen> createState() =>
+      _WorkoutHistoryScreenState();
 }
 
 enum HistoryViewMode { list, monthly, calendar }
@@ -60,13 +61,15 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             loading: () => const SizedBox(height: 140),
             error: (error, stack) => const SizedBox(height: 140),
           ),
-          
+
           // Workout History List
           Expanded(
             child: switch (_viewMode) {
               HistoryViewMode.list => _buildListView(workoutSessionsAsync),
-              HistoryViewMode.monthly => _buildGroupedView(workoutSessionsAsync),
-              HistoryViewMode.calendar => _buildCalendarView(workoutSessionsAsync),
+              HistoryViewMode.monthly =>
+                _buildGroupedView(workoutSessionsAsync),
+              HistoryViewMode.calendar =>
+                _buildCalendarView(workoutSessionsAsync),
             },
           ),
         ],
@@ -145,7 +148,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (index > 0) const SizedBox(height: 24),
-                
+
                 // Month Header
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -153,34 +156,44 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
                     children: [
                       Text(
                         monthName,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           '${sessions.length} workouts',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Month's workouts
-                ...sessions.map((session) => _WorkoutCard(
-                  workoutSession: session,
-                  showDate: true,
-                )).toList(),
+                ...sessions
+                    .map((session) => _WorkoutCard(
+                          workoutSession: session,
+                          showDate: true,
+                        ))
+                    .toList(),
               ],
             );
           },
@@ -191,7 +204,9 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error, size: 48, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            Icon(Icons.error,
+                size: 48,
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
             const SizedBox(height: 16),
             Text(
               'Error loading workout history',
@@ -234,7 +249,9 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error, size: 48, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            Icon(Icons.error,
+                size: 48,
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
             const SizedBox(height: 16),
             Text(
               'Error loading workout history',
@@ -269,15 +286,18 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             Text(
               'No Workout History',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 12),
             Text(
               'Complete your first workout to see your history here',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-              ),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -305,8 +325,8 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             Text(
               'Filter Workouts',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             ListTile(
@@ -314,7 +334,9 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
               title: const Text('Completed Only'),
               onTap: () {
                 Navigator.pop(context);
-                ref.read(workoutFilterProvider.notifier).setFilter(WorkoutFilter.completed);
+                ref
+                    .read(workoutFilterProvider.notifier)
+                    .setFilter(WorkoutFilter.completed);
               },
             ),
             ListTile(
@@ -322,7 +344,9 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
               title: const Text('In Progress'),
               onTap: () {
                 Navigator.pop(context);
-                ref.read(workoutFilterProvider.notifier).setFilter(WorkoutFilter.inProgress);
+                ref
+                    .read(workoutFilterProvider.notifier)
+                    .setFilter(WorkoutFilter.inProgress);
               },
             ),
             ListTile(
@@ -330,7 +354,9 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
               title: const Text('This Week'),
               onTap: () {
                 Navigator.pop(context);
-                ref.read(workoutFilterProvider.notifier).setFilter(WorkoutFilter.thisWeek);
+                ref
+                    .read(workoutFilterProvider.notifier)
+                    .setFilter(WorkoutFilter.thisWeek);
               },
             ),
             ListTile(
@@ -338,7 +364,9 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
               title: const Text('This Month'),
               onTap: () {
                 Navigator.pop(context);
-                ref.read(workoutFilterProvider.notifier).setFilter(WorkoutFilter.thisMonth);
+                ref
+                    .read(workoutFilterProvider.notifier)
+                    .setFilter(WorkoutFilter.thisMonth);
               },
             ),
             const SizedBox(height: 16),
@@ -349,47 +377,47 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
   }
 
   Widget _buildBottomNavigation(BuildContext context) => BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 3, // Progress/History tab
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            context.go('/');
-            break;
-          case 1:
-            context.go('/workout-templates');
-            break;
-          case 2:
-            context.go('/exercises');
-            break;
-          case 3:
-            context.go('/progress');
-            break;
-        }
-      },
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.fitness_center_outlined),
-          activeIcon: Icon(Icons.fitness_center),
-          label: 'Workouts',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search_outlined),
-          activeIcon: Icon(Icons.search),
-          label: 'Exercises',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.trending_up_outlined),
-          activeIcon: Icon(Icons.trending_up),
-          label: 'Progress',
-        ),
-      ],
-    );
+        type: BottomNavigationBarType.fixed,
+        currentIndex: 3, // Progress/History tab
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              context.go('/');
+              break;
+            case 1:
+              context.go('/workout-templates');
+              break;
+            case 2:
+              context.go('/exercises');
+              break;
+            case 3:
+              context.go('/progress');
+              break;
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center_outlined),
+            activeIcon: Icon(Icons.fitness_center),
+            label: 'Workouts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search_outlined),
+            activeIcon: Icon(Icons.search),
+            label: 'Exercises',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.trending_up_outlined),
+            activeIcon: Icon(Icons.trending_up),
+            label: 'Progress',
+          ),
+        ],
+      );
 }
 
 class _WorkoutStatsHeader extends StatelessWidget {
@@ -416,14 +444,12 @@ class _WorkoutStatsHeader extends StatelessWidget {
                   Text(
                     'Your Progress',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ],
               ),
-              
               const SizedBox(height: 20),
-              
               Row(
                 children: [
                   _StatCard(
@@ -441,9 +467,7 @@ class _WorkoutStatsHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              
               const SizedBox(height: 12),
-              
               Row(
                 children: [
                   _StatCard(
@@ -502,16 +526,19 @@ class _StatCard extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-              ),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -534,7 +561,7 @@ class _WorkoutCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateFormat = showDate ? DateFormat('MMM d, y') : DateFormat('h:mm a');
     final isCompleted = workoutSession.completedAt != null;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -552,16 +579,22 @@ class _WorkoutCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: isCompleted 
-                        ? Theme.of(context).colorScheme.secondary.withOpacity(0.1) 
-                        : Theme.of(context).colorScheme.tertiary.withOpacity(0.1),
+                      color: isCompleted
+                          ? Theme.of(context)
+                              .colorScheme
+                              .secondary
+                              .withOpacity(0.1)
+                          : Theme.of(context)
+                              .colorScheme
+                              .tertiary
+                              .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       isCompleted ? Icons.check_circle : Icons.schedule,
-                      color: isCompleted 
-                        ? Theme.of(context).colorScheme.secondary 
-                        : Theme.of(context).colorScheme.tertiary,
+                      color: isCompleted
+                          ? Theme.of(context).colorScheme.secondary
+                          : Theme.of(context).colorScheme.tertiary,
                       size: 20,
                     ),
                   ),
@@ -572,28 +605,35 @@ class _WorkoutCard extends StatelessWidget {
                       children: [
                         Text(
                           workoutSession.name,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
                           dateFormat.format(workoutSession.startedAt),
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.7),
+                                  ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: (isCompleted 
-                        ? Theme.of(context).colorScheme.secondary 
-                        : Theme.of(context).colorScheme.tertiary).withOpacity(0.1),
+                      color: (isCompleted
+                              ? Theme.of(context).colorScheme.secondary
+                              : Theme.of(context).colorScheme.tertiary)
+                          .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -601,17 +641,15 @@ class _WorkoutCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: isCompleted 
-                          ? Theme.of(context).colorScheme.secondary 
-                          : Theme.of(context).colorScheme.tertiary,
+                        color: isCompleted
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.tertiary,
                       ),
                     ),
                   ),
                 ],
               ),
-              
               const SizedBox(height: 12),
-              
               Wrap(
                 spacing: 16,
                 runSpacing: 8,
@@ -639,7 +677,7 @@ class _WorkoutCard extends StatelessWidget {
 
   String _formatDuration(int? seconds) {
     if (seconds == null) return '--';
-    
+
     final duration = Duration(seconds: seconds);
     if (duration.inHours > 0) {
       return '${duration.inHours}h ${duration.inMinutes % 60}m';
@@ -673,8 +711,9 @@ class _QuickStat extends StatelessWidget {
           child: Text(
             value,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-            ),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                ),
             overflow: TextOverflow.ellipsis,
           ),
         ),
