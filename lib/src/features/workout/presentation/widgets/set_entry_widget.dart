@@ -12,10 +12,12 @@ class SetEntryWidget extends ConsumerStatefulWidget {
     required this.set,
     required this.setNumber,
     required this.onChanged,
+    this.restTimerSeconds = 90,
   });
   final ActiveSet set;
   final int setNumber;
   final ValueChanged<ActiveSet> onChanged;
+  final int restTimerSeconds;
 
   @override
   ConsumerState<SetEntryWidget> createState() => _SetEntryWidgetState();
@@ -228,7 +230,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   }
 
   void _startRestTimer() {
-    // Start a 2-minute rest timer by default
-    ref.read(restTimerProvider.notifier).startTimer(120);
+    // Start rest timer with the exercise's configured duration
+    ref.read(restTimerProvider.notifier).startTimer(widget.restTimerSeconds);
   }
 }

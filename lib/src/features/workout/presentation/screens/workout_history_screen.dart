@@ -199,10 +199,11 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.history,
@@ -519,6 +520,7 @@ class _WorkoutCard extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -526,6 +528,7 @@ class _WorkoutCard extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -554,18 +557,18 @@ class _WorkoutCard extends StatelessWidget {
               
               const SizedBox(height: 12),
               
-              Row(
+              Wrap(
+                spacing: 16,
+                runSpacing: 8,
                 children: [
                   _QuickStat(
                     icon: Icons.schedule,
                     value: _formatDuration(workoutSession.totalDurationSeconds),
                   ),
-                  const SizedBox(width: 16),
                   _QuickStat(
                     icon: Icons.fitness_center,
                     value: '${workoutSession.totalSets} sets',
                   ),
-                  const SizedBox(width: 16),
                   _QuickStat(
                     icon: Icons.monitor_weight,
                     value: '${workoutSession.totalVolume.toStringAsFixed(0)}kg',
@@ -611,10 +614,13 @@ class _QuickStat extends StatelessWidget {
           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
         ),
         const SizedBox(width: 4),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+        Flexible(
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

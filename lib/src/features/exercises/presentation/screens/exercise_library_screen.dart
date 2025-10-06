@@ -393,13 +393,13 @@ class _ExerciseCard extends StatelessWidget {
               '${exercise.primaryMuscleGroup[0].toUpperCase() + exercise.primaryMuscleGroup.substring(1)} • ${exercise.equipment[0].toUpperCase() + exercise.equipment.substring(1).replaceAll('_', ' ')}',
             ),
             const SizedBox(height: 4),
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
               children: [
                 _DifficultyChip(difficulty: exercise.difficulty),
-                const SizedBox(width: 8),
                 _ExerciseTypeChip(type: exercise.exerciseType),
-                if (exercise.isBodyweight) ...[
-                  const SizedBox(width: 8),
+                if (exercise.isBodyweight)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
@@ -415,7 +415,6 @@ class _ExerciseCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                ],
               ],
             ),
           ],
@@ -739,11 +738,12 @@ class _ProgressionItem extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
                       children: [
                         _DifficultyChip(difficulty: exercise.difficulty),
-                        if (!isParent && exercise.variantType != null) ...[
-                          const SizedBox(width: 8),
+                        if (!isParent && exercise.variantType != null)
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
@@ -759,7 +759,6 @@ class _ProgressionItem extends StatelessWidget {
                               ),
                             ),
                           ),
-                        ],
                       ],
                     ),
                   ],

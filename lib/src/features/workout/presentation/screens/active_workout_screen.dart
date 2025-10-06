@@ -352,6 +352,7 @@ class _ExerciseCard extends ConsumerWidget {
                       return SetEntryWidget(
                         set: set,
                         setNumber: index + 1,
+                        restTimerSeconds: exercise.restTimerSeconds,
                         onChanged: (updatedSet) {
                           onSetChanged(index, updatedSet);
                         },

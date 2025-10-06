@@ -4,17 +4,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../domain/models/active_workout.dart';
+import 'exercise_timer_preferences_provider.dart';
 
 // Provider for active workout state with real template data
 final activeWorkoutProvider = StateNotifierProvider<ActiveWorkoutNotifier, ActiveWorkout?>((ref) {
   final database = ref.watch(databaseProvider);
-  return ActiveWorkoutNotifier(database);
+  return ActiveWorkoutNotifier(database, ref);
 });
 
 class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   final AppDatabase? database;
+  final Ref _ref;
   
-  ActiveWorkoutNotifier(this.database) : super(null);
+  ActiveWorkoutNotifier(this.database, this._ref) : super(null);
 
   Future<void> startWorkoutFromTemplate(String templateId) async {
     final db = database;
@@ -40,11 +42,17 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       // Create exercise map for ordering
       final exerciseMap = {for (final ex in exercisesList) ex.id: ex};
 
+      // Get timer preferences
+      final timerPrefs = _ref.read(exerciseTimerPreferencesProvider);
+
       // Create active exercises in template order
       final activeExercises = template.exerciseIds
           .where((id) => exerciseMap.containsKey(id))
           .map((id) {
         final exercise = exerciseMap[id]!;
+        // Load saved timer preference or use default (90s)
+        final savedTimer = timerPrefs[exercise.id] ?? 90;
+        
         // Start with 3 empty sets for each exercise
         return ActiveExercise(
           id: exercise.id,
@@ -54,6 +62,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             ActiveSet(number: 2, reps: 0, isCompleted: false),
             ActiveSet(number: 3, reps: 0, isCompleted: false),
           ],
+          restTimerSeconds: savedTimer,
         );
       }).toList();
 
@@ -242,6 +251,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         elapsedTime: state!.elapsedTime,
         totalSets: state!.totalSets,
         totalVolume: state!.totalVolume,
+      );
+      
+      // Save timer preference for this exercise
+      _ref.read(exerciseTimerPreferencesProvider.notifier).setTimerForExercise(
+        exercise.id,
+        newRestTimerSeconds,
       );
     }
   }
