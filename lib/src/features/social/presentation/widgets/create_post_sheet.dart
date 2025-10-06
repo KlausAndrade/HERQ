@@ -35,6 +35,9 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = ref.watch(currentUserProvider);
+    final currentUserProfile = ref.watch(userProfileProvider(currentUser?.id ?? ''));
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -60,6 +63,91 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                 onPressed: () => Navigator.pop(context),
               ),
             ],
+          ),
+          const SizedBox(height: 16),
+
+          // User info
+          currentUserProfile.when(
+            data: (profile) {
+              return Row(
+                children: [
+                  if (profile?.avatarUrl != null && profile!.avatarUrl!.isNotEmpty)
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundImage: NetworkImage(profile.avatarUrl!),
+                    )
+                  else
+                    CircleAvatar(
+                      radius: 20,
+                      child: Text(
+                        profile?.displayName?[0].toUpperCase() ?? currentUser?.email?[0].toUpperCase() ?? '?',
+                      ),
+                    ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        profile?.displayName ?? currentUser?.email?.split('@').first ?? 'User',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                      if (profile?.bio != null && profile!.bio!.isNotEmpty)
+                        Text(
+                          profile.bio!,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Colors.grey,
+                              ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                  ),
+                ],
+              );
+            },
+            loading: () => Row(
+              children: [
+                const CircleAvatar(
+                  radius: 20,
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            error: (_, __) => Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  child: Text(currentUser?.email?[0].toUpperCase() ?? '?'),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  currentUser?.email?.split('@').first ?? 'User',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
 

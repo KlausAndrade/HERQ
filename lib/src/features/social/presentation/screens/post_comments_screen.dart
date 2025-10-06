@@ -33,6 +33,7 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
     final postAsync = ref.watch(singlePostProvider(widget.postId));
     final commentsAsync = ref.watch(postCommentsProvider(widget.postId));
     final currentUser = ref.watch(currentUserProvider);
+    final currentUserProfile = ref.watch(userProfileProvider(currentUser?.id ?? ''));
 
     return Scaffold(
       appBar: AppBar(
@@ -236,9 +237,31 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
             child: SafeArea(
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 16,
-                    child: Text(currentUser?.id[0].toUpperCase() ?? '?'),
+                  currentUserProfile.when(
+                    data: (profile) {
+                      if (profile?.avatarUrl != null && profile!.avatarUrl!.isNotEmpty) {
+                        return CircleAvatar(
+                          radius: 16,
+                          backgroundImage: NetworkImage(profile.avatarUrl!),
+                        );
+                      }
+                      return CircleAvatar(
+                        radius: 16,
+                        child: Text(profile?.displayName?[0].toUpperCase() ?? currentUser?.id[0].toUpperCase() ?? '?'),
+                      );
+                    },
+                    loading: () => const CircleAvatar(
+                      radius: 16,
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                    error: (_, __) => CircleAvatar(
+                      radius: 16,
+                      child: Text(currentUser?.id[0].toUpperCase() ?? '?'),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(

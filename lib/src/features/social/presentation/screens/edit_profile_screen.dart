@@ -22,6 +22,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _bioController = TextEditingController();
   
   bool _isLoading = false;
+  bool _isPrivate = false;
   Uint8List? _imageBytes;
   String? _currentAvatarUrl;
 
@@ -40,6 +41,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       _displayNameController.text = profile.displayName ?? '';
       _bioController.text = profile.bio ?? '';
       _currentAvatarUrl = profile.avatarUrl;
+      _isPrivate = profile.isPrivate;
       if (mounted) setState(() {});
     }
   }
@@ -112,6 +114,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         bio: _bioController.text.trim().isEmpty 
             ? null 
             : _bioController.text.trim(),
+        isPrivate: _isPrivate,
       );
 
       // Invalidate profile cache
@@ -260,6 +263,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 prefixIcon: Icon(Icons.email),
                 border: OutlineInputBorder(),
                 enabled: false,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Privacy Settings
+            Card(
+              child: SwitchListTile(
+                title: const Text('Private Account'),
+                subtitle: const Text(
+                  'When your account is private, only followers can see your posts',
+                ),
+                value: _isPrivate,
+                onChanged: (value) => setState(() => _isPrivate = value),
+                secondary: const Icon(Icons.lock_outline),
               ),
             ),
             const SizedBox(height: 16),

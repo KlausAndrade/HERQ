@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../providers/social_providers.dart';
+import 'edit_post_dialog.dart';
 
 class PostCard extends ConsumerWidget {
   const PostCard({
@@ -168,9 +169,12 @@ class PostCard extends ConsumerWidget {
 
   Future<void> _sharePost(BuildContext context) async {
     try {
+      // Create a shareable link to the post
+      final webLink = 'https://yourapp.com/post/${post.id}'; // Update with your actual domain
+      
       final String shareText = (post.caption != null && post.caption!.isNotEmpty)
-          ? '${post.caption}\n\nShared from GymAI'
-          : 'Check out this post on GymAI!';
+          ? '${post.caption}\n\n$webLink'
+          : 'Check out this post on GymAI!\n$webLink';
       
       await Share.share(
         shareText,
@@ -191,6 +195,26 @@ class PostCard extends ConsumerWidget {
       builder: (context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text('Edit Post'),
+            onTap: () async {
+              Navigator.pop(context);
+              final result = await showDialog<bool>(
+                context: context,
+                builder: (context) => EditPostDialog(
+                  postId: post.id,
+                  initialCaption: post.caption ?? '',
+                ),
+              );
+
+              if (result == true && context.mounted) {
+                ref.invalidate(feedPostsProvider);
+                ref.invalidate(explorePostsProvider);
+                ref.invalidate(userPostsProvider(currentUserId));
+              }
+            },
+          ),
           ListTile(
             leading: const Icon(Icons.delete, color: Colors.red),
             title: const Text('Delete Post', style: TextStyle(color: Colors.red)),

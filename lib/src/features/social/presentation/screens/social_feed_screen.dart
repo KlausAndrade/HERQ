@@ -8,6 +8,7 @@ import '../providers/social_providers.dart';
 import '../widgets/create_post_sheet.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_completion_banner.dart';
+import '../widgets/email_verification_banner.dart';
 
 class SocialFeedScreen extends HookConsumerWidget {
   const SocialFeedScreen({super.key});
@@ -50,6 +51,7 @@ class SocialFeedScreen extends HookConsumerWidget {
               children: [
                 Column(
                   children: [
+                    const EmailVerificationBanner(),
                     const ProfileCompletionBanner(),
                     Expanded(child: _FeedTab(currentUserId: currentUser.id)),
                   ],

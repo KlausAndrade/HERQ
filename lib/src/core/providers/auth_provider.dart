@@ -80,6 +80,17 @@ class AuthService {
     await _client.auth.resetPasswordForEmail(email);
   }
 
+  // Resend email verification
+  Future<void> resendEmailVerification() async {
+    final user = _client.auth.currentUser;
+    if (user?.email != null) {
+      await _client.auth.resend(
+        type: OtpType.signup,
+        email: user!.email!,
+      );
+    }
+  }
+
   // Get current session
   Session? get currentSession => _client.auth.currentSession;
 

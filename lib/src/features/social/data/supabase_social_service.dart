@@ -22,6 +22,20 @@ class SupabaseSocialService {
     });
   }
 
+  /// Update/Edit a post
+  Future<void> updatePost({
+    required String postId,
+    String? caption,
+  }) async {
+    final updates = <String, dynamic>{
+      'updated_at': DateTime.now().toIso8601String(),
+    };
+
+    if (caption != null) updates['caption'] = caption;
+
+    await _supabase.from('posts').update(updates).eq('id', postId);
+  }
+
   /// Delete a post
   Future<void> deletePost(String postId) async {
     await _supabase.from('posts').delete().eq('id', postId);
@@ -110,6 +124,7 @@ class SupabaseSocialService {
     String? displayName,
     String? avatarUrl,
     String? bio,
+    bool? isPrivate,
   }) async {
     final updates = <String, dynamic>{
       'updated_at': DateTime.now().toIso8601String(),
@@ -118,7 +133,17 @@ class SupabaseSocialService {
     if (displayName != null) updates['display_name'] = displayName;
     if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
     if (bio != null) updates['bio'] = bio;
+    if (isPrivate != null) updates['is_private'] = isPrivate;
 
     await _supabase.from('profiles').update(updates).eq('id', userId);
+  }
+
+  /// Send email verification
+  Future<void> sendEmailVerification() async {
+    final user = _supabase.auth.currentUser;
+    if (user != null && user.email != null) {
+      // Supabase handles this automatically on signup
+      // This is a placeholder for custom verification logic if needed
+    }
   }
 }

@@ -82,12 +82,14 @@ class SupabaseProfile {
   final String? displayName;
   final String? avatarUrl;
   final String? bio;
+  final bool isPrivate;
 
   SupabaseProfile({
     required this.id,
     this.displayName,
     this.avatarUrl,
     this.bio,
+    this.isPrivate = false,
   });
 
   factory SupabaseProfile.fromJson(Map<String, dynamic> json) {
@@ -96,6 +98,7 @@ class SupabaseProfile {
       displayName: json['display_name'] as String?,
       avatarUrl: json['avatar_url'] as String?,
       bio: json['bio'] as String?,
+      isPrivate: json['is_private'] as bool? ?? false,
     );
   }
 }
@@ -136,6 +139,43 @@ final feedPostsProvider = FutureProvider.autoDispose<List<SupabasePost>>((ref) a
     print('Error fetching feed posts: $e');
     return [];
   }
+});
+
+// ===== REAL-TIME STREAM PROVIDERS =====
+
+// Real-time feed posts stream provider
+final feedPostsStreamProvider = StreamProvider.autoDispose<List<SupabasePost>>((ref) {
+  final supabase = ref.watch(supabaseProvider);
+  final user = ref.watch(currentUserProvider);
+  
+  if (user == null) return Stream.value([]);
+  
+  return supabase
+      .from('posts')
+      .stream(primaryKey: ['id'])
+      .order('created_at', ascending: false)
+      .limit(50)
+      .map((data) {
+        return (data as List)
+            .map((json) => SupabasePost.fromJson(json))
+            .toList();
+      });
+});
+
+// Real-time comments stream provider
+final postCommentsStreamProvider = StreamProvider.autoDispose.family<List<SupabaseComment>, String>((ref, postId) {
+  final supabase = ref.watch(supabaseProvider);
+  
+  return supabase
+      .from('comments')
+      .stream(primaryKey: ['id'])
+      .eq('post_id', postId)
+      .order('created_at', ascending: true)
+      .map((data) {
+        return (data as List)
+            .map((json) => SupabaseComment.fromJson(json))
+            .toList();
+      });
 });
 
 // Explore posts provider (all recent posts)
@@ -388,6 +428,22 @@ final userProfileProvider = FutureProvider.autoDispose.family<SupabaseProfile?, 
     print('Error fetching user profile: $e');
     return null;
   }
+});
+
+// ===== ACTION PROVIDERS =====
+
+// Edit post provider
+final editPostProvider = FutureProvider.autoDispose.family<void, ({String postId, String caption})>((ref, params) async {
+  final service = ref.watch(supabaseSocialServiceProvider);
+  await service.updatePost(
+    postId: params.postId,
+    caption: params.caption,
+  );
+  
+  // Invalidate related providers to refresh data
+  ref.invalidate(singlePostProvider(params.postId));
+  ref.invalidate(feedPostsProvider);
+  ref.invalidate(explorePostsProvider);
 });
 
 // Get single post by ID
