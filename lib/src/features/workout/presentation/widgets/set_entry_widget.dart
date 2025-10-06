@@ -26,6 +26,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   late TextEditingController _weightController;
   late TextEditingController _repsController;
   int? _selectedRpe;
+  bool _showRpe = false;
 
   @override
   void initState() {
@@ -37,6 +38,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
       text: widget.set.reps.toString(),
     );
     _selectedRpe = widget.set.rpe;
+    _showRpe = widget.set.rpe != null;
   }
 
   @override
@@ -119,6 +121,56 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                 ),
                 const SizedBox(width: 8),
 
+                // RPE Button (compact)
+                if (widget.set.isCompleted)
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: _selectedRpe != null
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _showRpe = !_showRpe;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _selectedRpe?.toString() ?? '-',
+                            style: TextStyle(
+                              color: _selectedRpe != null
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : Theme.of(context).colorScheme.onSurface,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            'RPE',
+                            style: TextStyle(
+                              color: _selectedRpe != null
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : Theme.of(context).colorScheme.onSurface,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                const SizedBox(width: 8),
+
                 // Complete Button
                 IconButton(
                   onPressed: () {
@@ -139,49 +191,79 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
               ],
             ),
 
-            // RPE Selector
-            if (widget.set.isCompleted || _selectedRpe != null) ...[
+            // RPE Selector (expandable)
+            if (_showRpe && widget.set.isCompleted) ...[
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  Text(
-                    'RPE:',
-                    style: Theme.of(context).textTheme.bodySmall,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color:
+                        Theme.of(context).colorScheme.outline.withOpacity(0.2),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Wrap(
-                      spacing: 4,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Rate of Perceived Exertion',
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () {
+                            setState(() {
+                              _showRpe = false;
+                            });
+                          },
+                          icon: const Icon(Icons.close, size: 16),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
                       children: List.generate(10, (index) {
                         final rpe = index + 1;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedRpe = rpe;
-                            });
-                            _updateSet(rpe: rpe);
-                          },
-                          child: Container(
-                            width: 28,
-                            height: 28,
-                            decoration: BoxDecoration(
-                              color: _selectedRpe == rpe
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .outline
-                                      .withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Center(
-                              child: Text(
-                                rpe.toString(),
-                                style: TextStyle(
-                                  color: _selectedRpe == rpe
-                                      ? Theme.of(context).colorScheme.onPrimary
-                                      : Theme.of(context).colorScheme.onSurface,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedRpe = rpe;
+                              });
+                              _updateSet(rpe: rpe);
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 2),
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: _selectedRpe == rpe
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .outline
+                                        .withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  rpe.toString(),
+                                  style: TextStyle(
+                                    color: _selectedRpe == rpe
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
@@ -189,8 +271,8 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                         );
                       }),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ],
