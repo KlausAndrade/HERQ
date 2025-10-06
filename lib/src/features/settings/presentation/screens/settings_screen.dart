@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/widgets/animated_switch.dart';
+import '../../../../core/widgets/app_card.dart';
+import '../../../../core/services/snackbar_service.dart';
 import '../../providers/data_export_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/workout_settings_provider.dart';
@@ -66,9 +69,7 @@ class SettingsScreen extends ConsumerWidget {
                           final authService = ref.read(authServiceProvider);
                           await authService.signOut();
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Signed out successfully')),
-                            );
+                            SnackbarService.showSuccess(context, 'Signed out successfully');
                           }
                         },
                       ),
@@ -142,28 +143,34 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => _showWeightUnitDialog(context, ref),
                 ),
                 const Divider(height: 1),
-                SwitchListTile(
-                  secondary: const Icon(Icons.vibration),
+                ListTile(
+                  leading: const Icon(Icons.vibration),
                   title: const Text('Haptic Feedback'),
                   subtitle: const Text('Vibrate on timer completion'),
-                  value: workoutSettings.hapticFeedback,
-                  onChanged: (value) {
-                    ref
-                        .read(workoutSettingsProvider.notifier)
-                        .setHapticFeedback(value);
-                  },
+                  trailing: AnimatedSwitch(
+                    value: workoutSettings.hapticFeedback,
+                    onChanged: (value) {
+                      ref
+                          .read(workoutSettingsProvider.notifier)
+                          .setHapticFeedback(value);
+                    },
+                    thumbIcon: Icons.vibration,
+                  ),
                 ),
                 const Divider(height: 1),
-                SwitchListTile(
-                  secondary: const Icon(Icons.play_circle_outline),
+                ListTile(
+                  leading: const Icon(Icons.play_circle_outline),
                   title: const Text('Auto-start Rest Timer'),
                   subtitle: const Text('Start timer after completing a set'),
-                  value: workoutSettings.autoStartRestTimer,
-                  onChanged: (value) {
-                    ref
-                        .read(workoutSettingsProvider.notifier)
-                        .setAutoStartRestTimer(value);
-                  },
+                  trailing: AnimatedSwitch(
+                    value: workoutSettings.autoStartRestTimer,
+                    onChanged: (value) {
+                      ref
+                          .read(workoutSettingsProvider.notifier)
+                          .setAutoStartRestTimer(value);
+                    },
+                    thumbIcon: Icons.timer,
+                  ),
                 ),
               ],
             ),

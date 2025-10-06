@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/providers/live_activity_provider.dart';
 import '../../domain/models/active_workout.dart';
 import '../providers/active_workout_provider.dart';
 
@@ -12,11 +13,15 @@ class SetEntryWidget extends ConsumerStatefulWidget {
     required this.setNumber,
     required this.onChanged,
     this.restTimerSeconds = 90,
+    this.exerciseName,
+    this.totalSets,
   });
   final ActiveSet set;
   final int setNumber;
   final ValueChanged<ActiveSet> onChanged;
   final int restTimerSeconds;
+  final String? exerciseName;
+  final int? totalSets;
 
   @override
   ConsumerState<SetEntryWidget> createState() => _SetEntryWidgetState();
@@ -321,7 +326,17 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   }
 
   void _startRestTimer() {
-    // Start rest timer with the exercise's configured duration
-    ref.read(restTimerProvider.notifier).startTimer(widget.restTimerSeconds);
+    // Get live activity service
+    final liveActivityService = ref.read(liveActivityServiceProvider);
+    
+    // Start rest timer with the exercise's configured duration and context
+    ref.read(restTimerProvider.notifier).startTimer(
+          widget.restTimerSeconds,
+          exerciseName: widget.exerciseName,
+          currentSet: widget.setNumber,
+          totalSets: widget.totalSets,
+          targetReps: widget.set.reps > 0 ? widget.set.reps : null,
+          liveActivityService: liveActivityService,
+        );
   }
 }

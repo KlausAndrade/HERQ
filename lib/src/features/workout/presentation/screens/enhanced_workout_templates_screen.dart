@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/database/database.dart';
+import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/skeleton_loader.dart';
 import '../providers/template_providers.dart';
 
 class WorkoutTemplatesScreen extends ConsumerStatefulWidget {
@@ -50,7 +54,14 @@ class _WorkoutTemplatesScreenState
         ],
       ),
       body: templatesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: 5,
+          itemBuilder: (context, index) => const Padding(
+            padding: EdgeInsets.only(bottom: 16),
+            child: SkeletonWorkoutCard(),
+          ),
+        ),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -59,8 +70,10 @@ class _WorkoutTemplatesScreenState
               const SizedBox(height: 16),
               Text('Error loading templates: $error'),
               const SizedBox(height: 16),
-              ElevatedButton(
+              AppButton(
                 onPressed: () => ref.refresh(workoutTemplatesProvider),
+                variant: AppButtonVariant.primary,
+                icon: Icons.refresh,
                 child: const Text('Retry'),
               ),
             ],
@@ -216,16 +229,15 @@ class _WorkoutTemplatesScreenState
   }
 
   Widget _buildTemplateCard(WorkoutTemplate template) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: _isEditing ? null : () => _startWorkout(template.id),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+    return AppCard(
+      variant: AppCardVariant.elevated,
+      heroTag: 'template-${template.id}',
+      onTap: _isEditing ? null : () => _startWorkout(template.id),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
               Row(
                 children: [
                   Container(
@@ -359,52 +371,16 @@ class _WorkoutTemplatesScreenState
             ],
           ),
         ),
-      ),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.fitness_center_outlined,
-              size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No workout templates',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Create your first template to get started with structured workouts',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => context.push('/template-builder'),
-              icon: const Icon(Icons.add),
-              label: const Text('Create Template'),
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () => _initializeDefaultTemplates(),
-              child: const Text('Load Default Templates'),
-            ),
-          ],
-        ),
-      ),
+    return EmptyState(
+      title: 'No Workout Templates',
+      subtitle: 'Create your first template to get started with structured workouts',
+      icon: Icons.fitness_center_outlined,
+      actionText: 'Create Template',
+      onAction: () => context.push('/template-builder'),
     );
   }
 

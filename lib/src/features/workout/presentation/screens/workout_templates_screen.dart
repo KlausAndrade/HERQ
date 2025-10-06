@@ -2,8 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../providers/active_workout_provider.dart';
+
 class WorkoutTemplatesScreen extends ConsumerWidget {
   const WorkoutTemplatesScreen({super.key});
+
+  Future<void> _handleStartWorkout({
+    required BuildContext context,
+    required WidgetRef ref,
+    required String templateId,
+  }) async {
+    final activeWorkout = ref.read(activeWorkoutProvider);
+
+    if (activeWorkout != null) {
+      // Show confirmation dialog
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Workout in Progress'),
+          content: Text(
+            'You have an active workout "${activeWorkout.name}" in progress. '
+            'Starting a new workout will end the current one.\n\n'
+            'Do you want to continue?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Start New Workout'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) {
+        return;
+      }
+    }
+
+    // Navigate to active workout with template
+    if (context.mounted) {
+      context.go('/active-workout?templateId=$templateId');
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
@@ -34,7 +78,11 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
               description: 'Chest, shoulders, and triceps workout',
               exercises: const ['Bench Press', 'Overhead Press', 'Push-up'],
               duration: '60 min',
-              onTap: () => context.go('/active-workout?templateId=push_day'),
+              onTap: () => _handleStartWorkout(
+                context: context,
+                ref: ref,
+                templateId: 'push_day',
+              ),
             ),
             const SizedBox(height: 8),
             _WorkoutTemplateCard(
@@ -42,7 +90,11 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
               description: 'Back and biceps workout',
               exercises: const ['Deadlift', 'Pull-up'],
               duration: '60 min',
-              onTap: () => context.go('/active-workout?templateId=pull_day'),
+              onTap: () => _handleStartWorkout(
+                context: context,
+                ref: ref,
+                templateId: 'pull_day',
+              ),
             ),
             const SizedBox(height: 8),
             _WorkoutTemplateCard(
@@ -50,7 +102,11 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
               description: 'Lower body workout',
               exercises: const ['Squat', 'Deadlift'],
               duration: '60 min',
-              onTap: () => context.go('/active-workout?templateId=leg_day'),
+              onTap: () => _handleStartWorkout(
+                context: context,
+                ref: ref,
+                templateId: 'leg_day',
+              ),
             ),
             const SizedBox(height: 24),
 

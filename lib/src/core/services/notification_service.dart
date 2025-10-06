@@ -1,6 +1,10 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:vibration/vibration.dart';
+
+// Global stream controller for timer actions from notifications
+final timerActionStreamController = StreamController<String>.broadcast();
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -12,12 +16,16 @@ class NotificationService {
 
   bool _initialized = false;
 
+  // Notification IDs
+  static const int _timerNotificationId = 1;
+  static const int _timerCompleteNotificationId = 2;
+
   Future<void> initialize() async {
     if (_initialized) return;
 
     const initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    
+
     const initializationSettingsIOS = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -31,10 +39,11 @@ class NotificationService {
 
     await _notifications.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Handle notification tapped
-      },
+      onDidReceiveNotificationResponse: _handleNotificationResponse,
     );
+
+    // Handle background notification actions
+    await _setupBackgroundActionHandler();
 
     // Request permissions for iOS
     await _notifications
@@ -47,6 +56,34 @@ class NotificationService {
         );
 
     _initialized = true;
+  }
+
+  Future<void> _setupBackgroundActionHandler() async {
+    // This allows handling notification actions even when app is in background
+    // The actual handler is set up via method channel callbacks
+  }
+
+  void _handleNotificationResponse(NotificationResponse response) {
+    final payload = response.payload;
+    final actionId = response.actionId;
+
+    if (actionId != null && payload != null) {
+      // Handle action button clicks
+      _handleTimerAction(actionId, payload);
+    } else if (payload != null) {
+      // Handle notification tap (open app to workout)
+      _handleNotificationTap(payload);
+    }
+  }
+
+  void _handleTimerAction(String actionId, String payload) {
+    // Emit action to stream so RestTimerNotifier can handle it
+    timerActionStreamController.add(actionId);
+  }
+
+  void _handleNotificationTap(String payload) {
+    // Navigate to active workout screen
+    print('Notification tapped: $payload');
   }
 
   Future<void> showTimerCompleteNotification({
@@ -78,11 +115,100 @@ class NotificationService {
     );
 
     await _notifications.show(
-      0, // notification id
+      _timerCompleteNotificationId, // notification id
       title,
       body,
       notificationDetails,
     );
+  }
+
+  /// Shows an interactive notification for the active rest timer with action buttons
+  Future<void> showTimerNotification({
+    required int remainingSeconds,
+    required int totalSeconds,
+    String? exerciseName,
+    int? currentSet,
+    int? totalSets,
+    int? targetReps,
+  }) async {
+    await initialize();
+
+    final minutes = remainingSeconds ~/ 60;
+    final seconds = remainingSeconds % 60;
+    final timeString =
+        '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    final progress =
+        ((totalSeconds - remainingSeconds) / totalSeconds * 100).toInt();
+
+    // Build title and body with exercise context
+    final title = exerciseName ?? '⏱️ Rest Timer';
+    final setInfo = currentSet != null && totalSets != null
+        ? 'Set $currentSet of $totalSets'
+        : '';
+    final repsInfo = targetReps != null ? ' • $targetReps reps' : '';
+    final body = setInfo.isNotEmpty
+        ? '$setInfo$repsInfo • $timeString'
+        : 'Time remaining: $timeString';
+
+    // Create action buttons for Android
+    final androidActions = <AndroidNotificationAction>[
+      const AndroidNotificationAction(
+        'subtract_15',
+        '-15s',
+        showsUserInterface: false,
+      ),
+      const AndroidNotificationAction(
+        'add_15',
+        '+15s',
+        showsUserInterface: false,
+      ),
+      const AndroidNotificationAction(
+        'skip',
+        'Skip',
+        showsUserInterface: false,
+      ),
+    ];
+
+    final androidDetails = AndroidNotificationDetails(
+      'timer_ongoing_channel',
+      'Active Timer',
+      channelDescription: 'Shows the current rest timer countdown with controls',
+      importance: Importance.defaultImportance,
+      priority: Priority.defaultPriority,
+      ongoing: true,
+      autoCancel: false,
+      showProgress: true,
+      maxProgress: 100,
+      progress: progress,
+      playSound: false,
+      enableVibration: false,
+      icon: '@mipmap/ic_launcher',
+      actions: androidActions,
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: false,
+    );
+
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _notifications.show(
+      _timerNotificationId,
+      title,
+      body,
+      notificationDetails,
+      payload: 'timer_active',
+    );
+  }
+
+  /// Cancels the ongoing timer notification
+  Future<void> cancelTimerNotification() async {
+    await _notifications.cancel(_timerNotificationId);
   }
 
   Future<void> vibrateTimerComplete() async {

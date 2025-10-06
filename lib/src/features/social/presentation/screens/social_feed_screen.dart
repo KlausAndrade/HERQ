@@ -4,6 +4,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/widgets/animated_fab.dart';
+import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/skeleton_loader.dart';
+import '../../../../core/widgets/custom_refresh_indicator.dart';
 import '../providers/social_providers.dart';
 import '../widgets/create_post_sheet.dart';
 import '../widgets/post_card.dart';
@@ -63,9 +67,10 @@ class SocialFeedScreen extends HookConsumerWidget {
                 _ExploreTab(currentUserId: currentUser.id),
               ],
             ),
-            floatingActionButton: FloatingActionButton(
+            floatingActionButton: AnimatedFAB(
+              icon: Icons.add,
               onPressed: () => _showCreatePost(context),
-              child: const Icon(Icons.add),
+              tooltip: 'Create Post',
             ),
           ),
         );
@@ -110,7 +115,14 @@ class _FeedTab extends ConsumerWidget {
 
     return feedAsync.when(
       data: (feedItems) => _buildPostList(context, ref, feedItems, currentUserId),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: 5,
+        itemBuilder: (_, __) => const Padding(
+          padding: EdgeInsets.only(bottom: 16),
+          child: SkeletonCard(height: 200),
+        ),
+      ),
       error: (error, stack) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

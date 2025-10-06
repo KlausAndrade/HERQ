@@ -3,6 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/database/database.dart';
+import '../../../../core/widgets/animated_switch.dart';
+import '../../../../core/widgets/animated_fab.dart';
+import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/skeleton_loader.dart';
 import '../providers/exercise_providers.dart';
 import '../providers/exercise_favorites_provider.dart';
 
@@ -98,13 +103,14 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          Switch(
+                          AnimatedSwitch(
                             value: _showOnlyFavorites,
                             onChanged: (value) {
                               setState(() {
                                 _showOnlyFavorites = value;
                               });
                             },
+                            thumbIcon: Icons.favorite,
                           ),
                         ],
                       ),
@@ -121,7 +127,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          Switch(
+                          AnimatedSwitch(
                             value: _showVariants,
                             onChanged: (value) {
                               setState(() {
@@ -207,11 +213,12 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
             child: exercisesAsync.when(
               data: (exercises) {
                 if (exercises.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No exercises found',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
+                  return EmptyState(
+                    title: 'No Exercises Found',
+                    subtitle: 'Try adjusting your filters or create a custom exercise',
+                    icon: Icons.fitness_center_outlined,
+                    actionText: 'Create Exercise',
+                    onAction: () => context.push('/exercises/create'),
                   );
                 }
 
@@ -227,8 +234,13 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                   },
                 );
               },
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
+              loading: () => ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: 8,
+                itemBuilder: (context, index) => const Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: SkeletonListTile(),
+                ),
               ),
               error: (error, stack) => Center(
                 child: Column(
@@ -253,9 +265,9 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: AnimatedFAB(
+        icon: Icons.add,
         onPressed: () => context.push('/exercises/create'),
-        child: const Icon(Icons.add),
         tooltip: 'Create Exercise',
       ),
       bottomNavigationBar: _buildBottomNavigation(context),
@@ -465,9 +477,12 @@ class _ExerciseCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Card(
-        margin: const EdgeInsets.only(bottom: 8),
+  Widget build(BuildContext context) => AppCard(
+        variant: AppCardVariant.elevated,
+        heroTag: 'exercise-${exercise.id}',
+        onTap: onTap,
         child: ListTile(
+          contentPadding: const EdgeInsets.all(12),
           leading: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(

@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/services/live_activity_service.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../domain/models/active_workout.dart';
 import 'exercise_timer_preferences_provider.dart';
@@ -386,25 +387,118 @@ final restTimerProvider =
         (ref) => RestTimerNotifier());
 
 class RestTimerNotifier extends StateNotifier<RestTimerState> {
-  RestTimerNotifier() : super(const RestTimerState());
-  Timer? _timer;
-  final NotificationService _notificationService = NotificationService();
+  RestTimerNotifier() : super(const RestTimerState()) {
+    // Listen to notification actions
+    _actionSubscription = timerActionStreamController.stream.listen((action) {
+      switch (action) {
+        case 'add_15':
+          addTime(15);
+          break;
+        case 'subtract_15':
+          subtractTime(15);
+          break;
+        case 'skip':
+          stopTimer();
+          _onTimerComplete();
+          break;
+      }
+    });
+  }
 
-  void startTimer(int durationSeconds) {
+  Timer? _timer;
+  StreamSubscription<String>? _actionSubscription;
+  final NotificationService _notificationService = NotificationService();
+  LiveActivityService? _liveActivityService;
+
+  void startTimer(
+    int durationSeconds, {
+    String? exerciseName,
+    int? currentSet,
+    int? totalSets,
+    int? targetReps,
+    LiveActivityService? liveActivityService,
+  }) {
     _timer?.cancel();
+    _liveActivityService = liveActivityService;
+    
     state = RestTimerState(
       isActive: true,
       remainingSeconds: durationSeconds,
       totalSeconds: durationSeconds,
+      exerciseName: exerciseName,
+      currentSet: currentSet,
+      totalSets: totalSets,
+      targetReps: targetReps,
     );
+
+    // Start live activity if service provided, otherwise fallback to notification
+    if (_liveActivityService != null && exerciseName != null && currentSet != null && totalSets != null && targetReps != null) {
+      _liveActivityService!.startTimerActivity(
+        exerciseName: exerciseName,
+        currentSet: currentSet,
+        totalSets: totalSets,
+        targetReps: targetReps,
+        remainingSeconds: durationSeconds,
+      );
+      
+      // Listen for action button taps
+      _actionSubscription?.cancel();
+      _actionSubscription = _liveActivityService!.actionStream.listen((action) {
+        switch (action) {
+          case 'subtract_15':
+            subtractTime(15);
+            break;
+          case 'add_15':
+            addTime(15);
+            break;
+          case 'skip':
+            skipTimer();
+            break;
+        }
+      });
+    } else {
+      // Fallback to regular notification
+      _notificationService.showTimerNotification(
+        remainingSeconds: durationSeconds,
+        totalSeconds: durationSeconds,
+        exerciseName: exerciseName,
+        currentSet: currentSet,
+        totalSets: totalSets,
+        targetReps: targetReps,
+      );
+    }
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.remainingSeconds > 0) {
+        final newRemainingSeconds = state.remainingSeconds - 1;
         state = RestTimerState(
           isActive: true,
-          remainingSeconds: state.remainingSeconds - 1,
+          remainingSeconds: newRemainingSeconds,
           totalSeconds: state.totalSeconds,
+          exerciseName: state.exerciseName,
+          currentSet: state.currentSet,
+          totalSets: state.totalSets,
+          targetReps: state.targetReps,
         );
+
+        // Update live activity or notification every 5 seconds or when <= 10 seconds remaining
+        // This reduces updates while keeping it responsive at the end
+        if (newRemainingSeconds % 5 == 0 || newRemainingSeconds <= 10) {
+          if (_liveActivityService != null) {
+            _liveActivityService!.updateTimer(
+              remainingSeconds: newRemainingSeconds,
+            );
+          } else {
+            _notificationService.showTimerNotification(
+              remainingSeconds: newRemainingSeconds,
+              totalSeconds: state.totalSeconds,
+              exerciseName: state.exerciseName,
+              currentSet: state.currentSet,
+              totalSets: state.totalSets,
+              targetReps: state.targetReps,
+            );
+          }
+        }
       } else {
         timer.cancel();
         state = const RestTimerState();
@@ -415,7 +509,15 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
   }
 
   Future<void> _onTimerComplete() async {
-    // Show notification
+    // End live activity or cancel notification
+    if (_liveActivityService != null) {
+      await _liveActivityService!.endTimerActivity();
+      _actionSubscription?.cancel();
+    } else {
+      await _notificationService.cancelTimerNotification();
+    }
+
+    // Show completion notification
     await _notificationService.showTimerCompleteNotification(
       title: '⏰ Rest Timer Complete!',
       body: 'Time to start your next set! 💪',
@@ -428,11 +530,93 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
   void stopTimer() {
     _timer?.cancel();
     state = const RestTimerState();
+    // Cancel notification when timer is stopped
+    _notificationService.cancelTimerNotification();
+  }
+
+  /// Add 15 seconds to the timer
+  void addTime(int seconds) {
+    if (state.isActive) {
+      final newRemainingSeconds = state.remainingSeconds + seconds;
+      state = RestTimerState(
+        isActive: true,
+        remainingSeconds: newRemainingSeconds,
+        totalSeconds: state.totalSeconds,
+        exerciseName: state.exerciseName,
+        currentSet: state.currentSet,
+        totalSets: state.totalSets,
+        targetReps: state.targetReps,
+      );
+
+      // Update live activity or notification immediately to show new time
+      if (_liveActivityService != null) {
+        _liveActivityService!.updateTimer(
+          remainingSeconds: newRemainingSeconds,
+        );
+      } else {
+        _notificationService.showTimerNotification(
+          remainingSeconds: newRemainingSeconds,
+          totalSeconds: state.totalSeconds,
+          exerciseName: state.exerciseName,
+          currentSet: state.currentSet,
+          totalSets: state.totalSets,
+          targetReps: state.targetReps,
+        );
+      }
+    }
+  }
+
+  /// Subtract 15 seconds from the timer (minimum 0)
+  void subtractTime(int seconds) {
+    if (state.isActive) {
+      final newRemainingSeconds = (state.remainingSeconds - seconds).clamp(0, state.totalSeconds);
+      
+      if (newRemainingSeconds == 0) {
+        // Timer completed by user action
+        stopTimer();
+        _onTimerComplete();
+      } else {
+        state = RestTimerState(
+          isActive: true,
+          remainingSeconds: newRemainingSeconds,
+          totalSeconds: state.totalSeconds,
+          exerciseName: state.exerciseName,
+          currentSet: state.currentSet,
+          totalSets: state.totalSets,
+          targetReps: state.targetReps,
+        );
+
+        // Update live activity or notification immediately to show new time
+        if (_liveActivityService != null) {
+          _liveActivityService!.updateTimer(
+            remainingSeconds: newRemainingSeconds,
+          );
+        } else {
+          _notificationService.showTimerNotification(
+            remainingSeconds: newRemainingSeconds,
+            totalSeconds: state.totalSeconds,
+            exerciseName: state.exerciseName,
+            currentSet: state.currentSet,
+            totalSets: state.totalSets,
+            targetReps: state.targetReps,
+          );
+        }
+      }
+    }
+  }
+
+  /// Skip the timer and go to completion
+  void skipTimer() {
+    if (state.isActive) {
+      stopTimer();
+      _onTimerComplete();
+    }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _actionSubscription?.cancel();
     super.dispose();
   }
 }
@@ -441,10 +625,18 @@ class RestTimerState {
   final bool isActive;
   final int remainingSeconds;
   final int totalSeconds;
+  final String? exerciseName;
+  final int? currentSet;
+  final int? totalSets;
+  final int? targetReps;
 
   const RestTimerState({
     this.isActive = false,
     this.remainingSeconds = 0,
     this.totalSeconds = 0,
+    this.exerciseName,
+    this.currentSet,
+    this.totalSets,
+    this.targetReps,
   });
 }

@@ -5,7 +5,10 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_animations.dart';
+import '../../../../core/services/haptic_service.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
+import '../../../workout/presentation/providers/active_workout_provider.dart';
 import '../../../gamification/presentation/widgets/gamification_widgets.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -21,65 +24,81 @@ class HomeScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Welcome back!',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Ready for your next workout?',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.7),
-                                ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ],
+                AnimatedListItem(
+                  index: 0,
+                  delay: const Duration(milliseconds: 0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Welcome back!',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displayMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Ready for your next workout?',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.6),
+                                  ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    // Gamification badges
-                    const StreakBadge(size: 36, showText: true),
-                    const SizedBox(width: 8),
-                    const LevelIndicator(size: 48, showProgress: false),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      onPressed: () => context.go('/settings'),
-                      icon: const Icon(Icons.settings_outlined),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      // Gamification badges
+                      const StreakBadge(size: 36, showText: true),
+                      const SizedBox(width: 8),
+                      const LevelIndicator(size: 48, showProgress: false),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: () async {
+                          await HapticService.lightImpact();
+                          if (context.mounted) context.go('/settings');
+                        },
+                        icon: const Icon(Icons.settings_outlined),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppTheme.spacingLG),
 
                 // Quick Actions
-                _buildQuickActions(context),
-                const SizedBox(height: 24),
+                AnimatedListItem(
+                  index: 1,
+                  child: _buildQuickActions(context),
+                ),
+                const SizedBox(height: AppTheme.spacingLG),
 
                 // Current Stats
-                _buildCurrentStats(context, ref),
-                const SizedBox(height: 24),
+                AnimatedListItem(
+                  index: 2,
+                  child: _buildCurrentStats(context, ref),
+                ),
+                const SizedBox(height: AppTheme.spacingLG),
 
                 // Recent Workouts
-                _buildRecentWorkouts(context, ref),
+                AnimatedListItem(
+                  index: 3,
+                  child: _buildRecentWorkouts(context, ref),
+                ),
               ],
             ),
           ),
@@ -87,126 +106,148 @@ class HomeScreen extends ConsumerWidget {
         bottomNavigationBar: _buildBottomNavigation(context),
       );
 
-  Widget _buildQuickActions(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Quick Actions',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(height: 12),
-          Row(
+  Widget _buildQuickActions(BuildContext context) => Consumer(
+        builder: (context, ref, child) {
+          final activeWorkout = ref.watch(activeWorkoutProvider);
+          final hasActiveWorkout = activeWorkout != null;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _QuickActionCard(
-                  title: 'Start Workout',
-                  subtitle: 'Begin a new session',
-                  icon: Icons.play_arrow,
-                  color: AppTheme.primaryColor,
-                  onTap: () => context.go('/workout-templates'),
-                ),
+              Text(
+                'Quick Actions',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _QuickActionCard(
-                  title: 'Achievements',
-                  subtitle: 'Track your progress',
-                  icon: Icons.emoji_events,
-                  color: Colors.amber,
-                  onTap: () => context.go('/gamification'),
-                ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _QuickActionCard(
+                      title:
+                          hasActiveWorkout ? 'Resume Workout' : 'Start Workout',
+                      subtitle: hasActiveWorkout
+                          ? 'Continue ${activeWorkout.name}'
+                          : 'Begin a new session',
+                      icon: hasActiveWorkout
+                          ? Icons.play_circle_filled
+                          : Icons.play_arrow,
+                      color: hasActiveWorkout
+                          ? Colors.orange
+                          : AppTheme.primaryColor,
+                      onTap: () async {
+                        if (hasActiveWorkout) {
+                          // Resume active workout
+                          context.go('/active-workout');
+                        } else {
+                          // Start new workout
+                          context.go('/workout-templates');
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickActionCard(
+                      title: 'Achievements',
+                      subtitle: 'Track your progress',
+                      icon: Icons.emoji_events,
+                      color: Colors.amber,
+                      onTap: () => context.go('/gamification'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _QuickActionCard(
+                      title: 'View Progress',
+                      subtitle: 'Check your stats',
+                      icon: Icons.trending_up,
+                      color: AppTheme.secondaryColor,
+                      onTap: () => context.go('/progress'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _QuickActionCard(
+                      title: 'Exercise Library',
+                      subtitle: 'Browse exercises',
+                      icon: Icons.fitness_center,
+                      color: AppTheme.accentColor,
+                      onTap: () => context.go('/exercises'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickActionCard(
+                      title: 'History',
+                      subtitle: 'Past workouts',
+                      icon: Icons.history,
+                      color: Colors.purple,
+                      onTap: () => context.go('/workout-history'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _QuickActionCard(
+                      title: 'Social Feed',
+                      subtitle: 'Friends & activity',
+                      icon: Icons.people,
+                      color: Colors.blue,
+                      onTap: () => context.go('/social'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickActionCard(
+                      title: 'Leaderboards',
+                      subtitle: 'Compare & compete',
+                      icon: Icons.emoji_events,
+                      color: Colors.amber,
+                      onTap: () => context.go('/leaderboards'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _QuickActionCard(
+                      title: 'AI Coach',
+                      subtitle: 'Smart training help',
+                      icon: Icons.psychology,
+                      color: Colors.teal,
+                      onTap: () => context.go('/ai-coach'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickActionCard(
+                      title: 'Settings',
+                      subtitle: 'App preferences',
+                      icon: Icons.settings,
+                      color: Colors.grey,
+                      onTap: () => context.go('/settings'),
+                    ),
+                  ),
+                ],
               ),
             ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _QuickActionCard(
-                  title: 'View Progress',
-                  subtitle: 'Check your stats',
-                  icon: Icons.trending_up,
-                  color: AppTheme.secondaryColor,
-                  onTap: () => context.go('/progress'),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _QuickActionCard(
-                  title: 'Exercise Library',
-                  subtitle: 'Browse exercises',
-                  icon: Icons.fitness_center,
-                  color: AppTheme.accentColor,
-                  onTap: () => context.go('/exercises'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _QuickActionCard(
-                  title: 'History',
-                  subtitle: 'Past workouts',
-                  icon: Icons.history,
-                  color: Colors.purple,
-                  onTap: () => context.go('/workout-history'),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _QuickActionCard(
-                  title: 'Social Feed',
-                  subtitle: 'Friends & activity',
-                  icon: Icons.people,
-                  color: Colors.blue,
-                  onTap: () => context.go('/social'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _QuickActionCard(
-                  title: 'Leaderboards',
-                  subtitle: 'Compare & compete',
-                  icon: Icons.emoji_events,
-                  color: Colors.amber,
-                  onTap: () => context.go('/leaderboards'),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _QuickActionCard(
-                  title: 'AI Coach',
-                  subtitle: 'Smart recommendations',
-                  icon: Icons.psychology,
-                  color: Colors.teal,
-                  onTap: () => context.go('/ai-coach'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _QuickActionCard(
-                  title: 'Settings',
-                  subtitle: 'App preferences',
-                  icon: Icons.settings,
-                  color: Colors.grey,
-                  onTap: () => context.go('/settings'),
-                ),
-              ),
-            ],
-          ),
-        ],
+          );
+        },
       );
 
   Widget _buildCurrentStats(BuildContext context, WidgetRef ref) {
@@ -220,8 +261,8 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Text(
               'This Week',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(height: 16),
@@ -318,8 +359,8 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Text(
               'Recent Workouts',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
             ),
             const Spacer(),
@@ -375,14 +416,21 @@ class HomeScreen extends ConsumerWidget {
                     ? workout.completedAt!.difference(workout.startedAt)
                     : Duration.zero;
 
-                return _RecentWorkoutCard(
-                  workoutId: workout.id,
-                  name: workout.name,
-                  date: DateFormat('MMM d').format(workout.startedAt),
-                  duration: duration.inMinutes > 0
-                      ? '${duration.inMinutes}m'
-                      : 'In progress',
-                  onTap: () => context.go('/workout/${workout.id}'),
+                return AnimatedListItem(
+                  index: index,
+                  delay: const Duration(milliseconds: 80),
+                  child: _RecentWorkoutCard(
+                    workoutId: workout.id,
+                    name: workout.name,
+                    date: DateFormat('MMM d').format(workout.startedAt),
+                    duration: duration.inMinutes > 0
+                        ? '${duration.inMinutes}m'
+                        : 'In progress',
+                    onTap: () async {
+                      await HapticService.lightImpact();
+                      if (context.mounted) context.go('/workout/${workout.id}');
+                    },
+                  ),
                 );
               },
             );
@@ -413,7 +461,10 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildBottomNavigation(BuildContext context) => BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: 0,
-        onTap: (index) {
+        onTap: (index) async {
+          await HapticService.selectionClick();
+          if (!context.mounted) return;
+
           switch (index) {
             case 0:
               context.go('/');
@@ -454,7 +505,7 @@ class HomeScreen extends ConsumerWidget {
       );
 }
 
-class _QuickActionCard extends StatelessWidget {
+class _QuickActionCard extends StatefulWidget {
   const _QuickActionCard({
     required this.title,
     required this.subtitle,
@@ -469,45 +520,114 @@ class _QuickActionCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Card(
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
+  State<_QuickActionCard> createState() => _QuickActionCardState();
+}
+
+class _QuickActionCardState extends State<_QuickActionCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: AppDurations.fast,
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _controller, curve: AppCurves.snappy),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    _controller.forward();
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    _controller.reverse();
+  }
+
+  void _handleTapCancel() {
+    _controller.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) => ScaleTransition(
+        scale: _scaleAnimation,
+        child: Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  widget.color.withOpacity(0.15),
+                  widget.color.withOpacity(0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+              border: Border.all(
+                color: widget.color.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: InkWell(
+              onTap: () async {
+                await HapticService.lightImpact();
+                widget.onTap();
+              },
+              onTapDown: _handleTapDown,
+              onTapUp: _handleTapUp,
+              onTapCancel: _handleTapCancel,
+              borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+              child: Padding(
+                padding: const EdgeInsets.all(AppTheme.spacingMD),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppTheme.spacingSM),
+                      decoration: BoxDecoration(
+                        color: widget.color.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(AppTheme.radiusSM),
                       ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.7),
+                      child: Icon(
+                        widget.icon,
+                        color: widget.color,
+                        size: 24,
                       ),
+                    ),
+                    const SizedBox(height: AppTheme.spacingSM),
+                    Text(
+                      widget.title,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                    const SizedBox(height: AppTheme.spacingXS),
+                    Text(
+                      widget.subtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
+                          ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -577,47 +697,87 @@ class _RecentWorkoutCard extends ConsumerWidget {
         ref.watch(exerciseCountBySessionProvider(workoutId));
 
     return Card(
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.primary.withOpacity(0.05),
+              Theme.of(context).colorScheme.surface,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          child: Icon(
-            Icons.fitness_center,
-            color: Theme.of(context).colorScheme.primary,
-            size: 20,
-          ),
-        ),
-        title: Text(
-          name,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        subtitle: exerciseCountAsync.when(
-          data: (exerciseCount) => Text(
-            '$exerciseCount exercises • $duration',
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
-          loading: () => Text(
-            'Loading... • $duration',
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
-          error: (_, __) => Text(
-            '0 exercises • $duration',
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
+          borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
           ),
         ),
-        trailing: Text(
-          date,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacingMD,
+            vertical: AppTheme.spacingSM,
+          ),
+          leading: Container(
+            padding: const EdgeInsets.all(AppTheme.spacingSM),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
+              borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.fitness_center,
+              color: Theme.of(context).colorScheme.onPrimary,
+              size: 20,
+            ),
+          ),
+          title: Text(
+            name,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          subtitle: exerciseCountAsync.when(
+            data: (exerciseCount) => Text(
+              '$exerciseCount exercises • $duration',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            loading: () => Text(
+              'Loading... • $duration',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            error: (_, __) => Text(
+              '0 exercises • $duration',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
+          trailing: Text(
+            date,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  fontWeight: FontWeight.w500,
+                ),
+          ),
+          onTap: onTap,
         ),
-        onTap: onTap,
       ),
     );
   }

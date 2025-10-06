@@ -23,6 +23,7 @@ import '../../features/social/presentation/screens/following_screen.dart';
 import '../../features/social/presentation/screens/post_detail_screen.dart';
 import '../../features/ai/presentation/screens/ai_coaching_screen.dart';
 import '../../features/gamification/presentation/screens/gamification_screen.dart';
+import '../widgets/page_transitions.dart';
 
 final routerProvider = Provider<GoRouter>((ref) => GoRouter(
       initialLocation: '/',
@@ -30,139 +31,205 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         GoRoute(
           path: '/',
           name: 'home',
-          builder: (context, state) => const HomeScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.fadeTransition(
+            const HomeScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/auth',
           name: 'auth',
-          builder: (context, state) => const AuthScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.slideUpTransition(
+            const AuthScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/workout-templates',
           name: 'workout-templates',
-          builder: (context, state) => const WorkoutTemplatesWithFoldersScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+            const WorkoutTemplatesWithFoldersScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/template-builder',
           name: 'template-builder',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final templateId = state.uri.queryParameters['templateId'];
-            return TemplateBuilderScreen(templateId: templateId);
+            return AppPageTransitions.slideRightTransition(
+              TemplateBuilderScreen(templateId: templateId),
+              key: state.pageKey,
+            );
           },
         ),
         GoRoute(
           path: '/workout/:id',
           name: 'workout-detail',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final id = state.pathParameters['id']!;
-            return WorkoutDetailScreen(workoutId: id);
+            return AppPageTransitions.sharedAxisTransition(
+              WorkoutDetailScreen(workoutId: id),
+              key: state.pageKey,
+            );
           },
         ),
         GoRoute(
           path: '/active-workout',
           name: 'active-workout',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final templateId = state.uri.queryParameters['templateId'];
-            return ActiveWorkoutScreen(templateId: templateId);
+            return AppPageTransitions.slideUpTransition(
+              ActiveWorkoutScreen(templateId: templateId),
+              key: state.pageKey,
+            );
           },
         ),
         GoRoute(
           path: '/workout-history',
           name: 'workout-history',
-          builder: (context, state) => const WorkoutHistoryScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+            const WorkoutHistoryScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/exercises',
           name: 'exercise-library',
-          builder: (context, state) => const ExerciseLibraryScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.fadeTransition(
+            const ExerciseLibraryScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/exercises/create',
           name: 'create-exercise',
-          builder: (context, state) => const CreateExerciseScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.slideUpTransition(
+            const CreateExerciseScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/exercise/:id',
           name: 'exercise-detail',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final id = state.pathParameters['id']!;
-            return ExerciseDetailScreen(exerciseId: id);
+            return AppPageTransitions.sharedAxisTransition(
+              ExerciseDetailScreen(exerciseId: id),
+              key: state.pageKey,
+            );
           },
         ),
         GoRoute(
           path: '/progress',
           name: 'progress',
-          builder: (context, state) => const ProgressScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.fadeTransition(
+            const ProgressScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/social',
           name: 'social',
-          builder: (context, state) => const SocialFeedScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.fadeTransition(
+            const SocialFeedScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/user/:id',
           name: 'user-profile',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final id = state.pathParameters['id']!;
-            return UserProfileScreen(userId: id);
+            return AppPageTransitions.slideRightTransition(
+              UserProfileScreen(userId: id),
+              key: state.pageKey,
+            );
           },
         ),
         GoRoute(
           path: '/edit-profile',
           name: 'edit-profile',
-          builder: (context, state) => const EditProfileScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.slideUpTransition(
+            const EditProfileScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/user/:id/followers',
           name: 'user-followers',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final id = state.pathParameters['id']!;
-            return FollowersScreen(userId: id);
+            return AppPageTransitions.slideRightTransition(
+              FollowersScreen(userId: id),
+              key: state.pageKey,
+            );
           },
         ),
         GoRoute(
           path: '/user/:id/following',
           name: 'user-following',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final id = state.pathParameters['id']!;
-            return FollowingScreen(userId: id);
+            return AppPageTransitions.slideRightTransition(
+              FollowingScreen(userId: id),
+              key: state.pageKey,
+            );
           },
         ),
         GoRoute(
           path: '/post/:id',
           name: 'post-detail',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final id = state.pathParameters['id']!;
-            return PostDetailScreen(postId: id);
+            return AppPageTransitions.sharedAxisTransition(
+              PostDetailScreen(postId: id),
+              key: state.pageKey,
+            );
           },
         ),
         GoRoute(
           path: '/post/:id/comments',
           name: 'post-comments',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final id = state.pathParameters['id']!;
-            return PostCommentsScreen(postId: id);
+            return AppPageTransitions.slideUpTransition(
+              PostCommentsScreen(postId: id),
+              key: state.pageKey,
+            );
           },
         ),
         GoRoute(
           path: '/leaderboards',
           name: 'leaderboards',
-          builder: (context, state) => const LeaderboardsScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+            const LeaderboardsScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/ai-coach',
           name: 'ai-coach',
-          builder: (context, state) => const AICoachingScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+            const AICoachingScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/settings',
           name: 'settings',
-          builder: (context, state) => const SettingsScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+            const SettingsScreen(),
+            key: state.pageKey,
+          ),
         ),
         GoRoute(
           path: '/gamification',
           name: 'gamification',
-          builder: (context, state) => const GamificationScreen(),
+          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+            const GamificationScreen(),
+            key: state.pageKey,
+          ),
         ),
       ],
     ));
