@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/providers/auth_provider.dart';
 import '../providers/social_providers.dart';
@@ -164,20 +165,31 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
         throw Exception('User not authenticated');
       }
 
-      final social = ref.read(socialServiceProvider);
-      
-      // TODO: Upload image to storage and get URL
+      // Upload image to Supabase Storage if selected
       String? imageUrl;
       if (_selectedImage != null) {
-        // For now, use a placeholder. In production, upload to Firebase Storage or similar
-        imageUrl = 'https://placeholder.com/${_selectedImage!.name}';
+        final bytes = await _selectedImage!.readAsBytes();
+        final fileName = '${currentUser.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final path = 'posts/$fileName';
+
+        await Supabase.instance.client.storage
+            .from('gym-images')
+            .uploadBinary(path, bytes);
+
+        imageUrl = Supabase.instance.client.storage
+            .from('gym-images')
+            .getPublicUrl(path);
       }
 
+      final social = ref.read(socialServiceProvider);
       await social.createPost(
         userId: currentUser.id,
         caption: caption,
         imageUrl: imageUrl,
       );
+
+      // Refresh the feed
+      ref.invalidate(feedPostsProvider);
 
       if (mounted) {
         Navigator.pop(context);

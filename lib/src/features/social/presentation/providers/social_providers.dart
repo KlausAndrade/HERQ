@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/database/database.dart';
@@ -20,6 +21,20 @@ final feedPostsProvider = FutureProvider.autoDispose<List<Post>>((ref) async {
   if (user == null) return [];
   
   return await social.getFeedPosts(user.id);
+});
+
+// Explore posts provider (all recent posts)
+// Explore posts provider (all recent posts)
+final explorePostsProvider = FutureProvider.autoDispose<List<Post>>((ref) async {
+  final db = ref.watch(databaseProvider);
+  if (db == null) return [];
+  
+  final posts = await (db.select(db.posts)
+    ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
+    ..limit(50)
+  ).get();
+  
+  return posts;
 });
 
 // User posts provider

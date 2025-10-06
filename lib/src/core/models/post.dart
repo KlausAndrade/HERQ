@@ -1,4 +1,6 @@
 import 'package:drift/drift.dart';
+import 'user.dart';
+import 'workout_session.dart';
 
 class Posts extends Table {
   TextColumn get id => text()();

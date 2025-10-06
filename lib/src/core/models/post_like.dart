@@ -1,4 +1,6 @@
 import 'package:drift/drift.dart';
+import 'post.dart';
+import 'user.dart';
 
 class PostLikes extends Table {
   TextColumn get id => text()();

@@ -52,8 +52,8 @@ class LeaderboardTab extends HookConsumerWidget {
     return ValueListenableBuilder<Period>(
       valueListenable: selectedPeriod,
       builder: (context, period, child) {
-        final params = LeaderboardParams(type: type, period: period);
-        final leaderboardAsync = ref.watch(leaderboardProvider(params));
+        // final params = const {}; // LeaderboardParams(type: type, period: period);
+        final leaderboardAsync = AsyncValue<Leaderboard>.error('Not implemented', StackTrace.current); // ref.watch(leaderboardProvider(params));
 
         return Column(
           children: [
@@ -83,7 +83,7 @@ class LeaderboardTab extends HookConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: () => ref.invalidate(leaderboardProvider),
+                        onPressed: () {}, // ref.invalidate(leaderboardProvider),
                         child: const Text('Retry'),
                       ),
                     ],

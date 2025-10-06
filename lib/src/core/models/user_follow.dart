@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'user.dart';
 
 class UserFollows extends Table {
   TextColumn get id => text()();
