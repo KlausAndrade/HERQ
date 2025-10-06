@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' hide JsonKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../domain/models/active_workout.dart';
 import 'exercise_timer_preferences_provider.dart';
 import 'workout_providers.dart';
@@ -387,6 +388,7 @@ final restTimerProvider =
 class RestTimerNotifier extends StateNotifier<RestTimerState> {
   RestTimerNotifier() : super(const RestTimerState());
   Timer? _timer;
+  final NotificationService _notificationService = NotificationService();
 
   void startTimer(int durationSeconds) {
     _timer?.cancel();
@@ -406,8 +408,21 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
       } else {
         timer.cancel();
         state = const RestTimerState();
+        // Timer complete - send notification and vibrate
+        _onTimerComplete();
       }
     });
+  }
+
+  Future<void> _onTimerComplete() async {
+    // Show notification
+    await _notificationService.showTimerCompleteNotification(
+      title: '⏰ Rest Timer Complete!',
+      body: 'Time to start your next set! 💪',
+    );
+
+    // Vibrate device
+    await _notificationService.vibrateTimerComplete();
   }
 
   void stopTimer() {
