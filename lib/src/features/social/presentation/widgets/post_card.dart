@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/database/database.dart';
 import '../providers/social_providers.dart';
@@ -155,7 +156,7 @@ class PostCard extends ConsumerWidget {
                 // Share button
                 IconButton(
                   icon: const Icon(Icons.share_outlined),
-                  onPressed: () => _sharePost(),
+                  onPressed: () => _sharePost(context),
                 ),
               ],
             ),
@@ -188,9 +189,31 @@ class PostCard extends ConsumerWidget {
     context.push('/post/${post.id}/comments');
   }
 
-  void _sharePost() {
-    // Implement share functionality
-    debugPrint('Share post: ${post.id}');
+  Future<void> _sharePost(BuildContext context) async {
+    try {
+      final String shareText = post.caption.isNotEmpty
+          ? '${post.caption}\n\nShared from GymAI'
+          : 'Check out this post on GymAI!';
+      
+      // If there's an image URL, share it along with the text
+      if (post.imageUrl != null && post.imageUrl!.isNotEmpty) {
+        await Share.share(
+          shareText,
+          subject: 'Post from GymAI',
+        );
+      } else {
+        await Share.share(
+          shareText,
+          subject: 'Post from GymAI',
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to share: $e')),
+        );
+      }
+    }
   }
 
   void _showPostOptions(BuildContext context, WidgetRef ref) {

@@ -15,56 +15,47 @@ class SocialFeedScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
+    final currentUser = ref.watch(currentUserProvider);
+    final tabController = useTabController(initialLength: 2);
 
     return authState.when(
       data: (user) {
-        // Show posts from the feed
-        final feedAsync = ref.watch(feedPostsProvider);
+        if (currentUser == null) {
+          return const Scaffold(
+            body: Center(child: Text('Please sign in')),
+          );
+        }
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Social Feed'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () => _showUserSearch(context, ref),
-              ),
-            ],
-          ),
-          body: feedAsync.when(
-            data: (feedItems) => _buildFeedList(context, ref, feedItems),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Failed to load feed',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    error.toString(),
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => ref.invalidate(feedPostsProvider),
-                    child: const Text('Retry'),
-                  ),
+        return DefaultTabController(
+          length: 2,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Social'),
+              bottom: TabBar(
+                controller: tabController,
+                tabs: const [
+                  Tab(icon: Icon(Icons.home), text: 'Feed'),
+                  Tab(icon: Icon(Icons.explore), text: 'Explore'),
                 ],
               ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () => _showUserSearch(context, ref),
+                ),
+              ],
             ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => _showCreatePost(context),
-            child: const Icon(Icons.add),
+            body: TabBarView(
+              controller: tabController,
+              children: [
+                _FeedTab(currentUserId: currentUser.id),
+                _ExploreTab(currentUserId: currentUser.id),
+              ],
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => _showCreatePost(context),
+              child: const Icon(Icons.add),
+            ),
           ),
         );
       },
@@ -75,60 +66,6 @@ class SocialFeedScreen extends HookConsumerWidget {
         body: Center(
           child: Text('Authentication error: $error'),
         ),
-      ),
-    );
-  }
-
-  Widget _buildFeedList(BuildContext context, WidgetRef ref, List<dynamic> feedItems) {
-    if (feedItems.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.photo_library_outlined,
-              size: 64,
-              color: Colors.grey,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'No posts yet',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Create your first post to share with the community!',
-              style: TextStyle(color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
-    final currentUser = ref.watch(currentUserProvider);
-    if (currentUser == null) {
-      return const Center(child: Text('Please sign in'));
-    }
-
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(feedPostsProvider);
-      },
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: feedItems.length,
-        itemBuilder: (context, index) {
-          final post = feedItems[index] as Post;
-          return PostCard(
-            post: post,
-            currentUserId: currentUser.id,
-          );
-        },
       ),
     );
   }
@@ -148,6 +85,147 @@ class SocialFeedScreen extends HookConsumerWidget {
       builder: (context) => const CreatePostSheet(),
     );
   }
+}
+
+// Feed Tab Widget
+class _FeedTab extends ConsumerWidget {
+  const _FeedTab({required this.currentUserId});
+  
+  final String currentUserId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final feedAsync = ref.watch(feedPostsProvider);
+
+    return feedAsync.when(
+      data: (feedItems) => _buildPostList(context, ref, feedItems, currentUserId),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Failed to load feed',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error.toString(),
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => ref.invalidate(feedPostsProvider),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Explore Tab Widget
+class _ExploreTab extends ConsumerWidget {
+  const _ExploreTab({required this.currentUserId});
+  
+  final String currentUserId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final exploreAsync = ref.watch(explorePostsProvider);
+
+    return exploreAsync.when(
+      data: (posts) => _buildPostList(context, ref, posts, currentUserId),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Failed to load posts',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error.toString(),
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => ref.invalidate(explorePostsProvider),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Shared post list builder
+Widget _buildPostList(BuildContext context, WidgetRef ref, List<dynamic> feedItems, String currentUserId) {
+  if (feedItems.isEmpty) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.photo_library_outlined,
+            size: 64,
+            color: Colors.grey,
+          ),
+          SizedBox(height: 16),
+          Text(
+            'No posts yet',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Create your first post to share with the community!',
+            style: TextStyle(color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  return RefreshIndicator(
+    onRefresh: () async {
+      ref.invalidate(feedPostsProvider);
+      ref.invalidate(explorePostsProvider);
+    },
+    child: ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: feedItems.length,
+      itemBuilder: (context, index) {
+        final post = feedItems[index] as Post;
+        return PostCard(
+          post: post,
+          currentUserId: currentUserId,
+        );
+      },
+    ),
+  );
 }
 
 class UserSearchSheet extends HookConsumerWidget {

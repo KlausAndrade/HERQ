@@ -43,6 +43,8 @@ dependencies:
   flutter_svg: ^2.0.9
   cached_network_image: ^3.3.0
   image_picker: ^1.0.7
+  share_plus: ^7.2.1
+  flutter_image_compress: ^2.1.0
   
   # Utilities
   uuid: ^4.2.1

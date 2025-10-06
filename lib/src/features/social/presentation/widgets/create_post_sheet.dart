@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../../../../core/providers/auth_provider.dart';
 import '../providers/social_providers.dart';
@@ -20,6 +21,10 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
   final _imagePicker = ImagePicker();
   XFile? _selectedImage;
   bool _isPosting = false;
+
+  // Image validation constants
+  static const int _maxImageSizeBytes = 10 * 1024 * 1024; // 10MB
+  static const int _maxDimension = 2048;
 
   @override
   void dispose() {
@@ -130,12 +135,27 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
     try {
       final image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 1080,
-        maxHeight: 1080,
+        maxWidth: _maxDimension.toDouble(),
+        maxHeight: _maxDimension.toDouble(),
         imageQuality: 85,
       );
 
       if (image != null) {
+        // Validate image size
+        final file = File(image.path);
+        final fileSize = await file.length();
+        
+        if (fileSize > _maxImageSizeBytes) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Image too large. Maximum size is 10MB'),
+              ),
+            );
+          }
+          return;
+        }
+
         setState(() => _selectedImage = image);
       }
     } catch (e) {
@@ -144,6 +164,23 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
           SnackBar(content: Text('Error picking image: $e')),
         );
       }
+    }
+  }
+
+  Future<XFile?> _compressImage(XFile file) async {
+    try {
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        '${file.path}_compressed.jpg',
+        quality: 85,
+        minWidth: 1080,
+        minHeight: 1080,
+      );
+      
+      return result;
+    } catch (e) {
+      debugPrint('Error compressing image: $e');
+      return file; // Return original if compression fails
     }
   }
 
@@ -168,7 +205,11 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
       // Upload image to Supabase Storage if selected
       String? imageUrl;
       if (_selectedImage != null) {
-        final bytes = await _selectedImage!.readAsBytes();
+        // Compress image first
+        final compressed = await _compressImage(_selectedImage!);
+        final imageToUpload = compressed ?? _selectedImage!;
+        
+        final bytes = await imageToUpload.readAsBytes();
         final fileName = '${currentUser.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
         final path = 'posts/$fileName';
 
@@ -190,6 +231,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
 
       // Refresh the feed
       ref.invalidate(feedPostsProvider);
+      ref.invalidate(explorePostsProvider);
 
       if (mounted) {
         Navigator.pop(context);
