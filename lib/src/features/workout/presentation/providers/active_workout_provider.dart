@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
@@ -285,29 +287,87 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   Future<void> finishWorkout() async {
     if (state == null) return;
 
-    // Calculate workout stats for gamification
-    final totalSets = _calculateTotalSets(state!.exercises);
-    final totalVolume = _calculateTotalVolume(state!.exercises);
-    final durationMinutes = state!.elapsedTime.inMinutes;
-
-    // Update gamification stats
-    final gamificationService = _ref.read(gamificationServiceProvider);
-    if (gamificationService != null) {
-      try {
-        await gamificationService.onWorkoutCompleted(
-          workoutId:
-              0, // Placeholder - real workout ID would come from database
-          setsCompleted: totalSets,
-          volumeLifted: totalVolume,
-          durationMinutes: durationMinutes,
-        );
-      } catch (e) {
-        // Log error but don't block workout completion
-        print('Error updating gamification stats: $e');
-      }
+    final db = database;
+    if (db == null) {
+      // Just clear state if no database
+      state = null;
+      return;
     }
 
-    state = null;
+    final workout = state!;
+    final now = DateTime.now();
+    final sessionId = const Uuid().v4();
+
+    try {
+      // Calculate workout stats
+      final totalSets = _calculateTotalSets(workout.exercises);
+      final totalVolume = _calculateTotalVolume(workout.exercises);
+      final totalReps = workout.exercises
+          .expand((e) => e.sets)
+          .where((s) => s.isCompleted)
+          .fold(0, (sum, set) => sum + set.reps);
+      final totalTonnage = workout.exercises
+          .expand((e) => e.sets)
+          .where((s) => s.isCompleted && s.weight != null)
+          .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
+
+      // Save workout session to database
+      await db.into(db.workoutSessions).insert(
+            WorkoutSessionsCompanion.insert(
+              id: sessionId,
+              name: workout.name,
+              startedAt: now.subtract(workout.elapsedTime),
+              completedAt: Value(now),
+              totalDurationSeconds: Value(workout.elapsedTime.inSeconds),
+              totalVolume: Value(totalVolume),
+              totalTonnage: Value(totalTonnage),
+              totalSets: Value(totalSets),
+              totalReps: Value(totalReps),
+            ),
+          );
+
+      // Save all completed sets to database
+      for (final exercise in workout.exercises) {
+        for (final set in exercise.sets.where((s) => s.isCompleted)) {
+          await db.into(db.setEntries).insert(
+                SetEntriesCompanion.insert(
+                  id: const Uuid().v4(),
+                  workoutSessionId: sessionId,
+                  exerciseId: exercise.id,
+                  setNumber: set.number,
+                  weight: Value(set.weight),
+                  reps: set.reps,
+                  rpe: Value(set.rpe),
+                  completedAt: now,
+                ),
+              );
+        }
+      }
+
+      // Update gamification stats
+      final gamificationService = _ref.read(gamificationServiceProvider);
+      if (gamificationService != null) {
+        try {
+          await gamificationService.onWorkoutCompleted(
+            workoutId: 0, // Using 0 as placeholder
+            setsCompleted: totalSets,
+            volumeLifted: totalVolume,
+            durationMinutes: workout.elapsedTime.inMinutes,
+          );
+        } catch (e) {
+          // Log error but don't block workout completion
+          print('Error updating gamification stats: $e');
+        }
+      }
+
+      // Clear the active workout
+      state = null;
+    } catch (e) {
+      print('Error finishing workout: $e');
+      // Still clear state even if save failed
+      state = null;
+      rethrow;
+    }
   }
 }
 
