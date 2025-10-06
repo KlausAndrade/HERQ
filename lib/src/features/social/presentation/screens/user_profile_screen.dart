@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +17,7 @@ class UserProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
+    final profileUserAsync = ref.watch(userByIdProvider(userId));
     final isCurrentUser = currentUser?.id == userId;
     final isFollowingAsync = ref.watch(isFollowingProvider(userId));
     final followersCountAsync = ref.watch(followersCountProvider(userId));
@@ -26,7 +26,15 @@ class UserProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: profileUserAsync.when(
+          data: (user) => Text(
+            user?.displayName.isNotEmpty ?? false
+                ? user!.displayName
+                : 'Profile',
+          ),
+          loading: () => const Text('Profile'),
+          error: (_, __) => const Text('Profile'),
+        ),
         actions: [
           if (isCurrentUser)
             IconButton(
@@ -37,6 +45,7 @@ class UserProfileScreen extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
+          ref.invalidate(userByIdProvider(userId));
           ref.invalidate(userPostsProvider(userId));
           ref.invalidate(followersCountProvider(userId));
           ref.invalidate(followingCountProvider(userId));
@@ -47,92 +56,144 @@ class UserProfileScreen extends ConsumerWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    // Avatar and name
-                    CircleAvatar(
-                      radius: 50,
-                      child: Text(
-                        userId[0].toUpperCase(),
-                        style: const TextStyle(fontSize: 32),
+                child: profileUserAsync.when(
+                  data: (user) => Column(
+                    children: [
+                      // Avatar and name
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: user?.avatarUrl != null
+                            ? NetworkImage(user!.avatarUrl!)
+                            : null,
+                        child: user?.avatarUrl == null
+                            ? Text(
+                                (user?.displayName.isNotEmpty ?? false
+                                        ? user!.displayName
+                                        : userId)[0]
+                                    .toUpperCase(),
+                                style: const TextStyle(fontSize: 32),
+                              )
+                            : null,
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'User ${userId.substring(0, 8)}',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Stats
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _StatColumn(
-                          label: 'Posts',
-                          value: userPostsAsync.when(
-                            data: (posts) => posts.length.toString(),
-                            loading: () => '-',
-                            error: (_, __) => '0',
-                          ),
-                        ),
-                        _StatColumn(
-                          label: 'Followers',
-                          value: followersCountAsync.when(
-                            data: (count) => count.toString(),
-                            loading: () => '-',
-                            error: (_, __) => '0',
-                          ),
-                          onTap: () => context.push('/user/$userId/followers'),
-                        ),
-                        _StatColumn(
-                          label: 'Following',
-                          value: followingCountAsync.when(
-                            data: (count) => count.toString(),
-                            loading: () => '-',
-                            error: (_, __) => '0',
-                          ),
-                          onTap: () => context.push('/user/$userId/following'),
+                      const SizedBox(height: 16),
+                      Text(
+                        user?.displayName.isNotEmpty ?? false
+                            ? user!.displayName
+                            : 'User ${userId.substring(0, 8)}',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      if (user?.email != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          user!.email!,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.6),
+                              ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                    // Follow/Edit button
-                    if (!isCurrentUser)
-                      SizedBox(
-                        width: double.infinity,
-                        child: isFollowingAsync.when(
-                          data: (isFollowing) => ElevatedButton(
-                            onPressed: () => _toggleFollow(ref, isFollowing),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isFollowing
-                                  ? Theme.of(context).colorScheme.surfaceVariant
-                                  : Theme.of(context).colorScheme.primary,
-                              foregroundColor: isFollowing
-                                  ? Theme.of(context).colorScheme.onSurfaceVariant
-                                  : Theme.of(context).colorScheme.onPrimary,
+                      // Stats
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _StatColumn(
+                            label: 'Posts',
+                            value: userPostsAsync.when(
+                              data: (posts) => posts.length.toString(),
+                              loading: () => '-',
+                              error: (_, __) => '0',
                             ),
-                            child: Text(isFollowing ? 'Following' : 'Follow'),
                           ),
-                          loading: () => const ElevatedButton(
-                            onPressed: null,
-                            child: Text('Loading...'),
+                          _StatColumn(
+                            label: 'Followers',
+                            value: followersCountAsync.when(
+                              data: (count) => count.toString(),
+                              loading: () => '-',
+                              error: (_, __) => '0',
+                            ),
+                            onTap: () => context.push('/user/$userId/followers'),
                           ),
-                          error: (_, __) => const SizedBox.shrink(),
+                          _StatColumn(
+                            label: 'Following',
+                            value: followingCountAsync.when(
+                              data: (count) => count.toString(),
+                              loading: () => '-',
+                              error: (_, __) => '0',
+                            ),
+                            onTap: () => context.push('/user/$userId/following'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Follow/Edit button
+                      if (!isCurrentUser)
+                        SizedBox(
+                          width: double.infinity,
+                          child: isFollowingAsync.when(
+                            data: (isFollowing) => ElevatedButton(
+                              onPressed: () => _toggleFollow(ref, isFollowing),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: isFollowing
+                                    ? Theme.of(context).colorScheme.surfaceVariant
+                                    : Theme.of(context).colorScheme.primary,
+                                foregroundColor: isFollowing
+                                    ? Theme.of(context).colorScheme.onSurfaceVariant
+                                    : Theme.of(context).colorScheme.onPrimary,
+                              ),
+                              child: Text(isFollowing ? 'Following' : 'Follow'),
+                            ),
+                            loading: () => const ElevatedButton(
+                              onPressed: null,
+                              child: Text('Loading...'),
+                            ),
+                            error: (_, __) => const SizedBox.shrink(),
+                          ),
+                        ),
+                      if (isCurrentUser)
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () => context.go('/settings'),
+                            child: const Text('Edit Profile'),
+                          ),
+                        ),
+                    ],
+                  ),
+                  loading: () => const Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        child: Icon(Icons.person, size: 32),
+                      ),
+                      SizedBox(height: 16),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                  error: (_, __) => Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        child: Text(
+                          userId[0].toUpperCase(),
+                          style: const TextStyle(fontSize: 32),
                         ),
                       ),
-                    if (isCurrentUser)
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton(
-                          onPressed: () => context.go('/settings'),
-                          child: const Text('Edit Profile'),
-                        ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'User ${userId.substring(0, 8)}',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

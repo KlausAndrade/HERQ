@@ -20,6 +20,7 @@ class PostCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hasLikedAsync = ref.watch(hasLikedPostProvider(post.id));
+    final postUserAsync = ref.watch(userByIdProvider(post.userId));
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -27,24 +28,65 @@ class PostCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header with user info
-          ListTile(
-            leading: CircleAvatar(
-              child: Text(post.userId[0].toUpperCase()),
+          postUserAsync.when(
+            data: (user) => ListTile(
+              leading: CircleAvatar(
+                backgroundImage: user?.avatarUrl != null
+                    ? NetworkImage(user!.avatarUrl!)
+                    : null,
+                child: user?.avatarUrl == null
+                    ? Text(
+                        (user?.displayName.isNotEmpty ?? false
+                                ? user!.displayName
+                                : post.userId)[0]
+                            .toUpperCase(),
+                      )
+                    : null,
+              ),
+              title: Text(
+                user?.displayName.isNotEmpty ?? false
+                    ? user!.displayName
+                    : 'User ${post.userId.substring(0, 8)}',
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                DateFormat('MMM d, yyyy • h:mm a').format(post.createdAt),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              trailing: currentUserId == post.userId
+                  ? IconButton(
+                      icon: const Icon(Icons.more_vert),
+                      onPressed: () => _showPostOptions(context, ref),
+                    )
+                  : null,
+              onTap: () => context.push('/user/${post.userId}'),
             ),
-            title: Text(
-              'User ${post.userId.substring(0, 8)}',
-              style: const TextStyle(fontWeight: FontWeight.w600),
+            loading: () => ListTile(
+              leading: const CircleAvatar(
+                child: Icon(Icons.person),
+              ),
+              title: Text(
+                'User ${post.userId.substring(0, 8)}',
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                DateFormat('MMM d, yyyy • h:mm a').format(post.createdAt),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
-            subtitle: Text(
-              DateFormat('MMM d, yyyy • h:mm a').format(post.createdAt),
-              style: Theme.of(context).textTheme.bodySmall,
+            error: (_, __) => ListTile(
+              leading: CircleAvatar(
+                child: Text(post.userId[0].toUpperCase()),
+              ),
+              title: Text(
+                'User ${post.userId.substring(0, 8)}',
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                DateFormat('MMM d, yyyy • h:mm a').format(post.createdAt),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
-            trailing: currentUserId == post.userId
-                ? IconButton(
-                    icon: const Icon(Icons.more_vert),
-                    onPressed: () => _showPostOptions(context, ref),
-                  )
-                : null,
           ),
 
           // Image if available

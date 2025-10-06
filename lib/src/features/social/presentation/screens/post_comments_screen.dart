@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -99,39 +98,114 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                   itemBuilder: (context, index) {
                     final comment = comments[index];
                     final isCurrentUser = comment.userId == currentUser?.id;
+                    final commentUserAsync = ref.watch(userByIdProvider(comment.userId));
 
-                    return ListTile(
-                      leading: CircleAvatar(
-                        radius: 16,
-                        child: Text(comment.userId[0].toUpperCase()),
+                    return commentUserAsync.when(
+                      data: (user) => ListTile(
+                        leading: CircleAvatar(
+                          radius: 16,
+                          backgroundImage: user?.avatarUrl != null
+                              ? NetworkImage(user!.avatarUrl!)
+                              : null,
+                          child: user?.avatarUrl == null
+                              ? Text(
+                                  (user?.displayName.isNotEmpty ?? false
+                                          ? user!.displayName
+                                          : comment.userId)[0]
+                                      .toUpperCase(),
+                                )
+                              : null,
+                        ),
+                        title: Text(
+                          user?.displayName.isNotEmpty ?? false
+                              ? user!.displayName
+                              : 'User ${comment.userId.substring(0, 8)}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(comment.comment),
+                            const SizedBox(height: 4),
+                            Text(
+                              DateFormat('MMM d, h:mm a').format(comment.createdAt),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        trailing: isCurrentUser
+                            ? IconButton(
+                                icon: const Icon(Icons.delete, size: 20),
+                                onPressed: () => _deleteComment(comment.id),
+                              )
+                            : null,
                       ),
-                      title: Text(
-                        'User ${comment.userId.substring(0, 8)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                      loading: () => ListTile(
+                        leading: const CircleAvatar(
+                          radius: 16,
+                          child: Icon(Icons.person, size: 16),
+                        ),
+                        title: Text(
+                          'User ${comment.userId.substring(0, 8)}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(comment.comment),
+                            const SizedBox(height: 4),
+                            Text(
+                              DateFormat('MMM d, h:mm a').format(comment.createdAt),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                            ),
+                          ],
                         ),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(comment.comment),
-                          const SizedBox(height: 4),
-                          Text(
-                            DateFormat('MMM d, h:mm a').format(comment.createdAt),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
+                      error: (_, __) => ListTile(
+                        leading: CircleAvatar(
+                          radius: 16,
+                          child: Text(comment.userId[0].toUpperCase()),
+                        ),
+                        title: Text(
+                          'User ${comment.userId.substring(0, 8)}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
                           ),
-                        ],
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(comment.comment),
+                            const SizedBox(height: 4),
+                            Text(
+                              DateFormat('MMM d, h:mm a').format(comment.createdAt),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        trailing: isCurrentUser
+                            ? IconButton(
+                                icon: const Icon(Icons.delete, size: 20),
+                                onPressed: () => _deleteComment(comment.id),
+                              )
+                            : null,
                       ),
-                      trailing: isCurrentUser
-                          ? IconButton(
-                              icon: const Icon(Icons.delete, size: 20),
-                              onPressed: () => _deleteComment(comment.id),
-                            )
-                          : null,
                     );
                   },
                 );

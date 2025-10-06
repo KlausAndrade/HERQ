@@ -16,6 +16,8 @@ import '../../features/social/presentation/screens/social_feed_screen.dart';
 import '../../features/social/presentation/screens/leaderboards_screen.dart';
 import '../../features/social/presentation/screens/post_comments_screen.dart';
 import '../../features/social/presentation/screens/user_profile_screen.dart';
+import '../../features/social/presentation/screens/followers_screen.dart';
+import '../../features/social/presentation/screens/following_screen.dart';
 import '../../features/ai/presentation/screens/ai_coaching_screen.dart';
 import '../../features/gamification/presentation/screens/gamification_screen.dart';
 
@@ -95,6 +97,22 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             return UserProfileScreen(userId: id);
+          },
+        ),
+        GoRoute(
+          path: '/user/:id/followers',
+          name: 'user-followers',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return FollowersScreen(userId: id);
+          },
+        ),
+        GoRoute(
+          path: '/user/:id/following',
+          name: 'user-following',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return FollowingScreen(userId: id);
           },
         ),
         GoRoute(

@@ -111,3 +111,11 @@ final searchUsersProvider = FutureProvider.autoDispose.family<List<User>, String
   if (query.isEmpty) return [];
   return await social.searchUsers(query);
 });
+
+// Get user by ID provider
+final userByIdProvider = FutureProvider.autoDispose.family<User?, String>((ref, userId) async {
+  final db = ref.watch(databaseProvider);
+  if (db == null) return null;
+  
+  return await (db.select(db.users)..where((tbl) => tbl.id.equals(userId))).getSingleOrNull();
+});

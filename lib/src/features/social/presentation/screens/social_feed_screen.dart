@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/auth_provider.dart';
@@ -153,8 +155,8 @@ class UserSearchSheet extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Implement search - for now just show empty
-    final searchResults = const AsyncValue<List<dynamic>>.data([]);
+    final searchQuery = useState('');
+    final searchResults = ref.watch(searchUsersProvider(searchQuery.value));
 
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
@@ -190,60 +192,121 @@ class UserSearchSheet extends HookConsumerWidget {
                         ),
                       ),
                       onChanged: (query) {
-                        // TODO: Implement search
+                        searchQuery.value = query.trim();
                       },
+                      autofocus: true,
                     ),
                   ],
                 ),
               ),
               Expanded(
-                child: searchResults.when(
-                  data: (users) {
-                    if (users.isEmpty) {
-                      return const Center(
-                        child: Text('No users found'),
-                      );
-                    }
+                child: searchQuery.value.isEmpty
+                    ? const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search,
+                              size: 64,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Search for users',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : searchResults.when(
+                        data: (users) {
+                          if (users.isEmpty) {
+                            return const Center(
+                              child: Text('No users found'),
+                            );
+                          }
 
-                    return ListView.builder(
-                      controller: scrollController,
-                      itemCount: users.length,
-                      itemBuilder: (context, index) {
-                        final user = users[index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: user.avatarUrl != null
-                                ? NetworkImage(user.avatarUrl!)
-                                : null,
-                            child: user.avatarUrl == null
-                                ? Text(user.displayName[0].toUpperCase())
-                                : null,
-                          ),
-                          title: Text(user.displayName),
-                          subtitle: user.bio != null ? Text(user.bio!) : null,
-                          trailing: ElevatedButton(
-                            onPressed: () {
-                              // Send friend request
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      'Friend request sent to ${user.displayName}'),
+                          return ListView.builder(
+                            controller: scrollController,
+                            itemCount: users.length,
+                            itemBuilder: (context, index) {
+                              final user = users[index];
+                              final currentUser = ref.watch(currentUserProvider);
+                              final isCurrentUser = user.id == currentUser?.id;
+                              final isFollowingAsync = ref.watch(isFollowingProvider(user.id));
+
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage: user.avatarUrl != null
+                                      ? NetworkImage(user.avatarUrl!)
+                                      : null,
+                                  child: user.avatarUrl == null
+                                      ? Text(
+                                          (user.displayName.isNotEmpty
+                                                  ? user.displayName
+                                                  : user.id)[0]
+                                              .toUpperCase())
+                                      : null,
                                 ),
+                                title: Text(
+                                  user.displayName.isNotEmpty
+                                      ? user.displayName
+                                      : 'User ${user.id.substring(0, 8)}',
+                                ),
+                                subtitle: user.email != null ? Text(user.email!) : null,
+                                trailing: isCurrentUser
+                                    ? null
+                                    : isFollowingAsync.when(
+                                        data: (isFollowing) => OutlinedButton(
+                                          onPressed: () async {
+                                            final social = ref.read(socialServiceProvider);
+                                            if (currentUser == null) return;
+
+                                            if (isFollowing) {
+                                              await social.unfollowUser(currentUser.id, user.id);
+                                            } else {
+                                              await social.followUser(currentUser.id, user.id);
+                                            }
+
+                                            ref.invalidate(isFollowingProvider(user.id));
+                                            ref.invalidate(feedPostsProvider);
+                                          },
+                                          style: OutlinedButton.styleFrom(
+                                            backgroundColor: isFollowing
+                                                ? Theme.of(context).colorScheme.surfaceVariant
+                                                : null,
+                                          ),
+                                          child: Text(isFollowing ? 'Following' : 'Follow'),
+                                        ),
+                                        loading: () => const SizedBox(
+                                          width: 80,
+                                          child: Center(
+                                            child: SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(strokeWidth: 2),
+                                            ),
+                                          ),
+                                        ),
+                                        error: (_, __) => const SizedBox.shrink(),
+                                      ),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  context.push('/user/${user.id}');
+                                },
                               );
-                              Navigator.pop(context);
                             },
-                            child: const Text('Add Friend'),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => Center(
-                    child: Text('Error: $error'),
-                  ),
-                ),
+                          );
+                        },
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
+                        error: (error, stack) => Center(
+                          child: Text('Error: $error'),
+                        ),
+                      ),
               ),
             ],
           ),
