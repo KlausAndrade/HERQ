@@ -7,6 +7,7 @@ import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../domain/models/active_workout.dart';
 import 'exercise_timer_preferences_provider.dart';
+import 'workout_providers.dart';
 import '../../../gamification/data/providers/gamification_provider.dart';
 
 // Provider for active workout state with real template data
@@ -359,6 +360,13 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           print('Error updating gamification stats: $e');
         }
       }
+
+      // Invalidate providers to refresh UI with new data
+      _ref.invalidate(workoutSessionsProvider);
+      _ref.invalidate(recentWorkoutSessionsProvider);
+      _ref.invalidate(weeklyStatsProvider);
+      _ref.invalidate(workoutStatsProvider);
+      _ref.invalidate(workoutSessionsByMonthProvider);
 
       // Clear the active workout
       state = null;

@@ -32,6 +32,8 @@ class VolumeChart extends StatelessWidget {
     final maxVolume = data.map((d) => d.volume).reduce((a, b) => a > b ? a : b);
     final minVolume = data.map((d) => d.volume).reduce((a, b) => a < b ? a : b);
     final volumeRange = maxVolume - minVolume;
+    // Ensure interval is never zero
+    final horizontalInterval = volumeRange > 0 ? volumeRange / 4 : 1.0;
 
     return SizedBox(
       height: height,
@@ -40,7 +42,7 @@ class VolumeChart extends StatelessWidget {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: volumeRange / 4,
+            horizontalInterval: horizontalInterval,
             getDrawingHorizontalLine: (value) {
               return FlLine(
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
@@ -84,7 +86,7 @@ class VolumeChart extends StatelessWidget {
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                interval: volumeRange / 4,
+                interval: horizontalInterval,
                 reservedSize: 50,
                 getTitlesWidget: (value, meta) {
                   return SideTitleWidget(
@@ -344,6 +346,8 @@ class ExerciseProgressChart extends StatelessWidget {
     final minOneRM =
         data.map((d) => d.oneRepMax).reduce((a, b) => a < b ? a : b);
     final oneRMRange = maxOneRM - minOneRM;
+    // Ensure interval is never zero
+    final horizontalInterval = oneRMRange > 0 ? oneRMRange / 4 : 1.0;
 
     return SizedBox(
       height: height,
@@ -352,7 +356,7 @@ class ExerciseProgressChart extends StatelessWidget {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: oneRMRange / 4,
+            horizontalInterval: horizontalInterval,
             getDrawingHorizontalLine: (value) {
               return FlLine(
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
@@ -396,7 +400,7 @@ class ExerciseProgressChart extends StatelessWidget {
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                interval: oneRMRange / 4,
+                interval: horizontalInterval,
                 reservedSize: 40,
                 getTitlesWidget: (value, meta) {
                   return SideTitleWidget(

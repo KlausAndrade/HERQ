@@ -23,37 +23,45 @@ class HomeScreen extends ConsumerWidget {
                 // Header
                 Row(
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome back!',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Ready for your next workout?',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.7),
-                                  ),
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome back!',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Ready for your next workout?',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.7),
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
                     ),
-                    const Spacer(),
+                    const SizedBox(width: 8),
                     // Gamification badges
                     const StreakBadge(size: 36, showText: true),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     const LevelIndicator(size: 48, showProgress: false),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     IconButton(
                       onPressed: () => context.go('/settings'),
                       icon: const Icon(Icons.settings_outlined),
@@ -530,6 +538,8 @@ class _StatItem extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
           const SizedBox(height: 4),
           Text(
@@ -539,6 +549,8 @@ class _StatItem extends StatelessWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                 ),
             textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
           ),
         ],
       );
@@ -583,9 +595,21 @@ class _RecentWorkoutCard extends ConsumerWidget {
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: exerciseCountAsync.when(
-          data: (exerciseCount) => Text('$exerciseCount exercises • $duration'),
-          loading: () => Text('Loading... • $duration'),
-          error: (_, __) => Text('0 exercises • $duration'),
+          data: (exerciseCount) => Text(
+            '$exerciseCount exercises • $duration',
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+          loading: () => Text(
+            'Loading... • $duration',
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+          error: (_, __) => Text(
+            '0 exercises • $duration',
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
         ),
         trailing: Text(
           date,

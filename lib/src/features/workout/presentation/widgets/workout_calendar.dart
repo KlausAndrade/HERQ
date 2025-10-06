@@ -337,9 +337,13 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                     title: Text(
                       workout.name,
                       style: const TextStyle(fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                     subtitle: Text(
                       '${workout.totalSets} sets • ${workout.totalVolume.toStringAsFixed(0)} kg',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                     trailing: workout.completedAt != null
                         ? Text(
