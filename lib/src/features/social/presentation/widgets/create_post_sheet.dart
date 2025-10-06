@@ -1,5 +1,6 @@
-import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -80,12 +81,32 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.file(
-                    File(_selectedImage!.path),
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  child: kIsWeb
+                      ? Image.network(
+                          _selectedImage!.path,
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )
+                      : FutureBuilder<Uint8List>(
+                          future: _selectedImage!.readAsBytes(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Image.memory(
+                                snapshot.data!,
+                                height: 200,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              );
+                            }
+                            return const SizedBox(
+                              height: 200,
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          },
+                        ),
                 ),
                 Positioned(
                   top: 8,
@@ -142,8 +163,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
 
       if (image != null) {
         // Validate image size
-        final file = File(image.path);
-        final fileSize = await file.length();
+        final bytes = await image.readAsBytes();
+        final fileSize = bytes.length;
         
         if (fileSize > _maxImageSizeBytes) {
           if (mounted) {
@@ -167,11 +188,12 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
     }
   }
 
-  Future<XFile?> _compressImage(XFile file) async {
+  Future<Uint8List> _compressImage(XFile file) async {
     try {
-      final result = await FlutterImageCompress.compressAndGetFile(
-        file.path,
-        '${file.path}_compressed.jpg',
+      final bytes = await file.readAsBytes();
+      
+      final result = await FlutterImageCompress.compressWithList(
+        bytes,
         quality: 85,
         minWidth: 1080,
         minHeight: 1080,
@@ -180,7 +202,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
       return result;
     } catch (e) {
       debugPrint('Error compressing image: $e');
-      return file; // Return original if compression fails
+      return await file.readAsBytes(); // Return original bytes if compression fails
     }
   }
 
@@ -206,16 +228,14 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
       String? imageUrl;
       if (_selectedImage != null) {
         // Compress image first
-        final compressed = await _compressImage(_selectedImage!);
-        final imageToUpload = compressed ?? _selectedImage!;
+        final compressedBytes = await _compressImage(_selectedImage!);
         
-        final bytes = await imageToUpload.readAsBytes();
         final fileName = '${currentUser.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
         final path = 'posts/$fileName';
 
         await Supabase.instance.client.storage
             .from('gym-images')
-            .uploadBinary(path, bytes);
+            .uploadBinary(path, compressedBytes);
 
         imageUrl = Supabase.instance.client.storage
             .from('gym-images')

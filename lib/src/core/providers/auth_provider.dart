@@ -65,6 +65,11 @@ class AuthService {
     return await _client.auth.signInWithOAuth(OAuthProvider.apple);
   }
 
+  // Sign in with Facebook
+  Future<bool> signInWithFacebook() async {
+    return await _client.auth.signInWithOAuth(OAuthProvider.facebook);
+  }
+
   // Sign out
   Future<void> signOut() async {
     await _client.auth.signOut();
