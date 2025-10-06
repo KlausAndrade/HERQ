@@ -152,10 +152,12 @@ git log --oneline -3
 - Not connected to real AI service
 - Can implement later with OpenAI/Claude
 
-### Leaderboards  
-- UI exists but shows "Not implemented"
-- Backend integration pending
-- Needs workout stats calculation
+### ~~Leaderboards~~ ✅ NOW IMPLEMENTED!
+- ✅ Fully functional with real workout data
+- ✅ 4 leaderboard types (Volume, Workouts, Streaks, PRs)
+- ✅ Period filtering (Daily, Weekly, Monthly, All Time)
+- ✅ Top 100 rankings with podium display
+- See `LEADERBOARDS_DOCUMENTATION.md` for details
 
 ### Push Notifications
 - Requires native platform setup
@@ -179,6 +181,7 @@ git log --oneline -3
 | Real-time Updates | ❌ | ✅ | Complete |
 | Deep Linking | ❌ | ✅ | Complete |
 | Avatar in Inputs | ❌ | ✅ | Complete |
+| **Leaderboards** | ❌ | ✅ | **Complete** |
 | Edit Profile | ✅ | ✅ | Enhanced |
 | Social Features | ✅ | ✅ | Enhanced |
 
