@@ -7,6 +7,7 @@ import '../../features/workout/presentation/screens/active_workout_screen.dart';
 import '../../features/workout/presentation/screens/workout_detail_screen.dart';
 import '../../features/workout/presentation/screens/workout_history_screen.dart';
 import '../../features/workout/presentation/screens/enhanced_workout_templates_screen.dart';
+import '../../features/workout/presentation/screens/template_builder_screen.dart';
 import '../../features/exercises/presentation/screens/exercise_library_screen.dart';
 import '../../features/exercises/presentation/screens/exercise_detail_screen.dart';
 import '../../features/progress/presentation/screens/progress_screen.dart';
@@ -32,6 +33,14 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         path: '/workout-templates',
         name: 'workout-templates',
         builder: (context, state) => const WorkoutTemplatesScreen(),
+      ),
+      GoRoute(
+        path: '/template-builder',
+        name: 'template-builder',
+        builder: (context, state) {
+          final templateId = state.uri.queryParameters['templateId'];
+          return TemplateBuilderScreen(templateId: templateId);
+        },
       ),
       GoRoute(
         path: '/workout/:id',

@@ -1,44 +1,81 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/database/database.dart';
+import '../../../../core/providers/database_provider.dart';
 import '../../domain/models/active_workout.dart';
 
-// Mock provider for active workout state
-final activeWorkoutProvider = StateNotifierProvider<ActiveWorkoutNotifier, ActiveWorkout?>((ref) => ActiveWorkoutNotifier());
+// Provider for active workout state with real template data
+final activeWorkoutProvider = StateNotifierProvider<ActiveWorkoutNotifier, ActiveWorkout?>((ref) {
+  final database = ref.watch(databaseProvider);
+  return ActiveWorkoutNotifier(database);
+});
 
 class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
-  ActiveWorkoutNotifier() : super(null);
+  final AppDatabase? database;
+  
+  ActiveWorkoutNotifier(this.database) : super(null);
 
-  void startWorkoutFromTemplate(String templateId) {
-    // Mock implementation - would fetch template and create active workout
-    final mockExercises = [
-      const ActiveExercise(
-        id: 'bench_press',
-        name: 'Bench Press',
-        sets: [
-          ActiveSet(number: 1, weight: 80, reps: 10),
-          ActiveSet(number: 2, weight: 80, reps: 10),
-          ActiveSet(number: 3, weight: 80, reps: 10),
-        ],
-      ),
-      const ActiveExercise(
-        id: 'overhead_press',
-        name: 'Overhead Press',
-        sets: [
-          ActiveSet(number: 1, weight: 50, reps: 8),
-          ActiveSet(number: 2, weight: 50, reps: 8),
-        ],
-      ),
-    ];
+  Future<void> startWorkoutFromTemplate(String templateId) async {
+    final db = database;
+    if (db == null) {
+      throw Exception('Database not available');
+    }
+    
+    try {
+      // Fetch template from database
+      final template = await (db.select(db.workoutTemplates)
+            ..where((tbl) => tbl.id.equals(templateId)))
+          .getSingleOrNull();
 
-    state = ActiveWorkout(
-      id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
-      name: _getTemplateName(templateId),
-      exercises: mockExercises,
-      elapsedTime: const Duration(minutes: 15),
-      totalSets: 5,
-      totalVolume: 650,
-    );
+      if (template == null) {
+        throw Exception('Template not found: $templateId');
+      }
+
+      // Fetch all exercises for this template
+      final exercisesList = await (db.select(db.exercises)
+            ..where((tbl) => tbl.id.isIn(template.exerciseIds)))
+          .get();
+
+      // Create exercise map for ordering
+      final exerciseMap = {for (final ex in exercisesList) ex.id: ex};
+
+      // Create active exercises in template order
+      final activeExercises = template.exerciseIds
+          .where((id) => exerciseMap.containsKey(id))
+          .map((id) {
+        final exercise = exerciseMap[id]!;
+        // Start with 3 empty sets for each exercise
+        return ActiveExercise(
+          id: exercise.id,
+          name: exercise.name,
+          sets: const [
+            ActiveSet(number: 1, reps: 0, isCompleted: false),
+            ActiveSet(number: 2, reps: 0, isCompleted: false),
+            ActiveSet(number: 3, reps: 0, isCompleted: false),
+          ],
+        );
+      }).toList();
+
+      state = ActiveWorkout(
+        id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
+        name: template.name,
+        exercises: activeExercises,
+        elapsedTime: const Duration(),
+        totalSets: activeExercises.length * 3,
+        totalVolume: 0,
+      );
+    } catch (e) {
+      // Fallback to empty workout if template fetch fails
+      state = ActiveWorkout(
+        id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
+        name: 'Quick Start Workout',
+        exercises: const [],
+        elapsedTime: const Duration(),
+        totalSets: 0,
+        totalVolume: 0,
+      );
+    }
   }
 
   void setCurrentExercise(int index) {
@@ -66,6 +103,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         id: exercise.id,
         name: exercise.name,
         sets: sets,
+        restTimerSeconds: exercise.restTimerSeconds,
       );
       
       state = ActiveWorkout(
@@ -99,6 +137,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         id: exercise.id,
         name: exercise.name,
         sets: sets,
+        restTimerSeconds: exercise.restTimerSeconds,
       );
       
       state = ActiveWorkout(
@@ -113,14 +152,87 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     }
   }
 
-  void addExercise(String exerciseName) {
-    if (state != null) {
+  Future<void> addExercise(
+    String exerciseId, {
+    double? initialWeight,
+    int restTimerSeconds = 90,
+    bool isAssisted = false,
+  }) async {
+    final db = database;
+    if (state != null && db != null) {
+      try {
+        // Find exercise by ID
+        final exercise = await (db.select(db.exercises)
+              ..where((tbl) => tbl.id.equals(exerciseId)))
+            .getSingleOrNull();
+
+        final exercises = List<ActiveExercise>.from(state!.exercises);
+        
+        if (exercise != null) {
+          // Add exercise from database with initial weight if provided
+          final initialSet = initialWeight != null
+              ? ActiveSet(number: 1, weight: initialWeight, reps: 0, isCompleted: false)
+              : const ActiveSet(number: 1, reps: 0, isCompleted: false);
+          
+          exercises.add(ActiveExercise(
+            id: exercise.id,
+            name: exercise.name,
+            sets: [initialSet],
+            restTimerSeconds: restTimerSeconds,
+          ));
+        } else {
+          // Fallback: create custom exercise
+          exercises.add(ActiveExercise(
+            id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+            name: exerciseId,
+            sets: const [ActiveSet(number: 1, reps: 0, isCompleted: false)],
+            restTimerSeconds: restTimerSeconds,
+          ));
+        }
+
+        state = ActiveWorkout(
+          id: state!.id,
+          name: state!.name,
+          exercises: exercises,
+          currentExerciseIndex: state!.currentExerciseIndex,
+          elapsedTime: state!.elapsedTime,
+          totalSets: _calculateTotalSets(exercises),
+          totalVolume: _calculateTotalVolume(exercises),
+        );
+      } catch (e) {
+        // On error, add as custom exercise
+        final exercises = List<ActiveExercise>.from(state!.exercises);
+        exercises.add(ActiveExercise(
+          id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+          name: exerciseId,
+          sets: const [ActiveSet(number: 1, reps: 0, isCompleted: false)],
+          restTimerSeconds: restTimerSeconds,
+        ));
+
+        state = ActiveWorkout(
+          id: state!.id,
+          name: state!.name,
+          exercises: exercises,
+          currentExerciseIndex: state!.currentExerciseIndex,
+          elapsedTime: state!.elapsedTime,
+          totalSets: _calculateTotalSets(exercises),
+          totalVolume: _calculateTotalVolume(exercises),
+        );
+      }
+    }
+  }
+
+  void updateExerciseRestTimer(int exerciseIndex, int newRestTimerSeconds) {
+    if (state != null && exerciseIndex >= 0 && exerciseIndex < state!.exercises.length) {
       final exercises = List<ActiveExercise>.from(state!.exercises);
-      exercises.add(ActiveExercise(
-        id: 'exercise_${DateTime.now().millisecondsSinceEpoch}',
-        name: exerciseName,
-        sets: [const ActiveSet(number: 1, reps: 0, isCompleted: false)],
-      ));
+      final exercise = exercises[exerciseIndex];
+      
+      exercises[exerciseIndex] = ActiveExercise(
+        id: exercise.id,
+        name: exercise.name,
+        sets: exercise.sets,
+        restTimerSeconds: newRestTimerSeconds,
+      );
       
       state = ActiveWorkout(
         id: state!.id,
@@ -128,8 +240,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         exercises: exercises,
         currentExerciseIndex: state!.currentExerciseIndex,
         elapsedTime: state!.elapsedTime,
-        totalSets: _calculateTotalSets(exercises),
-        totalVolume: _calculateTotalVolume(exercises),
+        totalSets: state!.totalSets,
+        totalVolume: state!.totalVolume,
       );
     }
   }
@@ -151,19 +263,6 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
   void finishWorkout() {
     state = null;
-  }
-
-  String _getTemplateName(String templateId) {
-    switch (templateId) {
-      case 'push_day':
-        return 'Push Day';
-      case 'pull_day':
-        return 'Pull Day';
-      case 'leg_day':
-        return 'Leg Day';
-      default:
-        return 'Workout';
-    }
   }
 }
 

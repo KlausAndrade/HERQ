@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../domain/models/active_workout.dart';
 import '../providers/active_workout_provider.dart';
+import '../widgets/exercise_picker_dialog.dart';
 import '../widgets/rest_timer_widget.dart';
 import '../widgets/set_entry_widget.dart';
 
@@ -27,10 +28,12 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     super.initState();
     if (widget.templateId != null) {
       // Initialize workout from template
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(activeWorkoutProvider.notifier).startWorkoutFromTemplate(widget.templateId!);
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await ref.read(activeWorkoutProvider.notifier).startWorkoutFromTemplate(widget.templateId!);
         // Auto-expand first exercise
-        _expandedExercises.add(0);
+        setState(() {
+          _expandedExercises.add(0);
+        });
       });
     } else {
       // Auto-expand first exercise if any
@@ -164,37 +167,25 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       ],
     );
 
-  void _showAddExerciseDialog(BuildContext context) {
-    final controller = TextEditingController();
-    showDialog(
+  void _showAddExerciseDialog(BuildContext context) async {
+    final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Exercise'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Exercise Name',
-            hintText: 'e.g., Squats',
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (controller.text.trim().isNotEmpty) {
-                ref.read(activeWorkoutProvider.notifier).addExercise(controller.text.trim());
-                Navigator.of(context).pop();
-              }
-            },
-            child: const Text('Add'),
-          ),
-        ],
-      ),
+      builder: (context) => const ExercisePickerDialog(),
     );
+
+    if (result != null && context.mounted) {
+      final exercise = result['exercise'];
+      final initialWeight = result['initialWeight'] as double?;
+      final restTimerSeconds = result['restTimerSeconds'] as int? ?? 90;
+      final isAssisted = result['isAssisted'] as bool? ?? false;
+
+      await ref.read(activeWorkoutProvider.notifier).addExercise(
+        exercise.id,
+        initialWeight: initialWeight,
+        restTimerSeconds: restTimerSeconds,
+        isAssisted: isAssisted,
+      );
+    }
   }
 
   void _showFinishWorkoutDialog(BuildContext context) {
@@ -234,7 +225,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   }
 }
 
-class _ExerciseCard extends StatelessWidget {
+class _ExerciseCard extends ConsumerWidget {
 
   const _ExerciseCard({
     required this.exercise,
@@ -252,7 +243,7 @@ class _ExerciseCard extends StatelessWidget {
   final VoidCallback onAddSet;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context, WidgetRef ref) => Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Column(
         children: [
@@ -285,6 +276,72 @@ class _ExerciseCard extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
+                  // Rest Timer Controls
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.timer_outlined,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Rest Timer',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(Icons.remove_circle_outline),
+                          iconSize: 20,
+                          onPressed: exercise.restTimerSeconds > 15
+                              ? () {
+                                  ref.read(activeWorkoutProvider.notifier).updateExerciseRestTimer(
+                                    exerciseIndex,
+                                    exercise.restTimerSeconds - 15,
+                                  );
+                                }
+                              : null,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${exercise.restTimerSeconds}s',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.primary,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add_circle_outline),
+                          iconSize: 20,
+                          onPressed: () {
+                            ref.read(activeWorkoutProvider.notifier).updateExerciseRestTimer(
+                              exerciseIndex,
+                              exercise.restTimerSeconds + 15,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   // Sets List
                   ListView.builder(
                     shrinkWrap: true,

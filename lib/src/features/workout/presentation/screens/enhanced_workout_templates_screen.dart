@@ -37,7 +37,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
               tooltip: 'Edit Templates',
             ),
           IconButton(
-            onPressed: () => _showCreateTemplateDialog(context),
+            onPressed: () => context.push('/template-builder'),
             icon: const Icon(Icons.add),
             tooltip: 'Create Template',
           ),
@@ -356,7 +356,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: () => _showCreateTemplateDialog(context),
+              onPressed: () => context.push('/template-builder'),
               icon: const Icon(Icons.add),
               label: const Text('Create Template'),
             ),
@@ -418,82 +418,6 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
     context.go('/active-workout?templateId=$templateId');
   }
 
-  void _showCreateTemplateDialog(BuildContext context) {
-    final nameController = TextEditingController();
-    final descriptionController = TextEditingController();
-    String selectedCategory = 'Custom';
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: const Text('Create Template'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Template Name',
-                    hintText: 'e.g., Upper Body Strength',
-                  ),
-                  autofocus: true,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    hintText: 'Brief description of the workout',
-                  ),
-                  maxLines: 2,
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: selectedCategory,
-                  decoration: const InputDecoration(
-                    labelText: 'Category',
-                  ),
-                  items: ['Custom', 'Push Pull Legs', 'Full Body', 'Upper Lower', 'PHUL', 'Strength', 'Bodybuilding']
-                      .map((category) => DropdownMenuItem(
-                            value: category,
-                            child: Text(category),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => selectedCategory = value);
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (nameController.text.trim().isNotEmpty) {
-                  _createTemplate(
-                    nameController.text.trim(),
-                    descriptionController.text.trim(),
-                    selectedCategory,
-                  );
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Create'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showTemplateMenu(BuildContext context, WorkoutTemplate template) {
     showModalBottomSheet(
       context: context,
@@ -502,6 +426,14 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
         children: [
           ListTile(
             leading: const Icon(Icons.edit),
+            title: const Text('Edit Template'),
+            onTap: () {
+              Navigator.of(context).pop();
+              context.push('/template-builder?templateId=${template.id}');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.text_fields),
             title: const Text('Rename'),
             onTap: () {
               Navigator.of(context).pop();
@@ -549,7 +481,7 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
             title: const Text('Add Template to Category'),
             onTap: () {
               Navigator.of(context).pop();
-              _showCreateTemplateDialog(context);
+              context.push('/template-builder');
             },
           ),
         ],
@@ -685,35 +617,6 @@ class _WorkoutTemplatesScreenState extends ConsumerState<WorkoutTemplatesScreen>
         ],
       ),
     );
-  }
-
-  void _createTemplate(String name, String description, String category) async {
-    // This is a simplified version - in a real app, you'd have a template builder
-    final template = WorkoutTemplate(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      description: description.isEmpty ? null : description,
-      category: category,
-      sortOrder: 0,
-      exerciseIds: [], // Would be populated in template builder
-      tags: [],
-      estimatedDurationMinutes: null,
-      isDefault: false,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-
-    final actions = ref.read(templateActionsProvider);
-    final success = await actions.createTemplate(template);
-    
-    if (success) {
-      ref.invalidate(workoutTemplatesProvider);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Template created successfully')),
-        );
-      }
-    }
   }
 
   void _renameTemplate(String templateId, String newName) async {

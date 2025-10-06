@@ -22,11 +22,13 @@ class ActiveExercise {
   final String id;
   final String name;
   final List<ActiveSet> sets;
+  final int restTimerSeconds;
 
   const ActiveExercise({
     required this.id,
     required this.name,
     required this.sets,
+    this.restTimerSeconds = 90, // Default 90 seconds rest
   });
 }
 

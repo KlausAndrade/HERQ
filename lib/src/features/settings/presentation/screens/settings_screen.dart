@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../providers/data_export_provider.dart';
 import '../../providers/theme_provider.dart';
+import '../../providers/workout_settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -10,6 +13,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final workoutSettings = ref.watch(workoutSettingsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -82,30 +86,36 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: const Icon(Icons.timer_outlined),
                   title: const Text('Default Rest Timer'),
-                  subtitle: const Text('2 minutes'),
+                  subtitle: Text(ref.read(workoutSettingsProvider.notifier).getFormattedRestTime()),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    // TODO: Show rest timer settings
-                  },
+                  onTap: () => _showRestTimerDialog(context, ref),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.scale_outlined),
                   title: const Text('Weight Unit'),
-                  subtitle: const Text('Kilograms (kg)'),
+                  subtitle: Text(ref.read(workoutSettingsProvider.notifier).getWeightUnitDisplay()),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    // TODO: Show weight unit settings
-                  },
+                  onTap: () => _showWeightUnitDialog(context, ref),
                 ),
                 const Divider(height: 1),
                 SwitchListTile(
                   secondary: const Icon(Icons.vibration),
                   title: const Text('Haptic Feedback'),
                   subtitle: const Text('Vibrate on timer completion'),
-                  value: true,
+                  value: workoutSettings.hapticFeedback,
                   onChanged: (value) {
-                    // TODO: Toggle haptic feedback
+                    ref.read(workoutSettingsProvider.notifier).setHapticFeedback(value);
+                  },
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  secondary: const Icon(Icons.play_circle_outline),
+                  title: const Text('Auto-start Rest Timer'),
+                  subtitle: const Text('Start timer after completing a set'),
+                  value: workoutSettings.autoStartRestTimer,
+                  onChanged: (value) {
+                    ref.read(workoutSettingsProvider.notifier).setAutoStartRestTimer(value);
                   },
                 ),
               ],
@@ -139,9 +149,7 @@ class SettingsScreen extends ConsumerWidget {
                   title: const Text('Export Data'),
                   subtitle: const Text('Download your workout data'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    // TODO: Export data
-                  },
+                  onTap: () => _showExportDialog(context, ref),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -256,5 +264,263 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _showRestTimerDialog(BuildContext context, WidgetRef ref) {
+    final currentSettings = ref.read(workoutSettingsProvider);
+    int selectedMinutes = currentSettings.defaultRestTimerSeconds ~/ 60;
+    int selectedSeconds = currentSettings.defaultRestTimerSeconds % 60;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Default Rest Timer'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Minutes
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_drop_up),
+                        onPressed: () {
+                          setState(() {
+                            if (selectedMinutes < 10) selectedMinutes++;
+                          });
+                        },
+                      ),
+                      Container(
+                        width: 60,
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Theme.of(context).dividerColor),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          selectedMinutes.toString(),
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.arrow_drop_down),
+                        onPressed: () {
+                          setState(() {
+                            if (selectedMinutes > 0) selectedMinutes--;
+                          });
+                        },
+                      ),
+                      const Text('min'),
+                    ],
+                  ),
+                  const SizedBox(width: 16),
+                  const Text(':', style: TextStyle(fontSize: 24)),
+                  const SizedBox(width: 16),
+                  // Seconds
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_drop_up),
+                        onPressed: () {
+                          setState(() {
+                            selectedSeconds = (selectedSeconds + 15) % 60;
+                          });
+                        },
+                      ),
+                      Container(
+                        width: 60,
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Theme.of(context).dividerColor),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          selectedSeconds.toString().padLeft(2, '0'),
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.arrow_drop_down),
+                        onPressed: () {
+                          setState(() {
+                            selectedSeconds = (selectedSeconds - 15) % 60;
+                            if (selectedSeconds < 0) selectedSeconds = 45;
+                          });
+                        },
+                      ),
+                      const Text('sec'),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final totalSeconds = (selectedMinutes * 60) + selectedSeconds;
+                if (totalSeconds > 0) {
+                  ref.read(workoutSettingsProvider.notifier).setDefaultRestTimer(totalSeconds);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showWeightUnitDialog(BuildContext context, WidgetRef ref) {
+    final currentUnit = ref.read(workoutSettingsProvider).weightUnit;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Weight Unit'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: const Text('Kilograms (kg)'),
+              value: 'kg',
+              groupValue: currentUnit,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(workoutSettingsProvider.notifier).setWeightUnit(value);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: const Text('Pounds (lb)'),
+              value: 'lb',
+              groupValue: currentUnit,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(workoutSettingsProvider.notifier).setWeightUnit(value);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showExportDialog(BuildContext context, WidgetRef ref) async {
+    final exportService = ref.read(dataExportServiceProvider);
+    final summary = await exportService.getExportSummary();
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Export Data'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Export your workout data as JSON or CSV'),
+            const SizedBox(height: 16),
+            Text('📊 Workouts: ${summary['workouts']}'),
+            Text('📝 Templates: ${summary['templates']}'),
+            Text('🏋️ Exercises: ${summary['exercises']}'),
+            Text('🏆 Personal Records: ${summary['personalRecords']}'),
+            const SizedBox(height: 16),
+            const Text(
+              'Choose export format:',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await _exportAsJson(context, ref);
+            },
+            child: const Text('JSON'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await _exportAsCsv(context, ref);
+            },
+            child: const Text('CSV'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _exportAsJson(BuildContext context, WidgetRef ref) async {
+    try {
+      final exportService = ref.read(dataExportServiceProvider);
+      final jsonData = await exportService.exportAllData();
+      
+      await Clipboard.setData(ClipboardData(text: jsonData));
+      
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Data exported to clipboard as JSON'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Export failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportAsCsv(BuildContext context, WidgetRef ref) async {
+    try {
+      final exportService = ref.read(dataExportServiceProvider);
+      final csvData = await exportService.exportWorkoutsAsCsv();
+      
+      await Clipboard.setData(ClipboardData(text: csvData));
+      
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Workouts exported to clipboard as CSV'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Export failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }
