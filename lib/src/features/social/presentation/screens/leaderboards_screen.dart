@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../domain/models/social_models.dart';
-import '../providers/social_providers.dart';
 
 class LeaderboardsScreen extends HookConsumerWidget {
   const LeaderboardsScreen({super.key});

@@ -17,7 +17,7 @@ class UserProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
-    final profileUserAsync = ref.watch(userByIdProvider(userId));
+    final profileUserAsync = ref.watch(userProfileProvider(userId));
     final isCurrentUser = currentUser?.id == userId;
     final isFollowingAsync = ref.watch(isFollowingProvider(userId));
     final followersCountAsync = ref.watch(followersCountProvider(userId));
@@ -28,8 +28,8 @@ class UserProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         title: profileUserAsync.when(
           data: (user) => Text(
-            user?.displayName.isNotEmpty ?? false
-                ? user!.displayName
+            user?.displayName?.isNotEmpty ?? false
+                ? user!.displayName!
                 : 'Profile',
           ),
           loading: () => const Text('Profile'),
@@ -45,7 +45,7 @@ class UserProfileScreen extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(userByIdProvider(userId));
+          ref.invalidate(userProfileProvider(userId));
           ref.invalidate(userPostsProvider(userId));
           ref.invalidate(followersCountProvider(userId));
           ref.invalidate(followingCountProvider(userId));
@@ -67,8 +67,8 @@ class UserProfileScreen extends ConsumerWidget {
                             : null,
                         child: user?.avatarUrl == null
                             ? Text(
-                                (user?.displayName.isNotEmpty ?? false
-                                        ? user!.displayName
+                                ((user?.displayName?.isNotEmpty ?? false)
+                                        ? user!.displayName!
                                         : userId)[0]
                                     .toUpperCase(),
                                 style: const TextStyle(fontSize: 32),
@@ -77,17 +77,17 @@ class UserProfileScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        user?.displayName.isNotEmpty ?? false
-                            ? user!.displayName
+                        (user?.displayName?.isNotEmpty ?? false)
+                            ? user!.displayName!
                             : 'User ${userId.substring(0, 8)}',
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                       ),
-                      if (user?.email != null) ...[
+                      if (user?.bio != null) ...[
                         const SizedBox(height: 8),
                         Text(
-                          user!.email!,
+                          user!.bio!,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -267,7 +267,7 @@ class UserProfileScreen extends ConsumerWidget {
     if (currentUser == null) return;
 
     try {
-      final social = ref.read(socialServiceProvider);
+      final social = ref.read(supabaseSocialServiceProvider);
       
       if (isFollowing) {
         await social.unfollowUser(currentUser.id, userId);

@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../../core/database/database.dart';
 import '../providers/social_providers.dart';
 
 class PostCard extends ConsumerWidget {
@@ -15,13 +14,14 @@ class PostCard extends ConsumerWidget {
     required this.currentUserId,
   });
 
-  final Post post;
+  final SupabasePost post;
   final String currentUserId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hasLikedAsync = ref.watch(hasLikedPostProvider(post.id));
-    final postUserAsync = ref.watch(userByIdProvider(post.userId));
+    final likesCountAsync = ref.watch(likesCountProvider(post.id));
+    final commentsCountAsync = ref.watch(commentsCountProvider(post.id));
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -29,65 +29,32 @@ class PostCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header with user info
-          postUserAsync.when(
-            data: (user) => ListTile(
-              leading: CircleAvatar(
-                backgroundImage: user?.avatarUrl != null
-                    ? NetworkImage(user!.avatarUrl!)
-                    : null,
-                child: user?.avatarUrl == null
-                    ? Text(
-                        (user?.displayName.isNotEmpty ?? false
-                                ? user!.displayName
-                                : post.userId)[0]
-                            .toUpperCase(),
-                      )
-                    : null,
-              ),
-              title: Text(
-                user?.displayName.isNotEmpty ?? false
-                    ? user!.displayName
-                    : 'User ${post.userId.substring(0, 8)}',
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                DateFormat('MMM d, yyyy • h:mm a').format(post.createdAt),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              trailing: currentUserId == post.userId
-                  ? IconButton(
-                      icon: const Icon(Icons.more_vert),
-                      onPressed: () => _showPostOptions(context, ref),
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: post.userAvatar != null
+                  ? NetworkImage(post.userAvatar!)
+                  : null,
+              child: post.userAvatar == null
+                  ? Text(
+                      (post.userName ?? post.userId)[0].toUpperCase(),
                     )
                   : null,
-              onTap: () => context.push('/user/${post.userId}'),
             ),
-            loading: () => ListTile(
-              leading: const CircleAvatar(
-                child: Icon(Icons.person),
-              ),
-              title: Text(
-                'User ${post.userId.substring(0, 8)}',
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                DateFormat('MMM d, yyyy • h:mm a').format(post.createdAt),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+            title: Text(
+              post.userName ?? 'User ${post.userId.substring(0, 8)}',
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
-            error: (_, __) => ListTile(
-              leading: CircleAvatar(
-                child: Text(post.userId[0].toUpperCase()),
-              ),
-              title: Text(
-                'User ${post.userId.substring(0, 8)}',
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                DateFormat('MMM d, yyyy • h:mm a').format(post.createdAt),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+            subtitle: Text(
+              DateFormat('MMM d, yyyy • h:mm a').format(post.createdAt),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
+            trailing: currentUserId == post.userId
+                ? IconButton(
+                    icon: const Icon(Icons.more_vert),
+                    onPressed: () => _showPostOptions(context, ref),
+                  )
+                : null,
+            onTap: () => context.push('/user/${post.userId}'),
           ),
 
           // Image if available
@@ -109,11 +76,11 @@ class PostCard extends ConsumerWidget {
             ),
 
           // Caption
-          if (post.caption.isNotEmpty)
+          if (post.caption != null && post.caption!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
-                post.caption,
+                post.caption!,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
@@ -141,7 +108,11 @@ class PostCard extends ConsumerWidget {
                     onPressed: null,
                   ),
                 ),
-                Text('${post.likesCount}'),
+                likesCountAsync.when(
+                  data: (count) => Text('$count'),
+                  loading: () => const Text('...'),
+                  error: (_, __) => const Text('0'),
+                ),
                 const SizedBox(width: 16),
 
                 // Comment button
@@ -149,7 +120,11 @@ class PostCard extends ConsumerWidget {
                   icon: const Icon(Icons.comment_outlined),
                   onPressed: () => _showComments(context),
                 ),
-                Text('${post.commentsCount}'),
+                commentsCountAsync.when(
+                  data: (count) => Text('$count'),
+                  loading: () => const Text('...'),
+                  error: (_, __) => const Text('0'),
+                ),
 
                 const Spacer(),
 
@@ -167,7 +142,7 @@ class PostCard extends ConsumerWidget {
   }
 
   Future<void> _toggleLike(WidgetRef ref, bool hasLiked) async {
-    final social = ref.read(socialServiceProvider);
+    final social = ref.read(supabaseSocialServiceProvider);
     
     try {
       if (hasLiked) {
@@ -178,7 +153,9 @@ class PostCard extends ConsumerWidget {
       
       // Refresh providers
       ref.invalidate(hasLikedPostProvider(post.id));
+      ref.invalidate(likesCountProvider(post.id));
       ref.invalidate(feedPostsProvider);
+      ref.invalidate(explorePostsProvider);
     } catch (e) {
       // Handle error silently or show snackbar
       debugPrint('Error toggling like: $e');
@@ -191,22 +168,14 @@ class PostCard extends ConsumerWidget {
 
   Future<void> _sharePost(BuildContext context) async {
     try {
-      final String shareText = post.caption.isNotEmpty
+      final String shareText = (post.caption != null && post.caption!.isNotEmpty)
           ? '${post.caption}\n\nShared from GymAI'
           : 'Check out this post on GymAI!';
       
-      // If there's an image URL, share it along with the text
-      if (post.imageUrl != null && post.imageUrl!.isNotEmpty) {
-        await Share.share(
-          shareText,
-          subject: 'Post from GymAI',
-        );
-      } else {
-        await Share.share(
-          shareText,
-          subject: 'Post from GymAI',
-        );
-      }
+      await Share.share(
+        shareText,
+        subject: 'Post from GymAI',
+      );
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -247,9 +216,11 @@ class PostCard extends ConsumerWidget {
               );
 
               if (confirm == true && context.mounted) {
-                final social = ref.read(socialServiceProvider);
+                final social = ref.read(supabaseSocialServiceProvider);
                 await social.deletePost(post.id);
                 ref.invalidate(feedPostsProvider);
+                ref.invalidate(explorePostsProvider);
+                ref.invalidate(userPostsProvider(currentUserId));
               }
             },
           ),

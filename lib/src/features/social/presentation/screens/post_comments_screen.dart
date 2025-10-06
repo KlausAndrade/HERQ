@@ -30,7 +30,7 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final postAsync = ref.watch(postProvider(widget.postId));
+    final postAsync = ref.watch(singlePostProvider(widget.postId));
     final commentsAsync = ref.watch(postCommentsProvider(widget.postId));
     final currentUser = ref.watch(currentUserProvider);
 
@@ -42,41 +42,50 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
         children: [
           // Post summary
           postAsync.when(
-            data: (post) => Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Theme.of(context).dividerColor,
-                  ),
-                ),
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    child: Text(post.userId[0].toUpperCase()),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'User ${post.userId.substring(0, 8)}',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                          post.caption,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+            data: (post) {
+              if (post == null) return const SizedBox.shrink();
+              
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Theme.of(context).dividerColor,
                     ),
                   ),
-                ],
-              ),
-            ),
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: post.userAvatar != null
+                          ? NetworkImage(post.userAvatar!)
+                          : null,
+                      child: post.userAvatar == null
+                          ? Text((post.userName ?? post.userId)[0].toUpperCase())
+                          : null,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            post.userName ?? 'User ${post.userId.substring(0, 8)}',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            post.caption ?? '',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
             loading: () => const LinearProgressIndicator(),
             error: (_, __) => const SizedBox.shrink(),
           ),
@@ -98,7 +107,7 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                   itemBuilder: (context, index) {
                     final comment = comments[index];
                     final isCurrentUser = comment.userId == currentUser?.id;
-                    final commentUserAsync = ref.watch(userByIdProvider(comment.userId));
+                    final commentUserAsync = ref.watch(userProfileProvider(comment.userId));
 
                     return commentUserAsync.when(
                       data: (user) => ListTile(
@@ -109,16 +118,16 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                               : null,
                           child: user?.avatarUrl == null
                               ? Text(
-                                  (user?.displayName.isNotEmpty ?? false
-                                          ? user!.displayName
+                                  ((user?.displayName?.isNotEmpty ?? false)
+                                          ? user!.displayName!
                                           : comment.userId)[0]
                                       .toUpperCase(),
                                 )
                               : null,
                         ),
                         title: Text(
-                          user?.displayName.isNotEmpty ?? false
-                              ? user!.displayName
+                          (user?.displayName?.isNotEmpty ?? false)
+                              ? user!.displayName!
                               : 'User ${comment.userId.substring(0, 8)}',
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
@@ -128,7 +137,7 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(comment.comment),
+                            Text(comment.text),
                             const SizedBox(height: 4),
                             Text(
                               DateFormat('MMM d, h:mm a').format(comment.createdAt),
@@ -161,7 +170,7 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(comment.comment),
+                            Text(comment.text),
                             const SizedBox(height: 4),
                             Text(
                               DateFormat('MMM d, h:mm a').format(comment.createdAt),
@@ -188,7 +197,7 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(comment.comment),
+                            Text(comment.text),
                             const SizedBox(height: 4),
                             Text(
                               DateFormat('MMM d, h:mm a').format(comment.createdAt),
@@ -271,16 +280,16 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
     if (currentUser == null) return;
 
     try {
-      final social = ref.read(socialServiceProvider);
+      final social = ref.read(supabaseSocialServiceProvider);
       await social.addComment(
         postId: widget.postId,
         userId: currentUser.id,
-        comment: comment,
+        text: comment,
       );
 
       _commentController.clear();
       ref.invalidate(postCommentsProvider(widget.postId));
-      ref.invalidate(postProvider(widget.postId));
+      ref.invalidate(singlePostProvider(widget.postId));
 
       // Scroll to bottom
       Future.delayed(const Duration(milliseconds: 100), () {
@@ -303,10 +312,10 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
 
   Future<void> _deleteComment(String commentId) async {
     try {
-      final social = ref.read(socialServiceProvider);
-      await social.deleteComment(commentId, widget.postId);
+      final social = ref.read(supabaseSocialServiceProvider);
+      await social.deleteComment(commentId);
       ref.invalidate(postCommentsProvider(widget.postId));
-      ref.invalidate(postProvider(widget.postId));
+      ref.invalidate(singlePostProvider(widget.postId));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

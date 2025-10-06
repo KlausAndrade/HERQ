@@ -3,7 +3,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/database/database.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../providers/social_providers.dart';
 import '../widgets/create_post_sheet.dart';
@@ -218,7 +217,7 @@ Widget _buildPostList(BuildContext context, WidgetRef ref, List<dynamic> feedIte
       padding: const EdgeInsets.all(16),
       itemCount: feedItems.length,
       itemBuilder: (context, index) {
-        final post = feedItems[index] as Post;
+        final post = feedItems[index];
         return PostCard(
           post: post,
           currentUserId: currentUserId,
@@ -323,24 +322,24 @@ class UserSearchSheet extends HookConsumerWidget {
                                       : null,
                                   child: user.avatarUrl == null
                                       ? Text(
-                                          (user.displayName.isNotEmpty
-                                                  ? user.displayName
+                                          ((user.displayName?.isNotEmpty ?? false)
+                                                  ? user.displayName!
                                                   : user.id)[0]
                                               .toUpperCase())
                                       : null,
                                 ),
                                 title: Text(
-                                  user.displayName.isNotEmpty
-                                      ? user.displayName
+                                  (user.displayName?.isNotEmpty ?? false)
+                                      ? user.displayName!
                                       : 'User ${user.id.substring(0, 8)}',
                                 ),
-                                subtitle: user.email != null ? Text(user.email!) : null,
+                                subtitle: user.bio != null ? Text(user.bio!) : null,
                                 trailing: isCurrentUser
                                     ? null
                                     : isFollowingAsync.when(
                                         data: (isFollowing) => OutlinedButton(
                                           onPressed: () async {
-                                            final social = ref.read(socialServiceProvider);
+                                            final social = ref.read(supabaseSocialServiceProvider);
                                             if (currentUser == null) return;
 
                                             if (isFollowing) {

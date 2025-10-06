@@ -389,3 +389,28 @@ final userProfileProvider = FutureProvider.autoDispose.family<SupabaseProfile?, 
     return null;
   }
 });
+
+// Get single post by ID
+final singlePostProvider = FutureProvider.autoDispose.family<SupabasePost?, String>((ref, postId) async {
+  final supabase = ref.watch(supabaseProvider);
+  
+  try {
+    final data = await supabase
+        .from('posts')
+        .select('''
+          *,
+          profiles!inner(
+            display_name,
+            avatar_url
+          )
+        ''')
+        .eq('id', postId)
+        .maybeSingle();
+    
+    if (data == null) return null;
+    return SupabasePost.fromJson(data);
+  } catch (e) {
+    print('Error fetching post: $e');
+    return null;
+  }
+});
