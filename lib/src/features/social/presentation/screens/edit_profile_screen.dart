@@ -95,12 +95,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         final supabase = ref.read(supabaseProvider);
         final fileName = '${currentUser.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
         
-        await supabase.storage.from('gym-images').uploadBinary(
-          'avatars/$fileName',
+        await supabase.storage.from('avatars').uploadBinary(
+          '${currentUser.id}/$fileName',
           _imageBytes!,
         );
 
-        avatarUrl = supabase.storage.from('gym-images').getPublicUrl('avatars/$fileName');
+        avatarUrl = supabase.storage.from('avatars').getPublicUrl('${currentUser.id}/$fileName');
       }
 
       // Update profile

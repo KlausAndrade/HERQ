@@ -318,15 +318,15 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
         // Compress image first
         final compressedBytes = await _compressImage(_selectedImage!);
         
-        final fileName = '${currentUser.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-        final path = 'posts/$fileName';
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final path = '${currentUser.id}/$fileName';
 
         await Supabase.instance.client.storage
-            .from('gym-images')
+            .from('post-images')
             .uploadBinary(path, compressedBytes);
 
         imageUrl = Supabase.instance.client.storage
-            .from('gym-images')
+            .from('post-images')
             .getPublicUrl(path);
       }
 

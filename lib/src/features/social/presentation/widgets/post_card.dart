@@ -195,6 +195,25 @@ class PostCard extends ConsumerWidget {
       builder: (context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(width: 40),
+                Text(
+                  'Post Options',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
           ListTile(
             leading: const Icon(Icons.edit),
             title: const Text('Edit Post'),
@@ -240,11 +259,30 @@ class PostCard extends ConsumerWidget {
               );
 
               if (confirm == true && context.mounted) {
-                final social = ref.read(supabaseSocialServiceProvider);
-                await social.deletePost(post.id);
-                ref.invalidate(feedPostsProvider);
-                ref.invalidate(explorePostsProvider);
-                ref.invalidate(userPostsProvider(currentUserId));
+                try {
+                  final social = ref.read(supabaseSocialServiceProvider);
+                  await social.deletePost(post.id);
+                  ref.invalidate(feedPostsProvider);
+                  ref.invalidate(explorePostsProvider);
+                  ref.invalidate(userPostsProvider(currentUserId));
+                  
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Post deleted successfully')),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Failed to delete post: $e'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 5),
+                      ),
+                    );
+                  }
+                  print('Delete post error: $e');
+                }
               }
             },
           ),

@@ -6,10 +6,11 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/workout/presentation/screens/active_workout_screen.dart';
 import '../../features/workout/presentation/screens/workout_detail_screen.dart';
 import '../../features/workout/presentation/screens/workout_history_screen.dart';
-import '../../features/workout/presentation/screens/enhanced_workout_templates_screen.dart';
+import '../../features/workout/presentation/screens/workout_templates_with_folders_screen.dart';
 import '../../features/workout/presentation/screens/template_builder_screen.dart';
 import '../../features/exercises/presentation/screens/exercise_library_screen.dart';
 import '../../features/exercises/presentation/screens/exercise_detail_screen.dart';
+import '../../features/exercises/presentation/screens/create_exercise_screen.dart';
 import '../../features/progress/presentation/screens/progress_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/social/presentation/screens/social_feed_screen.dart';
@@ -39,7 +40,7 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         GoRoute(
           path: '/workout-templates',
           name: 'workout-templates',
-          builder: (context, state) => const WorkoutTemplatesScreen(),
+          builder: (context, state) => const WorkoutTemplatesWithFoldersScreen(),
         ),
         GoRoute(
           path: '/template-builder',
@@ -74,6 +75,11 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
           path: '/exercises',
           name: 'exercise-library',
           builder: (context, state) => const ExerciseLibraryScreen(),
+        ),
+        GoRoute(
+          path: '/exercises/create',
+          name: 'create-exercise',
+          builder: (context, state) => const CreateExerciseScreen(),
         ),
         GoRoute(
           path: '/exercise/:id',

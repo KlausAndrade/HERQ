@@ -382,7 +382,7 @@ class HomeScreen extends ConsumerWidget {
                   duration: duration.inMinutes > 0
                       ? '${duration.inMinutes}m'
                       : 'In progress',
-                  onTap: () => context.go('/workout-detail/${workout.id}'),
+                  onTap: () => context.go('/workout/${workout.id}'),
                 );
               },
             );

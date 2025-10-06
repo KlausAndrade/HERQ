@@ -15,6 +15,7 @@ import '../models/post.dart';
 import '../models/post_comment.dart';
 import '../models/post_like.dart';
 import '../models/set_entry.dart';
+import '../models/template_folder.dart';
 import '../models/user.dart';
 import '../models/user_achievement.dart';
 import '../models/user_follow.dart';
@@ -30,6 +31,7 @@ part 'database.g.dart';
     Exercises,
     ExerciseFavorites,
     WorkoutTemplates,
+    TemplateFolders,
     WorkoutSessions,
     SetEntries,
     PersonalRecords,
@@ -48,7 +50,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -60,7 +62,11 @@ class AppDatabase extends _$AppDatabase {
           await _insertDefaultData();
         },
         onUpgrade: (migrator, from, to) async {
-          if (to == 9) {
+          if (to == 10) {
+            // Add template folders table and folderId to workout templates
+            await migrator.createTable(templateFolders);
+            await migrator.addColumn(workoutTemplates, workoutTemplates.folderId);
+          } else if (to == 9) {
             // Add social media tables
             await migrator.createTable(posts);
             await migrator.createTable(postLikes);

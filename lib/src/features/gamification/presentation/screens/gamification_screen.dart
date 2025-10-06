@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/database/database.dart';
 import '../../data/providers/gamification_provider.dart';
 import '../../domain/models/achievement.dart';
@@ -38,6 +39,10 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
+        ),
         title: const Text('Progress'),
         bottom: TabBar(
           controller: _tabController,

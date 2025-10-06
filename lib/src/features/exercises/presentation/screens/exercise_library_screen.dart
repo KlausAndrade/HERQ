@@ -30,6 +30,10 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
+        ),
         title: const Text('Exercise Library'),
         actions: [
           IconButton(
@@ -249,6 +253,11 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/exercises/create'),
+        child: const Icon(Icons.add),
+        tooltip: 'Create Exercise',
+      ),
       bottomNavigationBar: _buildBottomNavigation(context),
     );
   }
@@ -361,22 +370,36 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Exercise Progressions',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Exercise Progressions',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Expanded(
                 child: _ExerciseProgressionsView(
                     scrollController: scrollController),
@@ -479,10 +502,12 @@ class _ExerciseCard extends StatelessWidget {
                   child: Text(
                     exercise.variantType?.toUpperCase() ?? 'VARIANT',
                     style: const TextStyle(
-                      fontSize: 10,
+                      fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
               ],
@@ -725,12 +750,15 @@ class _ExerciseProgressionsView extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          '${variants.length + 1} variations',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.grey,
-                                  ),
+                        Flexible(
+                          child: Text(
+                            '${variants.length + 1} variations',
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey,
+                                    ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
@@ -741,8 +769,12 @@ class _ExerciseProgressionsView extends ConsumerWidget {
                       exercise: parent,
                       isParent: true,
                       onTap: () {
-                        Navigator.pop(context);
-                        context.go('/exercise/${parent.id}');
+                        Navigator.of(context).pop(); // Close bottom sheet
+                        Future.delayed(const Duration(milliseconds: 100), () {
+                          if (context.mounted) {
+                            context.go('/exercise/${parent.id}');
+                          }
+                        });
                       },
                     ),
 
@@ -752,8 +784,12 @@ class _ExerciseProgressionsView extends ConsumerWidget {
                               exercise: variant,
                               isParent: false,
                               onTap: () {
-                                Navigator.pop(context);
-                                context.go('/exercise/${variant.id}');
+                                Navigator.of(context).pop(); // Close bottom sheet
+                                Future.delayed(const Duration(milliseconds: 100), () {
+                                  if (context.mounted) {
+                                    context.go('/exercise/${variant.id}');
+                                  }
+                                });
                               },
                             ))
                         .toList(),
@@ -871,10 +907,12 @@ class _ProgressionItem extends StatelessWidget {
                             child: Text(
                               exercise.variantType!.toUpperCase(),
                               style: const TextStyle(
-                                fontSize: 10,
+                                fontSize: 9,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
                             ),
                           ),
                       ],

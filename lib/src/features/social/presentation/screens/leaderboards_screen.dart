@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../domain/models/leaderboard_models.dart';
@@ -13,6 +14,10 @@ class LeaderboardsScreen extends HookConsumerWidget {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/'),
+          ),
           title: const Text('Leaderboards'),
           bottom: const TabBar(
             isScrollable: true,

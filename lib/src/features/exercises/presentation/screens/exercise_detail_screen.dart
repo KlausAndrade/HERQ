@@ -36,6 +36,10 @@ class ExerciseDetailScreen extends ConsumerWidget {
 
         return Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.go('/exercises'),
+            ),
             title: Text(exercise.name),
             actions: [
               isFavoritedAsync.when(
@@ -123,7 +127,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
                           children: [
                             _InfoChip(
                               icon: Icons.fitness_center,
@@ -132,7 +138,6 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                       .substring(1)
                                       .replaceAll('_', ' '),
                             ),
-                            const SizedBox(width: 8),
                             _InfoChip(
                               icon: exercise.isBodyweight
                                   ? Icons.accessibility
@@ -141,25 +146,23 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                   ? 'Bodyweight'
                                   : 'Weighted',
                             ),
-                            const SizedBox(width: 8),
                             _DifficultyChip(difficulty: exercise.difficulty),
                           ],
                         ),
                         const SizedBox(height: 8),
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
                           children: [
                             _InfoChip(
                               icon: _getCategoryIcon(exercise.category),
                               label: exercise.category[0].toUpperCase() +
                                   exercise.category.substring(1),
                             ),
-                            const SizedBox(width: 8),
                             _ExerciseTypeChip(type: exercise.exerciseType),
                             if (exercise.parentExerciseId != null &&
-                                exercise.variantType != null) ...[
-                              const SizedBox(width: 8),
+                                exercise.variantType != null)
                               _VariantChip(variantType: exercise.variantType!),
-                            ],
                           ],
                         ),
                       ],
@@ -306,7 +309,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                               ),
                                                               const SizedBox(
                                                                   height: 4),
-                                                              Row(
+                                                              Wrap(
+                                                                spacing: 8,
+                                                                runSpacing: 8,
                                                                 children: [
                                                                   _DifficultyChip(
                                                                       difficulty:
@@ -314,14 +319,10 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                                               .difficulty),
                                                                   if (exerciseInChain
                                                                           .variantType !=
-                                                                      null) ...[
-                                                                    const SizedBox(
-                                                                        width:
-                                                                            8),
+                                                                      null)
                                                                     _VariantChip(
                                                                         variantType:
                                                                             exerciseInChain.variantType!),
-                                                                  ],
                                                                 ],
                                                               ),
                                                             ],
@@ -754,7 +755,7 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
 
       // Navigate to active workout screen with this template
       if (context.mounted) {
-        context.go('/workout/active?templateId=$templateId');
+        context.go('/active-workout?templateId=$templateId');
       }
     } catch (e) {
       if (context.mounted) {

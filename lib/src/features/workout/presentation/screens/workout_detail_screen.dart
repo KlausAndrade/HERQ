@@ -38,6 +38,10 @@ class WorkoutDetailScreen extends ConsumerWidget {
 
         return Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.go('/'),
+            ),
             title: Text(workoutSession.name),
             actions: [
               IconButton(
@@ -133,6 +137,25 @@ class WorkoutDetailScreen extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(width: 40),
+                  Text(
+                    'Workout Options',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
             ListTile(
               leading: const Icon(Icons.repeat),
               title: const Text('Repeat Workout'),
@@ -232,7 +255,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
     if (workoutSession.templateId != null &&
         workoutSession.templateId!.isNotEmpty) {
       // Use the existing template
-      context.go('/workout/active?templateId=${workoutSession.templateId}');
+      context.go('/active-workout?templateId=${workoutSession.templateId}');
     } else {
       // Create a temporary template from this workout's exercises
       showDialog(
@@ -268,7 +291,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
                       );
 
                   if (context.mounted) {
-                    context.go('/workout/active?templateId=$templateId');
+                    context.go('/active-workout?templateId=$templateId');
                   }
                 } catch (e) {
                   if (context.mounted) {
