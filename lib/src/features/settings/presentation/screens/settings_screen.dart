@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../providers/data_export_provider.dart';
 import '../../providers/theme_provider.dart';
@@ -36,16 +37,45 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.person_outline),
-                  title: const Text('Sign In / Sign Up'),
-                  subtitle: const Text('Sync your data across devices'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.go('/auth'),
-                ),
-              ],
+            child: Builder(
+              builder: (context) {
+                final user = ref.watch(currentUserProvider);
+                final isLoggedIn = user != null;
+
+                if (isLoggedIn) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.check_circle, color: Colors.green),
+                        title: const Text('Logged In'),
+                        subtitle: Text(user.email ?? 'No email'),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: const Icon(Icons.logout, color: Colors.red),
+                        title: const Text('Sign Out'),
+                        onTap: () async {
+                          final authService = ref.read(authServiceProvider);
+                          await authService.signOut();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Signed out successfully')),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  );
+                } else {
+                  return ListTile(
+                    leading: const Icon(Icons.person_outline),
+                    title: const Text('Sign In / Sign Up'),
+                    subtitle: const Text('Sync your data across devices'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.go('/auth'),
+                  );
+                }
+              },
             ),
           ),
           const SizedBox(height: 24),

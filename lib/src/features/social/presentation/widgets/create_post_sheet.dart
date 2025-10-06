@@ -242,12 +242,13 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
             .getPublicUrl(path);
       }
 
-      final social = ref.read(socialServiceProvider);
-      await social.createPost(
-        userId: currentUser.id,
-        caption: caption,
-        imageUrl: imageUrl,
-      );
+      // Insert post directly into Supabase
+      await Supabase.instance.client.from('posts').insert({
+        'user_id': currentUser.id,
+        'caption': caption,
+        'image_url': imageUrl,
+        'created_at': DateTime.now().toIso8601String(),
+      });
 
       // Refresh the feed
       ref.invalidate(feedPostsProvider);
