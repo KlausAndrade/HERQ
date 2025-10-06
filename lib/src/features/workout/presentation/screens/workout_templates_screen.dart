@@ -12,7 +12,7 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
         actions: [
           IconButton(
             onPressed: () {
-              // TODO: Add new template
+              context.push('/template-builder');
             },
             icon: const Icon(Icons.add),
           ),
@@ -66,7 +66,7 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
               const Spacer(),
               TextButton.icon(
                 onPressed: () {
-                  // TODO: Create new template
+                  context.push('/template-builder');
                 },
                 icon: const Icon(Icons.add),
                 label: const Text('Create'),
