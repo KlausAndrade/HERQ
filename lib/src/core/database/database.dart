@@ -11,9 +11,13 @@ import '../converters/json_converters.dart';
 import '../models/exercise.dart';
 import '../models/exercise_favorite.dart';
 import '../models/personal_record.dart';
+import '../models/post.dart';
+import '../models/post_comment.dart';
+import '../models/post_like.dart';
 import '../models/set_entry.dart';
 import '../models/user.dart';
 import '../models/user_achievement.dart';
+import '../models/user_follow.dart';
 import '../models/user_stats.dart';
 import '../models/workout_session.dart';
 import '../models/workout_template.dart';
@@ -31,6 +35,10 @@ part 'database.g.dart';
     PersonalRecords,
     UserAchievements,
     UserStats,
+    Posts,
+    PostLikes,
+    PostComments,
+    UserFollows,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -40,7 +48,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -52,7 +60,13 @@ class AppDatabase extends _$AppDatabase {
           await _insertDefaultData();
         },
         onUpgrade: (migrator, from, to) async {
-          if (to == 8) {
+          if (to == 9) {
+            // Add social media tables
+            await migrator.createTable(posts);
+            await migrator.createTable(postLikes);
+            await migrator.createTable(postComments);
+            await migrator.createTable(userFollows);
+          } else if (to == 8) {
             // Add gamification tables
             await migrator.createTable(userAchievements);
             await migrator.createTable(userStats);

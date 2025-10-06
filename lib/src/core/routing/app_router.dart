@@ -14,6 +14,8 @@ import '../../features/progress/presentation/screens/progress_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/social/presentation/screens/social_feed_screen.dart';
 import '../../features/social/presentation/screens/leaderboards_screen.dart';
+import '../../features/social/presentation/screens/post_comments_screen.dart';
+import '../../features/social/presentation/screens/user_profile_screen.dart';
 import '../../features/ai/presentation/screens/ai_coaching_screen.dart';
 import '../../features/gamification/presentation/screens/gamification_screen.dart';
 
@@ -86,6 +88,22 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
           path: '/social',
           name: 'social',
           builder: (context, state) => const SocialFeedScreen(),
+        ),
+        GoRoute(
+          path: '/user/:id',
+          name: 'user-profile',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return UserProfileScreen(userId: id);
+          },
+        ),
+        GoRoute(
+          path: '/post/:id/comments',
+          name: 'post-comments',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return PostCommentsScreen(postId: id);
+          },
         ),
         GoRoute(
           path: '/leaderboards',

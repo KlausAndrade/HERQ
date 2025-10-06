@@ -1,122 +1,98 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/services/social_service.dart';
-import '../../domain/models/social_models.dart';
+import '../../../../core/database/database.dart';
+import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/database_provider.dart';
+import '../../domain/social_service.dart';
 
-// Service provider
+// Social service provider
 final socialServiceProvider = Provider<SocialService>((ref) {
-  return const SocialService();
+  final db = ref.watch(databaseProvider);
+  if (db == null) throw Exception('Database not initialized');
+  return SocialService(db);
 });
 
-// User search provider
-final userSearchProvider =
-    StateNotifierProvider<UserSearchNotifier, AsyncValue<List<UserProfile>>>(
-        (ref) {
-  return UserSearchNotifier(ref.read(socialServiceProvider));
+// Feed posts provider
+final feedPostsProvider = FutureProvider.autoDispose<List<Post>>((ref) async {
+  final social = ref.watch(socialServiceProvider);
+  final user = ref.watch(currentUserProvider);
+  
+  if (user == null) return [];
+  
+  return await social.getFeedPosts(user.id);
 });
 
-class UserSearchNotifier extends StateNotifier<AsyncValue<List<UserProfile>>> {
-  UserSearchNotifier(this._socialService) : super(const AsyncValue.data([]));
-
-  final SocialService _socialService;
-
-  Future<void> searchUsers(String query) async {
-    if (query.trim().isEmpty) {
-      state = const AsyncValue.data([]);
-      return;
-    }
-
-    state = const AsyncValue.loading();
-
-    try {
-      final users = await _socialService.searchUsers(query);
-      state = AsyncValue.data(users);
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-    }
-  }
-
-  void clearSearch() {
-    state = const AsyncValue.data([]);
-  }
-}
-
-// Friends provider
-final friendsProvider =
-    FutureProvider.family<List<UserProfile>, String>((ref, userId) async {
-  final socialService = ref.read(socialServiceProvider);
-  return socialService.getFriends(userId);
+// User posts provider
+final userPostsProvider = FutureProvider.autoDispose.family<List<Post>, String>((ref, userId) async {
+  final social = ref.watch(socialServiceProvider);
+  return await social.getUserPosts(userId);
 });
 
-// Friend requests provider
-final friendRequestsProvider =
-    FutureProvider.family<List<FriendConnection>, String>((ref, userId) async {
-  final socialService = ref.read(socialServiceProvider);
-  return socialService.getFriendRequests(userId);
+// Post provider
+final postProvider = FutureProvider.autoDispose.family<Post, String>((ref, postId) async {
+  final social = ref.watch(socialServiceProvider);
+  return await social.getPost(postId);
 });
 
-// Social feed provider
-final socialFeedProvider =
-    FutureProvider.family<List<FeedItem>, String>((ref, userId) async {
-  final socialService = ref.read(socialServiceProvider);
-  return socialService.getFeed(userId);
+// Post comments provider
+final postCommentsProvider = FutureProvider.autoDispose.family<List<PostComment>, String>((ref, postId) async {
+  final social = ref.watch(socialServiceProvider);
+  return await social.getPostComments(postId);
 });
 
-// Leaderboards provider
-final leaderboardProvider =
-    FutureProvider.family<Leaderboard, LeaderboardParams>((ref, params) async {
-  final socialService = ref.read(socialServiceProvider);
-  return socialService.getLeaderboard(params.type, params.period);
+// Post likers provider
+final postLikersProvider = FutureProvider.autoDispose.family<List<User>, String>((ref, postId) async {
+  final social = ref.watch(socialServiceProvider);
+  return await social.getPostLikers(postId);
 });
 
-// User achievements provider
-final userAchievementsProvider =
-    FutureProvider.family<List<Achievement>, String>((ref, userId) async {
-  final socialService = ref.read(socialServiceProvider);
-  return socialService.getUserAchievements(userId);
+// Is following provider
+final isFollowingProvider = FutureProvider.autoDispose.family<bool, String>((ref, userId) async {
+  final social = ref.watch(socialServiceProvider);
+  final currentUser = ref.watch(currentUserProvider);
+  
+  if (currentUser == null) return false;
+  
+  return await social.isFollowing(currentUser.id, userId);
 });
 
-// Social actions provider
-final socialActionsProvider = Provider<SocialActions>((ref) {
-  return SocialActions(ref.read(socialServiceProvider));
+// Followers provider
+final followersProvider = FutureProvider.autoDispose.family<List<User>, String>((ref, userId) async {
+  final social = ref.watch(socialServiceProvider);
+  return await social.getFollowers(userId);
 });
 
-class SocialActions {
-  SocialActions(this._socialService);
+// Following provider
+final followingProvider = FutureProvider.autoDispose.family<List<User>, String>((ref, userId) async {
+  final social = ref.watch(socialServiceProvider);
+  return await social.getFollowing(userId);
+});
 
-  final SocialService _socialService;
+// Followers count provider
+final followersCountProvider = FutureProvider.autoDispose.family<int, String>((ref, userId) async {
+  final social = ref.watch(socialServiceProvider);
+  return await social.getFollowersCount(userId);
+});
 
-  Future<bool> sendFriendRequest(String fromUserId, String toUserId) async {
-    return _socialService.sendFriendRequest(fromUserId, toUserId);
-  }
+// Following count provider
+final followingCountProvider = FutureProvider.autoDispose.family<int, String>((ref, userId) async {
+  final social = ref.watch(socialServiceProvider);
+  return await social.getFollowingCount(userId);
+});
 
-  Future<bool> acceptFriendRequest(String requestId) async {
-    return _socialService.acceptFriendRequest(requestId);
-  }
+// Has liked post provider
+final hasLikedPostProvider = FutureProvider.autoDispose.family<bool, String>((ref, postId) async {
+  final social = ref.watch(socialServiceProvider);
+  final currentUser = ref.watch(currentUserProvider);
+  
+  if (currentUser == null) return false;
+  
+  return await social.hasLikedPost(postId, currentUser.id);
+});
 
-  Future<bool> declineFriendRequest(String requestId) async {
-    return _socialService.declineFriendRequest(requestId);
-  }
-}
-
-// Helper class for leaderboard parameters
-class LeaderboardParams {
-  const LeaderboardParams({
-    required this.type,
-    required this.period,
-  });
-
-  final LeaderboardType type;
-  final Period period;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is LeaderboardParams &&
-          runtimeType == other.runtimeType &&
-          type == other.type &&
-          period == other.period;
-
-  @override
-  int get hashCode => type.hashCode ^ period.hashCode;
-}
+// Search users provider
+final searchUsersProvider = FutureProvider.autoDispose.family<List<User>, String>((ref, query) async {
+  final social = ref.watch(socialServiceProvider);
+  if (query.isEmpty) return [];
+  return await social.searchUsers(query);
+});
