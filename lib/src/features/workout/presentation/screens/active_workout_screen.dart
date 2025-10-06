@@ -22,6 +22,8 @@ class ActiveWorkoutScreen extends ConsumerStatefulWidget {
 
 class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   final Set<int> _expandedExercises = {};
+  final ScrollController _scrollController = ScrollController();
+  final Map<int, GlobalKey> _exerciseKeys = {};
 
   @override
   void initState() {
@@ -41,6 +43,12 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       // Auto-expand first exercise if any
       _expandedExercises.add(0);
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -110,11 +118,15 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                 // Exercise List
                 Expanded(
                   child: ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(16),
                     itemCount: activeWorkout.exercises.length,
                     itemBuilder: (context, index) {
                       final exercise = activeWorkout.exercises[index];
+                      // Create a key for each exercise if it doesn't exist
+                      _exerciseKeys.putIfAbsent(index, () => GlobalKey());
                       return _ExerciseCard(
+                        key: _exerciseKeys[index],
                         exercise: exercise,
                         exerciseIndex: index,
                         isExpanded: _expandedExercises.contains(index),
@@ -204,6 +216,110 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   }
 
   void _showFinishWorkoutDialog(BuildContext context) {
+    final activeWorkout = ref.read(activeWorkoutProvider);
+    if (activeWorkout == null) return;
+
+    // Check if all exercises have at least one completed set
+    final incompleteExercises = <int>[];
+    for (var i = 0; i < activeWorkout.exercises.length; i++) {
+      final exercise = activeWorkout.exercises[i];
+      final hasCompletedSet = exercise.sets.any((set) => set.isCompleted);
+      if (!hasCompletedSet) {
+        incompleteExercises.add(i);
+      }
+    }
+
+    // If there are incomplete exercises, show warning
+    if (incompleteExercises.isNotEmpty) {
+      _showIncompleteExercisesWarning(context, incompleteExercises);
+      return;
+    }
+
+    // All exercises complete, show normal finish dialog
+    _showConfirmFinishDialog(context);
+  }
+
+  void _showIncompleteExercisesWarning(
+      BuildContext context, List<int> incompleteExercises) {
+    final activeWorkout = ref.read(activeWorkoutProvider);
+    if (activeWorkout == null) return;
+
+    final incompleteNames = incompleteExercises
+        .map((i) => activeWorkout.exercises[i].name)
+        .join(', ');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(width: 8),
+            const Text('Incomplete Exercises'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'The following exercises have no completed sets:',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.errorContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                incompleteNames,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onErrorContainer,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Do you want to continue these exercises or finish anyway?',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Auto-scroll to first incomplete exercise
+              _scrollToExercise(incompleteExercises.first);
+            },
+            child: const Text('Continue'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _showConfirmFinishDialog(context);
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Finish Anyway'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showConfirmFinishDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -227,6 +343,26 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     );
   }
 
+  void _scrollToExercise(int exerciseIndex) {
+    // Expand the exercise
+    setState(() {
+      _expandedExercises.add(exerciseIndex);
+    });
+
+    // Wait for the widget to expand, then scroll
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final keyContext = _exerciseKeys[exerciseIndex]?.currentContext;
+      if (keyContext != null) {
+        Scrollable.ensureVisible(
+          keyContext,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          alignment: 0.1, // Position at top of visible area
+        );
+      }
+    });
+  }
+
   String _formatDuration(Duration duration) {
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
@@ -242,6 +378,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 
 class _ExerciseCard extends ConsumerWidget {
   const _ExerciseCard({
+    super.key,
     required this.exercise,
     required this.exerciseIndex,
     required this.isExpanded,
