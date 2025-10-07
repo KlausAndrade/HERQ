@@ -4,6 +4,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../domain/models/ai_models.dart';
 import '../providers/ai_providers.dart';
 
+// Default user ID for AI coaching - TODO: Replace with actual user ID when auth implemented
+const String _kDefaultUserId = 'default_user';
+
 class AICoachingScreen extends HookConsumerWidget {
   const AICoachingScreen({super.key});
 
@@ -43,7 +46,7 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final params = WorkoutRecommendationParams(
-      userId: 'current_user',
+      userId: _kDefaultUserId,
       preferredMuscleGroups: ['chest', 'back', 'shoulders'],
       availableEquipment: ['barbell', 'dumbbell', 'bench'],
       maxDuration: 60,
@@ -318,7 +321,7 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recoveryAsync = ref.watch(recoveryAnalysisProvider('current_user'));
+    final recoveryAsync = ref.watch(recoveryAnalysisProvider(_kDefaultUserId));
 
     return recoveryAsync.when(
       data: (analysis) => _buildRecoveryAnalysis(context, analysis),
@@ -630,7 +633,7 @@ class ProgressAnalysisTab extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final params = ProgressiveOverloadParams(
-      userId: 'current_user',
+      userId: _kDefaultUserId,
       exerciseId: 'bench_press',
     );
 
@@ -820,7 +823,7 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final suggestionsAsync = ref.watch(aiSuggestionsProvider('current_user'));
+    final suggestionsAsync = ref.watch(aiSuggestionsProvider(_kDefaultUserId));
 
     return suggestionsAsync.when(
       data: (suggestions) => _buildSuggestionsList(context, suggestions),
