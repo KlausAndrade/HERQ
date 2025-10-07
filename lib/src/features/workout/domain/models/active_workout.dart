@@ -39,6 +39,37 @@ class ActiveWorkout {
         totalSets: json['totalSets'] as int? ?? 0,
         totalVolume: (json['totalVolume'] as num?)?.toDouble() ?? 0.0,
       );
+
+  /// Check if all sets in the workout are completed
+  bool isFullyCompleted() {
+    if (exercises.isEmpty) return false;
+    
+    for (final exercise in exercises) {
+      if (exercise.sets.isEmpty) return false;
+      
+      // Check if all sets in this exercise are completed
+      final allSetsComplete = exercise.sets.every((set) => set.isCompleted);
+      if (!allSetsComplete) return false;
+    }
+    
+    return true; // All exercises have all sets completed
+  }
+
+  /// Get count of completed sets
+  int getCompletedSetsCount() {
+    return exercises.fold<int>(
+      0,
+      (sum, exercise) => sum + exercise.sets.where((s) => s.isCompleted).length,
+    );
+  }
+
+  /// Get total count of all sets
+  int getTotalSetsCount() {
+    return exercises.fold<int>(
+      0,
+      (sum, exercise) => sum + exercise.sets.length,
+    );
+  }
 }
 
 class ActiveExercise {

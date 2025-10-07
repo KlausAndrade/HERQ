@@ -2,49 +2,95 @@
 
 ## Overview
 
-The Smart Finish feature enhances the workout recovery system by providing a third option when resuming workouts that have been paused for more than 10 minutes. This allows users to save their completed work without continuing the workout.
+The Smart Finish feature enhances the workout recovery system by providing intelligent prompts when resuming workouts. It automatically detects two scenarios:
 
-## User Story
+1. **Incomplete Workout**: User has unfinished sets and wants to resume or save partial progress
+2. **Complete But Not Finalized**: User completed all exercises but forgot to click "Finalize" before closing the app
 
+## User Stories
+
+### Story 1: Forgotten Finalization (Primary Use Case)
+**Problem**: User completes all exercises in a workout, forgets to click "Finish Workout", closes app and goes home. They don't realize their workout isn't saved.
+
+**Solution**: When they reopen the app (after 10+ minutes), the system detects that all sets are complete and shows a celebration dialog emphasizing "Finalize" to save their completed workout.
+
+### Story 2: Interrupted Workout
 **Problem**: User starts a workout, completes some exercises, then app is closed or crashes. After 10+ minutes, they may not want to continue but don't want to lose the work they already completed.
 
-**Solution**: Show a "Finish Workout" button that saves the completed sets and shows the workout summary, without requiring them to continue and manually finish.
+**Solution**: Show a "Finish" button that saves the completed sets and shows the workout summary, without requiring them to continue.
 
 ## Feature Behavior
 
-### Time Threshold
-- **< 10 minutes paused**: Show 2 buttons (Resume, Discard)
-- **≥ 10 minutes paused**: Show 3 buttons (Resume, Finish, Discard)
+### Detection Logic
 
-### Visual Indicators
-When paused ≥10 minutes:
-- Yellow warning banner shows: "Paused X hours/minutes/days ago"
-- Icon: Clock symbol with error color
-- Finish button uses secondary color to distinguish from Resume
+The system checks two conditions:
+1. **Time since last save** (`minutesSinceLastSave >= 10`)
+2. **Workout completion status** (`workout.isFullyCompleted()`)
 
-### Button Actions
+### Dialog Variations
 
-1. **Resume** (Primary - FilledButton)
-   - Restores workout state exactly as it was
-   - Navigates to active workout screen
-   - Restarts timer and services
+#### Scenario A: Completed Workout (100% done + >10 min)
+- **Title**: "Workout Complete!" 🎉
+- **Icon**: Celebration icon (secondary color)
+- **Message**: "You completed all exercises but forgot to finalize"
+- **Banner**: Green/secondary colored "Finished X hours/minutes ago - don't forget to save!"
+- **Buttons**:
+  - **Finalize** (Primary - emphasized) - Saves and shows summary
+  - **Add More** (Outlined - de-emphasized) - Resume to add extra sets
+  - **Discard** (Text button) - Delete checkpoint
 
-2. **Finish** (Secondary - FilledButton, shown only if >10 min)
-   - Loads the saved workout state
-   - Immediately calls finishWorkout()
-   - Shows workout summary with completed sets
-   - Saves to database with actual completion time
+#### Scenario B: Incomplete Workout (>10 min paused)
+- **Title**: "Resume Workout?"
+- **Icon**: History icon (primary color)
+- **Message**: "You have an unfinished workout"
+- **Banner**: Yellow/error colored "Paused X hours/minutes ago"
+- **Buttons**:
+  - **Resume** (Primary) - Continue workout
+  - **Finish** (Secondary) - Save partial progress
+  - **Discard** (Text button) - Delete checkpoint
 
-3. **Discard** (Destructive - TextButton)
-   - Deletes the checkpoint from database
-   - No data is saved
-   - Returns to home screen
+#### Scenario C: Recent Pause (<10 min)
+- **Title**: "Resume Workout?"
+- **Message**: "You have an unfinished workout"
+- **No banner**
+- **Buttons**:
+  - **Resume** (Primary) - Continue workout
+  - **Discard** (Text button) - Delete checkpoint
+
+#### Scenario D: Completed Workout (<10 min)
+- **Title**: "Workout Complete!" 🎉
+- **Message**: "You completed all exercises but forgot to finalize"
+- **No banner** (recently completed)
+- **Buttons**:
+  - **Finalize** (Primary) - Saves and shows summary
+  - **Add More** (Outlined) - Resume to add extra sets
+  - **Discard** (Text button) - Delete checkpoint
 
 ## Technical Implementation
 
 ### Modified Files
 
-#### 1. `workout_checkpoint_service.dart`
+#### 1. `active_workout.dart`
+- **New method**: `isFullyCompleted()` - Checks if all sets in all exercises are completed
+  ```dart
+  bool isFullyCompleted() {
+    if (exercises.isEmpty) return false;
+    
+    for (final exercise in exercises) {
+      if (exercise.sets.isEmpty) return false;
+      
+      final allSetsComplete = exercise.sets.every((set) => set.isCompleted);
+      if (!allSetsComplete) return false;
+    }
+    
+    return true;
+  }
+  ```
+- **New method**: `getCompletedSetsCount()` - Returns count of completed sets
+- **New method**: `getTotalSetsCount()` - Returns total count of all sets
+- **Purpose**: Enable detection of workout completion state
+
+#### 2. `workout_checkpoint_service.dart`
 - **New class**: `CheckpointData`
   ```dart
   class CheckpointData {
@@ -56,29 +102,32 @@ When paused ≥10 minutes:
 - **Updated method**: `getLatestCheckpoint()` now returns `CheckpointData?` instead of `ActiveWorkout?`
 - **Purpose**: Provides metadata (lastSavedAt) needed for time-based logic
 
-#### 2. `resume_workout_dialog.dart`
+#### 3. `resume_workout_dialog.dart`
 - **New parameters**:
   - `lastSavedAt: DateTime` - When workout was last saved
   - `onFinish: VoidCallback` - Callback for finish action
   
-- **Time calculation logic**:
+- **Enhanced detection logic**:
   ```dart
-  final now = DateTime.now();
-  final timeSinceLastSave = now.difference(lastSavedAt);
-  final minutesSinceLastSave = timeSinceLastSave.inMinutes;
-  final showFinishOption = minutesSinceLastSave >= 10;
+  final isFullyCompleted = workout.isFullyCompleted();
+  final showFinishOption = minutesSinceLastSave >= 10 || isFullyCompleted;
+  final isCompleteForgotten = isFullyCompleted && minutesSinceLastSave >= 10;
   ```
+
+- **Adaptive UI**:
+  - **Title**: Changes from "Resume Workout?" to "Workout Complete!" when fully done
+  - **Icon**: Celebration icon for complete workouts, history icon for incomplete
+  - **Message**: Context-specific text based on completion state
+  - **Banner color**: Green/secondary for complete, yellow/error for incomplete
+  - **Banner text**: "Finished X ago - don't forget to save!" vs "Paused X ago"
+  - **Button order**: Finalize prioritized when complete, Resume prioritized when incomplete
+  - **Button labels**: "Finalize" vs "Finish", "Add More" vs "Resume"
 
 - **Helper method**: `_formatDuration(Duration)` for human-readable time display
   - Shows days if > 24 hours
   - Shows hours if > 60 minutes
   - Shows minutes otherwise
   - Proper pluralization
-
-- **UI enhancements**:
-  - Warning banner with pause duration
-  - Conditional third button
-  - Secondary color styling for Finish button
 
 #### 3. `home_screen.dart`
 - **Updated checkpoint handling**:
@@ -97,27 +146,46 @@ When paused ≥10 minutes:
 
 ## User Experience Flow
 
-### Scenario 1: Quick Resume (<10 minutes)
-1. User opens app
-2. Dialog shows: "Resume" or "Discard"
-3. No warning banner
-4. User clicks Resume → back to workout
+### Scenario 1: Forgot to Finalize (Primary Use Case)
+1. User completes all sets in workout
+2. User closes app without clicking "Finish Workout"
+3. 15 minutes later, user opens app
+4. Dialog appears: **"Workout Complete!"** with celebration icon
+5. Green banner: "Finished 15 minutes ago - don't forget to save!"
+6. Prominent "Finalize" button (primary color)
+7. User clicks "Finalize" → Workout saved → Summary screen appears
+8. Achievement unlocked! PRs displayed, confetti celebration
 
-### Scenario 2: Long Pause (≥10 minutes)
-1. User opens app after extended break
-2. Dialog shows: "Resume", "Finish", or "Discard"
-3. Yellow warning: "Paused 43 minutes ago"
-4. User options:
-   - **Resume**: Continue where left off
-   - **Finish**: Save completed work, show summary
-   - **Discard**: Delete everything
+### Scenario 2: Want to Add More Sets
+1. User completes all sets in workout
+2. User closes app without finalizing
+3. Later, user opens app
+4. Dialog appears: "Workout Complete!"
+5. User realizes they want to do bonus sets
+6. User clicks "Add More" (outlined button)
+7. Returns to active workout screen
+8. Can add extra sets to any exercise
+9. Eventually clicks "Finish Workout" normally
 
-### Scenario 3: Forgotten Workout (hours/days later)
-1. User opens app next day
-2. Dialog shows: "Paused 1 day ago"
-3. User clicks "Finish" to save yesterday's partial workout
-4. Summary screen shows completed sets with correct timestamps
-5. Workout saved to history
+### Scenario 3: Interrupted Mid-Workout (>10 min)
+1. User completes 5 out of 10 exercises
+2. App crashes or phone dies
+3. 30 minutes later, user opens app
+4. Dialog shows: "Resume Workout?"
+5. Yellow banner: "Paused 30 minutes ago"
+6. Options: Resume (continue) | Finish (save partial) | Discard
+7. User clicks "Finish" to save what's done
+8. Summary shows completed exercises only
+
+### Scenario 4: Quick Resume (<10 min)
+1. User in middle of workout
+2. Gets phone call, app goes to background
+3. 3 minutes later, call ends
+4. User opens app
+5. Dialog shows: "Resume Workout?"
+6. No warning banner (recent)
+7. Only 2 buttons: Resume | Discard
+8. User clicks Resume → back to workout immediately
 
 ## Edge Cases Handled
 

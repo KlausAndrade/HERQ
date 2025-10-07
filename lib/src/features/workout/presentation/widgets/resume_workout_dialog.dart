@@ -28,32 +28,35 @@ class ResumeWorkoutDialog extends StatelessWidget {
     final now = DateTime.now();
     final timeSinceLastSave = now.difference(lastSavedAt);
     final minutesSinceLastSave = timeSinceLastSave.inMinutes;
-    final showFinishOption = minutesSinceLastSave >= 10;
+    
+    // Check if workout is fully completed
+    final isFullyCompleted = workout.isFullyCompleted();
+    
+    // Show finish option if >10 minutes OR if workout is complete
+    final showFinishOption = minutesSinceLastSave >= 10 || isFullyCompleted;
+    
+    // Determine dialog style based on completion state
+    final isCompleteForgotten = isFullyCompleted && minutesSinceLastSave >= 10;
 
     // Calculate completion stats
-    final totalSets = workout.exercises.fold<int>(
-      0,
-      (sum, exercise) => sum + exercise.sets.length,
-    );
-    final completedSets = workout.exercises.fold<int>(
-      0,
-      (sum, exercise) =>
-          sum + exercise.sets.where((s) => s.isCompleted).length,
-    );
+    final completedSets = workout.getCompletedSetsCount();
+    final totalSets = workout.getTotalSetsCount();
     final completionPercent = totalSets > 0 ? (completedSets / totalSets * 100).round() : 0;
 
     return AlertDialog(
       title: Row(
         children: [
           Icon(
-            Icons.history,
-            color: colorScheme.primary,
+            isCompleteForgotten ? Icons.celebration : Icons.history,
+            color: isCompleteForgotten ? colorScheme.secondary : colorScheme.primary,
             size: 28,
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Resume Workout?',
+              isCompleteForgotten 
+                  ? 'Workout Complete!' 
+                  : 'Resume Workout?',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -66,7 +69,9 @@ class ResumeWorkoutDialog extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'You have an unfinished workout:',
+            isCompleteForgotten
+                ? 'You completed all exercises but forgot to finalize:'
+                : 'You have an unfinished workout:',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurface.withOpacity(0.7),
             ),
@@ -130,32 +135,38 @@ class ResumeWorkoutDialog extends StatelessWidget {
                   ],
                 ),
                 
-                // Show time since last save if > 10 minutes
-                if (showFinishOption) ...[
+                // Show time since last save if > 10 minutes OR if workout is complete
+                if (showFinishOption && minutesSinceLastSave >= 10) ...[
                   const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                     decoration: BoxDecoration(
-                      color: colorScheme.errorContainer.withOpacity(0.3),
+                      color: isCompleteForgotten 
+                          ? colorScheme.secondaryContainer.withOpacity(0.3)
+                          : colorScheme.errorContainer.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: colorScheme.error.withOpacity(0.3),
+                        color: isCompleteForgotten
+                            ? colorScheme.secondary.withOpacity(0.3)
+                            : colorScheme.error.withOpacity(0.3),
                         width: 1,
                       ),
                     ),
                     child: Row(
                       children: [
                         Icon(
-                          Icons.access_time,
+                          isCompleteForgotten ? Icons.info_outline : Icons.access_time,
                           size: 14,
-                          color: colorScheme.error,
+                          color: isCompleteForgotten ? colorScheme.secondary : colorScheme.error,
                         ),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
-                            'Paused ${_formatDuration(timeSinceLastSave)} ago',
+                            isCompleteForgotten
+                                ? 'Finished ${_formatDuration(timeSinceLastSave)} ago - don\'t forget to save!'
+                                : 'Paused ${_formatDuration(timeSinceLastSave)} ago',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.error,
+                              color: isCompleteForgotten ? colorScheme.secondary : colorScheme.error,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -195,7 +206,9 @@ class ResumeWorkoutDialog extends StatelessWidget {
           
           const SizedBox(height: 16),
           Text(
-            'Would you like to continue where you left off?',
+            isCompleteForgotten
+                ? 'Tap "Finalize" to save your workout and see your summary!'
+                : 'Would you like to continue where you left off?',
             style: theme.textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurface.withOpacity(0.6),
               fontStyle: FontStyle.italic,
@@ -216,23 +229,37 @@ class ResumeWorkoutDialog extends StatelessWidget {
           ),
         ),
         
-        // Finish button (only if > 10 minutes)
+        // Resume button (secondary when workout is complete)
+        if (!isCompleteForgotten)
+          FilledButton.icon(
+            onPressed: onResume,
+            icon: const Icon(Icons.play_arrow),
+            label: const Text('Resume'),
+          ),
+        
+        // Finalize button
         if (showFinishOption)
           FilledButton.icon(
             onPressed: onFinish,
-            icon: const Icon(Icons.check),
-            label: const Text('Finish'),
+            icon: Icon(isCompleteForgotten ? Icons.celebration : Icons.check),
+            label: Text(isCompleteForgotten ? 'Finalize' : 'Finish'),
             style: FilledButton.styleFrom(
-              backgroundColor: colorScheme.secondary,
+              backgroundColor: isCompleteForgotten 
+                  ? colorScheme.primary  // Primary color when emphasizing finalize
+                  : colorScheme.secondary,
             ),
           ),
         
-        // Resume button
-        FilledButton.icon(
-          onPressed: onResume,
-          icon: const Icon(Icons.play_arrow),
-          label: const Text('Resume'),
-        ),
+        // Resume button (de-emphasized when workout is complete)
+        if (isCompleteForgotten)
+          OutlinedButton.icon(
+            onPressed: onResume,
+            icon: const Icon(Icons.add),
+            label: const Text('Add More'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: colorScheme.primary,
+            ),
+          ),
       ],
     );
   }
