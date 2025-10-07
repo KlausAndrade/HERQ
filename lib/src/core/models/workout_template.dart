@@ -8,7 +8,7 @@ class WorkoutTemplates extends Table {
   TextColumn get category => text().withDefault(const Constant('Custom'))();
   TextColumn get folderId => text().nullable()(); // Reference to TemplateFolders
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
-  TextColumn get exerciseIds => text().map(const StringListConverter())();
+  TextColumn get exerciseIds => text().map(const StringListConverter()).withDefault(const Constant(''))();
   TextColumn get tags => text().map(const StringListConverter())();
   IntColumn get estimatedDurationMinutes => integer().nullable()();
   BoolColumn get isDefault => boolean().withDefault(const Constant(false))();

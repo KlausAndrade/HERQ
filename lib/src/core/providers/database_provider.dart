@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../database/database.dart';
+import '../database/database.dart' if (dart.library.html) '../database/database_stub.dart';
 
 final databaseProvider = Provider<AppDatabase?>((ref) {
   if (kIsWeb) {

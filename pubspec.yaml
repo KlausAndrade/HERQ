@@ -55,11 +55,11 @@ dependencies:
   flutter_dotenv: ^5.1.0
   
   # Notifications & Background
-  flutter_local_notifications: ^16.3.0
-  workmanager: ^0.5.2
+  flutter_local_notifications: ^19.4.0
+  workmanager: ^0.9.0
   
   # Accessibility & Platform
-  vibration: ^1.8.4
+  vibration: ^3.1.4
   wakelock_plus: ^1.4.0
   live_activities: ^2.4.2
   confetti: ^0.8.0

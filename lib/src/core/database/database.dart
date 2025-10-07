@@ -52,7 +52,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -64,7 +64,10 @@ class AppDatabase extends _$AppDatabase {
           await _insertDefaultData();
         },
         onUpgrade: (migrator, from, to) async {
-          if (to == 11) {
+          if (to == 12) {
+            // Fix workout templates with null exerciseIds
+            await customStatement('UPDATE workout_templates SET exercise_ids = \'\' WHERE exercise_ids IS NULL');
+          } else if (to == 11) {
             // Add workout checkpoints table for auto-save functionality
             await migrator.createTable(workoutCheckpoints);
           } else if (to == 10) {

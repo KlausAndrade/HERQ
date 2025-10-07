@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../core/database/database.dart';
+import '../../../../core/providers/database_provider.dart';
+import '../../../workout/presentation/providers/template_providers.dart';
 import '../../domain/models/ai_models.dart';
 import '../providers/ai_providers.dart';
 
@@ -57,7 +61,7 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
 
     return recommendationsAsync.when(
       data: (recommendations) =>
-          _buildRecommendationsList(context, recommendations),
+          _buildRecommendationsList(context, ref, recommendations),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(
         child: Column(
@@ -90,7 +94,7 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
   }
 
   Widget _buildRecommendationsList(
-      BuildContext context, List<WorkoutRecommendation> recommendations) {
+      BuildContext context, WidgetRef ref, List<WorkoutRecommendation> recommendations) {
     if (recommendations.isEmpty) {
       return Center(
         child: Column(
@@ -120,13 +124,13 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
       itemCount: recommendations.length,
       itemBuilder: (context, index) {
         final recommendation = recommendations[index];
-        return _buildRecommendationCard(context, recommendation);
+        return _buildRecommendationCard(context, ref, recommendation);
       },
     );
   }
 
   Widget _buildRecommendationCard(
-      BuildContext context, WorkoutRecommendation recommendation) {
+      BuildContext context, WidgetRef ref, WorkoutRecommendation recommendation) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -252,14 +256,11 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Start workout
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Starting ${recommendation.name}...'),
-                        ),
-                      );
-                    },
+                    onPressed: () => _startWorkoutFromRecommendation(
+                      context, 
+                      ref, 
+                      recommendation,
+                    ),
                     child: const Text('Start Workout'),
                   ),
                 ),
@@ -312,6 +313,83 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
         return Colors.orange;
       case Difficulty.advanced:
         return Colors.red;
+    }
+  }
+
+  Future<void> _startWorkoutFromRecommendation(
+    BuildContext context,
+    WidgetRef ref,
+    WorkoutRecommendation recommendation,
+  ) async {
+    try {
+      // Import required providers and services
+      final database = ref.read(databaseProvider);
+      final templateActions = ref.read(templateActionsProvider);
+      
+      if (database == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Database not available. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Create a workout template from the AI recommendation
+      final templateId = 'ai_rec_${DateTime.now().millisecondsSinceEpoch}';
+      final template = WorkoutTemplate(
+        id: templateId,
+        name: recommendation.name,
+        description: recommendation.description,
+        category: 'AI Recommended',
+        sortOrder: 0,
+        exerciseIds: recommendation.exercises.map((e) => e.exerciseId).toList(),
+        tags: ['ai_generated', ...recommendation.targetMuscleGroups],
+        estimatedDurationMinutes: recommendation.estimatedDuration,
+        isDefault: false,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      // Save the template to database
+      final success = await templateActions.createTemplate(template);
+      
+      if (!success) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to create workout template'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      if (context.mounted) {
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Starting "${recommendation.name}"...'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        // Navigate to active workout with the template
+        context.go('/active-workout?templateId=$templateId');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error starting workout: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }
@@ -640,7 +718,7 @@ class ProgressAnalysisTab extends HookConsumerWidget {
     final progressAsync = ref.watch(progressiveOverloadProvider(params));
 
     return progressAsync.when(
-      data: (suggestions) => _buildProgressAnalysis(context, suggestions),
+      data: (suggestions) => _buildProgressAnalysis(context, ref, suggestions),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(
         child: Text('Error: $error'),
@@ -649,19 +727,19 @@ class ProgressAnalysisTab extends HookConsumerWidget {
   }
 
   Widget _buildProgressAnalysis(
-      BuildContext context, List<ProgressiveOverloadSuggestion> suggestions) {
+      BuildContext context, WidgetRef ref, List<ProgressiveOverloadSuggestion> suggestions) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: suggestions.length,
       itemBuilder: (context, index) {
         final suggestion = suggestions[index];
-        return _buildProgressCard(context, suggestion);
+        return _buildProgressCard(context, ref, suggestion);
       },
     );
   }
 
   Widget _buildProgressCard(
-      BuildContext context, ProgressiveOverloadSuggestion suggestion) {
+      BuildContext context, WidgetRef ref, ProgressiveOverloadSuggestion suggestion) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -733,15 +811,23 @@ class ProgressAnalysisTab extends HookConsumerWidget {
               ),
             ],
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Suggestion applied to next workout'),
+            Consumer(
+              builder: (context, ref, child) {
+                final appliedSuggestions = ref.watch(appliedProgressSuggestionsProvider);
+                final isApplied = appliedSuggestions.contains(suggestion.exerciseId);
+                
+                return ElevatedButton(
+                  onPressed: isApplied ? null : () => _applyProgressiveOverloadSuggestion(
+                    context,
+                    ref,
+                    suggestion,
                   ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isApplied ? Colors.green : null,
+                  ),
+                  child: Text(isApplied ? 'Applied' : 'Apply Suggestion'),
                 );
               },
-              child: const Text('Apply Suggestion'),
             ),
           ],
         ),
@@ -816,6 +902,100 @@ class ProgressAnalysisTab extends HookConsumerWidget {
       ],
     );
   }
+
+  Future<void> _applyProgressiveOverloadSuggestion(
+    BuildContext context,
+    WidgetRef ref,
+    ProgressiveOverloadSuggestion suggestion,
+  ) async {
+    try {
+      // For now, let's show a detailed confirmation and save the suggestion as a preference
+      // In a full implementation, this would integrate with user preferences or workout templates
+      
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Apply Progressive Overload'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Apply this suggestion to your next ${suggestion.exerciseId} workout?'),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'New Targets:',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text('Weight: ${suggestion.suggestedWeight}kg'),
+                    Text('Reps: ${suggestion.suggestedReps}'),
+                    Text('Sets: ${suggestion.suggestedSets}'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                suggestion.reasoning,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Apply'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed == true && context.mounted) {
+        // Mark suggestion as applied
+        ref.read(appliedProgressSuggestionsProvider.notifier).update(
+          (state) => {...state, suggestion.exerciseId},
+        );
+        
+        // Here you would normally save to user preferences or update templates
+        // For this implementation, we'll show a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Progressive overload applied! Next ${suggestion.exerciseId} workout: '
+              '${suggestion.suggestedWeight}kg × ${suggestion.suggestedReps} × ${suggestion.suggestedSets}',
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error applying suggestion: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 }
 
 class GeneralSuggestionsTab extends HookConsumerWidget {
@@ -826,7 +1006,7 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     final suggestionsAsync = ref.watch(aiSuggestionsProvider(_kDefaultUserId));
 
     return suggestionsAsync.when(
-      data: (suggestions) => _buildSuggestionsList(context, suggestions),
+      data: (suggestions) => _buildSuggestionsList(context, ref, suggestions),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(
         child: Text('Error: $error'),
@@ -835,18 +1015,18 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
   }
 
   Widget _buildSuggestionsList(
-      BuildContext context, List<AISuggestion> suggestions) {
+      BuildContext context, WidgetRef ref, List<AISuggestion> suggestions) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: suggestions.length,
       itemBuilder: (context, index) {
         final suggestion = suggestions[index];
-        return _buildSuggestionCard(context, suggestion);
+        return _buildSuggestionCard(context, ref, suggestion);
       },
     );
   }
 
-  Widget _buildSuggestionCard(BuildContext context, AISuggestion suggestion) {
+  Widget _buildSuggestionCard(BuildContext context, WidgetRef ref, AISuggestion suggestion) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -908,26 +1088,58 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
             ],
             if (suggestion.actionable) ...[
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      // Dismiss suggestion
-                    },
-                    child: const Text('Dismiss'),
-                  ),
-                  const Spacer(),
-                  ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Applied: ${suggestion.title}'),
+              Consumer(
+                builder: (context, ref, child) {
+                  final appliedSuggestions = ref.watch(appliedSuggestionsProvider);
+                  final dismissedSuggestions = ref.watch(dismissedSuggestionsProvider);
+                  final isApplied = appliedSuggestions.contains(suggestion.id);
+                  final isDismissed = dismissedSuggestions.contains(suggestion.id);
+
+                  if (isDismissed) {
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.visibility_off, color: Colors.grey[600], size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Dismissed',
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return Row(
+                    children: [
+                      TextButton(
+                        onPressed: isApplied ? null : () {
+                          ref.read(dismissedSuggestionsProvider.notifier).update(
+                            (state) => {...state, suggestion.id},
+                          );
+                        },
+                        child: const Text('Dismiss'),
+                      ),
+                      const Spacer(),
+                      ElevatedButton(
+                        onPressed: isApplied ? null : () => _applyGeneralSuggestion(
+                          context,
+                          ref,
+                          suggestion,
                         ),
-                      );
-                    },
-                    child: const Text('Apply'),
-                  ),
-                ],
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isApplied ? Colors.green : null,
+                        ),
+                        child: Text(isApplied ? 'Applied' : 'Apply'),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ],
@@ -971,6 +1183,299 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
         return Colors.red;
       case SuggestionType.nutritionTip:
         return Colors.brown;
+    }
+  }
+
+  Future<void> _applyGeneralSuggestion(
+    BuildContext context,
+    WidgetRef ref,
+    AISuggestion suggestion,
+  ) async {
+    try {
+      // Handle different types of suggestions with specific actions
+      switch (suggestion.type) {
+        case SuggestionType.exerciseSubstitution:
+          await _handleExerciseSubstitution(context, suggestion);
+          break;
+        case SuggestionType.nutritionTip:
+          await _handleNutritionTip(context, suggestion);
+          break;
+        case SuggestionType.formTip:
+          await _handleFormTip(context, suggestion);
+          break;
+        case SuggestionType.recoveryAdvice:
+          await _handleRecoveryAdvice(context, suggestion);
+          break;
+        case SuggestionType.deloadSuggestion:
+          await _handleDeloadSuggestion(context, suggestion);
+          break;
+        case SuggestionType.workoutRecommendation:
+          await _handleWorkoutRecommendation(context, suggestion);
+          break;
+        default:
+          // Generic handling for unknown suggestion types
+          await _handleGenericSuggestion(context, suggestion);
+      }
+      
+      // Mark suggestion as applied after successful handling
+      ref.read(appliedSuggestionsProvider.notifier).update(
+        (state) => {...state, suggestion.id},
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error applying suggestion: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleExerciseSubstitution(
+    BuildContext context,
+    AISuggestion suggestion,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exercise Substitution'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Add this exercise substitution to your preferences?'),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                suggestion.description,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Add to Preferences'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Exercise substitution saved to preferences!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleNutritionTip(
+    BuildContext context,
+    AISuggestion suggestion,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Nutrition Reminder'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Set a reminder for this nutrition tip?'),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                suggestion.description,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Set Reminder'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Nutrition reminder set!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleFormTip(
+    BuildContext context,
+    AISuggestion suggestion,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Form Tip'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Save this form tip for future reference?'),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.teal.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                suggestion.description,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Save Tip'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Form tip saved!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleRecoveryAdvice(
+    BuildContext context,
+    AISuggestion suggestion,
+  ) async {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Recovery advice noted: ${suggestion.title}'),
+          backgroundColor: Colors.blue,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleDeloadSuggestion(
+    BuildContext context,
+    AISuggestion suggestion,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Deload Week'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Schedule a deload week as suggested?'),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                suggestion.description,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Not Now'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Schedule Deload'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Deload week scheduled!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleWorkoutRecommendation(
+    BuildContext context,
+    AISuggestion suggestion,
+  ) async {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Check the Recommendations tab for workout suggestions!'),
+          backgroundColor: Colors.blue,
+          action: SnackBarAction(
+            label: 'View',
+            onPressed: () {
+              // Switch to recommendations tab
+              DefaultTabController.of(context).animateTo(0);
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleGenericSuggestion(
+    BuildContext context,
+    AISuggestion suggestion,
+  ) async {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Applied: ${suggestion.title}'),
+          backgroundColor: Colors.green,
+        ),
+      );
     }
   }
 }

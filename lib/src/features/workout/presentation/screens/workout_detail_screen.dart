@@ -284,7 +284,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
                         WorkoutTemplatesCompanion.insert(
                           id: templateId,
                           name: 'Repeat: ${workoutSession.name}',
-                          exerciseIds: [], // Will be populated based on set entries
+                          exerciseIds: const Value([]), // Will be populated based on set entries
                           tags: const [],
                           category: const Value('Quick Start'),
                         ),

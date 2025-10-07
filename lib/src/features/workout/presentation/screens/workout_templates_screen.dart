@@ -30,9 +30,17 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
               onPressed: () => Navigator.of(context).pop(false),
               child: const Text('Cancel'),
             ),
-            FilledButton(
+            TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               child: const Text('Start New Workout'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.of(context).pop(true);
+                // Force cleanup to ensure clean state
+                await ref.read(activeWorkoutProvider.notifier).forceCleanup();
+              },
+              child: const Text('Clear & Start New'),
             ),
           ],
         ),

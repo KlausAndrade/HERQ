@@ -45,10 +45,52 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   @override
   void dispose() {
     _foregroundService.stopService();
+    // Clear any active rest timer when disposing
+    _ref.read(restTimerProvider.notifier).stopTimer();
     super.dispose();
   }
 
+  /// Clear any existing workout and cleanup resources
+  Future<void> _clearActiveWorkout() async {
+    if (state != null) {
+      print('🧹 Clearing existing active workout: ${state!.name}');
+      
+      // Stop all services and timers
+      await _foregroundService.stopService();
+      _ref.read(restTimerProvider.notifier).stopTimer();
+      
+      // Stop auto-save and delete checkpoint
+      final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+      await checkpointService?.stopAutoSave(deleteCheckpoint: true);
+      
+      // Clear the state
+      state = null;
+    }
+  }
+
+  /// Force clear any leftover checkpoints and reset state
+  /// This can be used to recover from inconsistent states
+  Future<void> forceCleanup() async {
+    print('🧹 Force cleanup - clearing all workout data');
+    
+    // Stop all services and timers regardless of state
+    await _foregroundService.stopService();
+    _ref.read(restTimerProvider.notifier).stopTimer();
+    
+    // Force clear checkpoints
+    final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+    await checkpointService?.stopAutoSave(deleteCheckpoint: true);
+    
+    // Clear state
+    state = null;
+    
+    print('🧹 Force cleanup completed');
+  }
+
   Future<void> startWorkoutFromTemplate(String templateId) async {
+    // First, clear any existing workout
+    await _clearActiveWorkout();
+    
     final db = database;
     if (db == null) {
       throw Exception('Database not available');
@@ -105,6 +147,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalVolume: 0,
       );
 
+      print('🏁 New workout created: ${template.name}');
+
       // Start foreground service to keep app alive
       await _foregroundService.startService(
         workoutName: template.name,
@@ -127,6 +171,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalVolume: 0,
       );
 
+      print('🏁 Fallback workout created: Quick Start Workout');
+
       // Start foreground service even for fallback workout
       await _foregroundService.startService(
         workoutName: 'Quick Start Workout',
@@ -143,7 +189,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
   /// Resume a workout from a saved checkpoint
   Future<void> resumeWorkout(ActiveWorkout workout) async {
+    // First, clear any existing workout
+    await _clearActiveWorkout();
+    
     state = workout;
+    
+    print('🏁 Workout resumed: ${workout.name}');
     
     // Restart foreground service
     await _foregroundService.startService(
@@ -448,10 +499,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   }
 
   Future<WorkoutSummary?> finishWorkout() async {
-    if (state == null) return null;
+    print('🏁 Starting finishWorkout...');
+    if (state == null) {
+      print('❌ No active workout to finish');
+      return null;
+    }
 
     final db = database;
     if (db == null) {
+      print('❌ Database is null, clearing state');
       // Just clear state if no database
       state = null;
       return null;
@@ -460,16 +516,22 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     final workout = state!;
     final now = DateTime.now();
     final sessionId = const Uuid().v4();
+    
+    print('🏁 Finishing workout: ${workout.name}');
 
     try {
       // Calculate workout summary before saving
       final summaryService = _ref.read(workoutSummaryServiceProvider);
+      print('🏁 Summary service: ${summaryService != null ? 'available' : 'null'}');
+      
       final summary = summaryService != null
           ? await summaryService.calculateSummary(
               workout: workout,
               duration: workout.elapsedTime,
             )
           : null;
+      
+      print('🏁 Summary calculated: ${summary != null ? 'success' : 'null'}');
       // Calculate workout stats
       final totalSets = _calculateTotalSets(workout.exercises);
       final totalVolume = _calculateTotalVolume(workout.exercises);
@@ -545,12 +607,27 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final checkpointService = _ref.read(workoutCheckpointServiceProvider);
       await checkpointService?.stopAutoSave(deleteCheckpoint: true);
 
+      // Clear any active rest timer
+      _ref.read(restTimerProvider.notifier).stopTimer();
+
       // Clear the active workout
       state = null;
       
+      print('🏁 Workout finished successfully. Summary: ${summary != null ? 'available' : 'null'}');
       return summary;
     } catch (e) {
-      print('Error finishing workout: $e');
+      print('❌ Error finishing workout: $e');
+      
+      // Ensure cleanup happens even if save failed
+      try {
+        await _foregroundService.stopService();
+        final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+        await checkpointService?.stopAutoSave(deleteCheckpoint: true);
+        _ref.read(restTimerProvider.notifier).stopTimer();
+      } catch (cleanupError) {
+        print('❌ Error during cleanup: $cleanupError');
+      }
+      
       // Still clear state even if save failed
       state = null;
       rethrow;

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:vibration/vibration.dart';
 
@@ -24,6 +26,14 @@ class NotificationService {
   Future<void> initialize() async {
     if (_initialized) return;
 
+    // Skip notification initialization on macOS/desktop to avoid compatibility issues
+    if (defaultTargetPlatform == TargetPlatform.macOS || 
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.linux) {
+      _initialized = true;
+      return;
+    }
+
     const initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -33,9 +43,16 @@ class NotificationService {
       requestSoundPermission: true,
     );
 
+    const initializationSettingsMacOS = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
     const initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
+      macOS: initializationSettingsMacOS,
     );
 
     await _notifications.initialize(
@@ -91,6 +108,13 @@ class NotificationService {
     required String title,
     required String body,
   }) async {
+    // Skip notifications on desktop platforms
+    if (defaultTargetPlatform == TargetPlatform.macOS || 
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.linux) {
+      return;
+    }
+
     await initialize();
 
     final androidDetails = AndroidNotificationDetails(
@@ -110,9 +134,16 @@ class NotificationService {
       presentSound: true,
     );
 
+    const macosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
     final notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
+      macOS: macosDetails,
     );
 
     await _notifications.show(
@@ -132,6 +163,13 @@ class NotificationService {
     int? totalSets,
     int? targetReps,
   }) async {
+    // Skip notifications on desktop platforms
+    if (defaultTargetPlatform == TargetPlatform.macOS || 
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.linux) {
+      return;
+    }
+
     await initialize();
 
     final minutes = remainingSeconds ~/ 60;
@@ -193,9 +231,16 @@ class NotificationService {
       presentSound: false,
     );
 
+    const macosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: false,
+    );
+
     final notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
+      macOS: macosDetails,
     );
 
     await _notifications.show(
@@ -209,6 +254,11 @@ class NotificationService {
 
   /// Cancels the ongoing timer notification
   Future<void> cancelTimerNotification() async {
+    if (defaultTargetPlatform == TargetPlatform.macOS || 
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.linux) {
+      return;
+    }
     await _notifications.cancel(_timerNotificationId);
   }
 
@@ -226,6 +276,11 @@ class NotificationService {
   }
 
   Future<void> cancelAllNotifications() async {
+    if (defaultTargetPlatform == TargetPlatform.macOS || 
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.linux) {
+      return;
+    }
     await _notifications.cancelAll();
   }
 
@@ -255,9 +310,16 @@ class NotificationService {
       presentSound: true,
     );
 
+    const macosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
     const notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
+      macOS: macosDetails,
     );
 
     await instance._notifications.show(

@@ -747,7 +747,7 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
             WorkoutTemplatesCompanion.insert(
               id: templateId,
               name: 'Quick: ${exercise.name}',
-              exerciseIds: [exercise.id],
+              exerciseIds: Value([exercise.id]),
               tags: const [],
               category: const Value('Quick Start'),
             ),
@@ -769,24 +769,34 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
   void _showAddToTemplateDialog(
       BuildContext context, WidgetRef ref, Exercise exercise) async {
     final database = ref.read(databaseProvider);
-    if (database == null) return;
+    if (database == null) {
+      // Web platform or no database available
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Template management not available on web platform'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
 
-    // Get all user templates
-    final templates = await database.select(database.workoutTemplates).get();
+    try {
+      // Get all user templates with error handling
+      final templates = await database.select(database.workoutTemplates).get();
 
-    if (!context.mounted) return;
+      if (!context.mounted) return;
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add to Workout Template'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: templates.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(16),
-                  child:
-                      Text('No templates available. Create a template first.'),
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Add to Workout Template'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: templates.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(16),
+                    child:
+                        Text('No templates available. Create a template first.'),
                 )
               : ListView.builder(
                   shrinkWrap: true,
@@ -851,6 +861,17 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
         ],
       ),
     );
+    } catch (e) {
+      print('❌ Error loading templates: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error loading templates. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   IconData _getCategoryIcon(String? category) {

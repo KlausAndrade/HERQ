@@ -31,6 +31,50 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     if (widget.templateId != null) {
       // Initialize workout from template
       WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final existingWorkout = ref.read(activeWorkoutProvider);
+        
+        // If there's already an active workout, show confirmation dialog
+        if (existingWorkout != null && mounted) {
+          final confirmed = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Workout in Progress'),
+              content: Text(
+                'You have an active workout "${existingWorkout.name}" in progress. '
+                'Starting a new workout will end the current one.\n\n'
+                'Do you want to continue?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Force Start New Workout'),
+                ),
+                FilledButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop(true);
+                    // Force cleanup to ensure clean state
+                    await ref.read(activeWorkoutProvider.notifier).forceCleanup();
+                  },
+                  child: const Text('Clear & Start New'),
+                ),
+              ],
+            ),
+          );
+
+          if (confirmed != true) {
+            // User cancelled, go back to previous screen
+            if (mounted) {
+              Navigator.of(context).pop();
+            }
+            return;
+          }
+        }
+        
+        // Start the new workout
         await ref
             .read(activeWorkoutProvider.notifier)
             .startWorkoutFromTemplate(widget.templateId!);
@@ -41,7 +85,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       });
     } else {
       // Auto-expand first exercise if any
-      _expandedExercises.add(0);
+      if (mounted) {
+        _expandedExercises.add(0);
+      }
     }
   }
 
@@ -51,6 +97,63 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     super.dispose();
   }
 
+  void _handleBackButtonPressed(BuildContext context) async {
+    final activeWorkout = ref.read(activeWorkoutProvider);
+    
+    if (activeWorkout == null) {
+      // No active workout, safe to navigate back
+      context.go('/');
+      return;
+    }
+
+    // Show dialog asking what to do with the active workout
+    final action = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Leave Workout?'),
+        content: Text(
+          'You have an active workout "${activeWorkout.name}" in progress.\n\n'
+          'What would you like to do?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop('cancel'),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop('save'),
+            child: const Text('Save & Exit'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop('discard'),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Discard Workout'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted) return;
+
+    switch (action) {
+      case 'save':
+        // Save as checkpoint and exit
+        context.go('/');
+        break;
+      case 'discard':
+        // Force cleanup and exit - navigate first to avoid "no active workout" flash
+        context.go('/');
+        await ref.read(activeWorkoutProvider.notifier).forceCleanup();
+        break;
+      case 'cancel':
+      default:
+        // Do nothing, stay in workout
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final activeWorkout = ref.watch(activeWorkoutProvider);
@@ -58,6 +161,10 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => _handleBackButtonPressed(context),
+        ),
         title: Text(activeWorkout?.name ?? 'Active Workout'),
         actions: [
           TextButton(
@@ -365,9 +472,62 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
             ),
             child: const Text('Finish Anyway'),
           ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await _showDiscardWorkoutDialog(context);
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Discard'),
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _showDiscardWorkoutDialog(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              Icons.delete_forever,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(width: 8),
+            const Text('Discard Workout?'),
+          ],
+        ),
+        content: const Text(
+          'This will permanently discard your current workout. '
+          'All progress will be lost and cannot be recovered.\n\n'
+          'Are you sure you want to discard this workout?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Discard Workout'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      // Navigate to home first
+      context.go('/');
+      // Then force cleanup in the background
+      await ref.read(activeWorkoutProvider.notifier).forceCleanup();
+    }
   }
 
   void _showConfirmFinishDialog(BuildContext context) {
@@ -384,15 +544,30 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           TextButton(
             onPressed: () async {
               Navigator.of(context).pop();
+              await _showDiscardWorkoutDialog(context);
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Discard'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              print('🏁 Finish button pressed');
+              Navigator.of(context).pop();
               
               // Finish workout and get summary
               final summary = await ref.read(activeWorkoutProvider.notifier).finishWorkout();
               
+              print('🏁 Finish result - Summary: ${summary != null ? 'available' : 'null'}');
+              
               if (context.mounted) {
                 if (summary != null) {
+                  print('🏁 Navigating to workout summary');
                   // Navigate to summary screen
                   context.go('/workout-summary', extra: summary);
                 } else {
+                  print('🏁 No summary, falling back to home');
                   // Fallback to home if no summary
                   context.go('/');
                 }
