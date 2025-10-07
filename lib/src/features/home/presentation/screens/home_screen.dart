@@ -39,8 +39,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (activeWorkout != null) return; // Don't show dialog if workout is already running
 
     // Check for saved checkpoint
-    final checkpoint = await checkpointService.getLatestCheckpoint();
-    if (checkpoint == null) return;
+    final checkpointData = await checkpointService.getLatestCheckpoint();
+    if (checkpointData == null) return;
 
     if (!mounted) return;
 
@@ -49,15 +49,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => ResumeWorkoutDialog(
-        workout: checkpoint,
+        workout: checkpointData.workout,
+        lastSavedAt: checkpointData.lastSavedAt,
         onResume: () {
           Navigator.of(context).pop();
-          ref.read(activeWorkoutProvider.notifier).resumeWorkout(checkpoint);
+          ref.read(activeWorkoutProvider.notifier).resumeWorkout(checkpointData.workout);
           context.go('/active-workout');
+        },
+        onFinish: () async {
+          Navigator.of(context).pop();
+          // Resume the workout and immediately finish it
+          ref.read(activeWorkoutProvider.notifier).resumeWorkout(checkpointData.workout);
+          await ref.read(activeWorkoutProvider.notifier).finishWorkout();
+          if (!mounted) return;
+          context.go('/workout-summary');
         },
         onDiscard: () async {
           Navigator.of(context).pop();
-          await checkpointService.deleteCheckpoint(checkpoint.id);
+          await checkpointService.deleteCheckpoint(checkpointData.id);
         },
       ),
     );

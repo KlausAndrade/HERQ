@@ -6,6 +6,19 @@ import 'package:drift/drift.dart';
 import '../database/database.dart';
 import '../../features/workout/domain/models/active_workout.dart';
 
+/// Wrapper class for checkpoint data with metadata
+class CheckpointData {
+  final String id;
+  final ActiveWorkout workout;
+  final DateTime lastSavedAt;
+
+  CheckpointData({
+    required this.id,
+    required this.workout,
+    required this.lastSavedAt,
+  });
+}
+
 /// Service for automatically saving workout progress to prevent data loss
 /// Implements periodic checkpointing and resume functionality
 class WorkoutCheckpointService {
@@ -76,7 +89,8 @@ class WorkoutCheckpointService {
   }
 
   /// Get the most recent incomplete workout checkpoint
-  Future<ActiveWorkout?> getLatestCheckpoint() async {
+  /// Get the latest saved checkpoint with metadata
+  Future<CheckpointData?> getLatestCheckpoint() async {
     try {
       final checkpoint = await (database.select(database.workoutCheckpoints)
             ..orderBy([(t) => OrderingTerm.desc(t.lastSavedAt)])
@@ -90,7 +104,12 @@ class WorkoutCheckpointService {
       final workout = ActiveWorkout.fromJson(workoutJson);
       
       print('📦 Found checkpoint: ${workout.name} from ${checkpoint.lastSavedAt}');
-      return workout;
+      
+      return CheckpointData(
+        id: checkpoint.id,
+        workout: workout,
+        lastSavedAt: checkpoint.lastSavedAt,
+      );
     } catch (e) {
       print('❌ Failed to load checkpoint: $e');
       return null;

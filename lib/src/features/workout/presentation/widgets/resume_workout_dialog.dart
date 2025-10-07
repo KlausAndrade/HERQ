@@ -5,13 +5,17 @@ import '../../domain/models/active_workout.dart';
 /// Dialog to prompt user to resume an incomplete workout
 class ResumeWorkoutDialog extends StatelessWidget {
   final ActiveWorkout workout;
+  final DateTime lastSavedAt;
   final VoidCallback onResume;
+  final VoidCallback onFinish;
   final VoidCallback onDiscard;
 
   const ResumeWorkoutDialog({
     super.key,
     required this.workout,
+    required this.lastSavedAt,
     required this.onResume,
+    required this.onFinish,
     required this.onDiscard,
   });
 
@@ -19,6 +23,12 @@ class ResumeWorkoutDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    // Calculate time since last save
+    final now = DateTime.now();
+    final timeSinceLastSave = now.difference(lastSavedAt);
+    final minutesSinceLastSave = timeSinceLastSave.inMinutes;
+    final showFinishOption = minutesSinceLastSave >= 10;
 
     // Calculate completion stats
     final totalSets = workout.exercises.fold<int>(
@@ -119,6 +129,41 @@ class ResumeWorkoutDialog extends StatelessWidget {
                     ),
                   ],
                 ),
+                
+                // Show time since last save if > 10 minutes
+                if (showFinishOption) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: colorScheme.errorContainer.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: colorScheme.error.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 14,
+                          color: colorScheme.error,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'Paused ${_formatDuration(timeSinceLastSave)} ago',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.error,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 8),
                 
                 // Progress bar
@@ -171,14 +216,35 @@ class ResumeWorkoutDialog extends StatelessWidget {
           ),
         ),
         
+        // Finish button (only if > 10 minutes)
+        if (showFinishOption)
+          FilledButton.icon(
+            onPressed: onFinish,
+            icon: const Icon(Icons.check),
+            label: const Text('Finish'),
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.secondary,
+            ),
+          ),
+        
         // Resume button
         FilledButton.icon(
           onPressed: onResume,
           icon: const Icon(Icons.play_arrow),
-          label: const Text('Resume Workout'),
+          label: const Text('Resume'),
         ),
       ],
     );
+  }
+  
+  String _formatDuration(Duration duration) {
+    if (duration.inDays > 0) {
+      return '${duration.inDays} day${duration.inDays > 1 ? "s" : ""}';
+    } else if (duration.inHours > 0) {
+      return '${duration.inHours} hour${duration.inHours > 1 ? "s" : ""}';
+    } else {
+      return '${duration.inMinutes} minute${duration.inMinutes > 1 ? "s" : ""}';
+    }
   }
 }
 
