@@ -246,10 +246,14 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.drag_handle),
-                                    onPressed: null,
+                                  ReorderableDragStartListener(
+                                    index: index,
+                                    child: const Icon(
+                                      Icons.drag_handle,
+                                      color: Colors.grey,
+                                    ),
                                   ),
+                                  const SizedBox(width: 8),
                                   IconButton(
                                     icon: const Icon(Icons.delete),
                                     onPressed: () {
@@ -304,59 +308,75 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        builder: (context) => DraggableScrollableSheet(
-          initialChildSize: 0.9,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          expand: false,
-          builder: (context, scrollController) => Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Select Exercises',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: exercises.length,
-                  itemBuilder: (context, index) {
-                    final exercise = exercises[index];
-                    final isSelected =
-                        _selectedExerciseIds.contains(exercise.id);
-
-                    return CheckboxListTile(
-                      value: isSelected,
-                      title: Text(exercise.name),
-                      subtitle: Text(
-                        '${exercise.primaryMuscleGroup} • ${exercise.equipment}',
+        builder: (context) => StatefulBuilder(
+          builder: (context, setModalState) => DraggableScrollableSheet(
+            initialChildSize: 0.9,
+            minChildSize: 0.5,
+            maxChildSize: 0.95,
+            expand: false,
+            builder: (context, scrollController) => Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Select Exercises',
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      onChanged: (selected) {
-                        setState(() {
-                          if (selected == true) {
-                            _selectedExerciseIds.add(exercise.id);
-                          } else {
-                            _selectedExerciseIds.remove(exercise.id);
-                          }
-                        });
-                        Navigator.pop(context);
-                      },
-                    );
-                  },
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_selectedExerciseIds.isNotEmpty)
+                            Chip(
+                              label: Text('${_selectedExerciseIds.length} selected'),
+                              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                            ),
+                          const SizedBox(width: 8),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              setState(() {}); // Update parent widget after closing
+                            },
+                            child: const Text('Done'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: ListView.builder(
+                    controller: scrollController,
+                    itemCount: exercises.length,
+                    itemBuilder: (context, index) {
+                      final exercise = exercises[index];
+                      final isSelected =
+                          _selectedExerciseIds.contains(exercise.id);
+
+                      return CheckboxListTile(
+                        value: isSelected,
+                        title: Text(exercise.name),
+                        subtitle: Text(
+                          '${exercise.primaryMuscleGroup} • ${exercise.equipment}',
+                        ),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        onChanged: (selected) {
+                          setModalState(() {
+                            if (selected == true) {
+                              _selectedExerciseIds.add(exercise.id);
+                            } else {
+                              _selectedExerciseIds.remove(exercise.id);
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );

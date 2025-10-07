@@ -184,7 +184,34 @@ class _WorkoutTemplatesScreenState
             ],
           ),
         ),
-        ...templates.map((template) => _buildTemplateCard(template)),
+        if (_isEditing)
+          ReorderableListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: templates.length,
+            onReorder: (oldIndex, newIndex) async {
+              setState(() {
+                if (newIndex > oldIndex) newIndex--;
+                final item = templates.removeAt(oldIndex);
+                templates.insert(newIndex, item);
+              });
+
+              // Persist the new order
+              final actions = ref.read(templateActionsProvider);
+              await actions.reorderTemplates(templates, category);
+              ref.invalidate(workoutTemplatesProvider);
+            },
+            itemBuilder: (context, index) => _buildTemplateCard(
+              templates[index],
+              key: ValueKey('${category}-edit-${templates[index].id}'), // Unique key per category
+              index: index,
+            ),
+          )
+        else
+          ...templates.map((template) => _buildTemplateCard(
+                template,
+                key: ValueKey('${category}-view-${template.id}'), // Unique key per category
+              )),
         const SizedBox(height: 16),
       ],
     );
@@ -221,15 +248,48 @@ class _WorkoutTemplatesScreenState
       );
     }
 
+    // Use ReorderableListView when in edit mode
+    if (_isEditing) {
+      return ReorderableListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: templates.length,
+        onReorder: (oldIndex, newIndex) async {
+          setState(() {
+            if (newIndex > oldIndex) newIndex--;
+            final item = templates.removeAt(oldIndex);
+            templates.insert(newIndex, item);
+          });
+
+          // Persist the new order
+          final actions = ref.read(templateActionsProvider);
+          await actions.reorderTemplates(templates, _selectedCategory);
+          ref.invalidate(workoutTemplatesProvider);
+        },
+        itemBuilder: (context, index) => _buildTemplateCard(
+          templates[index],
+          key: ValueKey('edit-${templates[index].id}'), // Unique key for edit mode
+          index: index,
+        ),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: templates.length,
-      itemBuilder: (context, index) => _buildTemplateCard(templates[index]),
+      itemBuilder: (context, index) => _buildTemplateCard(
+        templates[index],
+        key: ValueKey('view-${templates[index].id}'), // Unique key for view mode
+      ),
     );
   }
 
-  Widget _buildTemplateCard(WorkoutTemplate template) {
+  Widget _buildTemplateCard(
+    WorkoutTemplate template, {
+    Key? key,
+    int? index,
+  }) {
     return AppCard(
+      key: key,
       variant: AppCardVariant.elevated,
       heroTag: 'template-${template.id}',
       onTap: _isEditing ? null : () => _startWorkout(template.id),
@@ -283,13 +343,24 @@ class _WorkoutTemplatesScreenState
                       ],
                     ),
                   ),
-                  if (_isEditing)
+                  if (_isEditing) ...[
+                    if (index != null)
+                      ReorderableDragStartListener(
+                        index: index,
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(
+                            Icons.drag_handle,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
                     IconButton(
                       onPressed: () => _showTemplateMenu(context, template),
                       icon: const Icon(Icons.more_vert),
                       iconSize: 20,
-                    )
-                  else
+                    ),
+                  ] else
                     Icon(
                       Icons.play_arrow,
                       color: Theme.of(context).colorScheme.primary,

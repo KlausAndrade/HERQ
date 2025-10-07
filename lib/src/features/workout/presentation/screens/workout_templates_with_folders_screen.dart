@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../providers/template_folder_provider.dart';
+import '../providers/template_providers.dart';
 import '../../../workouts/widgets/create_folder_dialog.dart';
 
 class WorkoutTemplatesWithFoldersScreen extends ConsumerStatefulWidget {
@@ -68,6 +69,8 @@ class _WorkoutTemplatesWithFoldersScreenState
           ),
         ),
         data: (folders) {
+          final foldersList = folders.toList();
+          
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -82,8 +85,35 @@ class _WorkoutTemplatesWithFoldersScreenState
                   ),
                 ),
 
-              // Folders
-              ...folders.map((folder) => _buildFolderSection(folder)),
+              // Folders - with reordering support in edit mode
+              if (_isEditing && foldersList.isNotEmpty)
+                ReorderableListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: foldersList.length,
+                  onReorder: (oldIndex, newIndex) async {
+                    setState(() {
+                      if (newIndex > oldIndex) newIndex--;
+                      final item = foldersList.removeAt(oldIndex);
+                      foldersList.insert(newIndex, item);
+                    });
+
+                    // Persist the new order
+                    final actions = ref.read(templateActionsProvider);
+                    await actions.reorderFolders(foldersList);
+                    ref.invalidate(templateFoldersProvider);
+                  },
+                  itemBuilder: (context, index) => _buildFolderSection(
+                    foldersList[index],
+                    key: ValueKey('folder-edit-${foldersList[index].id}'), // Unique key for edit mode
+                    index: index,
+                  ),
+                )
+              else
+                ...foldersList.map((folder) => _buildFolderSection(
+                      folder,
+                      key: ValueKey('folder-view-${folder.id}'), // Unique key for view mode
+                    )),
 
               // Unfolderd Templates
               unfoldered.when(
@@ -124,7 +154,11 @@ class _WorkoutTemplatesWithFoldersScreenState
     );
   }
 
-  Widget _buildFolderSection(TemplateFolder folder) {
+  Widget _buildFolderSection(
+    TemplateFolder folder, {
+    Key? key,
+    int? index,
+  }) {
     final isExpanded = _expandedFolders.contains(folder.id);
     final templatesAsync = ref.watch(templatesInFolderProvider(folder.id));
     final folderColor = folder.color != null
@@ -132,6 +166,7 @@ class _WorkoutTemplatesWithFoldersScreenState
         : Theme.of(context).colorScheme.primary;
 
     return DragTarget<String>(
+      key: key,
       onAcceptWithDetails: (details) {
         _moveTemplate(details.data, folder.id);
       },
@@ -217,13 +252,24 @@ class _WorkoutTemplatesWithFoldersScreenState
                           error: (_, __) => const Icon(Icons.error_outline, size: 20),
                         ),
                         const SizedBox(width: 8),
-                        if (_isEditing)
+                        if (_isEditing) ...[
+                          if (index != null)
+                            ReorderableDragStartListener(
+                              index: index,
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                child: Icon(
+                                  Icons.drag_handle,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
                           IconButton(
                             icon: const Icon(Icons.more_vert),
                             onPressed: () => _showFolderMenu(context, folder),
                             iconSize: 20,
-                          )
-                        else
+                          ),
+                        ] else
                           Icon(
                             isExpanded ? Icons.expand_less : Icons.expand_more,
                             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),

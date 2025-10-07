@@ -330,6 +330,79 @@ class TemplateActions {
       return false;
     }
   }
+
+  /// Reorder templates within a category
+  Future<bool> reorderTemplates(
+      List<WorkoutTemplate> templates, String? category) async {
+    if (_database == null) return false;
+
+    try {
+      // Update sortOrder for each template
+      for (int i = 0; i < templates.length; i++) {
+        await (_database!.update(_database!.workoutTemplates)
+              ..where((tbl) => tbl.id.equals(templates[i].id)))
+            .write(
+          WorkoutTemplatesCompanion(
+            sortOrder: Value(i),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
+
+        // 🌩️ Sync to Supabase
+        try {
+          final user = _supabase.auth.currentUser;
+          if (user != null) {
+            await _supabase.from('workout_templates').update({
+              'sort_order': i,
+              'updated_at': DateTime.now().toIso8601String(),
+            }).eq('id', templates[i].id);
+          }
+        } catch (syncError) {
+          print('⚠️ Template reorder sync failed: $syncError');
+        }
+      }
+      return true;
+    } catch (e) {
+      print('❌ Template reorder failed: $e');
+      return false;
+    }
+  }
+
+  /// Reorder folders
+  Future<bool> reorderFolders(List<TemplateFolder> folders) async {
+    if (_database == null) return false;
+
+    try {
+      // Update sortOrder for each folder
+      for (int i = 0; i < folders.length; i++) {
+        await (_database!.update(_database!.templateFolders)
+              ..where((tbl) => tbl.id.equals(folders[i].id)))
+            .write(
+          TemplateFoldersCompanion(
+            sortOrder: Value(i),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
+
+        // 🌩️ Sync to Supabase if needed
+        try {
+          final user = _supabase.auth.currentUser;
+          if (user != null) {
+            await _supabase.from('template_folders').update({
+              'sort_order': i,
+              'updated_at': DateTime.now().toIso8601String(),
+            }).eq('id', folders[i].id);
+          }
+        } catch (syncError) {
+          print('⚠️ Folder reorder sync failed: $syncError');
+        }
+      }
+      return true;
+    } catch (e) {
+      print('❌ Folder reorder failed: $e');
+      return false;
+    }
+  }
 }
 
 // Helper functions for default templates
