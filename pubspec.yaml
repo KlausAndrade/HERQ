@@ -60,8 +60,9 @@ dependencies:
   
   # Accessibility & Platform
   vibration: ^1.8.4
-  wakelock_plus: ^1.1.4
+  wakelock_plus: ^1.4.0
   live_activities: ^2.4.2
+  confetti: ^0.8.0
 
 dev_dependencies:
   flutter_test:

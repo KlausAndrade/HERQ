@@ -38,6 +38,8 @@ class ActiveSet {
   final int reps;
   final int? rpe;
   final bool isCompleted;
+  final bool isPRWeight;  // True if this set beat previous max weight
+  final bool isPRReps;    // True if this set beat previous max reps (at same or higher weight)
 
   const ActiveSet({
     required this.number,
@@ -45,5 +47,7 @@ class ActiveSet {
     required this.reps,
     this.rpe,
     this.isCompleted = false,
+    this.isPRWeight = false,
+    this.isPRReps = false,
   });
 }

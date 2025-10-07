@@ -3,9 +3,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/screens/auth_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/workout/domain/models/workout_summary.dart';
 import '../../features/workout/presentation/screens/active_workout_screen.dart';
 import '../../features/workout/presentation/screens/workout_detail_screen.dart';
 import '../../features/workout/presentation/screens/workout_history_screen.dart';
+import '../../features/workout/presentation/screens/workout_summary_screen.dart';
 import '../../features/workout/presentation/screens/workout_templates_with_folders_screen.dart';
 import '../../features/workout/presentation/screens/template_builder_screen.dart';
 import '../../features/exercises/presentation/screens/exercise_library_screen.dart';
@@ -81,6 +83,24 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
             final templateId = state.uri.queryParameters['templateId'];
             return AppPageTransitions.slideUpTransition(
               ActiveWorkoutScreen(templateId: templateId),
+              key: state.pageKey,
+            );
+          },
+        ),
+        GoRoute(
+          path: '/workout-summary',
+          name: 'workout-summary',
+          pageBuilder: (context, state) {
+            final summary = state.extra as WorkoutSummary?;
+            if (summary == null) {
+              // Redirect to home if no summary provided
+              return AppPageTransitions.fadeTransition(
+                const HomeScreen(),
+                key: state.pageKey,
+              );
+            }
+            return AppPageTransitions.slideUpTransition(
+              WorkoutSummaryScreen(summary: summary),
               key: state.pageKey,
             );
           },

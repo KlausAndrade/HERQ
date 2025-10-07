@@ -7,9 +7,13 @@ import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/live_activity_service.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/services/workout_foreground_service.dart';
 import '../../domain/models/active_workout.dart';
+import '../../domain/models/workout_summary.dart';
 import 'exercise_timer_preferences_provider.dart';
 import 'workout_providers.dart';
+import 'workout_summary_provider.dart';
+import 'pr_detection_provider.dart';
 import '../../../gamification/data/providers/gamification_provider.dart';
 
 // Provider for active workout state with real template data
@@ -22,6 +26,7 @@ final activeWorkoutProvider =
 class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   final AppDatabase? database;
   final Ref _ref;
+  final _foregroundService = WorkoutForegroundService();
 
   ActiveWorkoutNotifier(this.database, this._ref) : super(null);
 
@@ -81,6 +86,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalSets: activeExercises.length * 3,
         totalVolume: 0,
       );
+
+      // Start foreground service to keep app alive
+      await _foregroundService.startService(
+        workoutName: template.name,
+        exerciseCount: activeExercises.length,
+      );
     } catch (e) {
       // Fallback to empty workout if template fetch fails
       state = ActiveWorkout(
@@ -90,6 +101,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         elapsedTime: const Duration(),
         totalSets: 0,
         totalVolume: 0,
+      );
+
+      // Start foreground service even for fallback workout
+      await _foregroundService.startService(
+        workoutName: 'Quick Start Workout',
+        exerciseCount: 0,
       );
     }
   }
@@ -108,12 +125,49 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     }
   }
 
-  void updateSet(int exerciseIndex, int setIndex, ActiveSet updatedSet) {
+  Future<void> updateSet(int exerciseIndex, int setIndex, ActiveSet updatedSet) async {
     if (state != null) {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       final exercise = exercises[exerciseIndex];
+      
+      // Check for PR if set is being marked as completed
+      ActiveSet finalSet = updatedSet;
+      if (updatedSet.isCompleted && !exercise.sets[setIndex].isCompleted) {
+        // Set just got completed - check for PR
+        final prService = _ref.read(prDetectionServiceProvider);
+        if (prService != null) {
+          // Get all OTHER completed sets from this exercise in current workout
+          final currentWorkoutCompletedSets = <Map<String, dynamic>>[];
+          for (int i = 0; i < exercise.sets.length; i++) {
+            if (i != setIndex && exercise.sets[i].isCompleted) {
+              currentWorkoutCompletedSets.add({
+                'weight': exercise.sets[i].weight,
+                'reps': exercise.sets[i].reps,
+              });
+            }
+          }
+          
+          final prResult = await prService.checkSetForPR(
+            exerciseId: exercise.id,
+            weight: updatedSet.weight,
+            reps: updatedSet.reps,
+            currentWorkoutSets: currentWorkoutCompletedSets,
+          );
+          
+          finalSet = ActiveSet(
+            number: updatedSet.number,
+            weight: updatedSet.weight,
+            reps: updatedSet.reps,
+            rpe: updatedSet.rpe,
+            isCompleted: updatedSet.isCompleted,
+            isPRWeight: prResult['isPRWeight'] ?? false,
+            isPRReps: prResult['isPRReps'] ?? false,
+          );
+        }
+      }
+      
       final sets = List<ActiveSet>.from(exercise.sets);
-      sets[setIndex] = updatedSet;
+      sets[setIndex] = finalSet;
 
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
@@ -131,6 +185,17 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalSets: _calculateTotalSets(exercises),
         totalVolume: _calculateTotalVolume(exercises),
       );
+
+      // Update foreground service notification with progress
+      if (_foregroundService.isRunning) {
+        final completedExercises = exercises.where((e) => 
+          e.sets.every((s) => s.isCompleted || s.reps == 0)).length;
+        await _foregroundService.updateService(
+          workoutName: state!.name,
+          completedExercises: completedExercises,
+          totalExercises: exercises.length,
+        );
+      }
     }
   }
 
@@ -287,14 +352,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     });
   }
 
-  Future<void> finishWorkout() async {
-    if (state == null) return;
+  Future<WorkoutSummary?> finishWorkout() async {
+    if (state == null) return null;
 
     final db = database;
     if (db == null) {
       // Just clear state if no database
       state = null;
-      return;
+      return null;
     }
 
     final workout = state!;
@@ -302,6 +367,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     final sessionId = const Uuid().v4();
 
     try {
+      // Calculate workout summary before saving
+      final summaryService = _ref.read(workoutSummaryServiceProvider);
+      final summary = summaryService != null
+          ? await summaryService.calculateSummary(
+              workout: workout,
+              duration: workout.elapsedTime,
+            )
+          : null;
       // Calculate workout stats
       final totalSets = _calculateTotalSets(workout.exercises);
       final totalVolume = _calculateTotalVolume(workout.exercises);
@@ -370,8 +443,13 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       _ref.invalidate(workoutStatsProvider);
       _ref.invalidate(workoutSessionsByMonthProvider);
 
+      // Stop foreground service
+      await _foregroundService.stopService();
+
       // Clear the active workout
       state = null;
+      
+      return summary;
     } catch (e) {
       print('Error finishing workout: $e');
       // Still clear state even if save failed

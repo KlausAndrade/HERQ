@@ -119,7 +119,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                 Expanded(
                   child: ListView.builder(
                     controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     itemCount: activeWorkout.exercises.length,
                     itemBuilder: (context, index) {
                       final exercise = activeWorkout.exercises[index];
@@ -139,10 +139,54 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                             }
                           });
                         },
-                        onSetChanged: (setIndex, updatedSet) {
-                          ref
+                        onSetChanged: (setIndex, updatedSet) async {
+                          final oldSet = exercise.sets[setIndex];
+                          
+                          await ref
                               .read(activeWorkoutProvider.notifier)
                               .updateSet(index, setIndex, updatedSet);
+                          
+                          // Check if we just completed a set and got a PR
+                          if (updatedSet.isCompleted && !oldSet.isCompleted) {
+                            // Wait for state to update
+                            await Future.delayed(const Duration(milliseconds: 300));
+                            final updatedWorkout = ref.read(activeWorkoutProvider);
+                            if (updatedWorkout != null) {
+                              final updatedExercise = updatedWorkout.exercises[index];
+                              final newSet = updatedExercise.sets[setIndex];
+                              
+                              if (newSet.isPRWeight || newSet.isPRReps) {
+                                if (context.mounted) {
+                                  String message = '';
+                                  if (newSet.isPRWeight && newSet.isPRReps) {
+                                    message = '🏆 Double PR! New max weight AND reps!';
+                                  } else if (newSet.isPRWeight) {
+                                    message = '💪 New PR! Max weight achieved!';
+                                  } else if (newSet.isPRReps) {
+                                    message = '🔥 New PR! Max reps achieved!';
+                                  }
+                                  
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(message),
+                                      backgroundColor: Colors.amber.shade700,
+                                      behavior: SnackBarBehavior.floating,
+                                      duration: const Duration(seconds: 3),
+                                      margin: const EdgeInsets.all(16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      action: SnackBarAction(
+                                        label: '🎉',
+                                        textColor: Colors.white,
+                                        onPressed: () {},
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          }
                         },
                         onAddSet: () {
                           ref
@@ -338,10 +382,21 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              ref.read(activeWorkoutProvider.notifier).finishWorkout();
+            onPressed: () async {
               Navigator.of(context).pop();
-              context.go('/');
+              
+              // Finish workout and get summary
+              final summary = await ref.read(activeWorkoutProvider.notifier).finishWorkout();
+              
+              if (context.mounted) {
+                if (summary != null) {
+                  // Navigate to summary screen
+                  context.go('/workout-summary', extra: summary);
+                } else {
+                  // Fallback to home if no summary
+                  context.go('/');
+                }
+              }
             },
             child: const Text('Finish'),
           ),
@@ -397,49 +452,71 @@ class _ExerciseCard extends ConsumerWidget {
   final int exerciseIndex;
   final bool isExpanded;
   final VoidCallback onTap;
-  final Function(int setIndex, ActiveSet updatedSet) onSetChanged;
+  final Future<void> Function(int setIndex, ActiveSet updatedSet) onSetChanged;
   final VoidCallback onAddSet;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Card(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: 6),
         child: Column(
           children: [
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.fitness_center,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 20,
-                ),
-              ),
-              title: Text(
-                exercise.name,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text('${exercise.sets.length} sets'),
-              trailing: Icon(
-                isExpanded ? Icons.expand_less : Icons.expand_more,
-              ),
+            InkWell(
               onTap: onTap,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Icon(
+                        Icons.fitness_center,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 18,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            exercise.name,
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                          ),
+                          Text(
+                            '${exercise.sets.length} sets',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      isExpanded ? Icons.expand_less : Icons.expand_more,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
             ),
             if (isExpanded) ...[
               const Divider(height: 1),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
                 child: Column(
                   children: [
                     // Rest Timer Controls
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: Theme.of(context)
                               .colorScheme
@@ -451,15 +528,15 @@ class _ExerciseCard extends ConsumerWidget {
                         children: [
                           Icon(
                             Icons.timer_outlined,
-                            size: 20,
+                            size: 18,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           Text(
-                            'Rest Timer',
+                            'Rest',
                             style: Theme.of(context)
                                 .textTheme
-                                .bodyMedium
+                                .bodySmall
                                 ?.copyWith(
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -527,6 +604,7 @@ class _ExerciseCard extends ConsumerWidget {
                           restTimerSeconds: exercise.restTimerSeconds,
                           exerciseName: exercise.name,
                           totalSets: exercise.sets.length,
+                          isFirstSet: index == 0,
                           onChanged: (updatedSet) {
                             onSetChanged(index, updatedSet);
                           },
