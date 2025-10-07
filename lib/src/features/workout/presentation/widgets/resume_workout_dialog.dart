@@ -216,50 +216,78 @@ class ResumeWorkoutDialog extends StatelessWidget {
           ),
         ],
       ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
       actions: [
-        // Discard button
-        TextButton(
-          onPressed: onDiscard,
-          child: Text(
-            'Discard',
-            style: TextStyle(
-              color: colorScheme.error,
-              fontWeight: FontWeight.w600,
+        // Left side - empty to push content right
+        const SizedBox.shrink(),
+        // Right side - buttons in column
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Discard button on top right
+            TextButton(
+              onPressed: onDiscard,
+              child: Text(
+                'Discard',
+                style: TextStyle(
+                  color: colorScheme.error,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-          ),
+            const SizedBox(height: 8),
+            // Main action buttons in a row
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Resume/Add More button
+                if (isCompleteForgotten)
+                  OutlinedButton.icon(
+                    onPressed: onResume,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add More'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colorScheme.primary,
+                    ),
+                  )
+                else if (!showFinishOption)
+                  FilledButton.icon(
+                    onPressed: onResume,
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Resume'),
+                  ),
+                
+                // Spacing between buttons
+                if (showFinishOption) const SizedBox(width: 12),
+                
+                // Finalize/Finish button
+                if (showFinishOption)
+                  FilledButton.icon(
+                    onPressed: onFinish,
+                    icon: Icon(isCompleteForgotten ? Icons.celebration : Icons.check),
+                    label: Text(isCompleteForgotten ? 'Finalize' : 'Finish'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: isCompleteForgotten 
+                          ? colorScheme.primary
+                          : colorScheme.secondary,
+                    ),
+                  ),
+                
+                // Resume button (when finish option is shown but not complete)
+                if (showFinishOption && !isCompleteForgotten) ...[
+                  const SizedBox(width: 12),
+                  FilledButton.icon(
+                    onPressed: onResume,
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Resume'),
+                  ),
+                ],
+              ],
+            ),
+          ],
         ),
-        
-        // Resume button (secondary when workout is complete)
-        if (!isCompleteForgotten)
-          FilledButton.icon(
-            onPressed: onResume,
-            icon: const Icon(Icons.play_arrow),
-            label: const Text('Resume'),
-          ),
-        
-        // Finalize button
-        if (showFinishOption)
-          FilledButton.icon(
-            onPressed: onFinish,
-            icon: Icon(isCompleteForgotten ? Icons.celebration : Icons.check),
-            label: Text(isCompleteForgotten ? 'Finalize' : 'Finish'),
-            style: FilledButton.styleFrom(
-              backgroundColor: isCompleteForgotten 
-                  ? colorScheme.primary  // Primary color when emphasizing finalize
-                  : colorScheme.secondary,
-            ),
-          ),
-        
-        // Resume button (de-emphasized when workout is complete)
-        if (isCompleteForgotten)
-          OutlinedButton.icon(
-            onPressed: onResume,
-            icon: const Icon(Icons.add),
-            label: const Text('Add More'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: colorScheme.primary,
-            ),
-          ),
       ],
     );
   }
