@@ -23,6 +23,13 @@ class ProgressScreen extends ConsumerWidget {
           onPressed: () => context.go('/'),
         ),
         title: const Text('Progress'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.psychology),
+            onPressed: () => context.go('/analytics'),
+            tooltip: 'Advanced Analytics',
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

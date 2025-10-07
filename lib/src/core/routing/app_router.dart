@@ -14,6 +14,7 @@ import '../../features/exercises/presentation/screens/exercise_library_screen.da
 import '../../features/exercises/presentation/screens/exercise_detail_screen.dart';
 import '../../features/exercises/presentation/screens/create_exercise_screen.dart';
 import '../../features/progress/presentation/screens/progress_screen.dart';
+import '../../features/analytics/presentation/screens/analytics_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/social/presentation/screens/social_feed_screen.dart';
 import '../../features/social/presentation/screens/leaderboards_screen.dart';
@@ -145,6 +146,14 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
           name: 'progress',
           pageBuilder: (context, state) => AppPageTransitions.fadeTransition(
             const ProgressScreen(),
+            key: state.pageKey,
+          ),
+        ),
+        GoRoute(
+          path: '/analytics',
+          name: 'analytics',
+          pageBuilder: (context, state) => AppPageTransitions.fadeTransition(
+            const AnalyticsScreen(),
             key: state.pageKey,
           ),
         ),
