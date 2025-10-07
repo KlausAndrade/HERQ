@@ -280,6 +280,54 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     }
   }
 
+  void removeSet(int exerciseIndex, int setIndex) {
+    if (state != null) {
+      final exercises = List<ActiveExercise>.from(state!.exercises);
+      final exercise = exercises[exerciseIndex];
+      final sets = List<ActiveSet>.from(exercise.sets);
+
+      // Don't allow removing the last set
+      if (sets.length <= 1) {
+        return;
+      }
+
+      // Remove the set at the specified index
+      sets.removeAt(setIndex);
+
+      // Renumber remaining sets
+      final renumberedSets = sets.asMap().entries.map((entry) {
+        final idx = entry.key;
+        final set = entry.value;
+        return ActiveSet(
+          number: idx + 1,
+          weight: set.weight,
+          reps: set.reps,
+          rpe: set.rpe,
+          isCompleted: set.isCompleted,
+          isPRWeight: set.isPRWeight,
+          isPRReps: set.isPRReps,
+        );
+      }).toList();
+
+      exercises[exerciseIndex] = ActiveExercise(
+        id: exercise.id,
+        name: exercise.name,
+        sets: renumberedSets,
+        restTimerSeconds: exercise.restTimerSeconds,
+      );
+
+      state = ActiveWorkout(
+        id: state!.id,
+        name: state!.name,
+        exercises: exercises,
+        currentExerciseIndex: state!.currentExerciseIndex,
+        elapsedTime: state!.elapsedTime,
+        totalSets: _calculateTotalSets(exercises),
+        totalVolume: _calculateTotalVolume(exercises),
+      );
+    }
+  }
+
   Future<void> addExercise(
     String exerciseId, {
     double? initialWeight,

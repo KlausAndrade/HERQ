@@ -598,16 +598,69 @@ class _ExerciseCard extends ConsumerWidget {
                       itemCount: exercise.sets.length,
                       itemBuilder: (context, index) {
                         final set = exercise.sets[index];
-                        return SetEntryWidget(
-                          set: set,
-                          setNumber: index + 1,
-                          restTimerSeconds: exercise.restTimerSeconds,
-                          exerciseName: exercise.name,
-                          totalSets: exercise.sets.length,
-                          isFirstSet: index == 0,
-                          onChanged: (updatedSet) {
-                            onSetChanged(index, updatedSet);
+                        return Dismissible(
+                          key: Key('set_${exerciseIndex}_$index'),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20),
+                            color: Theme.of(context).colorScheme.error,
+                            child: Icon(
+                              Icons.delete,
+                              color: Theme.of(context).colorScheme.onError,
+                              size: 28,
+                            ),
+                          ),
+                          confirmDismiss: (direction) async {
+                            // Show confirmation dialog
+                            return await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Remove Set?'),
+                                content: Text(
+                                  'Are you sure you want to remove set ${index + 1}?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () => Navigator.of(context).pop(true),
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: Theme.of(context).colorScheme.error,
+                                    ),
+                                    child: const Text('Remove'),
+                                  ),
+                                ],
+                              ),
+                            ) ?? false;
                           },
+                          onDismissed: (direction) {
+                            // Remove the set
+                            ref
+                                .read(activeWorkoutProvider.notifier)
+                                .removeSet(exerciseIndex, index);
+                            
+                            // Show snackbar with undo option
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Set ${index + 1} removed'),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                          child: SetEntryWidget(
+                            set: set,
+                            setNumber: index + 1,
+                            restTimerSeconds: exercise.restTimerSeconds,
+                            exerciseName: exercise.name,
+                            totalSets: exercise.sets.length,
+                            isFirstSet: index == 0,
+                            onChanged: (updatedSet) {
+                              onSetChanged(index, updatedSet);
+                            },
+                          ),
                         );
                       },
                     ),
