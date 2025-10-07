@@ -89,6 +89,7 @@ class WebTemplatesScreen extends ConsumerWidget {
     
     showDialog(
       context: context,
+      barrierDismissible: false, // Prevent accidental dismissal
       builder: (context) => _CreateTemplateDialog(
         nameController: nameController,
         onSubmit: (name, exerciseIds) async {
@@ -172,38 +173,57 @@ class _CreateTemplateDialogState extends ConsumerState<_CreateTemplateDialog> {
               ),
             ),
             const SizedBox(height: 24),
-            Text(
-              'Select Exercises',
-              style: Theme.of(context).textTheme.titleMedium,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Select Exercises',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                if (selectedExercises.isNotEmpty)
+                  Chip(
+                    label: Text('${selectedExercises.length} selected'),
+                    backgroundColor: const Color(0xFF6366F1).withOpacity(0.2),
+                  ),
+              ],
             ),
             const SizedBox(height: 12),
             Expanded(
               child: exercises.when(
-                data: (data) => ListView.builder(
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    final exercise = data[index];
-                    final id = exercise['id'] as String;
-                    final isSelected = selectedExercises.contains(id);
-                    
-                    return CheckboxListTile(
-                      title: Text(exercise['name'] ?? 'Unknown'),
-                      subtitle: Text(exercise['primary_muscle_group'] ?? ''),
-                      value: isSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          if (value == true) {
-                            selectedExercises.add(id);
-                          } else {
-                            selectedExercises.remove(id);
-                          }
-                        });
-                      },
+                data: (data) {
+                  if (data.isEmpty) {
+                    return const Center(
+                      child: Text('No exercises available'),
                     );
-                  },
-                ),
+                  }
+                  
+                  return ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      final exercise = data[index];
+                      final id = exercise['id'] as String;
+                      final isSelected = selectedExercises.contains(id);
+                      
+                      return CheckboxListTile(
+                        title: Text(exercise['name'] ?? 'Unknown'),
+                        subtitle: Text(exercise['primary_muscle_group'] ?? ''),
+                        value: isSelected,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value == true) {
+                              selectedExercises.add(id);
+                            } else {
+                              selectedExercises.remove(id);
+                            }
+                          });
+                        },
+                      );
+                    },
+                  );
+                },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Text('Error: $error'),
+                error: (error, stack) => Center(child: Text('Error: $error')),
               ),
             ),
             const SizedBox(height: 24),

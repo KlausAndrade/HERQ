@@ -1,9 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/auth_provider.dart';
 
 // Provider for all workout templates grouped by category
 final workoutTemplatesProvider =
@@ -100,19 +102,45 @@ final templateCategoriesProvider = FutureProvider<List<String>>((ref) async {
 
 // Template management actions
 final templateActionsProvider = Provider<TemplateActions>((ref) {
-  return TemplateActions(ref.read(databaseProvider));
+  return TemplateActions(
+    ref.read(databaseProvider),
+    ref.read(supabaseClientProvider),
+  );
 });
 
 class TemplateActions {
-  TemplateActions(this._database);
+  TemplateActions(this._database, this._supabase);
 
   final AppDatabase? _database;
+  final SupabaseClient _supabase;
 
   Future<bool> createTemplate(WorkoutTemplate template) async {
     if (_database == null) return false;
 
     try {
+      // Save to local database
       await _database!.into(_database!.workoutTemplates).insert(template);
+      
+      // 🌩️ Sync to Supabase
+      try {
+        final user = _supabase.auth.currentUser;
+        if (user != null) {
+          await _supabase.from('workout_templates').insert({
+            'id': template.id,
+            'user_id': user.id,
+            'name': template.name,
+            'description': template.description,
+            'exercise_ids': template.exerciseIds,
+            'created_at': template.createdAt.toIso8601String(),
+            'updated_at': template.updatedAt.toIso8601String(),
+          });
+          print('✅ Template synced to Supabase');
+        }
+      } catch (syncError) {
+        print('⚠️ Template cloud sync failed: $syncError');
+        // Don't fail the operation if sync fails
+      }
+      
       return true;
     } catch (e) {
       return false;
@@ -123,7 +151,25 @@ class TemplateActions {
     if (_database == null) return false;
 
     try {
+      // Update local database
       await _database!.update(_database!.workoutTemplates).replace(template);
+      
+      // 🌩️ Sync to Supabase
+      try {
+        final user = _supabase.auth.currentUser;
+        if (user != null) {
+          await _supabase.from('workout_templates').update({
+            'name': template.name,
+            'description': template.description,
+            'exercise_ids': template.exerciseIds,
+            'updated_at': template.updatedAt.toIso8601String(),
+          }).eq('id', template.id);
+          print('✅ Template update synced to Supabase');
+        }
+      } catch (syncError) {
+        print('⚠️ Template update sync failed: $syncError');
+      }
+      
       return true;
     } catch (e) {
       return false;
@@ -134,9 +180,19 @@ class TemplateActions {
     if (_database == null) return false;
 
     try {
+      // Delete from local database
       await (_database!.delete(_database!.workoutTemplates)
             ..where((tbl) => tbl.id.equals(templateId)))
           .go();
+      
+      // 🌩️ Sync to Supabase
+      try {
+        await _supabase.from('workout_templates').delete().eq('id', templateId);
+        print('✅ Template deletion synced to Supabase');
+      } catch (syncError) {
+        print('⚠️ Template deletion sync failed: $syncError');
+      }
+      
       return true;
     } catch (e) {
       return false;

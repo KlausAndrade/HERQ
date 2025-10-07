@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:drift/drift.dart' hide JsonKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/services/live_activity_service.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/workout_foreground_service.dart';
@@ -575,6 +577,60 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                 ),
               );
         }
+      }
+
+      // 🌩️ SYNC TO SUPABASE (background sync for cross-platform access)
+      try {
+        final supabase = _ref.read(supabaseClientProvider);
+        final user = supabase.auth.currentUser;
+        
+        if (user != null) {
+          print('☁️ Syncing workout to Supabase...');
+          
+          // Sync workout session
+          await supabase.from('workout_sessions').insert({
+            'id': sessionId,
+            'user_id': user.id,
+            'name': workout.name,
+            'started_at': now.subtract(workout.elapsedTime).toIso8601String(),
+            'completed_at': now.toIso8601String(),
+            'total_duration_seconds': workout.elapsedTime.inSeconds,
+            'total_volume': totalVolume,
+            'total_tonnage': totalTonnage,
+            'total_sets': totalSets,
+            'total_reps': totalReps,
+          });
+
+          // Sync all completed sets
+          final setEntries = <Map<String, dynamic>>[];
+          for (final exercise in workout.exercises) {
+            for (final set in exercise.sets.where((s) => s.isCompleted)) {
+              setEntries.add({
+                'id': const Uuid().v4(),
+                'user_id': user.id,
+                'workout_session_id': sessionId,
+                'exercise_id': exercise.id,
+                'set_number': set.number,
+                'weight': set.weight,
+                'reps': set.reps,
+                'rpe': set.rpe,
+                'completed': true,
+              });
+            }
+          }
+
+          if (setEntries.isNotEmpty) {
+            await supabase.from('set_entries').insert(setEntries);
+          }
+          
+          print('✅ Workout synced to Supabase successfully');
+        } else {
+          print('⚠️ Not authenticated - workout saved locally only');
+        }
+      } catch (syncError) {
+        // Don't fail the workout save if cloud sync fails
+        print('⚠️ Cloud sync failed (offline?): $syncError');
+        print('💾 Workout saved locally - will sync when online');
       }
 
       // Update gamification stats
