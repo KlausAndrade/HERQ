@@ -234,35 +234,53 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                             orElse: () => exercises.first,
                           );
 
-                          return Card(
+                          return Container(
                             key: ValueKey(exerciseId),
                             margin: const EdgeInsets.only(bottom: 8),
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                child: Text('${index + 1}'),
-                              ),
-                              title: Text(exercise.name),
-                              subtitle: Text(exercise.primaryMuscleGroup),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ReorderableDragStartListener(
-                                    index: index,
-                                    child: const Icon(
-                                      Icons.drag_handle,
-                                      color: Colors.grey,
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      child: Text('${index + 1}'),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete),
-                                    onPressed: () {
-                                      setState(() {
-                                        _selectedExerciseIds.removeAt(index);
-                                      });
-                                    },
-                                  ),
-                                ],
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            exercise.name,
+                                            style: Theme.of(context).textTheme.titleMedium,
+                                          ),
+                                          Text(
+                                            exercise.primaryMuscleGroup,
+                                            style: Theme.of(context).textTheme.bodySmall,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    ReorderableDragStartListener(
+                                      index: index,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Icon(
+                                          Icons.drag_handle,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () {
+                                        setState(() {
+                                          _selectedExerciseIds.removeAt(index);
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           );

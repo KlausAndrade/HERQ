@@ -27,6 +27,7 @@ final workoutTemplatesProvider =
           .from('workout_templates')
           .select()
           .eq('user_id', user.id)
+          .order('sort_order')
           .order('name');
       
       // Merge cloud templates into local database
@@ -38,7 +39,7 @@ final workoutTemplatesProvider =
               name: template['name'],
               description: template['description'],
               category: template['folder_id'] ?? 'Custom',
-              sortOrder: 0,
+              sortOrder: template['sort_order'] ?? 0, // Use cloud sort order
               exerciseIds: List<String>.from(template['exercise_ids'] ?? []),
               tags: const [],
               estimatedDurationMinutes: null,

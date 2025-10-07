@@ -190,16 +190,21 @@ class _WorkoutTemplatesScreenState
             physics: const NeverScrollableScrollPhysics(),
             itemCount: templates.length,
             onReorder: (oldIndex, newIndex) async {
-              setState(() {
-                if (newIndex > oldIndex) newIndex--;
-                final item = templates.removeAt(oldIndex);
-                templates.insert(newIndex, item);
-              });
+              if (newIndex > oldIndex) newIndex--;
+              
+              // Create mutable copy for reordering
+              final reorderedList = List<WorkoutTemplate>.from(templates);
+              final item = reorderedList.removeAt(oldIndex);
+              reorderedList.insert(newIndex, item);
 
               // Persist the new order
               final actions = ref.read(templateActionsProvider);
-              await actions.reorderTemplates(templates, category);
-              ref.invalidate(workoutTemplatesProvider);
+              final success = await actions.reorderTemplates(reorderedList, category);
+              
+              if (success) {
+                // Only invalidate after successful database update
+                ref.invalidate(workoutTemplatesProvider);
+              }
             },
             itemBuilder: (context, index) => _buildTemplateCard(
               templates[index],
@@ -254,16 +259,21 @@ class _WorkoutTemplatesScreenState
         padding: const EdgeInsets.all(16),
         itemCount: templates.length,
         onReorder: (oldIndex, newIndex) async {
-          setState(() {
-            if (newIndex > oldIndex) newIndex--;
-            final item = templates.removeAt(oldIndex);
-            templates.insert(newIndex, item);
-          });
+          if (newIndex > oldIndex) newIndex--;
+          
+          // Create mutable copy for reordering
+          final reorderedList = List<WorkoutTemplate>.from(templates);
+          final item = reorderedList.removeAt(oldIndex);
+          reorderedList.insert(newIndex, item);
 
           // Persist the new order
           final actions = ref.read(templateActionsProvider);
-          await actions.reorderTemplates(templates, _selectedCategory);
-          ref.invalidate(workoutTemplatesProvider);
+          final success = await actions.reorderTemplates(reorderedList, _selectedCategory);
+          
+          if (success) {
+            // Only invalidate after successful database update
+            ref.invalidate(workoutTemplatesProvider);
+          }
         },
         itemBuilder: (context, index) => _buildTemplateCard(
           templates[index],

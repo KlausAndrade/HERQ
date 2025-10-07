@@ -92,16 +92,21 @@ class _WorkoutTemplatesWithFoldersScreenState
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: foldersList.length,
                   onReorder: (oldIndex, newIndex) async {
-                    setState(() {
-                      if (newIndex > oldIndex) newIndex--;
-                      final item = foldersList.removeAt(oldIndex);
-                      foldersList.insert(newIndex, item);
-                    });
+                    if (newIndex > oldIndex) newIndex--;
+                    
+                    // Create mutable copy for reordering
+                    final reorderedList = List<TemplateFolder>.from(foldersList);
+                    final item = reorderedList.removeAt(oldIndex);
+                    reorderedList.insert(newIndex, item);
 
                     // Persist the new order
                     final actions = ref.read(templateActionsProvider);
-                    await actions.reorderFolders(foldersList);
-                    ref.invalidate(templateFoldersProvider);
+                    final success = await actions.reorderFolders(reorderedList);
+                    
+                    if (success) {
+                      // Only invalidate after successful database update
+                      ref.invalidate(templateFoldersProvider);
+                    }
                   },
                   itemBuilder: (context, index) => _buildFolderSection(
                     foldersList[index],
@@ -135,7 +140,34 @@ class _WorkoutTemplatesWithFoldersScreenState
                               ),
                         ),
                       ),
-                      ...templates.map((template) => _buildTemplateCard(template, null)),
+                      if (_isEditing)
+                        ReorderableListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: templates.length,
+                          onReorder: (oldIndex, newIndex) async {
+                            if (newIndex > oldIndex) newIndex--;
+                            
+                            final reorderedList = List<WorkoutTemplate>.from(templates);
+                            final item = reorderedList.removeAt(oldIndex);
+                            reorderedList.insert(newIndex, item);
+
+                            final actions = ref.read(templateActionsProvider);
+                            final success = await actions.reorderTemplates(reorderedList, null);
+                            
+                            if (success) {
+                              ref.invalidate(templatesInFolderProvider(null));
+                            }
+                          },
+                          itemBuilder: (context, index) => _buildTemplateCard(
+                            templates[index],
+                            null,
+                            key: ValueKey('uncat-edit-${templates[index].id}'),
+                            index: index,
+                          ),
+                        )
+                      else
+                        ...templates.map((template) => _buildTemplateCard(template, null)),
                     ],
                   );
                 },
@@ -299,6 +331,34 @@ class _WorkoutTemplatesWithFoldersScreenState
                       );
                     }
 
+                    if (_isEditing) {
+                      return ReorderableListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: templates.length,
+                        onReorder: (oldIndex, newIndex) async {
+                          if (newIndex > oldIndex) newIndex--;
+                          
+                          final reorderedList = List<WorkoutTemplate>.from(templates);
+                          final item = reorderedList.removeAt(oldIndex);
+                          reorderedList.insert(newIndex, item);
+
+                          final actions = ref.read(templateActionsProvider);
+                          final success = await actions.reorderTemplates(reorderedList, folder.id);
+                          
+                          if (success) {
+                            ref.invalidate(templatesInFolderProvider(folder.id));
+                          }
+                        },
+                        itemBuilder: (context, index) => _buildTemplateCard(
+                          templates[index],
+                          folder.id,
+                          key: ValueKey('${folder.id}-edit-${templates[index].id}'),
+                          index: index,
+                        ),
+                      );
+                    }
+
                     return Column(
                       children: templates
                           .map((template) => _buildTemplateCard(template, folder.id))
@@ -321,8 +381,22 @@ class _WorkoutTemplatesWithFoldersScreenState
     );
   }
 
-  Widget _buildTemplateCard(WorkoutTemplate template, String? folderId) {
+  Widget _buildTemplateCard(
+    WorkoutTemplate template,
+    String? folderId, {
+    Key? key,
+    int? index,
+  }) {
+    // In edit mode with reordering, show drag handle instead of long-press draggable
+    if (_isEditing && index != null) {
+      return Container(
+        key: key,
+        child: _buildTemplateCardWithDragHandle(template, folderId, index),
+      );
+    }
+    
     return LongPressDraggable<String>(
+      key: key,
       data: template.id,
       feedback: Material(
         elevation: 8,
@@ -361,6 +435,80 @@ class _WorkoutTemplatesWithFoldersScreenState
         child: _buildTemplateCardContent(template, folderId),
       ),
       child: _buildTemplateCardContent(template, folderId),
+    );
+  }
+
+  Widget _buildTemplateCardWithDragHandle(
+    WorkoutTemplate template,
+    String? folderId,
+    int index,
+  ) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: () => _startWorkout(template.id),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _getCategoryColor(template.category).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  _getCategoryIcon(template.category),
+                  color: _getCategoryColor(template.category),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      template.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                    if (template.description?.isNotEmpty == true)
+                      Text(
+                        template.description!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.7),
+                            ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+              ),
+              ReorderableDragStartListener(
+                index: index,
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(
+                    Icons.drag_handle,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: () => _showTemplateMenu(context, template, folderId),
+                iconSize: 20,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
