@@ -2,10 +2,33 @@
 
 ## Overview
 
-The Smart Finish feature enhances the workout recovery system by providing intelligent prompts when resuming workouts. It automatically detects two scenarios:
+The Smart Finish feature enhances the workout recovery system with three intelligent behaviors:
 
-1. **Incomplete Workout**: User has unfinished sets and wants to resume or save partial progress
-2. **Complete But Not Finalized**: User completed all exercises but forgot to click "Finalize" before closing the app
+1. **Auto-Finalize Complete Workouts**: Automatically saves completed workouts without showing a dialog
+2. **Workout Reminder Notifications**: Sends a notification after 10 minutes if workout is incomplete
+3. **Adaptive Resume Dialog**: Shows context-specific options for incomplete workouts
+
+## Key Features
+
+### 1. Auto-Finalize (100% Complete + >10 Minutes)
+When user reopens the app after completing all exercises:
+- ✅ **Detects 100% completion** - All sets marked as done
+- ✅ **Checks time** - More than 10 minutes since last save
+- ✅ **Skips dialog** - No interruption, frictionless UX
+- ✅ **Auto-saves workout** - Immediately finalizes to database
+- ✅ **Shows celebration** - Navigates directly to summary screen with confetti
+- ✅ **Deletes checkpoint** - Cleans up after successful save
+
+### 2. Workout Reminder Notification (>10 Minutes Paused)
+When user closes app with incomplete workout:
+- ⏰ **Schedules notification** - Timer starts when app goes to background
+- 🔔 **Sends after 10 minutes** - "Don't forget your workout!"
+- 📱 **Tap to resume** - Opens app to active workout screen
+- ❌ **Auto-cancels** - If app resumes before 10 minutes
+- 🧹 **Cleanup** - Removes notification when workout finalized
+
+### 3. Adaptive Resume Dialog (For Incomplete Workouts)
+Shows different UI based on completion state and time elapsed
 
 ## User Stories
 
@@ -146,38 +169,54 @@ The system checks two conditions:
 
 ## User Experience Flow
 
-### Scenario 1: Forgot to Finalize (Primary Use Case)
+### Scenario 1: Forgot to Finalize - Auto-Save (NEW! 🎉)
 1. User completes all sets in workout
 2. User closes app without clicking "Finish Workout"
-3. 15 minutes later, user opens app
-4. Dialog appears: **"Workout Complete!"** with celebration icon
-5. Green banner: "Finished 15 minutes ago - don't forget to save!"
-6. Prominent "Finalize" button (primary color)
-7. User clicks "Finalize" → Workout saved → Summary screen appears
-8. Achievement unlocked! PRs displayed, confetti celebration
+3. 15 minutes pass
+4. User opens app
+5. **NO DIALOG** - App automatically finalizes workout
+6. **Direct to celebration** - Summary screen with confetti
+7. Workout saved to history with all completed sets
+8. Checkpoint automatically deleted
 
-### Scenario 2: Want to Add More Sets
+**Why this is great**: Zero friction, instant gratification, feels magical!
+
+### Scenario 2: Workout Reminder Notification (NEW! 🔔)
+1. User starts workout, completes 3 out of 6 exercises
+2. Phone call comes in, user closes app
+3. Call takes 15 minutes
+4. After 10 minutes: **Notification appears**
+   - Title: "💪 Don't forget your workout!"
+   - Body: "You still have 'Push Day' in progress. Tap to continue."
+5. User taps notification
+6. App opens to active workout screen
+7. User continues where they left off
+
+**Why this is great**: Gentle reminder, prevents lost workouts, reduces abandonment rate
+
+### Scenario 3: Want to Add More Sets
 1. User completes all sets in workout
 2. User closes app without finalizing
-3. Later, user opens app
-4. Dialog appears: "Workout Complete!"
+3. 5 minutes later, user opens app
+4. Dialog appears: "Workout Complete!" (still shows because <10 min)
 5. User realizes they want to do bonus sets
 6. User clicks "Add More" (outlined button)
 7. Returns to active workout screen
 8. Can add extra sets to any exercise
 9. Eventually clicks "Finish Workout" normally
 
-### Scenario 3: Interrupted Mid-Workout (>10 min)
+### Scenario 4: Interrupted Mid-Workout (>10 min)
 1. User completes 5 out of 10 exercises
 2. App crashes or phone dies
-3. 30 minutes later, user opens app
-4. Dialog shows: "Resume Workout?"
-5. Yellow banner: "Paused 30 minutes ago"
-6. Options: Resume (continue) | Finish (save partial) | Discard
-7. User clicks "Finish" to save what's done
-8. Summary shows completed exercises only
+3. 30 minutes later, notification was sent at 10-minute mark
+4. User opens app
+5. Dialog shows: "Resume Workout?"
+6. Yellow banner: "Paused 30 minutes ago"
+7. Options: Resume (continue) | Finish (save partial) | Discard
+8. User clicks "Finish" to save what's done
+9. Summary shows completed exercises only
 
-### Scenario 4: Quick Resume (<10 min)
+### Scenario 5: Quick Resume (<10 min, Incomplete)
 1. User in middle of workout
 2. Gets phone call, app goes to background
 3. 3 minutes later, call ends
@@ -186,6 +225,7 @@ The system checks two conditions:
 6. No warning banner (recent)
 7. Only 2 buttons: Resume | Discard
 8. User clicks Resume → back to workout immediately
+9. No notification sent (cancelled when app resumed)
 
 ## Edge Cases Handled
 

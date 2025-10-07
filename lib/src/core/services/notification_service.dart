@@ -19,6 +19,7 @@ class NotificationService {
   // Notification IDs
   static const int _timerNotificationId = 1;
   static const int _timerCompleteNotificationId = 2;
+  static const int _workoutReminderNotificationId = 3;
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -226,5 +227,51 @@ class NotificationService {
 
   Future<void> cancelAllNotifications() async {
     await _notifications.cancelAll();
+  }
+
+  /// Show a reminder notification when workout is left incomplete for 10 minutes
+  static Future<void> showWorkoutReminder({
+    required String workoutName,
+  }) async {
+    final instance = NotificationService();
+    if (!instance._initialized) {
+      await instance.initialize();
+    }
+
+    const androidDetails = AndroidNotificationDetails(
+      'workout_reminder_channel',
+      'Workout Reminders',
+      channelDescription: 'Reminds you to finish your incomplete workout',
+      importance: Importance.high,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+      icon: '@mipmap/ic_launcher',
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await instance._notifications.show(
+      _workoutReminderNotificationId,
+      '💪 Don\'t forget your workout!',
+      'You still have "$workoutName" in progress. Tap to continue.',
+      notificationDetails,
+      payload: 'workout_reminder',
+    );
+  }
+
+  /// Cancel the workout reminder notification
+  static Future<void> cancelWorkoutReminder() async {
+    final instance = NotificationService();
+    await instance._notifications.cancel(_workoutReminderNotificationId);
   }
 }

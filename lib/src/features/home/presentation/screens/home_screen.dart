@@ -44,7 +44,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     if (!mounted) return;
 
-    // Show resume dialog
+    // Calculate time since last save
+    final now = DateTime.now();
+    final timeSinceLastSave = now.difference(checkpointData.lastSavedAt);
+    final minutesSinceLastSave = timeSinceLastSave.inMinutes;
+
+    // Auto-finalize if workout is 100% complete and >10 minutes old
+    if (checkpointData.workout.isFullyCompleted() && minutesSinceLastSave >= 10) {
+      // Skip dialog - directly finalize and show celebration!
+      ref.read(activeWorkoutProvider.notifier).resumeWorkout(checkpointData.workout);
+      await ref.read(activeWorkoutProvider.notifier).finishWorkout();
+      if (!mounted) return;
+      context.go('/workout-summary');
+      return;
+    }
+
+    // Show resume dialog for incomplete or recent workouts
     showDialog<void>(
       context: context,
       barrierDismissible: false,

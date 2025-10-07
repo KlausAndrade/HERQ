@@ -28,6 +28,7 @@ class _GymAIAppState extends ConsumerState<GymAIApp> {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(_lifecycleObserver);
+    _lifecycleObserver.dispose();
     super.dispose();
   }
 
