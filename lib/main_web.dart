@@ -4,6 +4,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 
+import 'src/features/workout/presentation/screens/web_home_screen.dart';
+import 'src/features/workout/presentation/screens/web_templates_screen.dart';
+import 'src/features/workout/presentation/screens/web_workout_screen.dart';
+import 'src/features/workout/presentation/screens/web_history_screen.dart';
+import 'src/features/workout/presentation/screens/web_auth_screen.dart';
+
 /// Web-specific entry point for GymAI
 /// Uses Supabase for data persistence instead of SQLite
 Future<void> main() async {
@@ -32,11 +38,11 @@ Future<void> main() async {
   );
 }
 
-class GymAIWebApp extends StatelessWidget {
+class GymAIWebApp extends ConsumerWidget {
   const GymAIWebApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       title: 'GymAI - Workout Tracker',
       theme: ThemeData(
@@ -55,129 +61,43 @@ class GymAIWebApp extends StatelessWidget {
 
 final _router = GoRouter(
   initialLocation: '/',
+  redirect: (context, state) {
+    final user = Supabase.instance.client.auth.currentUser;
+    final isAuthRoute = state.matchedLocation == '/auth';
+    
+    if (user == null && !isAuthRoute) {
+      return '/auth';
+    }
+    
+    if (user != null && isAuthRoute) {
+      return '/';
+    }
+    
+    return null;
+  },
   routes: [
     GoRoute(
+      path: '/auth',
+      builder: (context, state) => const WebAuthScreen(),
+    ),
+    GoRoute(
       path: '/',
-      builder: (context, state) => const WebLandingPage(),
+      builder: (context, state) => const WebHomeScreen(),
+    ),
+    GoRoute(
+      path: '/templates',
+      builder: (context, state) => const WebTemplatesScreen(),
+    ),
+    GoRoute(
+      path: '/workout/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return WebWorkoutScreen(templateId: id);
+      },
+    ),
+    GoRoute(
+      path: '/history',
+      builder: (context, state) => const WebHistoryScreen(),
     ),
   ],
 );
-
-class WebLandingPage extends StatelessWidget {
-  const WebLandingPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.fitness_center,
-              size: 100,
-              color: Color(0xFF6366F1),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'GymAI Web',
-              style: TextStyle(
-                fontSize: 48,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Full web version available soon!',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 32),
-            const Text(
-              'To enable full functionality:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1A1A1A),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFF6366F1).withOpacity(0.3),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '1. Run SQL in Supabase SQL Editor:',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF6366F1),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const SelectableText(
-                      'supabase_web_schema.sql',
-                      style: TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    '2. Update providers to use web versions',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF6366F1),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'See: active_workout_web_provider.dart',
-                    style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-            OutlinedButton.icon(
-              onPressed: () {
-                // TODO: Navigate to login when ready
-              },
-              icon: const Icon(Icons.rocket_launch),
-              label: const Text('Download Mobile App'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF6366F1),
-                side: const BorderSide(color: Color(0xFF6366F1)),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

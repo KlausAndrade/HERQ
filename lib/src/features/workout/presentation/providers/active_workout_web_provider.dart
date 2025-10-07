@@ -1,31 +1,25 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/providers/auth_provider.dart';
-import '../../../../core/providers/database_provider.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
-import 'exercise_timer_preferences_provider.dart';
-import 'workout_providers.dart';
-import 'workout_summary_provider.dart';
+import 'workout_web_sessions_provider.dart';
 
-// Platform-aware active workout provider
+// Web-only active workout provider (uses Supabase only)
 final activeWorkoutWebProvider =
     StateNotifierProvider<ActiveWorkoutWebNotifier, ActiveWorkout?>((ref) {
-  final database = ref.watch(databaseProvider);
   final supabase = ref.watch(supabaseClientProvider);
-  return ActiveWorkoutWebNotifier(database, supabase, ref);
+  return ActiveWorkoutWebNotifier(supabase, ref);
 });
 
 class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
-  final dynamic database; // AppDatabase? for mobile, ignored on web
   final SupabaseClient supabase;
   final Ref _ref;
 
-  ActiveWorkoutWebNotifier(this.database, this.supabase, this._ref) : super(null);
+  ActiveWorkoutWebNotifier(this.supabase, this._ref) : super(null);
 
   @override
   void dispose() {
@@ -52,60 +46,28 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
     await _clearActiveWorkout();
 
     try {
-      Map<String, dynamic>? template;
+      // Web: Fetch from Supabase
+      final templateData = await supabase
+          .from('workout_templates')
+          .select()
+          .eq('id', templateId)
+          .maybeSingle();
+
+      if (templateData == null) {
+        throw Exception('Template not found: $templateId');
+      }
+      
+      // Fetch exercises
+      final exerciseIds = List<String>.from(templateData['exercise_ids'] ?? []);
       List<Map<String, dynamic>> exercisesList = [];
-
-      if (kIsWeb) {
-        // Web: Fetch from Supabase
-        final templateData = await supabase
-            .from('workout_templates')
+      
+      if (exerciseIds.isNotEmpty) {
+        final exercisesData = await supabase
+            .from('exercises')
             .select()
-            .eq('id', templateId)
-            .maybeSingle();
-
-        if (templateData == null) {
-          throw Exception('Template not found: $templateId');
-        }
+            .inFilter('id', exerciseIds);
         
-        template = templateData;
-        
-        // Fetch exercises
-        final exerciseIds = List<String>.from(template['exercise_ids'] ?? []);
-        if (exerciseIds.isNotEmpty) {
-          final exercisesData = await supabase
-              .from('exercises')
-              .select()
-              .inFilter('id', exerciseIds);
-          
-          exercisesList = List<Map<String, dynamic>>.from(exercisesData);
-        }
-      } else {
-        // Mobile: Fetch from Drift (existing code)
-        final db = database;
-        if (db == null) throw Exception('Database not available');
-
-        final templateData = await (db.select(db.workoutTemplates)
-              ..where((tbl) => tbl.id.equals(templateId)))
-            .getSingleOrNull();
-
-        if (templateData == null) {
-          throw Exception('Template not found: $templateId');
-        }
-
-        template = {
-          'id': templateData.id,
-          'name': templateData.name,
-          'exercise_ids': templateData.exerciseIds,
-        };
-
-        final exercises = await (db.select(db.exercises)
-              ..where((tbl) => tbl.id.isIn(templateData.exerciseIds)))
-            .get();
-
-        exercisesList = exercises.map((e) => {
-          'id': e.id,
-          'name': e.name,
-        }).toList();
+        exercisesList = List<Map<String, dynamic>>.from(exercisesData);
       }
 
       // Create exercise map for ordering
@@ -113,16 +75,11 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
         for (final ex in exercisesList) ex['id'] as String: ex
       };
 
-      // Get timer preferences
-      final timerPrefs = _ref.read(exerciseTimerPreferencesProvider);
-
       // Create active exercises in template order
-      final exerciseIds = List<String>.from(template['exercise_ids'] ?? []);
       final activeExercises = exerciseIds
           .where((id) => exerciseMap.containsKey(id))
           .map((id) {
         final exercise = exerciseMap[id]!;
-        final savedTimer = timerPrefs[id] ?? 90;
 
         return ActiveExercise(
           id: id,
@@ -132,20 +89,20 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
             ActiveSet(number: 2, reps: 0, isCompleted: false),
             ActiveSet(number: 3, reps: 0, isCompleted: false),
           ],
-          restTimerSeconds: savedTimer,
+          restTimerSeconds: 90, // Default rest timer for web
         );
       }).toList();
 
       state = ActiveWorkout(
         id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
-        name: template['name'] as String,
+        name: templateData['name'] as String,
         exercises: activeExercises,
         elapsedTime: const Duration(),
         totalSets: activeExercises.length * 3,
         totalVolume: 0,
       );
 
-      print('🏁 New workout created: ${template['name']}');
+      print('🏁 New workout created: ${templateData['name']}');
     } catch (e) {
       // Fallback to empty workout
       state = ActiveWorkout(
@@ -261,87 +218,48 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
           .where((s) => s.isCompleted && s.weight != null)
           .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
 
-      if (kIsWeb) {
-        // Web: Save to Supabase
-        final user = supabase.auth.currentUser;
-        if (user == null) throw Exception('Not authenticated');
+      // Web: Save to Supabase
+      final user = supabase.auth.currentUser;
+      if (user == null) throw Exception('Not authenticated');
 
-        await supabase.from('workout_sessions').insert({
-          'id': sessionId,
-          'user_id': user.id,
-          'name': workout.name,
-          'started_at': now.subtract(workout.elapsedTime).toIso8601String(),
-          'completed_at': now.toIso8601String(),
-          'total_duration_seconds': workout.elapsedTime.inSeconds,
-          'total_volume': totalVolume,
-          'total_tonnage': totalTonnage,
-          'total_sets': totalSets,
-          'total_reps': totalReps,
-        });
+      await supabase.from('workout_sessions').insert({
+        'id': sessionId,
+        'user_id': user.id,
+        'name': workout.name,
+        'started_at': now.subtract(workout.elapsedTime).toIso8601String(),
+        'completed_at': now.toIso8601String(),
+        'total_duration_seconds': workout.elapsedTime.inSeconds,
+        'total_volume': totalVolume,
+        'total_tonnage': totalTonnage,
+        'total_sets': totalSets,
+        'total_reps': totalReps,
+      });
 
-        // Save all completed sets
-        final setEntries = <Map<String, dynamic>>[];
-        for (final exercise in workout.exercises) {
-          for (final set in exercise.sets.where((s) => s.isCompleted)) {
-            setEntries.add({
-              'id': const Uuid().v4(),
-              'user_id': user.id,
-              'workout_session_id': sessionId,
-              'exercise_id': exercise.id,
-              'set_number': set.number,
-              'weight': set.weight,
-              'reps': set.reps,
-              'rpe': set.rpe,
-              'completed': true,
-            });
-          }
-        }
-
-        if (setEntries.isNotEmpty) {
-          await supabase.from('set_entries').insert(setEntries);
-        }
-      } else {
-        // Mobile: Save to Drift (existing code)
-        final db = database;
-        if (db != null) {
-          await db.into(db.workoutSessions).insert(
-                db.workoutSessionsCompanion.insert(
-                  id: sessionId,
-                  name: workout.name,
-                  startedAt: now.subtract(workout.elapsedTime),
-                  completedAt: db.value(now),
-                  totalDurationSeconds: db.value(workout.elapsedTime.inSeconds),
-                  totalVolume: db.value(totalVolume),
-                  totalTonnage: db.value(totalTonnage),
-                  totalSets: db.value(totalSets),
-                  totalReps: db.value(totalReps),
-                ),
-              );
-
-          for (final exercise in workout.exercises) {
-            for (final set in exercise.sets.where((s) => s.isCompleted)) {
-              await db.into(db.setEntries).insert(
-                    db.setEntriesCompanion.insert(
-                      id: const Uuid().v4(),
-                      workoutSessionId: sessionId,
-                      exerciseId: exercise.id,
-                      setNumber: set.number,
-                      weight: db.value(set.weight),
-                      reps: set.reps,
-                      rpe: db.value(set.rpe),
-                      completedAt: now,
-                    ),
-                  );
-            }
-          }
+      // Save all completed sets
+      final setEntries = <Map<String, dynamic>>[];
+      for (final exercise in workout.exercises) {
+        for (final set in exercise.sets.where((s) => s.isCompleted)) {
+          setEntries.add({
+            'id': const Uuid().v4(),
+            'user_id': user.id,
+            'workout_session_id': sessionId,
+            'exercise_id': exercise.id,
+            'set_number': set.number,
+            'weight': set.weight,
+            'reps': set.reps,
+            'rpe': set.rpe,
+            'completed': true,
+          });
         }
       }
 
-      // Invalidate providers to refresh UI
-      _ref.invalidate(workoutSessionsProvider);
-      _ref.invalidate(recentWorkoutSessionsProvider);
-      _ref.invalidate(weeklyStatsProvider);
-      _ref.invalidate(workoutStatsProvider);
+      if (setEntries.isNotEmpty) {
+        await supabase.from('set_entries').insert(setEntries);
+      }
+
+      // Invalidate web providers to refresh UI
+      _ref.invalidate(recentSessionsWebProvider);
+      _ref.invalidate(allSessionsWebProvider);
 
       // Clear timer and state
       _ref.read(restTimerWebProvider.notifier).stopTimer();
@@ -349,12 +267,8 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       
       print('🏁 Workout finished successfully');
       
-      // Calculate summary
-      final summaryService = _ref.read(workoutSummaryServiceProvider);
-      return summaryService?.calculateSummary(
-        workout: workout,
-        duration: workout.elapsedTime,
-      );
+      // Web doesn't support workout summary calculation yet
+      return null;
     } catch (e) {
       print('❌ Error finishing workout: $e');
       state = null;
