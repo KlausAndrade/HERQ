@@ -20,6 +20,7 @@ import '../models/user.dart';
 import '../models/user_achievement.dart';
 import '../models/user_follow.dart';
 import '../models/user_stats.dart';
+import '../models/workout_checkpoint.dart';
 import '../models/workout_session.dart';
 import '../models/workout_template.dart';
 
@@ -33,6 +34,7 @@ part 'database.g.dart';
     WorkoutTemplates,
     TemplateFolders,
     WorkoutSessions,
+    WorkoutCheckpoints,
     SetEntries,
     PersonalRecords,
     UserAchievements,
@@ -50,7 +52,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -62,7 +64,10 @@ class AppDatabase extends _$AppDatabase {
           await _insertDefaultData();
         },
         onUpgrade: (migrator, from, to) async {
-          if (to == 10) {
+          if (to == 11) {
+            // Add workout checkpoints table for auto-save functionality
+            await migrator.createTable(workoutCheckpoints);
+          } else if (to == 10) {
             // Add template folders table and folderId to workout templates
             await migrator.createTable(templateFolders);
             await migrator.addColumn(workoutTemplates, workoutTemplates.folderId);

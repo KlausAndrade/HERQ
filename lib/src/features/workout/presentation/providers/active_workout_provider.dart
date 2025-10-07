@@ -13,6 +13,7 @@ import '../../domain/models/workout_summary.dart';
 import 'exercise_timer_preferences_provider.dart';
 import 'workout_providers.dart';
 import 'workout_summary_provider.dart';
+import 'workout_checkpoint_provider.dart';
 import 'pr_detection_provider.dart';
 import '../../../gamification/data/providers/gamification_provider.dart';
 
@@ -28,7 +29,24 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   final Ref _ref;
   final _foregroundService = WorkoutForegroundService();
 
-  ActiveWorkoutNotifier(this.database, this._ref) : super(null);
+  ActiveWorkoutNotifier(this.database, this._ref) : super(null) {
+    // Listen to state changes to update checkpoint
+    addListener(_onStateChanged);
+  }
+
+  void _onStateChanged(ActiveWorkout? workout) {
+    if (workout != null) {
+      // Save checkpoint when workout state changes
+      final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+      checkpointService?.saveCheckpoint(workout);
+    }
+  }
+
+  @override
+  void dispose() {
+    _foregroundService.stopService();
+    super.dispose();
+  }
 
   Future<void> startWorkoutFromTemplate(String templateId) async {
     final db = database;
@@ -92,6 +110,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         workoutName: template.name,
         exerciseCount: activeExercises.length,
       );
+
+      // Start auto-save checkpoint service
+      final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+      if (checkpointService != null && state != null) {
+        checkpointService.startAutoSave(state!);
+      }
     } catch (e) {
       // Fallback to empty workout if template fetch fails
       state = ActiveWorkout(
@@ -108,7 +132,30 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         workoutName: 'Quick Start Workout',
         exerciseCount: 0,
       );
+
+      // Start auto-save for fallback workout too
+      final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+      if (checkpointService != null && state != null) {
+        checkpointService.startAutoSave(state!);
+      }
     }
+  }
+
+  /// Resume a workout from a saved checkpoint
+  Future<void> resumeWorkout(ActiveWorkout workout) async {
+    state = workout;
+    
+    // Restart foreground service
+    await _foregroundService.startService(
+      workoutName: workout.name,
+      exerciseCount: workout.exercises.length,
+    );
+    
+    // Restart auto-save
+    final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+    checkpointService?.startAutoSave(workout);
+    
+    print('✅ Workout resumed: ${workout.name}');
   }
 
   void setCurrentExercise(int index) {
@@ -445,6 +492,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Stop foreground service
       await _foregroundService.stopService();
+
+      // Stop auto-save and delete checkpoint (workout completed successfully)
+      final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+      await checkpointService?.stopAutoSave(deleteCheckpoint: true);
 
       // Clear the active workout
       state = null;

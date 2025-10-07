@@ -9,13 +9,62 @@ import '../../../../core/theme/app_animations.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
 import '../../../workout/presentation/providers/active_workout_provider.dart';
+import '../../../workout/presentation/providers/workout_checkpoint_provider.dart';
+import '../../../workout/presentation/widgets/resume_workout_dialog.dart';
 import '../../../gamification/presentation/widgets/gamification_widgets.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Check for incomplete workouts on app start
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForIncompleteWorkout();
+    });
+  }
+
+  Future<void> _checkForIncompleteWorkout() async {
+    final checkpointService = ref.read(workoutCheckpointServiceProvider);
+    if (checkpointService == null) return;
+
+    // Check if there's already an active workout
+    final activeWorkout = ref.read(activeWorkoutProvider);
+    if (activeWorkout != null) return; // Don't show dialog if workout is already running
+
+    // Check for saved checkpoint
+    final checkpoint = await checkpointService.getLatestCheckpoint();
+    if (checkpoint == null) return;
+
+    if (!mounted) return;
+
+    // Show resume dialog
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ResumeWorkoutDialog(
+        workout: checkpoint,
+        onResume: () {
+          Navigator.of(context).pop();
+          ref.read(activeWorkoutProvider.notifier).resumeWorkout(checkpoint);
+          context.go('/active-workout');
+        },
+        onDiscard: () async {
+          Navigator.of(context).pop();
+          await checkpointService.deleteCheckpoint(checkpoint.id);
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: SafeArea(
           child: SingleChildScrollView(
