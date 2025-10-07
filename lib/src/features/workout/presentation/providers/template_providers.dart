@@ -7,12 +7,59 @@ import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 
-// Provider for all workout templates grouped by category
+// Provider for all workout templates grouped by category (with cloud sync)
 final workoutTemplatesProvider =
     FutureProvider<Map<String, List<WorkoutTemplate>>>((ref) async {
   final database = ref.read(databaseProvider);
+  final supabase = ref.read(supabaseClientProvider);
+  
   if (database == null) {
     return _getDefaultTemplatesByCategory();
+  }
+
+  // 🌩️ SYNC: Fetch templates from Supabase
+  try {
+    final user = supabase.auth.currentUser;
+    if (user != null) {
+      print('☁️ Fetching templates from Supabase...');
+      
+      final cloudTemplates = await supabase
+          .from('workout_templates')
+          .select()
+          .eq('user_id', user.id)
+          .order('name');
+      
+      // Merge cloud templates into local database
+      for (final template in cloudTemplates) {
+        try {
+          await database.into(database.workoutTemplates).insertOnConflictUpdate(
+            WorkoutTemplate(
+              id: template['id'],
+              name: template['name'],
+              description: template['description'],
+              category: template['folder_id'] ?? 'Custom',
+              sortOrder: 0,
+              exerciseIds: List<String>.from(template['exercise_ids'] ?? []),
+              tags: const [],
+              estimatedDurationMinutes: null,
+              isDefault: false,
+              createdAt: template['created_at'] != null
+                  ? DateTime.parse(template['created_at'])
+                  : DateTime.now(),
+              updatedAt: template['updated_at'] != null
+                  ? DateTime.parse(template['updated_at'])
+                  : DateTime.now(),
+            ),
+          );
+        } catch (e) {
+          print('⚠️ Error syncing template ${template['id']}: $e');
+        }
+      }
+      
+      print('✅ Synced ${cloudTemplates.length} templates from cloud');
+    }
+  } catch (e) {
+    print('⚠️ Template sync failed, using local data: $e');
   }
 
   final templates = await (database.select(database.workoutTemplates)

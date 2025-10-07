@@ -2,21 +2,23 @@
 
 ## Overview
 
-GymAI now automatically syncs your workout data across **all platforms** (iOS, Android, Web) using Supabase as the cloud backend. Your workouts and templates are available everywhere!
+GymAI now has **full bidirectional cross-platform sync**! Your workout data automatically syncs across **all platforms** (iOS, Android, Web) in real-time using Supabase.
 
-## ✅ What's Synced
+## ✅ What's Synced (Both Directions)
 
-### Workout Sessions
+### Workout Sessions ↔️
 - ✅ Complete workout data (name, duration, volume, tonnage)
 - ✅ All completed sets (weight, reps, RPE)
 - ✅ Timestamps (started_at, completed_at)
 - ✅ User attribution (user_id)
+- ✅ **Bidirectional:** iOS ↔ Web ↔ Android
 
-### Workout Templates
+### Workout Templates ↔️
 - ✅ Template creation
 - ✅ Template updates
 - ✅ Template deletion
 - ✅ Exercise lists
+- ✅ **Bidirectional:** iOS ↔ Web ↔ Android
 
 ## 🔄 How It Works
 
@@ -26,16 +28,14 @@ User completes workout
     ↓
 Save to local SQLite (Drift) ✅ Offline-first
     ↓
-Sync to Supabase ☁️ Background sync
+Upload to Supabase ☁️ Background sync
     ↓
-Data available on all platforms ✨
+Download from Supabase ⬇️ Fetch other devices' data
+    ↓
+Merge into local database 🔄
+    ↓
+Data available everywhere ✨
 ```
-
-**Benefits:**
-- Works offline - data saved locally first
-- Automatic background sync when online
-- No data loss if sync fails
-- Graceful error handling
 
 ### Web
 ```
@@ -43,13 +43,41 @@ User completes workout
     ↓
 Save directly to Supabase ☁️
     ↓
-Data immediately available ✨
+Mobile apps fetch automatically ⬇️
+    ↓
+Data synced across all devices ✨
 ```
 
-**Benefits:**
-- Real-time availability
-- No local storage needed
-- Always up to date
+## 🔄 Sync Direction Examples
+
+### Example 1: Web → iOS
+1. Complete workout on **Web** 💻
+2. Open **iOS** app 📱
+3. Pull to refresh (or open History)
+4. Web workout appears! ✅
+
+### Example 2: iOS → Android
+1. Complete workout on **iOS** 📱
+2. Open **Android** app 🤖
+3. Workouts automatically sync
+4. iOS workout appears on Android! ✅
+
+### Example 3: Android → Web
+1. Create template on **Android** 🤖
+2. Open **Web** app 💻
+3. Refresh templates
+4. Android template appears! ✅
+
+## 📊 Sync Matrix
+
+| Source | → | Destination | Status |
+|--------|---|-------------|--------|
+| iOS | → | Web | ✅ Working |
+| iOS | → | Android | ✅ Working |
+| Android | → | iOS | ✅ Working |
+| Android | → | Web | ✅ Working |
+| Web | → | iOS | ✅ Working |
+| Web | → | Android | ✅ Working |
 
 ## 📱 Platform Compatibility
 
