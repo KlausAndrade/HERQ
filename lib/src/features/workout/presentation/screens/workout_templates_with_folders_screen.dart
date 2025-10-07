@@ -99,14 +99,9 @@ class _WorkoutTemplatesWithFoldersScreenState
                     final item = reorderedList.removeAt(oldIndex);
                     reorderedList.insert(newIndex, item);
 
-                    // Persist the new order
+                    // Persist the new order in background (no need to invalidate - ReorderableListView handles UI)
                     final actions = ref.read(templateActionsProvider);
-                    final success = await actions.reorderFolders(reorderedList);
-                    
-                    if (success) {
-                      // Only invalidate after successful database update
-                      ref.invalidate(templateFoldersProvider);
-                    }
+                    actions.reorderFolders(reorderedList);
                   },
                   itemBuilder: (context, index) => _buildFolderSection(
                     foldersList[index],
@@ -152,12 +147,9 @@ class _WorkoutTemplatesWithFoldersScreenState
                             final item = reorderedList.removeAt(oldIndex);
                             reorderedList.insert(newIndex, item);
 
+                            // Persist in background (no need to invalidate - ReorderableListView handles UI)
                             final actions = ref.read(templateActionsProvider);
-                            final success = await actions.reorderTemplates(reorderedList, null);
-                            
-                            if (success) {
-                              ref.invalidate(templatesInFolderProvider(null));
-                            }
+                            actions.reorderTemplates(reorderedList, null);
                           },
                           itemBuilder: (context, index) => _buildTemplateCard(
                             templates[index],
@@ -343,12 +335,9 @@ class _WorkoutTemplatesWithFoldersScreenState
                           final item = reorderedList.removeAt(oldIndex);
                           reorderedList.insert(newIndex, item);
 
+                          // Persist in background (no need to invalidate - ReorderableListView handles UI)
                           final actions = ref.read(templateActionsProvider);
-                          final success = await actions.reorderTemplates(reorderedList, folder.id);
-                          
-                          if (success) {
-                            ref.invalidate(templatesInFolderProvider(folder.id));
-                          }
+                          actions.reorderTemplates(reorderedList, folder.id);
                         },
                         itemBuilder: (context, index) => _buildTemplateCard(
                           templates[index],

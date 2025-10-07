@@ -197,14 +197,9 @@ class _WorkoutTemplatesScreenState
               final item = reorderedList.removeAt(oldIndex);
               reorderedList.insert(newIndex, item);
 
-              // Persist the new order
+              // Persist the new order in background (no need to invalidate - ReorderableListView handles UI)
               final actions = ref.read(templateActionsProvider);
-              final success = await actions.reorderTemplates(reorderedList, category);
-              
-              if (success) {
-                // Only invalidate after successful database update
-                ref.invalidate(workoutTemplatesProvider);
-              }
+              actions.reorderTemplates(reorderedList, category);
             },
             itemBuilder: (context, index) => _buildTemplateCard(
               templates[index],
@@ -266,14 +261,9 @@ class _WorkoutTemplatesScreenState
           final item = reorderedList.removeAt(oldIndex);
           reorderedList.insert(newIndex, item);
 
-          // Persist the new order
+          // Persist the new order in background (no need to invalidate - ReorderableListView handles UI)
           final actions = ref.read(templateActionsProvider);
-          final success = await actions.reorderTemplates(reorderedList, _selectedCategory);
-          
-          if (success) {
-            // Only invalidate after successful database update
-            ref.invalidate(workoutTemplatesProvider);
-          }
+          actions.reorderTemplates(reorderedList, _selectedCategory);
         },
         itemBuilder: (context, index) => _buildTemplateCard(
           templates[index],
