@@ -1,18 +1,28 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/groq_provider.dart';
 import '../../data/services/ai_coaching_service.dart';
+import '../../data/services/groq_ai_coaching_service.dart';
 import '../../domain/models/ai_models.dart';
 
-// Service provider
+// Mock service provider (fallback)
 final aiCoachingServiceProvider = Provider<AICoachingService>((ref) {
   return AICoachingService();
 });
 
-// Workout recommendations provider
-final workoutRecommendationsProvider = FutureProvider.family<
+// Groq AI service provider (real AI)
+final groqAICoachingServiceProvider = Provider<GroqAICoachingService>((ref) {
+  final groqService = ref.watch(groqServiceProvider);
+  final database = ref.watch(databaseProvider)!;
+  return GroqAICoachingService(groqService, database);
+});
+
+// Groq-powered workout recommendations provider
+final groqWorkoutRecommendationsProvider = FutureProvider.family<
     List<WorkoutRecommendation>,
     WorkoutRecommendationParams>((ref, params) async {
-  final aiService = ref.read(aiCoachingServiceProvider);
+  final aiService = ref.read(groqAICoachingServiceProvider);
   return aiService.getWorkoutRecommendations(
     params.userId,
     preferredMuscleGroups: params.preferredMuscleGroups,
@@ -21,39 +31,127 @@ final workoutRecommendationsProvider = FutureProvider.family<
   );
 });
 
-// Progressive overload suggestions provider
-final progressiveOverloadProvider = FutureProvider.family<
+// Groq-powered progressive overload suggestions provider
+final groqProgressiveOverloadProvider = FutureProvider.family<
     List<ProgressiveOverloadSuggestion>,
     ProgressiveOverloadParams>((ref, params) async {
-  final aiService = ref.read(aiCoachingServiceProvider);
+  final aiService = ref.read(groqAICoachingServiceProvider);
   return aiService.getProgressiveOverloadSuggestions(
       params.userId, params.exerciseId);
 });
 
-// Recovery analysis provider
-final recoveryAnalysisProvider =
+// Groq-powered recovery analysis provider
+final groqRecoveryAnalysisProvider =
     FutureProvider.family<RecoveryAnalysis, String>((ref, userId) async {
-  final aiService = ref.read(aiCoachingServiceProvider);
+  final aiService = ref.read(groqAICoachingServiceProvider);
   return aiService.getRecoveryAnalysis(userId);
 });
 
-// General AI suggestions provider
-final aiSuggestionsProvider =
+// Groq-powered general AI suggestions provider
+final groqAISuggestionsProvider =
     FutureProvider.family<List<AISuggestion>, String>((ref, userId) async {
-  final aiService = ref.read(aiCoachingServiceProvider);
+  final aiService = ref.read(groqAICoachingServiceProvider);
   return aiService.getGeneralSuggestions(userId);
 });
 
-// Exercise substitutions provider
-final exerciseSubstitutionsProvider =
+// Groq-powered exercise substitutions provider
+final groqExerciseSubstitutionsProvider =
     FutureProvider.family<List<String>, ExerciseSubstitutionParams>(
         (ref, params) async {
-  final aiService = ref.read(aiCoachingServiceProvider);
+  final aiService = ref.read(groqAICoachingServiceProvider);
   return aiService.getExerciseSubstitutions(
     params.exerciseId,
     availableEquipment: params.availableEquipment,
     limitedBodyParts: params.limitedBodyParts,
   );
+});
+
+// Workout recommendations provider (fallback to mock if Groq fails)
+final workoutRecommendationsProvider = FutureProvider.family<
+    List<WorkoutRecommendation>,
+    WorkoutRecommendationParams>((ref, params) async {
+  try {
+    final aiService = ref.read(groqAICoachingServiceProvider);
+    return await aiService.getWorkoutRecommendations(
+      params.userId,
+      preferredMuscleGroups: params.preferredMuscleGroups,
+      availableEquipment: params.availableEquipment,
+      maxDuration: params.maxDuration,
+    );
+  } catch (e) {
+    // Fallback to mock service if Groq fails
+    final mockService = ref.read(aiCoachingServiceProvider);
+    return mockService.getWorkoutRecommendations(
+      params.userId,
+      preferredMuscleGroups: params.preferredMuscleGroups,
+      availableEquipment: params.availableEquipment,
+      maxDuration: params.maxDuration,
+    );
+  }
+});
+
+// Progressive overload suggestions provider (fallback to mock if Groq fails)
+final progressiveOverloadProvider = FutureProvider.family<
+    List<ProgressiveOverloadSuggestion>,
+    ProgressiveOverloadParams>((ref, params) async {
+  try {
+    final aiService = ref.read(groqAICoachingServiceProvider);
+    return await aiService.getProgressiveOverloadSuggestions(
+        params.userId, params.exerciseId);
+  } catch (e) {
+    // Fallback to mock service if Groq fails
+    final mockService = ref.read(aiCoachingServiceProvider);
+    return mockService.getProgressiveOverloadSuggestions(
+        params.userId, params.exerciseId);
+  }
+});
+
+// Recovery analysis provider (fallback to mock if Groq fails)
+final recoveryAnalysisProvider =
+    FutureProvider.family<RecoveryAnalysis, String>((ref, userId) async {
+  try {
+    final aiService = ref.read(groqAICoachingServiceProvider);
+    return await aiService.getRecoveryAnalysis(userId);
+  } catch (e) {
+    // Fallback to mock service if Groq fails
+    final mockService = ref.read(aiCoachingServiceProvider);
+    return mockService.getRecoveryAnalysis(userId);
+  }
+});
+
+// General AI suggestions provider (fallback to mock if Groq fails)
+final aiSuggestionsProvider =
+    FutureProvider.family<List<AISuggestion>, String>((ref, userId) async {
+  try {
+    final aiService = ref.read(groqAICoachingServiceProvider);
+    return await aiService.getGeneralSuggestions(userId);
+  } catch (e) {
+    // Fallback to mock service if Groq fails
+    final mockService = ref.read(aiCoachingServiceProvider);
+    return mockService.getGeneralSuggestions(userId);
+  }
+});
+
+// Exercise substitutions provider (fallback to mock if Groq fails)
+final exerciseSubstitutionsProvider =
+    FutureProvider.family<List<String>, ExerciseSubstitutionParams>(
+        (ref, params) async {
+  try {
+    final aiService = ref.read(groqAICoachingServiceProvider);
+    return await aiService.getExerciseSubstitutions(
+      params.exerciseId,
+      availableEquipment: params.availableEquipment,
+      limitedBodyParts: params.limitedBodyParts,
+    );
+  } catch (e) {
+    // Fallback to mock service if Groq fails
+    final mockService = ref.read(aiCoachingServiceProvider);
+    return mockService.getExerciseSubstitutions(
+      params.exerciseId,
+      availableEquipment: params.availableEquipment,
+      limitedBodyParts: params.limitedBodyParts,
+    );
+  }
 });
 
 // Workout pattern analysis provider
@@ -63,15 +161,19 @@ final workoutPatternAnalysisProvider =
   return aiService.analyzeWorkoutPatterns(userId);
 });
 
-// AI actions provider for user interactions
+// AI actions provider for user interactions (with Groq fallback)
 final aiActionsProvider = Provider<AIActions>((ref) {
-  return AIActions(ref.read(aiCoachingServiceProvider));
+  return AIActions(
+    ref.read(groqAICoachingServiceProvider),
+    ref.read(aiCoachingServiceProvider),
+  );
 });
 
 class AIActions {
-  AIActions(this._aiService);
+  AIActions(this._groqService, this._mockService);
 
-  final AICoachingService _aiService;
+  final GroqAICoachingService _groqService;
+  final AICoachingService _mockService;
 
   Future<List<WorkoutRecommendation>> getPersonalizedWorkouts(
     String userId, {
@@ -79,16 +181,29 @@ class AIActions {
     List<String>? equipment,
     int? duration,
   }) async {
-    return _aiService.getWorkoutRecommendations(
-      userId,
-      preferredMuscleGroups: muscleGroups,
-      availableEquipment: equipment,
-      maxDuration: duration,
-    );
+    try {
+      return await _groqService.getWorkoutRecommendations(
+        userId,
+        preferredMuscleGroups: muscleGroups,
+        availableEquipment: equipment,
+        maxDuration: duration,
+      );
+    } catch (e) {
+      return _mockService.getWorkoutRecommendations(
+        userId,
+        preferredMuscleGroups: muscleGroups,
+        availableEquipment: equipment,
+        maxDuration: duration,
+      );
+    }
   }
 
   Future<RecoveryAnalysis> analyzeRecovery(String userId) async {
-    return _aiService.getRecoveryAnalysis(userId);
+    try {
+      return await _groqService.getRecoveryAnalysis(userId);
+    } catch (e) {
+      return _mockService.getRecoveryAnalysis(userId);
+    }
   }
 
   Future<List<String>> findAlternativeExercises(
@@ -96,11 +211,19 @@ class AIActions {
     List<String>? equipment,
     List<String>? limitations,
   }) async {
-    return _aiService.getExerciseSubstitutions(
-      exerciseId,
-      availableEquipment: equipment,
-      limitedBodyParts: limitations,
-    );
+    try {
+      return await _groqService.getExerciseSubstitutions(
+        exerciseId,
+        availableEquipment: equipment,
+        limitedBodyParts: limitations,
+      );
+    } catch (e) {
+      return _mockService.getExerciseSubstitutions(
+        exerciseId,
+        availableEquipment: equipment,
+        limitedBodyParts: limitations,
+      );
+    }
   }
 }
 
