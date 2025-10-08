@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:drift/drift.dart' hide JsonKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
@@ -18,6 +17,23 @@ import 'workout_summary_provider.dart';
 import 'workout_checkpoint_provider.dart';
 import 'pr_detection_provider.dart';
 import '../../../gamification/data/providers/gamification_provider.dart';
+
+// Provider for tracking workout modifications
+final workoutModificationsProvider = StateNotifierProvider<WorkoutModificationsNotifier, bool>((ref) {
+  return WorkoutModificationsNotifier();
+});
+
+class WorkoutModificationsNotifier extends StateNotifier<bool> {
+  WorkoutModificationsNotifier() : super(false);
+
+  void markAsModified() {
+    state = true;
+  }
+
+  void reset() {
+    state = false;
+  }
+}
 
 // Provider for active workout state with real template data
 final activeWorkoutProvider =
@@ -150,6 +166,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       );
 
       print('🏁 New workout created: ${template.name}');
+      
+      // Reset modifications flag - this is a fresh workout
+      _ref.read(workoutModificationsProvider.notifier).reset();
 
       // Start foreground service to keep app alive
       await _foregroundService.startService(
@@ -174,6 +193,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       );
 
       print('🏁 Fallback workout created: Quick Start Workout');
+      
+      // Reset modifications flag
+      _ref.read(workoutModificationsProvider.notifier).reset();
 
       // Start foreground service even for fallback workout
       await _foregroundService.startService(
@@ -330,6 +352,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalSets: _calculateTotalSets(exercises),
         totalVolume: _calculateTotalVolume(exercises),
       );
+      
+      // Mark as modified
+      _ref.read(workoutModificationsProvider.notifier).markAsModified();
     }
   }
 
@@ -378,6 +403,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalSets: _calculateTotalSets(exercises),
         totalVolume: _calculateTotalVolume(exercises),
       );
+      
+      // Mark as modified
+      _ref.read(workoutModificationsProvider.notifier).markAsModified();
     }
   }
 
@@ -429,6 +457,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           totalSets: _calculateTotalSets(exercises),
           totalVolume: _calculateTotalVolume(exercises),
         );
+        
+        // Mark as modified
+        _ref.read(workoutModificationsProvider.notifier).markAsModified();
       } catch (e) {
         // On error, add as custom exercise
         final exercises = List<ActiveExercise>.from(state!.exercises);
@@ -448,6 +479,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           totalSets: _calculateTotalSets(exercises),
           totalVolume: _calculateTotalVolume(exercises),
         );
+        
+        // Mark as modified
+        _ref.read(workoutModificationsProvider.notifier).markAsModified();
       }
     }
   }
@@ -482,6 +516,45 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             newRestTimerSeconds,
           );
     }
+  }
+
+  /// Reorder exercises during an active workout
+  void reorderExercises(int oldIndex, int newIndex) {
+    if (state == null) return;
+    
+    final exercises = List<ActiveExercise>.from(state!.exercises);
+    if (oldIndex < 0 || oldIndex >= exercises.length ||
+        newIndex < 0 || newIndex >= exercises.length) {
+      return;
+    }
+    
+    final item = exercises.removeAt(oldIndex);
+    exercises.insert(newIndex, item);
+    
+    // Update current exercise index if needed
+    int currentIndex = state!.currentExerciseIndex;
+    if (currentIndex == oldIndex) {
+      currentIndex = newIndex;
+    } else if (oldIndex < currentIndex && newIndex >= currentIndex) {
+      currentIndex--;
+    } else if (oldIndex > currentIndex && newIndex <= currentIndex) {
+      currentIndex++;
+    }
+    
+    state = ActiveWorkout(
+      id: state!.id,
+      name: state!.name,
+      exercises: exercises,
+      currentExerciseIndex: currentIndex,
+      elapsedTime: state!.elapsedTime,
+      totalSets: state!.totalSets,
+      totalVolume: state!.totalVolume,
+    );
+    
+    // Mark as modified
+    _ref.read(workoutModificationsProvider.notifier).markAsModified();
+    
+    // Checkpoint is automatically saved via state listener
   }
 
   int _calculateTotalSets(List<ActiveExercise> exercises) {

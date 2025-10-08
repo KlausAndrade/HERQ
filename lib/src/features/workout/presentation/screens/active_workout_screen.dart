@@ -224,29 +224,37 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 
                 // Exercise List
                 Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
+                  child: ReorderableListView.builder(
+                    buildDefaultDragHandles: false, // We'll add custom drag handles
+                    onReorder: (oldIndex, newIndex) {
+                      ref.read(activeWorkoutProvider.notifier).reorderExercises(oldIndex, newIndex);
+                    },
+                    scrollController: _scrollController,
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     itemCount: activeWorkout.exercises.length,
                     itemBuilder: (context, index) {
                       final exercise = activeWorkout.exercises[index];
                       // Create a key for each exercise if it doesn't exist
                       _exerciseKeys.putIfAbsent(index, () => GlobalKey());
-                      return _ExerciseCard(
-                        key: _exerciseKeys[index],
-                        exercise: exercise,
-                        exerciseIndex: index,
-                        isExpanded: _expandedExercises.contains(index),
-                        onTap: () {
-                          setState(() {
-                            if (_expandedExercises.contains(index)) {
-                              _expandedExercises.remove(index);
-                            } else {
-                              _expandedExercises.add(index);
-                            }
-                          });
-                        },
-                        onSetChanged: (setIndex, updatedSet) async {
+                      return ReorderableDragStartListener(
+                        key: ValueKey('exercise-${exercise.id}-$index'),
+                        index: index,
+                        child: _ExerciseCard(
+                          key: _exerciseKeys[index],
+                          exercise: exercise,
+                          exerciseIndex: index,
+                          isExpanded: _expandedExercises.contains(index),
+                          showDragHandle: true, // Show drag handle during workout
+                          onTap: () {
+                            setState(() {
+                              if (_expandedExercises.contains(index)) {
+                                _expandedExercises.remove(index);
+                              } else {
+                                _expandedExercises.add(index);
+                              }
+                            });
+                          },
+                          onSetChanged: (setIndex, updatedSet) async {
                           final oldSet = exercise.sets[setIndex];
                           
                           await ref
@@ -300,6 +308,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                               .read(activeWorkoutProvider.notifier)
                               .addSet(index);
                         },
+                      ),
                       );
                     },
                   ),
@@ -531,11 +540,27 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   }
 
   void _showConfirmFinishDialog(BuildContext context) {
+    final hasModifications = ref.read(workoutModificationsProvider);
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Finish Workout'),
-        content: const Text('Are you sure you want to finish this workout?'),
+        content: hasModifications
+            ? const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('You made changes during this workout:'),
+                  SizedBox(height: 8),
+                  Text('• Reordered exercises', style: TextStyle(fontSize: 13)),
+                  Text('• Added or removed exercises', style: TextStyle(fontSize: 13)),
+                  Text('• Added or removed sets', style: TextStyle(fontSize: 13)),
+                  SizedBox(height: 12),
+                  Text('These changes will be saved in your workout history.'),
+                ],
+              )
+            : const Text('Are you sure you want to finish this workout?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -622,6 +647,7 @@ class _ExerciseCard extends ConsumerWidget {
     required this.onTap,
     required this.onSetChanged,
     required this.onAddSet,
+    this.showDragHandle = false,
   });
   final ActiveExercise exercise;
   final int exerciseIndex;
@@ -629,6 +655,7 @@ class _ExerciseCard extends ConsumerWidget {
   final VoidCallback onTap;
   final Future<void> Function(int setIndex, ActiveSet updatedSet) onSetChanged;
   final VoidCallback onAddSet;
+  final bool showDragHandle;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Card(
@@ -672,6 +699,16 @@ class _ExerciseCard extends ConsumerWidget {
                         ],
                       ),
                     ),
+                    if (showDragHandle) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8, right: 4),
+                        child: Icon(
+                          Icons.drag_handle,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                        ),
+                      ),
+                    ],
                     Icon(
                       isExpanded ? Icons.expand_less : Icons.expand_more,
                       size: 20,
