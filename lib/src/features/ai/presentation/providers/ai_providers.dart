@@ -114,6 +114,7 @@ final groqExerciseSubstitutionsProvider =
 final workoutRecommendationsProvider = FutureProvider.family<
     List<WorkoutRecommendation>,
     WorkoutRecommendationParams>((ref, params) async {
+  ref.keepAlive();
   print('🔄 Loading workout recommendations...');
   try {
     final aiService = ref.read(groqAICoachingServiceProvider);
@@ -319,6 +320,20 @@ class WorkoutRecommendationParams {
   final List<String>? availableEquipment;
   final int? maxDuration;
 
+  WorkoutRecommendationParams copyWith({
+    List<String>? preferredMuscleGroups,
+    List<String>? availableEquipment,
+    int? maxDuration,
+  }) {
+    return WorkoutRecommendationParams(
+      userId: userId,
+      preferredMuscleGroups:
+          preferredMuscleGroups ?? this.preferredMuscleGroups,
+      availableEquipment: availableEquipment ?? this.availableEquipment,
+      maxDuration: maxDuration ?? this.maxDuration,
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -332,8 +347,8 @@ class WorkoutRecommendationParams {
   @override
   int get hashCode =>
       userId.hashCode ^
-      (preferredMuscleGroups?.hashCode ?? 0) ^
-      (availableEquipment?.hashCode ?? 0) ^
+      _listHash(preferredMuscleGroups) ^
+      _listHash(availableEquipment) ^
       (maxDuration?.hashCode ?? 0);
 
   bool _listEquals(List<String>? a, List<String>? b) {
@@ -344,6 +359,11 @@ class WorkoutRecommendationParams {
       if (a[i] != b[i]) return false;
     }
     return true;
+  }
+
+  int _listHash(List<String>? list) {
+    if (list == null) return 0;
+    return Object.hashAll(list);
   }
 }
 
