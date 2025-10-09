@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../data/services/analytics_service.dart';
 import '../../domain/models/analytics_models.dart';
+import '../../../../core/providers/auth_provider.dart';
 
 /// Provider for analytics service
 final analyticsServiceProvider = Provider<AnalyticsService>((ref) {
@@ -19,7 +20,8 @@ final analyticsProvider = FutureProvider<AnalyticsData>((ref) async {
 /// Provider for power score only
 final powerScoreProvider = FutureProvider<PowerScore>((ref) async {
   final service = ref.watch(analyticsServiceProvider);
-  return service.calculatePowerScore();
+  final currentUser = ref.watch(currentUserProvider);
+  return service.calculatePowerScore(userId: currentUser?.id);
 });
 
 /// Provider for PR streaks

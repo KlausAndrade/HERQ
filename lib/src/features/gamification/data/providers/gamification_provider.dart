@@ -2,39 +2,41 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' hide JsonKey;
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/auth_provider.dart';
 import '../../domain/models/achievement.dart';
 
-// Default user ID - TODO: Replace with actual authentication
-const String kDefaultUserId = 'default_user';
-
-// Provider for user stats
+// Provider for user stats (wires to current authenticated user)
 final userStatsProvider = StreamProvider.autoDispose<UserStat?>((ref) {
   final database = ref.watch(databaseProvider);
-  if (database == null) return Stream.value(null);
+  final currentUser = ref.watch(currentUserProvider);
+  if (database == null || currentUser == null) return Stream.value(null);
 
-  return database.watchUserStats(kDefaultUserId);
+  return database.watchUserStats(currentUser.id);
 });
 
-// Provider for user achievements
+// Provider for user achievements (wires to current authenticated user)
 final userAchievementsProvider =
     StreamProvider.autoDispose<List<UserAchievement>>((ref) {
   final database = ref.watch(databaseProvider);
-  if (database == null) return Stream.value([]);
+  final currentUser = ref.watch(currentUserProvider);
+  if (database == null || currentUser == null) return Stream.value([]);
 
-  return database.watchUserAchievements(kDefaultUserId);
+  return database.watchUserAchievements(currentUser.id);
 });
 
 // Provider for gamification service
 final gamificationServiceProvider = Provider<GamificationService?>((ref) {
   final database = ref.watch(databaseProvider);
-  if (database == null) return null;
-  return GamificationService(database);
+  final currentUser = ref.watch(currentUserProvider);
+  if (database == null || currentUser == null) return null;
+  return GamificationService(database, currentUser.id);
 });
 
 class GamificationService {
   final AppDatabase database;
+  final String? defaultUserId;
 
-  GamificationService(this.database);
+  GamificationService(this.database, [this.defaultUserId]);
 
   // Calculate XP required for a given level
   int xpRequiredForLevel(int level) {
@@ -63,7 +65,8 @@ class GamificationService {
 
   // Initialize user stats if they don't exist
   Future<UserStat> initializeUserStats({String? userId}) async {
-    final uid = userId ?? kDefaultUserId;
+    final uid = userId ?? defaultUserId;
+    if (uid == null) throw StateError('No userId available for gamification');
 
     final existing = await database.getUserStats(uid);
     if (existing != null) {
@@ -88,6 +91,9 @@ class GamificationService {
 
   // Calculate current streak based on workout dates
   Future<int> calculateCurrentStreak({String? userId}) async {
+    final uid = userId ?? defaultUserId;
+    if (uid == null) throw StateError('No userId available for gamification');
+
     // Get all workout sessions ordered by date descending
     // Note: WorkoutSessions doesn't have userId, so we get all sessions
     final sessions = await (database.select(database.workoutSessions)
@@ -140,7 +146,8 @@ class GamificationService {
 
   // Award XP to user
   Future<void> awardXp(int xpAmount, {String? userId}) async {
-    final uid = userId ?? kDefaultUserId;
+    final uid = userId ?? defaultUserId;
+    if (uid == null) throw StateError('No userId available for gamification');
     await initializeUserStats(userId: uid);
 
     final stats = await database.getUserStats(uid);
@@ -165,7 +172,8 @@ class GamificationService {
     required int durationMinutes,
     String? userId,
   }) async {
-    final uid = userId ?? kDefaultUserId;
+    final uid = userId ?? defaultUserId;
+    if (uid == null) throw StateError('No userId available for gamification');
     await initializeUserStats(userId: uid);
 
     final stats = await database.getUserStats(uid);
@@ -201,7 +209,8 @@ class GamificationService {
 
   // Check and unlock achievements
   Future<List<Achievement>> checkAchievements({String? userId}) async {
-    final uid = userId ?? kDefaultUserId;
+    final uid = userId ?? defaultUserId;
+    if (uid == null) throw StateError('No userId available for gamification');
     final stats = await database.getUserStats(uid);
     if (stats == null) return [];
 
@@ -303,7 +312,8 @@ class GamificationService {
 
   // Get achievement progress summary
   Future<Map<String, dynamic>> getAchievementProgress({String? userId}) async {
-    final uid = userId ?? kDefaultUserId;
+    final uid = userId ?? defaultUserId;
+    if (uid == null) throw StateError('No userId available for gamification');
     final userAchievements = await database.getUserAchievements(uid);
 
     final completed = userAchievements.where((a) => a.isCompleted).length;

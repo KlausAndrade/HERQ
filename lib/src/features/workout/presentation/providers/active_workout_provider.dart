@@ -754,11 +754,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final gamificationService = _ref.read(gamificationServiceProvider);
       if (gamificationService != null) {
         try {
+          final currentUser = _ref.read(currentUserProvider);
+          final uid = currentUser?.id;
           await gamificationService.onWorkoutCompleted(
             workoutId: 0, // Using 0 as placeholder
             setsCompleted: totalSets,
             volumeLifted: totalVolume,
             durationMinutes: workout.elapsedTime.inMinutes,
+            userId: uid,
           );
         } catch (e) {
           // Log error but don't block workout completion

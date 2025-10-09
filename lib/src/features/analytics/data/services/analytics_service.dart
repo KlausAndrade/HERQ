@@ -34,7 +34,7 @@ class AnalyticsService {
   }
 
   /// Calculate user's overall power score
-  Future<PowerScore> calculatePowerScore() async {
+  Future<PowerScore> calculatePowerScore({String? userId}) async {
     // Get all PRs from last 30 days
     final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
 
@@ -90,11 +90,29 @@ class AnalyticsService {
       pointsToNext = 0;
     }
 
+    // If userId provided, calculate rank across all users using user_stats table
+    int rank = 0;
+    if (userId != null) {
+      // Order users by total_volume desc and find the position of this user
+      final rows = await database.customSelect(
+        'SELECT user_id FROM user_stats ORDER BY total_volume DESC',
+        readsFrom: {database.userStats},
+      ).get();
+
+      for (var i = 0; i < rows.length; i++) {
+        final uid = rows[i].read<String>('user_id');
+        if (uid == userId) {
+          rank = i + 1; // 1-based rank
+          break;
+        }
+      }
+    }
+
     return PowerScore(
       current: current,
       change30Days: thirtyDayScore,
       changeAllTime: current,
-      rank: 0, // TODO: Calculate from all users
+      rank: rank,
       tier: tier,
       pointsToNextTier: pointsToNext,
     );
