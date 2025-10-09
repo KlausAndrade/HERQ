@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../providers/template_web_provider.dart';
 import '../widgets/exercise_picker_dialog.dart';
+import '../widgets/multi_exercise_picker_dialog.dart';
 import 'template_builder_screen.dart';
 
 class WebTemplatesScreen extends ConsumerWidget {
@@ -210,13 +211,15 @@ class _CreateTemplateDialogState extends ConsumerState<_CreateTemplateDialog> {
               onPressed: () async {
                 final result = await showDialog<Map<String, dynamic>>(
                   context: context,
-                  builder: (context) => const ExercisePickerDialog(),
+                  builder: (context) => const MultiExercisePickerDialog(),
                 );
-                if (result != null && result['exercise'] != null) {
+                if (result != null && result['exercises'] != null) {
                   setState(() {
-                    final exercise = result['exercise'];
-                    if (!selectedExercises.contains(exercise.id)) {
-                      selectedExercises.add(exercise.id);
+                    final exercises = result['exercises'] as List;
+                    for (final exercise in exercises) {
+                      if (!selectedExercises.contains(exercise.id)) {
+                        selectedExercises.add(exercise.id);
+                      }
                     }
                   });
                 }
@@ -248,3 +251,5 @@ class _CreateTemplateDialogState extends ConsumerState<_CreateTemplateDialog> {
         ),
       ),
     );
+  }
+}

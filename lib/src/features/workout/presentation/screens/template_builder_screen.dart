@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/database/database.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
 import '../widgets/exercise_picker_dialog.dart';
+import '../widgets/multi_exercise_picker_dialog.dart';
 import '../providers/template_providers.dart';
 
 class TemplateBuilderScreen extends ConsumerStatefulWidget {
@@ -72,13 +73,15 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
   Future<void> _showExercisePickerDialog() async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (context) => const ExercisePickerDialog(),
+      builder: (context) => const MultiExercisePickerDialog(),
     );
-    if (result != null && result['exercise'] != null) {
+    if (result != null && result['exercises'] != null) {
       setState(() {
-        final exercise = result['exercise'];
-        if (!_selectedExerciseIds.contains(exercise.id)) {
-          _selectedExerciseIds.add(exercise.id);
+        final exercises = result['exercises'] as List;
+        for (final exercise in exercises) {
+          if (!_selectedExerciseIds.contains(exercise.id)) {
+            _selectedExerciseIds.add(exercise.id);
+          }
         }
       });
     }
