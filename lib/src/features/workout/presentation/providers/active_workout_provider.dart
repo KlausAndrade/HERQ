@@ -136,25 +136,36 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final timerPrefs = _ref.read(exerciseTimerPreferencesProvider);
 
       // Create active exercises in template order
-      final activeExercises = template.exerciseIds
-          .where((id) => exerciseMap.containsKey(id))
-          .map((id) {
+      final activeExercises = <ActiveExercise>[];
+      for (final id in template.exerciseIds.where((id) => exerciseMap.containsKey(id))) {
         final exercise = exerciseMap[id]!;
         // Load saved timer preference or use default (90s)
         final savedTimer = timerPrefs[exercise.id] ?? 90;
 
-        // Start with 3 empty sets for each exercise
-        return ActiveExercise(
+        // Try to fetch last completed set for this exercise from DB and prefill
+        final lastSet = await (db.select(db.setEntries)
+              ..where((tbl) => tbl.exerciseId.equals(exercise.id))
+              ..orderBy([
+                (t) => OrderingTerm(expression: t.completedAt, mode: OrderingMode.desc)
+              ])
+              ..limit(1))
+            .getSingleOrNull();
+
+        final initialWeight = lastSet?.weight;
+        final initialReps = lastSet?.reps ?? 0;
+
+        // Start with 3 prefilled sets using last completed values (if any)
+        activeExercises.add(ActiveExercise(
           id: exercise.id,
           name: exercise.name,
-          sets: const [
-            ActiveSet(number: 1, reps: 0, isCompleted: false),
-            ActiveSet(number: 2, reps: 0, isCompleted: false),
-            ActiveSet(number: 3, reps: 0, isCompleted: false),
+          sets: [
+            ActiveSet(number: 1, weight: initialWeight, reps: initialReps, isCompleted: false),
+            ActiveSet(number: 2, weight: initialWeight, reps: initialReps, isCompleted: false),
+            ActiveSet(number: 3, weight: initialWeight, reps: initialReps, isCompleted: false),
           ],
           restTimerSeconds: savedTimer,
-        );
-      }).toList();
+        ));
+      }
 
       state = ActiveWorkout(
         id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
@@ -251,7 +262,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     if (state != null) {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       final exercise = exercises[exerciseIndex];
-      
+      final sets = List<ActiveSet>.from(exercise.sets);
+
       // Check for PR if set is being marked as completed
       ActiveSet finalSet = updatedSet;
       if (updatedSet.isCompleted && !exercise.sets[setIndex].isCompleted) {
@@ -288,7 +300,31 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         }
       }
       
-      final sets = List<ActiveSet>.from(exercise.sets);
+      // Auto-fill logic: if the user completed the first set (index 0) and
+      // there were no other completed sets before this action, copy the weight
+      // and reps to other sets that are not completed and currently empty.
+      if (updatedSet.isCompleted && setIndex == 0) {
+        final hadOtherCompleted = sets.any((s) => s.isCompleted && s.number != updatedSet.number);
+        if (!hadOtherCompleted) {
+          for (int i = 0; i < sets.length; i++) {
+            if (i != setIndex) {
+              final s = sets[i];
+              final isEmpty = (s.weight == null) && (s.reps == 0);
+              if (!s.isCompleted && isEmpty) {
+                sets[i] = ActiveSet(
+                  number: s.number,
+                  weight: updatedSet.weight,
+                  reps: updatedSet.reps,
+                  rpe: s.rpe,
+                  isCompleted: s.isCompleted,
+                );
+              }
+            }
+          }
+        }
+      }
+      
+      // Update the specific set and apply the PR/completion changes
       sets[setIndex] = finalSet;
 
       exercises[exerciseIndex] = ActiveExercise(
@@ -327,12 +363,20 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final exercise = exercises[exerciseIndex];
       final sets = List<ActiveSet>.from(exercise.sets);
 
-      // Add new set with previous set's values as template
-      final lastSet = sets.isNotEmpty ? sets.last : null;
+      // Add new set using last completed set as template if available
+      ActiveSet? templateSet;
+      for (int i = sets.length - 1; i >= 0; i--) {
+        if (sets[i].isCompleted) {
+          templateSet = sets[i];
+          break;
+        }
+      }
+      templateSet ??= (sets.isNotEmpty ? sets.last : null);
+
       sets.add(ActiveSet(
         number: sets.length + 1,
-        weight: lastSet?.weight,
-        reps: lastSet?.reps ?? 0,
+        weight: templateSet?.weight,
+        reps: templateSet?.reps ?? 0,
         isCompleted: false,
       ));
 

@@ -23,6 +23,7 @@ import '../models/user_stats.dart';
 import '../models/workout_checkpoint.dart';
 import '../models/workout_session.dart';
 import '../models/workout_template.dart';
+import 'package:gym_ai/src/features/workout/data/seed/default_template_seed.dart';
 
 part 'database.g.dart';
 
@@ -389,6 +390,8 @@ class AppDatabase extends _$AppDatabase {
         exerciseType: Value('reps'),
         category: Value('calisthenics'),
         difficulty: Value('expert'),
+        parentExerciseId: Value('push_up'),
+        variantType: Value('progression'),
       ),
       const ExercisesCompanion(
         id: Value('handstand'),
@@ -445,6 +448,333 @@ class AppDatabase extends _$AppDatabase {
         exerciseType: Value('reps'),
         category: Value('calisthenics'),
         difficulty: Value('expert'),
+        parentExerciseId: Value('handstand'),
+        variantType: Value('progression'),
+      ),
+
+      // ===== ACCESSORY & COMMON EXERCISES MISSING FROM SEED =====
+      const ExercisesCompanion(
+        id: Value('incline_dumbbell_press'),
+        name: Value('Incline Dumbbell Press'),
+        primaryMuscleGroup: Value('chest'),
+        secondaryMuscleGroups: Value(['shoulders', 'triceps']),
+        equipment: Value('dumbbells'),
+        instructions: Value('Press dumbbells from an inclined bench'),
+        tags: Value(['upper_body', 'compound']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('intermediate'),
+        parentExerciseId: Value('bench_press'),
+        variantType: Value('equipment'),
+      ),
+      const ExercisesCompanion(
+        id: Value('lateral_raises'),
+        name: Value('Lateral Raises'),
+        primaryMuscleGroup: Value('shoulders'),
+        secondaryMuscleGroups: Value(['traps']),
+        equipment: Value('dumbbells'),
+        instructions: Value('Raise dumbbells to side to shoulder height'),
+        tags: Value(['isolation', 'shoulders']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('intermediate'),
+      ),
+      // Additional accessory / variants
+      const ExercisesCompanion(
+        id: Value('dumbbell_shoulder_press'),
+        name: Value('Dumbbell Shoulder Press'),
+        primaryMuscleGroup: Value('shoulders'),
+        secondaryMuscleGroups: Value(['triceps']),
+        equipment: Value('dumbbells'),
+        instructions: Value('Press dumbbells overhead from shoulder height'),
+        tags: Value(['shoulders', 'equipment', 'upper_body']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('intermediate'),
+        parentExerciseId: Value('overhead_press'),
+        variantType: Value('equipment'),
+      ),
+      const ExercisesCompanion(
+        id: Value('seated_cable_rows'),
+        name: Value('Seated Cable Rows'),
+        primaryMuscleGroup: Value('back'),
+        secondaryMuscleGroups: Value(['biceps']),
+        equipment: Value('cable_machine'),
+        instructions: Value('Sit and pull cable handle to torso focusing on scapular retraction'),
+        tags: Value(['back', 'equipment']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('beginner'),
+        parentExerciseId: Value('barbell_rows'),
+        variantType: Value('equipment'),
+      ),
+      const ExercisesCompanion(
+        id: Value('tricep_dips'),
+        name: Value('Tricep Dips'),
+        primaryMuscleGroup: Value('triceps'),
+        secondaryMuscleGroups: Value(['chest', 'shoulders']),
+        equipment: Value('dip_bars'),
+        instructions: Value('Lower body between bars keeping torso more upright to emphasize triceps, push back up'),
+        tags: Value(['triceps', 'compound', 'bodyweight']),
+        isBodyweight: Value(true),
+        exerciseType: Value('reps'),
+        category: Value('calisthenics'),
+        difficulty: Value('intermediate'),
+        parentExerciseId: Value('chest_dips'),
+        variantType: Value('focus'),
+      ),
+      const ExercisesCompanion(
+        id: Value('close_grip_bench_press'),
+        name: Value('Close-grip Bench Press'),
+        primaryMuscleGroup: Value('triceps'),
+        secondaryMuscleGroups: Value(['chest', 'shoulders']),
+        equipment: Value('barbell'),
+        instructions: Value('Bench press with narrow grip to emphasize triceps'),
+        tags: Value(['compound', 'triceps']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('intermediate'),
+      ),
+      const ExercisesCompanion(
+        id: Value('barbell_rows'),
+        name: Value('Barbell Rows'),
+        primaryMuscleGroup: Value('back'),
+        secondaryMuscleGroups: Value(['biceps']),
+        equipment: Value('barbell'),
+        instructions: Value('Row barbell to the torso with a hinged back'),
+        tags: Value(['compound', 'back']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('intermediate'),
+      ),
+      const ExercisesCompanion(
+        id: Value('lat_pulldowns'),
+        name: Value('Lat Pulldowns'),
+        primaryMuscleGroup: Value('back'),
+        secondaryMuscleGroups: Value(['biceps']),
+        equipment: Value('cable_machine'),
+        instructions: Value('Pull bar down to chest to target latissimus dorsi'),
+        tags: Value(['back', 'isolation']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('beginner'),
+      ),
+      const ExercisesCompanion(
+        id: Value('face_pulls'),
+        name: Value('Face Pulls'),
+        primaryMuscleGroup: Value('rear_delts'),
+        secondaryMuscleGroups: Value(['traps', 'upper_back']),
+        equipment: Value('cable'),
+        instructions: Value('Pull rope towards face focusing on rear delts'),
+        tags: Value(['shoulders', 'rehab']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('beginner'),
+      ),
+      const ExercisesCompanion(
+        id: Value('barbell_curls'),
+        name: Value('Barbell Curls'),
+        primaryMuscleGroup: Value('biceps'),
+        secondaryMuscleGroups: Value(['forearms']),
+        equipment: Value('barbell'),
+        instructions: Value('Curl barbell up keeping elbows fixed'),
+        tags: Value(['arms', 'isolation']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('beginner'),
+      ),
+      const ExercisesCompanion(
+        id: Value('romanian_deadlift'),
+        name: Value('Romanian Deadlift'),
+        primaryMuscleGroup: Value('hamstrings'),
+        secondaryMuscleGroups: Value(['glutes', 'back']),
+        equipment: Value('barbell'),
+        instructions: Value('Hinge at hips and lower bar while keeping back straight'),
+        tags: Value(['hinge', 'posterior_chain']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('intermediate'),
+      ),
+      const ExercisesCompanion(
+        id: Value('leg_press'),
+        name: Value('Leg Press'),
+        primaryMuscleGroup: Value('legs'),
+        secondaryMuscleGroups: Value(['quads', 'glutes']),
+        equipment: Value('leg_press_machine'),
+        instructions: Value('Press platform using legs while seated'),
+        tags: Value(['legs', 'machine']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('beginner'),
+      ),
+      const ExercisesCompanion(
+        id: Value('leg_curls'),
+        name: Value('Leg Curls'),
+        primaryMuscleGroup: Value('hamstrings'),
+        secondaryMuscleGroups: Value(['glutes']),
+        equipment: Value('machine'),
+        instructions: Value('Curl heels toward glutes while lying or seated'),
+        tags: Value(['isolation', 'hamstrings']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('beginner'),
+      ),
+      const ExercisesCompanion(
+        id: Value('calf_raises'),
+        name: Value('Calf Raises'),
+        primaryMuscleGroup: Value('calves'),
+        secondaryMuscleGroups: Value([]),
+        equipment: Value('bodyweight'),
+        instructions: Value('Raise heels to stand on toes'),
+        tags: Value(['calves', 'isolation']),
+        isBodyweight: Value(true),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('beginner'),
+      ),
+      const ExercisesCompanion(
+        id: Value('walking_lunges'),
+        name: Value('Walking Lunges'),
+        primaryMuscleGroup: Value('legs'),
+        secondaryMuscleGroups: Value(['glutes', 'core']),
+        equipment: Value('bodyweight'),
+        instructions: Value('Step forward into lunges alternating legs'),
+        tags: Value(['legs', 'unilateral']),
+        isBodyweight: Value(true),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('intermediate'),
+      ),
+      const ExercisesCompanion(
+        id: Value('planks'),
+        name: Value('Plank'),
+        primaryMuscleGroup: Value('core'),
+        secondaryMuscleGroups: Value(['shoulders', 'back']),
+        equipment: Value('bodyweight'),
+        instructions: Value('Hold a straight-body plank on forearms or hands'),
+        tags: Value(['core', 'isometric']),
+        isBodyweight: Value(true),
+        exerciseType: Value('timer'),
+        category: Value('strength'),
+        difficulty: Value('beginner'),
+      ),
+      const ExercisesCompanion(
+        id: Value('weighted_pull_up'),
+        name: Value('Weighted Pull-up'),
+        primaryMuscleGroup: Value('back'),
+        secondaryMuscleGroups: Value(['biceps']),
+        equipment: Value('pull_up_bar'),
+        instructions: Value('Perform pull-ups with added external weight'),
+        tags: Value(['pull', 'weighted']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('calisthenics'),
+        difficulty: Value('advanced'),
+        parentExerciseId: Value('pull_up'),
+        variantType: Value('weighted'),
+      ),
+      const ExercisesCompanion(
+        id: Value('barbell_bench_press'),
+        name: Value('Barbell Bench Press'),
+        primaryMuscleGroup: Value('chest'),
+        secondaryMuscleGroups: Value(['shoulders', 'triceps']),
+        equipment: Value('barbell'),
+        instructions: Value('Perform bench press with barbell'),
+        tags: Value(['bench', 'strength']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('intermediate'),
+      ),
+      const ExercisesCompanion(
+        id: Value('front_squats'),
+        name: Value('Front Squat'),
+        primaryMuscleGroup: Value('legs'),
+        secondaryMuscleGroups: Value(['core', 'quads']),
+        equipment: Value('barbell'),
+        instructions: Value('Barbell rests on front of shoulders, squat down'),
+        tags: Value(['squat', 'strength']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        difficulty: Value('advanced'),
+      ),
+      const ExercisesCompanion(
+        id: Value('kettlebell_swings'),
+        name: Value('Kettlebell Swings'),
+        primaryMuscleGroup: Value('glutes'),
+        secondaryMuscleGroups: Value(['hamstrings', 'back', 'core']),
+        equipment: Value('kettlebell'),
+        instructions: Value('Swing kettlebell using hip hinge, powerful extension'),
+        tags: Value(['cardio', 'conditioning']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('cardio'),
+        difficulty: Value('intermediate'),
+      ),
+      const ExercisesCompanion(
+        id: Value('sprint'),
+        name: Value('Sprint'),
+        primaryMuscleGroup: Value('legs'),
+        secondaryMuscleGroups: Value(['cardiovascular']),
+        equipment: Value('track'),
+        instructions: Value('Short maximal effort run'),
+        tags: Value(['cardio', 'sprint']),
+        isBodyweight: Value(true),
+        exerciseType: Value('timer'),
+        category: Value('cardio'),
+        difficulty: Value('advanced'),
+      ),
+      const ExercisesCompanion(
+        id: Value('jump_rope'),
+        name: Value('Jump Rope'),
+        primaryMuscleGroup: Value('full_body'),
+        secondaryMuscleGroups: Value(['cardiovascular']),
+        equipment: Value('jump_rope'),
+        instructions: Value('Continuous rope jumps for conditioning'),
+        tags: Value(['cardio', 'conditioning']),
+        isBodyweight: Value(true),
+        exerciseType: Value('timer'),
+        category: Value('cardio'),
+        difficulty: Value('beginner'),
+      ),
+      const ExercisesCompanion(
+        id: Value('box_jumps'),
+        name: Value('Box Jumps'),
+        primaryMuscleGroup: Value('legs'),
+        secondaryMuscleGroups: Value(['glutes', 'core']),
+        equipment: Value('plyo_box'),
+        instructions: Value('Jump onto a box from standing position'),
+        tags: Value(['plyometrics', 'power']),
+        isBodyweight: Value(true),
+        exerciseType: Value('reps'),
+        category: Value('cardio'),
+        difficulty: Value('intermediate'),
+      ),
+      const ExercisesCompanion(
+        id: Value('row'),
+        name: Value('Row (Erg)'),
+        primaryMuscleGroup: Value('full_body'),
+        secondaryMuscleGroups: Value(['cardiovascular']),
+        equipment: Value('ergometer'),
+        instructions: Value('Row on the erg for distance or time'),
+        tags: Value(['cardio', 'conditioning']),
+        isBodyweight: Value(true),
+        exerciseType: Value('timer'),
+        category: Value('cardio'),
+        difficulty: Value('beginner'),
       ),
 
       // ===== YOGA EXERCISES =====
@@ -622,6 +952,19 @@ class AppDatabase extends _$AppDatabase {
         category: Value('yoga'),
         difficulty: Value('beginner'),
       ),
+        const ExercisesCompanion(
+          id: Value('forward_fold'),
+          name: Value('Forward Fold'),
+          primaryMuscleGroup: Value('hamstrings'),
+          secondaryMuscleGroups: Value(['back', 'core']),
+          equipment: Value('yoga_mat'),
+          instructions: Value('Stand with feet together and fold forward at the hips'),
+          tags: Value(['yoga','stretch']),
+          isBodyweight: Value(true),
+          exerciseType: Value('timer'),
+          category: Value('yoga'),
+          difficulty: Value('beginner'),
+        ),
       const ExercisesCompanion(
         id: Value('camel_pose'),
         name: Value('Camel Pose (Ustrasana)'),
@@ -844,76 +1187,52 @@ class AppDatabase extends _$AppDatabase {
     ];
 
     for (final exercise in defaultExercises) {
-      await into(exercises).insert(exercise);
+      // Use insertOnConflictUpdate to make the seeder idempotent. This
+      // allows calling the seeder multiple times (e.g., onCreate and in tests)
+      // without violating unique constraints.
+      await into(exercises).insertOnConflictUpdate(exercise);
     }
 
     // Insert default workout templates
-    final defaultTemplates = [
-      const WorkoutTemplatesCompanion(
-        id: Value('push_pull_legs'),
-        name: Value('Push Pull Legs'),
-        description: Value(
-            'Classic 3-day split focusing on push, pull, and leg movements'),
-        exerciseIds: Value([
-          'bench_press',
-          'overhead_press',
-          'chest_dips',
-          'pull_up',
-          'deadlift',
-          'squat'
-        ]),
-        tags: Value(['strength', 'split', 'intermediate']),
-        estimatedDurationMinutes: Value(60),
-        isDefault: Value(true),
-      ),
-      const WorkoutTemplatesCompanion(
-        id: Value('calisthenics_beginner'),
-        name: Value('Calisthenics Basics'),
-        description:
-            Value('Foundation bodyweight movements for building strength'),
-        exerciseIds:
-            Value(['push_up', 'pull_up', 'squat', 'handstand', 'burpees']),
-        tags: Value(['calisthenics', 'bodyweight', 'beginner']),
-        estimatedDurationMinutes: Value(45),
-        isDefault: Value(true),
-      ),
-      const WorkoutTemplatesCompanion(
-        id: Value('calisthenics_advanced'),
-        name: Value('Advanced Calisthenics'),
-        description: Value('Advanced bodyweight skills and progressions'),
-        exerciseIds: Value([
-          'muscle_up',
-          'planche',
-          'human_flag',
-          'front_lever',
-          'handstand_push_up'
-        ]),
-        tags: Value(['calisthenics', 'advanced', 'skills']),
-        estimatedDurationMinutes: Value(60),
-        isDefault: Value(true),
-      ),
-      const WorkoutTemplatesCompanion(
-        id: Value('yoga_flow'),
-        name: Value('Morning Yoga Flow'),
-        description: Value('Energizing yoga sequence to start your day'),
-        exerciseIds: Value([
-          'mountain_pose',
-          'downward_dog',
-          'warrior_1',
-          'warrior_2',
-          'triangle_pose',
-          'child_pose'
-        ]),
-        tags: Value(['yoga', 'flexibility', 'morning']),
-        estimatedDurationMinutes: Value(30),
-        isDefault: Value(true),
-      ),
-    ];
+    // Insert folders and templates from the centralized seed
+    // Convert seed data maps to Companion objects to avoid circular types
+    final foldersData = getDefaultFoldersData();
+    for (final f in foldersData) {
+      final companion = TemplateFoldersCompanion(
+        id: Value(f['id'] as String),
+        name: Value(f['name'] as String),
+        description: Value(f['description'] as String?),
+      );
+      await into(templateFolders).insertOnConflictUpdate(companion);
+    }
 
-    for (final template in defaultTemplates) {
-      await into(workoutTemplates).insert(template);
+    final templatesData = getDefaultTemplatesData();
+    for (final t in templatesData) {
+      var companion = WorkoutTemplatesCompanion(
+        id: Value(t['id'] as String),
+        name: Value(t['name'] as String),
+        description: Value(t['description'] as String?),
+        folderId: Value(t['folderId'] as String?),
+        exerciseIds: Value(List<String>.from(t['exerciseIds'] as List<dynamic>? ?? [])),
+        tags: Value(List<String>.from(t['tags'] as List<dynamic>? ?? [])),
+        estimatedDurationMinutes: Value(t['estimatedDurationMinutes'] as int?),
+        isDefault: Value(t['isDefault'] as bool? ?? false),
+      );
+
+      // category is a non-nullable String inside Value<String> in the companion
+      // only set it when the seed provides a non-null value to avoid
+      // passing a String? into Value<String> which causes a type error.
+      final cat = t['category'] as String?;
+      if (cat != null) {
+        companion = companion.copyWith(category: Value(cat));
+      }
+
+      await into(workoutTemplates).insertOnConflictUpdate(companion);
     }
   }
+
+  // Public wrapper for seeding default data in tests/CI
+  Future<void> seedDefaultData() async => _insertDefaultData();
 }
 
 LazyDatabase _openConnection() => LazyDatabase(() async {
