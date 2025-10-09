@@ -17,7 +17,7 @@ class WorkoutTemplatesWithFoldersScreen extends ConsumerStatefulWidget {
 
 class _WorkoutTemplatesWithFoldersScreenState
     extends ConsumerState<WorkoutTemplatesWithFoldersScreen> {
-  bool _isEditing = false;
+  final _isEditing = true;
   final Set<String> _expandedFolders = {};
 
   @override
@@ -33,17 +33,6 @@ class _WorkoutTemplatesWithFoldersScreenState
         ),
         title: const Text('Workout Templates'),
         actions: [
-          if (_isEditing)
-            TextButton(
-              onPressed: () => setState(() => _isEditing = false),
-              child: const Text('Done'),
-            )
-          else
-            IconButton(
-              onPressed: () => setState(() => _isEditing = true),
-              icon: const Icon(Icons.edit),
-              tooltip: 'Edit Templates',
-            ),
           IconButton(
             onPressed: () => context.push('/template-builder'),
             icon: const Icon(Icons.add),
@@ -74,16 +63,6 @@ class _WorkoutTemplatesWithFoldersScreenState
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // Create Folder Button
-              if (_isEditing)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: OutlinedButton.icon(
-                    onPressed: _createNewFolder,
-                    icon: const Icon(Icons.create_new_folder),
-                    label: const Text('Create Folder'),
-                  ),
-                ),
 
               // Folders - with reordering support in edit mode
               if (_isEditing && foldersList.isNotEmpty)
@@ -435,7 +414,9 @@ class _WorkoutTemplatesWithFoldersScreenState
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
-        onTap: () => _startWorkout(template.id),
+        onTap: () {
+          context.push('/template-builder?templateId=${template.id}');
+        },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -488,11 +469,6 @@ class _WorkoutTemplatesWithFoldersScreenState
                     color: Colors.grey.shade600,
                   ),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.more_vert),
-                onPressed: () => _showTemplateMenu(context, template, folderId),
-                iconSize: 20,
               ),
             ],
           ),
@@ -578,12 +554,6 @@ class _WorkoutTemplatesWithFoldersScreenState
                   ],
                 ),
               ),
-              if (_isEditing)
-                IconButton(
-                  icon: const Icon(Icons.more_vert),
-                  onPressed: () => _showTemplateMenu(context, template, folderId),
-                  iconSize: 20,
-                ),
             ],
           ),
         ),
@@ -725,76 +695,6 @@ class _WorkoutTemplatesWithFoldersScreenState
         }
       }
     }
-  }
-
-  void _showTemplateMenu(BuildContext context, WorkoutTemplate template, String? currentFolderId) async {
-    final foldersAsync = ref.read(templateFoldersProvider);
-    
-    await foldersAsync.when(
-      data: (folders) async {
-        await showModalBottomSheet(
-          context: context,
-          builder: (context) => SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: const Text('Edit Template'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.push('/template-builder?templateId=${template.id}');
-                  },
-                ),
-                const Divider(height: 1),
-                const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    'Move to Folder',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ),
-                const Divider(height: 1),
-                if (currentFolderId != null)
-                  ListTile(
-                    leading: const Icon(Icons.folder_off),
-                    title: const Text('Remove from Folder'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _moveTemplate(template.id, null);
-                    },
-                  ),
-                ...folders
-                    .where((f) => f.id != currentFolderId)
-                    .map((folder) => ListTile(
-                          leading: Icon(
-                            Icons.folder,
-                            color: folder.color != null
-                                ? Color(int.parse(folder.color!))
-                                : null,
-                          ),
-                          title: Text(folder.name),
-                          onTap: () {
-                            Navigator.pop(context);
-                            _moveTemplate(template.id, folder.id);
-                          },
-                        )),
-                if (folders.where((f) => f.id != currentFolderId).isEmpty && currentFolderId != null)
-                  const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      'No other folders available',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
-      loading: () {},
-      error: (_, __) {},
-    );
   }
 
   void _moveTemplate(String templateId, String? folderId) async {
