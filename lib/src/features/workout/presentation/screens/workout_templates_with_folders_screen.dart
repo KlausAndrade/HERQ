@@ -8,7 +8,12 @@ import '../providers/template_providers.dart';
 import '../../../workouts/widgets/create_folder_dialog.dart';
 
 class WorkoutTemplatesWithFoldersScreen extends ConsumerStatefulWidget {
-  const WorkoutTemplatesWithFoldersScreen({super.key});
+  const WorkoutTemplatesWithFoldersScreen({
+    super.key,
+    this.isEditing = true,
+  });
+
+  final bool isEditing;
 
   @override
   ConsumerState<WorkoutTemplatesWithFoldersScreen> createState() =>
@@ -17,8 +22,24 @@ class WorkoutTemplatesWithFoldersScreen extends ConsumerStatefulWidget {
 
 class _WorkoutTemplatesWithFoldersScreenState
     extends ConsumerState<WorkoutTemplatesWithFoldersScreen> {
-  final _isEditing = true;
+  late bool _isEditing;
   final Set<String> _expandedFolders = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _isEditing = widget.isEditing;
+  }
+
+  @override
+  void didUpdateWidget(covariant WorkoutTemplatesWithFoldersScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isEditing != widget.isEditing) {
+      setState(() {
+        _isEditing = widget.isEditing;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +52,7 @@ class _WorkoutTemplatesWithFoldersScreenState
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: const Text('Workout Templates'),
+        title: Text(_isEditing ? 'Workout Templates' : 'Select a Workout'),
         actions: [
           IconButton(
             onPressed: () => context.push('/template-builder'),

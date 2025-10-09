@@ -311,7 +311,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () {
-                context.go('/workout-templates');
+                context.go('/workout-templates?mode=start');
               },
               icon: const Icon(Icons.fitness_center),
               label: const Text('Start First Workout'),

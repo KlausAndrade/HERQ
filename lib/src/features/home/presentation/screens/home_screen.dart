@@ -215,7 +215,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           context.go('/active-workout');
                         } else {
                           // Start new workout
-                          context.go('/workout-templates');
+                          context.go('/workout-templates?mode=start');
                         }
                       },
                     ),

@@ -50,10 +50,15 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         GoRoute(
           path: '/workout-templates',
           name: 'workout-templates',
-          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
-            const WorkoutTemplatesWithFoldersScreen(),
-            key: state.pageKey,
-          ),
+          pageBuilder: (context, state) {
+            final mode = state.uri.queryParameters['mode'];
+            final isEditing = mode != 'start';
+
+            return AppPageTransitions.slideRightTransition(
+              WorkoutTemplatesWithFoldersScreen(isEditing: isEditing),
+              key: state.pageKey,
+            );
+          },
         ),
         GoRoute(
           path: '/template-builder',
