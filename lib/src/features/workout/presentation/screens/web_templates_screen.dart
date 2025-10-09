@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/template_web_provider.dart';
-import '../../../exercises/presentation/providers/exercise_web_provider.dart';
+import '../widgets/exercise_picker_dialog.dart';
 
 class WebTemplatesScreen extends ConsumerWidget {
   const WebTemplatesScreen({super.key});
@@ -151,8 +151,6 @@ class _CreateTemplateDialogState extends ConsumerState<_CreateTemplateDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final exercises = ref.watch(exercisesWebProvider);
-
     return Dialog(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
@@ -188,43 +186,29 @@ class _CreateTemplateDialogState extends ConsumerState<_CreateTemplateDialog> {
               ],
             ),
             const SizedBox(height: 12),
-            Expanded(
-              child: exercises.when(
-                data: (data) {
-                  if (data.isEmpty) {
-                    return const Center(
-                      child: Text('No exercises available'),
-                    );
-                  }
-                  
-                  return ListView.builder(
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      final exercise = data[index];
-                      final id = exercise['id'] as String;
-                      final isSelected = selectedExercises.contains(id);
-                      
-                      return CheckboxListTile(
-                        title: Text(exercise['name'] ?? 'Unknown'),
-                        subtitle: Text(exercise['primary_muscle_group'] ?? ''),
-                        value: isSelected,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value == true) {
-                              selectedExercises.add(id);
-                            } else {
-                              selectedExercises.remove(id);
-                            }
-                          });
-                        },
-                      );
-                    },
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Center(child: Text('Error: $error')),
+            if (selectedExercises.isNotEmpty)
+              Chip(
+                label: Text('${selectedExercises.length} selected'),
+                backgroundColor: const Color(0xFF6366F1).withOpacity(0.2),
               ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.add),
+              label: const Text('Add Exercises'),
+              onPressed: () async {
+                final result = await showDialog<Map<String, dynamic>>(
+                  context: context,
+                  builder: (context) => const ExercisePickerDialog(),
+                );
+                if (result != null && result['exercise'] != null) {
+                  setState(() {
+                    final exercise = result['exercise'];
+                    if (!selectedExercises.contains(exercise.id)) {
+                      selectedExercises.add(exercise.id);
+                    }
+                  });
+                }
+              },
             ),
             const SizedBox(height: 24),
             Row(
@@ -252,5 +236,3 @@ class _CreateTemplateDialogState extends ConsumerState<_CreateTemplateDialog> {
         ),
       ),
     );
-  }
-}

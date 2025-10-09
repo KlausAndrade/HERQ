@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
+import '../widgets/exercise_picker_dialog.dart';
 import '../providers/template_providers.dart';
 
 class TemplateBuilderScreen extends ConsumerStatefulWidget {
@@ -66,6 +67,21 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
     });
 
     setState(() => _isLoading = false);
+  }
+
+  Future<void> _showExercisePickerDialog() async {
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (context) => const ExercisePickerDialog(),
+    );
+    if (result != null && result['exercise'] != null) {
+      setState(() {
+        final exercise = result['exercise'];
+        if (!_selectedExerciseIds.contains(exercise.id)) {
+          _selectedExerciseIds.add(exercise.id);
+        }
+      });
+    }
   }
 
   @override
@@ -172,7 +188,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       ElevatedButton.icon(
-                        onPressed: () => _showExerciseSelector(exercisesAsync),
+                        onPressed: _showExercisePickerDialog,
                         icon: const Icon(Icons.add),
                         label: const Text('Add Exercise'),
                       ),
