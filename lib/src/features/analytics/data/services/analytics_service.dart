@@ -492,13 +492,38 @@ class AnalyticsService {
       final totalGain = currentWeight - startWeight;
       final percentageGain = (totalGain / startWeight) * 100;
 
-      // Build history
+      // Get personal records for this exercise to mark PRs in history
+      final prsForExercise = await (database.select(database.personalRecords)
+            ..where((pr) => pr.exerciseId.equals(exercise.id)))
+          .get();
+
+      // Build history and mark PRs when a set matches a personal record
       final history = sets.map((row) {
+        final setDate = row.read<DateTime>('completed_at');
+        final setWeight = row.read<double>('weight');
+        final setReps = row.read<int>('reps');
+
+        // Tolerances to account for small precision differences
+        const weightTolerance = 0.25; // kg
+        const timeToleranceSeconds = 2;
+
+        bool isPR = prsForExercise.any((pr) {
+          final prWeight = pr.weight ?? 0;
+          final prReps = pr.reps ?? 0;
+          final prDate = pr.achievedAt;
+
+          final weightMatches = (prWeight - setWeight).abs() <= weightTolerance;
+          final repsMatches = prReps == setReps;
+          final timeMatches = prDate.difference(setDate).inSeconds.abs() <= timeToleranceSeconds;
+
+          return weightMatches && repsMatches && timeMatches;
+        });
+
         return ProgressDataPoint(
-          date: row.read<DateTime>('completed_at'),
-          weight: row.read<double>('weight'),
-          reps: row.read<int>('reps'),
-          isPR: false, // TODO: Mark PRs
+          date: setDate,
+          weight: setWeight,
+          reps: setReps,
+          isPR: isPR,
         );
       }).toList();
 
