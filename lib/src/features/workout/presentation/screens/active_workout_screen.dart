@@ -236,7 +236,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                       final exercise = activeWorkout.exercises[index];
                       // Create a key for each exercise if it doesn't exist
                       _exerciseKeys.putIfAbsent(index, () => GlobalKey());
-                      return ReorderableDragStartListener(
+                      return ReorderableDelayedDragStartListener(
                         key: ValueKey('exercise-${exercise.id}-$index'),
                         index: index,
                         child: _ExerciseCard(
