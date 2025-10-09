@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../providers/template_web_provider.dart';
 import '../widgets/exercise_picker_dialog.dart';
+import 'template_builder_screen.dart';
 
 class WebTemplatesScreen extends ConsumerWidget {
   const WebTemplatesScreen({super.key});
@@ -59,6 +60,17 @@ class WebTemplatesScreen extends ConsumerWidget {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.orange),
+                        tooltip: 'Edit Template',
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => TemplateBuilderScreen(templateId: template['id']),
+                            ),
+                          );
+                        },
+                      ),
                       IconButton(
                         icon: const Icon(Icons.play_arrow, color: Color(0xFF6366F1)),
                         onPressed: () => context.go('/workout/${template['id']}'),

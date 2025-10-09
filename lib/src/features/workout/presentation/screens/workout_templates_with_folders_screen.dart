@@ -738,6 +738,15 @@ class _WorkoutTemplatesWithFoldersScreenState
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                ListTile(
+                  leading: const Icon(Icons.edit),
+                  title: const Text('Edit Template'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/template-builder?templateId=${template.id}');
+                  },
+                ),
+                const Divider(height: 1),
                 const Padding(
                   padding: EdgeInsets.all(16),
                   child: Text(
