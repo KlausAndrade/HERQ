@@ -26,9 +26,21 @@ class SocialFeedScreen extends HookConsumerWidget {
     return authState.when(
       data: (user) {
         if (currentUser == null) {
-          return const Scaffold(
-            body: Center(child: Text('Please sign in')),
-          );
+        return Scaffold(
+          body: TabBarView(
+            children: [
+              Column(
+                children: [
+                  const Center(child: Text('Please sign in')),
+                  ElevatedButton(
+                    onPressed: () => context.go('/auth'),
+                    child: const Text('Sign In'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
         }
 
         return DefaultTabController(

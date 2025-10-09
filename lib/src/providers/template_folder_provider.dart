@@ -130,12 +130,36 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     try {
       for (var i = 0; i < folders.length; i++) {
+        final sortValue = i * 2;
         await (_database.update(_database.templateFolders)
               ..where((t) => t.id.equals(folders[i].id)))
             .write(TemplateFoldersCompanion(
-              sortOrder: Value(i),
+              sortOrder: Value(sortValue),
               updatedAt: Value(DateTime.now()),
             ));
+      }
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      rethrow;
+    }
+  }
+
+  Future<void> updateFolderSortOrders(Map<String, int> orders) async {
+    if (orders.isEmpty) return;
+
+    state = const AsyncValue.loading();
+    try {
+      final now = DateTime.now();
+      for (final entry in orders.entries) {
+        await (_database.update(_database.templateFolders)
+              ..where((t) => t.id.equals(entry.key)))
+            .write(
+          TemplateFoldersCompanion(
+            sortOrder: Value(entry.value),
+            updatedAt: Value(now),
+          ),
+        );
       }
       state = const AsyncValue.data(null);
     } catch (e, st) {

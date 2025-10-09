@@ -340,11 +340,12 @@ class TemplateActions {
     try {
       // Update sortOrder for each template
       for (int i = 0; i < templates.length; i++) {
+        final sortValue = category == null ? (i * 2) + 1 : i;
         await (_database!.update(_database!.workoutTemplates)
               ..where((tbl) => tbl.id.equals(templates[i].id)))
             .write(
           WorkoutTemplatesCompanion(
-            sortOrder: Value(i),
+            sortOrder: Value(sortValue),
             updatedAt: Value(DateTime.now()),
           ),
         );
@@ -354,7 +355,7 @@ class TemplateActions {
           final user = _supabase.auth.currentUser;
           if (user != null) {
             await _supabase.from('workout_templates').update({
-              'sort_order': i,
+              'sort_order': sortValue,
               'updated_at': DateTime.now().toIso8601String(),
             }).eq('id', templates[i].id);
           }
@@ -369,6 +370,34 @@ class TemplateActions {
     }
   }
 
+  Future<void> updateTemplateSortOrders(Map<String, int> orders) async {
+    if (_database == null || orders.isEmpty) return;
+
+    final now = DateTime.now();
+    for (final entry in orders.entries) {
+      await (_database!.update(_database!.workoutTemplates)
+            ..where((tbl) => tbl.id.equals(entry.key)))
+          .write(
+        WorkoutTemplatesCompanion(
+          sortOrder: Value(entry.value),
+          updatedAt: Value(now),
+        ),
+      );
+
+      try {
+        final user = _supabase.auth.currentUser;
+        if (user != null) {
+          await _supabase.from('workout_templates').update({
+            'sort_order': entry.value,
+            'updated_at': now.toIso8601String(),
+          }).eq('id', entry.key);
+        }
+      } catch (syncError) {
+        print('⚠️ Template sort update sync failed: $syncError');
+      }
+    }
+  }
+
   /// Reorder folders
   Future<bool> reorderFolders(List<TemplateFolder> folders) async {
     if (_database == null) return false;
@@ -376,11 +405,12 @@ class TemplateActions {
     try {
       // Update sortOrder for each folder
       for (int i = 0; i < folders.length; i++) {
+        final sortValue = i * 2;
         await (_database!.update(_database!.templateFolders)
               ..where((tbl) => tbl.id.equals(folders[i].id)))
             .write(
           TemplateFoldersCompanion(
-            sortOrder: Value(i),
+            sortOrder: Value(sortValue),
             updatedAt: Value(DateTime.now()),
           ),
         );
@@ -390,7 +420,7 @@ class TemplateActions {
           final user = _supabase.auth.currentUser;
           if (user != null) {
             await _supabase.from('template_folders').update({
-              'sort_order': i,
+              'sort_order': sortValue,
               'updated_at': DateTime.now().toIso8601String(),
             }).eq('id', folders[i].id);
           }
