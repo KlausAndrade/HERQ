@@ -100,7 +100,7 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
               color: Color.lerp(inactiveColor, activeColor, _controller.value),
               boxShadow: [
                 BoxShadow(
-                  color: Color.lerp(Colors.black12, activeColor.withOpacity(0.4), _controller.value)!,
+                  color: Color.lerp(Colors.black12, activeColor.withAlpha((0.4 * 255).round()), _controller.value)!,
                   blurRadius: 8 * _controller.value,
                   offset: Offset(0, 2 * _controller.value),
                 ),

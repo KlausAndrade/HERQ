@@ -139,9 +139,9 @@ class _AppCardState extends State<AppCard>
           color: widget.gradient == null ? theme.colorScheme.surface : null,
           gradient: widget.gradient,
           borderRadius: borderRadius,
-          boxShadow: [
+            boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withAlpha((0.1 * 255).round()),
               blurRadius: widget.animateOnTap ? _elevationAnimation.value : 8,
               offset: Offset(0, widget.animateOnTap ? _elevationAnimation.value / 2 : 4),
             ),
@@ -158,22 +158,22 @@ class _AppCardState extends State<AppCard>
           color: widget.gradient == null ? theme.colorScheme.surface : null,
           gradient: widget.gradient,
           borderRadius: borderRadius,
-          border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.2),
+            border: Border.all(
+            color: theme.colorScheme.outline.withAlpha((0.2 * 255).round()),
             width: 1,
           ),
         );
       case AppCardVariant.glass:
         return BoxDecoration(
-          color: theme.colorScheme.surface.withOpacity(0.8),
+          color: theme.colorScheme.surface.withAlpha((0.8 * 255).round()),
           borderRadius: borderRadius,
           border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.1),
+            color: theme.colorScheme.outline.withAlpha((0.1 * 255).round()),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withAlpha((0.05 * 255).round()),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),

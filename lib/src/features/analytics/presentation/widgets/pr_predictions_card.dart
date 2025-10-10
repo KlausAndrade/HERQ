@@ -94,10 +94,10 @@ class PRPredictionsCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+  color: theme.colorScheme.surfaceVariant.withAlpha((0.3 * 255).round()),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: confidenceColor.withOpacity(0.3),
+          color: confidenceColor.withAlpha((0.3 * 255).round()),
           width: 2,
         ),
       ),

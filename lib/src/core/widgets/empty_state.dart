@@ -98,16 +98,16 @@ class _EmptyStateState extends State<EmptyState>
                         color: Theme.of(context)
                             .colorScheme
                             .primary
-                            .withOpacity(0.1),
+                            .withAlpha((0.1 * 255).round()),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         widget.icon ?? Icons.inbox_outlined,
-                        size: 60,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.6),
+            size: 60,
+            color: Theme.of(context)
+              .colorScheme
+              .primary
+              .withAlpha((0.6 * 255).round()),
                       ),
                     ),
               ),

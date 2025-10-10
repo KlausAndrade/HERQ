@@ -67,7 +67,7 @@ class AppTheme {
   // Shadows
   static List<BoxShadow> softShadow = [
     BoxShadow(
-      color: Colors.black.withOpacity(0.1),
+      color: Colors.black.withAlpha((0.1 * 255).round()),
       blurRadius: 16,
       offset: const Offset(0, 4),
     ),
@@ -75,7 +75,7 @@ class AppTheme {
 
   static List<BoxShadow> elevatedShadow = [
     BoxShadow(
-      color: primaryColor.withOpacity(0.3),
+      color: primaryColor.withAlpha((0.3 * 255).round()),
       blurRadius: 20,
       offset: const Offset(0, 8),
     ),
@@ -169,7 +169,7 @@ class AppTheme {
         ),
         cardTheme: CardThemeData(
           elevation: 2,
-          shadowColor: Colors.black.withOpacity(0.1),
+          shadowColor: Colors.black.withAlpha((0.1 * 255).round()),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMD),
           ),
@@ -177,7 +177,7 @@ class AppTheme {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             elevation: 2,
-            shadowColor: primaryColor.withOpacity(0.3),
+            shadowColor: primaryColor.withAlpha((0.3 * 255).round()),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(radiusSM),
             ),
@@ -242,7 +242,7 @@ class AppTheme {
         ),
         chipTheme: ChipThemeData(
           backgroundColor: Colors.grey.shade100,
-          selectedColor: primaryLight.withOpacity(0.2),
+          selectedColor: primaryLight.withAlpha((0.2 * 255).round()),
           labelStyle: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,

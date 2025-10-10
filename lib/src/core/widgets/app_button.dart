@@ -172,9 +172,9 @@ class _AppButtonState extends State<AppButton>
         return BoxDecoration(
           gradient: widget.gradient ?? AppTheme.primaryGradient,
           borderRadius: BorderRadius.circular(_getBorderRadius()),
-          boxShadow: isEnabled ? [
+            boxShadow: isEnabled ? [
             BoxShadow(
-              color: theme.colorScheme.primary.withOpacity(0.3),
+              color: theme.colorScheme.primary.withAlpha((0.3 * 255).round()),
               blurRadius: _elevationAnimation.value,
               offset: Offset(0, _elevationAnimation.value / 2),
             ),
@@ -184,9 +184,9 @@ class _AppButtonState extends State<AppButton>
         return BoxDecoration(
           gradient: widget.gradient ?? AppTheme.successGradient,
           borderRadius: BorderRadius.circular(_getBorderRadius()),
-          boxShadow: isEnabled ? [
+            boxShadow: isEnabled ? [
             BoxShadow(
-              color: theme.colorScheme.secondary.withOpacity(0.3),
+              color: theme.colorScheme.secondary.withAlpha((0.3 * 255).round()),
               blurRadius: _elevationAnimation.value,
               offset: Offset(0, _elevationAnimation.value / 2),
             ),
@@ -200,7 +200,7 @@ class _AppButtonState extends State<AppButton>
             color: isEnabled ? theme.colorScheme.primary : theme.colorScheme.outline,
             width: 1.5,
           ),
-          boxShadow: isEnabled ? AppTheme.softShadow : null,
+            boxShadow: isEnabled ? AppTheme.softShadow : null,
         );
       case AppButtonVariant.text:
         return BoxDecoration(
@@ -210,9 +210,9 @@ class _AppButtonState extends State<AppButton>
         return BoxDecoration(
           color: AppTheme.errorColor,
           borderRadius: BorderRadius.circular(_getBorderRadius()),
-          boxShadow: isEnabled ? [
+            boxShadow: isEnabled ? [
             BoxShadow(
-              color: AppTheme.errorColor.withOpacity(0.3),
+              color: AppTheme.errorColor.withAlpha((0.3 * 255).round()),
               blurRadius: _elevationAnimation.value,
               offset: Offset(0, _elevationAnimation.value / 2),
             ),

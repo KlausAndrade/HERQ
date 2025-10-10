@@ -58,12 +58,12 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
           gradient: LinearGradient(
             colors: isAlmostDone
                 ? [
-                    Theme.of(context).colorScheme.error.withOpacity(0.8),
+                    Theme.of(context).colorScheme.error.withAlpha((0.8 * 255).round()),
                     Theme.of(context).colorScheme.error,
                   ]
                 : [
                     Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                    Theme.of(context).colorScheme.primary.withAlpha((0.8 * 255).round()),
                   ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -74,7 +74,7 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
               color: (isAlmostDone
                       ? Theme.of(context).colorScheme.error
                       : Theme.of(context).colorScheme.primary)
-                  .withOpacity(0.4),
+                  .withAlpha((0.4 * 255).round()),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -95,7 +95,7 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
                       CircularProgressIndicator(
                         value: progress,
                         strokeWidth: 4,
-                        backgroundColor: Colors.white.withOpacity(0.3),
+                        backgroundColor: Colors.white.withAlpha((0.3 * 255).round()),
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           Colors.white,
                         ),
@@ -116,7 +116,7 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
                       Text(
                         isAlmostDone ? 'Almost Done!' : 'Rest Timer',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withAlpha((0.9 * 255).round()),
                               fontWeight: FontWeight.w600,
                             ),
                       ),

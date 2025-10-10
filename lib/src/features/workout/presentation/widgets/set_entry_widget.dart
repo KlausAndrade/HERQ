@@ -79,7 +79,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withOpacity(0.6),
+              color: colorScheme.surfaceContainerHighest.withAlpha((0.6 * 255).round()),
             ),
             child: Row(
               children: [
@@ -92,7 +92,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                       style: theme.textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: 10,
-                        color: colorScheme.onSurface.withOpacity(0.6),
+                        color: colorScheme.onSurface.withAlpha((0.6 * 255).round()),
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -108,7 +108,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                     style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 10,
-                      color: colorScheme.onSurface.withOpacity(0.6),
+                      color: colorScheme.onSurface.withAlpha((0.6 * 255).round()),
                       letterSpacing: 0.5,
                     ),
                     textAlign: TextAlign.center,
@@ -124,7 +124,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                     style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 10,
-                      color: colorScheme.onSurface.withOpacity(0.6),
+                      color: colorScheme.onSurface.withAlpha((0.6 * 255).round()),
                       letterSpacing: 0.5,
                     ),
                     textAlign: TextAlign.center,
@@ -140,7 +140,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                     style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 10,
-                      color: colorScheme.onSurface.withOpacity(0.6),
+                      color: colorScheme.onSurface.withAlpha((0.6 * 255).round()),
                       letterSpacing: 0.5,
                     ),
                     textAlign: TextAlign.center,
@@ -154,7 +154,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                   child: Icon(
                     Icons.check_rounded,
                     size: 14,
-                    color: colorScheme.onSurface.withOpacity(0.4),
+                    color: colorScheme.onSurface.withAlpha((0.4 * 255).round()),
                   ),
                 ),
               ],
@@ -166,13 +166,13 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
             color: isCompleted
-                ? colorScheme.primary.withOpacity(0.12)
+                ? colorScheme.primary.withAlpha((0.12 * 255).round())
                 : (widget.setNumber % 2 == 0
-                    ? colorScheme.surfaceContainerHighest.withOpacity(0.3)
+                    ? colorScheme.surfaceContainerHighest.withAlpha((0.3 * 255).round())
                     : Colors.transparent),
             border: isCompleted
                 ? Border.all(
-                    color: colorScheme.primary.withOpacity(0.4),
+                    color: colorScheme.primary.withAlpha((0.4 * 255).round()),
                     width: 1.5,
                   )
                 : null,
@@ -228,7 +228,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                           decoration: BoxDecoration(
                             color: isCompleted
                                 ? colorScheme.primary
-                                : colorScheme.surfaceContainerHighest.withOpacity(0.8),
+                                : colorScheme.surfaceContainerHighest.withAlpha((0.8 * 255).round()),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Center(
@@ -255,7 +255,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                   height: 40,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+                    color: colorScheme.surfaceContainerHighest.withAlpha((0.4 * 255).round()),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Center(
@@ -264,7 +264,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                             '${widget.previousSet!.weight?.toStringAsFixed(1) ?? '-'} × ${widget.previousSet!.reps}',
                             style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w500,
-                              color: colorScheme.onSurface.withOpacity(0.7),
+                              color: colorScheme.onSurface.withAlpha((0.7 * 255).round()),
                               fontSize: 13,
                             ),
                             textAlign: TextAlign.center,
@@ -272,7 +272,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                         : Text(
                             '—',
                             style: TextStyle(
-                              color: colorScheme.onSurface.withOpacity(0.3),
+                              color: colorScheme.onSurface.withAlpha((0.3 * 255).round()),
                               fontSize: 13,
                             ),
                           ),
@@ -300,7 +300,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                     decoration: InputDecoration(
                       hintText: '-',
                       hintStyle: TextStyle(
-                        color: colorScheme.onSurface.withOpacity(0.3),
+                        color: colorScheme.onSurface.withAlpha((0.3 * 255).round()),
                       ),
                       filled: true,
                       fillColor: colorScheme.surface,
@@ -308,13 +308,13 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4),
                         borderSide: BorderSide(
-                          color: colorScheme.outline.withOpacity(0.3),
+                          color: colorScheme.outline.withAlpha((0.3 * 255).round()),
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4),
                         borderSide: BorderSide(
-                          color: colorScheme.outline.withOpacity(0.3),
+                          color: colorScheme.outline.withAlpha((0.3 * 255).round()),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -354,7 +354,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                     decoration: InputDecoration(
                       hintText: '-',
                       hintStyle: TextStyle(
-                        color: colorScheme.onSurface.withOpacity(0.3),
+                        color: colorScheme.onSurface.withAlpha((0.3 * 255).round()),
                       ),
                       filled: true,
                       fillColor: colorScheme.surface,
@@ -362,13 +362,13 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4),
                         borderSide: BorderSide(
-                          color: colorScheme.outline.withOpacity(0.3),
+                          color: colorScheme.outline.withAlpha((0.3 * 255).round()),
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4),
                         borderSide: BorderSide(
-                          color: colorScheme.outline.withOpacity(0.3),
+                          color: colorScheme.outline.withAlpha((0.3 * 255).round()),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(

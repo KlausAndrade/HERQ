@@ -165,8 +165,8 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _getDifficultyColor(recommendation.difficulty)
-                        .withOpacity(0.2),
+          color: _getDifficultyColor(recommendation.difficulty)
+            .withAlpha((0.2 * 255).round()),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -201,7 +201,7 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.2),
+                    color: Colors.green.withAlpha((0.2 * 255).round()),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -598,7 +598,7 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color:
-                    _getPriorityColor(recommendation.priority).withOpacity(0.2),
+                    _getPriorityColor(recommendation.priority).withAlpha((0.2 * 255).round()),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -630,7 +630,7 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color:
-                    _getPriorityColor(recommendation.priority).withOpacity(0.2),
+                    _getPriorityColor(recommendation.priority).withAlpha((0.2 * 255).round()),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -758,7 +758,7 @@ class ProgressAnalysisTab extends HookConsumerWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.2),
+                    color: Colors.blue.withAlpha((0.2 * 255).round()),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -925,9 +925,9 @@ class ProgressAnalysisTab extends HookConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withAlpha((0.1 * 255).round()),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                  border: Border.all(color: Colors.blue.withAlpha((0.3 * 255).round())),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1054,7 +1054,7 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.2),
+                    color: Colors.green.withAlpha((0.2 * 255).round()),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -1099,7 +1099,7 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
                     return Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withAlpha((0.1 * 255).round()),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -1249,7 +1249,7 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withAlpha((0.1 * 255).round()),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -1298,7 +1298,7 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withAlpha((0.1 * 255).round()),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -1347,7 +1347,7 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.teal.withOpacity(0.1),
+                color: Colors.teal.withAlpha((0.1 * 255).round()),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -1411,7 +1411,7 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withAlpha((0.1 * 255).round()),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

@@ -2,6 +2,48 @@
 
 ## Priority Features to Implement
 
+### 🔧 Immediate UX & Exercise/Search Fixes (High Priority)
+
+These are small, high-impact changes that improve search relevance and the UX for body-weight / time-based exercises.
+
+- [ ] Body-weight / skill exercises: support exercises that are not weight+reps (e.g., handstand, free handstand)
+  - [ ] Add exercise type/flag that signals "time-based" or "skill" so UI shows a timer input instead of KG & reps by default
+  - [ ] Ensure handstand / free handstand (and similar balance/skill moves) are seeded with the correct type
+  - [ ] Allow optional fields for intensity (RPE) and notes for these exercises
+
+- [ ] Time-based exercise quick-entry UI
+  - [ ] Add a compact timer input next to set entry for exercises of type "timer" (presets: 10s/20s/30s/45s/60s)
+  - [ ] Support keyboard shortcuts on web for quick time presets
+  - [ ] Persist last-used timer presets per exercise as a quick-recall
+
+- [ ] Search improvements (synonyms & muscle-group aware)
+  - [ ] Use the new `aliases` column in `exercises` for synonym matching (supports hspu → handstand push up)
+  - [ ] Implement a tokenizer that matches aliases, exercise title, and tags (case-insensitive, partial matches)
+  - [ ] Muscle-group search: when user searches for "bicep" or "biceps" return exercises whose primary/secondary muscle group includes biceps (e.g., dumbbell curl)
+  - [ ] Add unit tests for search behavior (alias match, muscle-group match, partial match)
+
+- [ ] Preacher exercise & seeds
+  - [ ] Add `preacher_curl` (and common variants: barbell_preacher_curl, db_preacher_curl, machine_preacher_curl) to seed packs
+  - [ ] Include aliases (e.g., "preacher", "preacher curl") and muscle group tag `biceps`
+  - [ ] Ensure search returns preacher variants for queries like "preacher" and "bicep"
+
+- [ ] In-app notification redesign (revamp)
+  - [ ] Design: create a sleek, professional notification style (mockups + Figma link placeholder)
+  - [ ] Implement a new notification UI component with better typography, spacing and optional action buttons
+  - [ ] Add accessibility labels and large-text support for notifications
+  - [ ] Add unit tests / widget tests for the redesigned notification component
+
+
+## ✅ Recent small wins (done)
+
+- [x] Exercise aliases column + seeding (schema bumped to v13, aliases populated for selected seeds)
+- [x] Test helpers & DB test fixes (in-memory DB helper, updated database tests)
+- [x] Safe notification initialization for tests (notification service guarded)
+- [x] Groq service resilient mock mode (falls back to deterministic mock when API key missing)
+
+Notes: These were implemented as low-risk, backwards-compatible changes to support development and tests. See `lib/src/core/database/database.dart`, `lib/src/core/services/notification_service.dart`, and `lib/src/core/services/groq_service.dart`.
+
+
 ### 8. 📊 **Advanced Analytics** (Medium Priority)
 
 **Status:** ⏳ Not Started  

@@ -225,13 +225,13 @@ class SnackbarService {
   static Color _getIconBackgroundColor(SnackbarType type) {
     switch (type) {
       case SnackbarType.success:
-        return Colors.white.withOpacity(0.2);
+  return Colors.white.withAlpha((0.2 * 255).round());
       case SnackbarType.error:
-        return Colors.white.withOpacity(0.2);
+  return Colors.white.withAlpha((0.2 * 255).round());
       case SnackbarType.warning:
-        return Colors.black.withOpacity(0.2);
+  return Colors.black.withAlpha((0.2 * 255).round());
       case SnackbarType.info:
-        return Colors.white.withOpacity(0.2);
+  return Colors.white.withAlpha((0.2 * 255).round());
     }
   }
 

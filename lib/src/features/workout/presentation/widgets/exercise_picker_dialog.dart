@@ -47,7 +47,7 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                 border: Border(
                   bottom: BorderSide(
                     color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                        Theme.of(context).colorScheme.outline.withAlpha((0.2 * 255).round()),
                   ),
                 ),
               ),
@@ -153,10 +153,10 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.1),
+                : Theme.of(context)
+                  .colorScheme
+                  .primary
+                  .withAlpha((0.1 * 255).round()),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
@@ -204,10 +204,10 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                   color: Theme.of(context).colorScheme.surface,
                   border: Border(
                     top: BorderSide(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .outline
-                          .withOpacity(0.2),
+            color: Theme.of(context)
+              .colorScheme
+              .outline
+              .withAlpha((0.2 * 255).round()),
                     ),
                   ),
                 ),
