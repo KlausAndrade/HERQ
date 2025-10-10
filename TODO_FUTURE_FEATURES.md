@@ -32,6 +32,18 @@ These are small, high-impact changes that improve search relevance and the UX fo
   - [ ] Implement a new notification UI component with better typography, spacing and optional action buttons
   - [ ] Add accessibility labels and large-text support for notifications
   - [ ] Add unit tests / widget tests for the redesigned notification component
+ - [x] In-app notification redesign (revamp) — started
+ - [x] Design: create a sleek, professional notification style (mockups + Figma link placeholder)
+   - Figma / mockup placeholder: https://www.figma.com/file/PLACEHOLDER-GymAI-Notifications
+ - [x] Implement a new notification UI component with better typography, spacing and optional action buttons
+   - Implemented `NotificationCard` component in `lib/src/core/ui/notification_redesign/notification_card.dart`
+ - [x] Add accessibility labels and large-text support for notifications
+   - Component includes semantic labels, hints and adapts to textScaleFactor
+ - [x] Add unit tests / widget tests for the redesigned notification component
+   - Added `test/notification_widget_test.dart` which verifies rendering and action callbacks
+ - [x] In-app NotificationService integration (in-app overlay)
+   - Added `NotificationService.showInAppNotification(...)` and `inAppStream`
+   - Added `NotificationOverlay` which listens to `inAppStream` and renders `NotificationCard` instances as overlays (file: `lib/src/core/ui/notification_redesign/notification_overlay.dart`)
 
 
 ## ✅ Recent small wins (done)

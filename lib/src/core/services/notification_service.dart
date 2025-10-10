@@ -1,9 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:vibration/vibration.dart';
+import 'package:flutter/semantics.dart';
+import '../ui/notification_redesign/in_app_notification.dart';
 
 // Global stream controller for timer actions from notifications
 final timerActionStreamController = StreamController<String>.broadcast();
@@ -90,6 +92,45 @@ class NotificationService {
         );
 
     _initialized = true;
+  }
+
+  // In-app notification queue & stream
+  final StreamController<InAppNotification> _inAppController =
+      StreamController<InAppNotification>.broadcast();
+
+  Stream<InAppNotification> get inAppStream => _inAppController.stream;
+
+  /// Post an in-app notification — this will be emitted on `inAppStream`
+  Future<void> showInAppNotification({
+    required String id,
+    required String title,
+    required String body,
+    Widget? leading,
+    String? primaryActionLabel,
+    VoidCallback? onPrimaryAction,
+    String? secondaryActionLabel,
+    VoidCallback? onSecondaryAction,
+  }) async {
+    final notif = InAppNotification(
+      id: id,
+      title: title,
+      body: body,
+      leading: leading,
+      primaryActionLabel: primaryActionLabel,
+      onPrimaryAction: onPrimaryAction,
+      secondaryActionLabel: secondaryActionLabel,
+      onSecondaryAction: onSecondaryAction,
+    );
+
+    // Emit to listeners (UI overlays)
+    _inAppController.add(notif);
+
+    // Also announce via semantics for accessibility
+    try {
+      SemanticsService.announce('$title. $body', TextDirection.ltr);
+    } catch (_) {
+      // SemanticsService may not be available in some test/headless envs.
+    }
   }
 
   Future<void> _setupBackgroundActionHandler() async {

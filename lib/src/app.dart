@@ -7,6 +7,7 @@ import 'core/services/app_lifecycle_observer.dart';
 import 'core/theme/app_theme.dart';
 import 'features/settings/providers/theme_provider.dart';
 import 'generated/l10n.dart';
+import 'core/ui/notification_redesign/notification_overlay.dart';
 
 class GymAIApp extends ConsumerStatefulWidget {
   const GymAIApp({super.key});
@@ -51,6 +52,18 @@ class _GymAIAppState extends ConsumerState<GymAIApp> {
       ],
       supportedLocales: S.delegate.supportedLocales,
       debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        // Place the notification overlay above the app shell so in-app
+        // notifications can float on top of all routes. We keep the
+        // MaterialApp.router as the root but inject an additional Stack
+        // via the builder which receives the navigator's child.
+        return Stack(
+          children: [
+            if (child != null) child,
+            const NotificationOverlay(),
+          ],
+        );
+      },
     );
   }
 }
