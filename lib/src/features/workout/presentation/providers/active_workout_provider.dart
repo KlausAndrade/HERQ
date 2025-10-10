@@ -222,6 +222,106 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     }
   }
 
+  /// Start a workout directly from a list of exercise IDs (no template record)
+  Future<void> startWorkoutFromExerciseIds(String name, List<String> exerciseIds) async {
+    // First, clear any existing workout
+    await _clearActiveWorkout();
+
+    final db = database;
+    if (db == null) {
+      throw Exception('Database not available');
+    }
+
+    try {
+      // Fetch exercises for the provided IDs
+      final exercisesList = exerciseIds.isNotEmpty
+          ? await (db.select(db.exercises)..where((tbl) => tbl.id.isIn(exerciseIds))).get()
+          : <Exercise>[];
+
+      final exerciseMap = {for (final ex in exercisesList) ex.id: ex};
+
+      // Get timer preferences
+      final timerPrefs = _ref.read(exerciseTimerPreferencesProvider);
+
+      // Create active exercises in provided order
+      final activeExercises = <ActiveExercise>[];
+      for (final id in exerciseIds.where((id) => exerciseMap.containsKey(id))) {
+        final exercise = exerciseMap[id]!;
+        final savedTimer = timerPrefs[exercise.id] ?? 90;
+
+        final lastSet = await (db.select(db.setEntries)
+              ..where((tbl) => tbl.exerciseId.equals(exercise.id))
+              ..orderBy([
+                (t) => OrderingTerm(expression: t.completedAt, mode: OrderingMode.desc)
+              ])
+              ..limit(1))
+            .getSingleOrNull();
+
+        final initialWeight = lastSet?.weight;
+        final initialReps = lastSet?.reps ?? 0;
+
+        activeExercises.add(ActiveExercise(
+          id: exercise.id,
+          name: exercise.name,
+          sets: [
+            ActiveSet(number: 1, weight: initialWeight, reps: initialReps, isCompleted: false),
+            ActiveSet(number: 2, weight: initialWeight, reps: initialReps, isCompleted: false),
+            ActiveSet(number: 3, weight: initialWeight, reps: initialReps, isCompleted: false),
+          ],
+          restTimerSeconds: savedTimer,
+        ));
+      }
+
+      state = ActiveWorkout(
+        id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
+        name: name,
+        exercises: activeExercises,
+        elapsedTime: const Duration(),
+        totalSets: activeExercises.length * 3,
+        totalVolume: 0,
+      );
+
+      // Reset modifications flag
+      _ref.read(workoutModificationsProvider.notifier).reset();
+
+      // Start foreground service
+      await _foregroundService.startService(
+        workoutName: name,
+        exerciseCount: activeExercises.length,
+      );
+
+      // Start auto-save checkpoint service
+      final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+      if (checkpointService != null && state != null) {
+        checkpointService.startAutoSave(state!);
+      }
+    } catch (e) {
+      // Fallback to empty workout
+      state = ActiveWorkout(
+        id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
+        name: name,
+        exercises: const [],
+        elapsedTime: const Duration(),
+        totalSets: 0,
+        totalVolume: 0,
+      );
+
+      // Reset modifications flag
+      _ref.read(workoutModificationsProvider.notifier).reset();
+
+      // Start foreground service even for fallback workout
+      await _foregroundService.startService(
+        workoutName: name,
+        exerciseCount: 0,
+      );
+
+      final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+      if (checkpointService != null && state != null) {
+        checkpointService.startAutoSave(state!);
+      }
+    }
+  }
+
   /// Resume a workout from a saved checkpoint
   Future<void> resumeWorkout(ActiveWorkout workout) async {
     // First, clear any existing workout

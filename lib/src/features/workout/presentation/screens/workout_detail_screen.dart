@@ -6,8 +6,10 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/telemetry_provider.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
 import '../providers/workout_providers.dart';
+import '../providers/active_workout_provider.dart';
 
 class WorkoutDetailScreen extends ConsumerWidget {
   const WorkoutDetailScreen({
@@ -277,21 +279,39 @@ class WorkoutDetailScreen extends ConsumerWidget {
                 if (database == null) return;
 
                 try {
-                  // Create a quick template from this workout
-                  final templateId =
-                      'repeat_${DateTime.now().millisecondsSinceEpoch}';
-                  await database.into(database.workoutTemplates).insert(
-                        WorkoutTemplatesCompanion.insert(
-                          id: templateId,
-                          name: 'Repeat: ${workoutSession.name}',
-                          exerciseIds: const Value([]), // Will be populated based on set entries
-                          tags: const [],
-                          category: const Value('Quick Start'),
-                        ),
+                  // Gather distinct exercise IDs used in this workout session
+                  final entries = await (database.select(database.setEntries)
+                        ..where((tbl) => tbl.workoutSessionId.equals(workoutSession.id)))
+                      .get();
+
+                  final exerciseIds = entries.map((e) => e.exerciseId).toSet().toList();
+
+                  // Start workout directly from exercise IDs (no DB template)
+                  await ref.read(activeWorkoutProvider.notifier).startWorkoutFromExerciseIds(
+                        'Repeat: ${workoutSession.name}',
+                        exerciseIds,
                       );
 
+                  // Telemetry: track repeat action (best-effort)
+                  try {
+                    final telemetry = ref.read(telemetryProvider);
+                    telemetry.trackEvent('repeat_workout', {
+                      'source': 'workout_detail',
+                      'workoutId': workoutSession.id,
+                      'exerciseCount': exerciseIds.length,
+                      'name': workoutSession.name,
+                    });
+                  } catch (_) {
+                    // ignore - telemetry must not crash
+                  }
+
                   if (context.mounted) {
-                    context.go('/active-workout?templateId=$templateId');
+                    // Provide user feedback
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Repeat workout started')),
+                    );
+
+                    context.go('/active-workout');
                   }
                 } catch (e) {
                   if (context.mounted) {
