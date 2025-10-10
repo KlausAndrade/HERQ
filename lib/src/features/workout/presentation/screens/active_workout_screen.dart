@@ -867,6 +867,7 @@ class _ExerciseCard extends ConsumerWidget {
                             setNumber: index + 1,
                             restTimerSeconds: exercise.restTimerSeconds,
                             exerciseName: exercise.name,
+                            exerciseType: exercise.exerciseType,
                             totalSets: exercise.sets.length,
                             isFirstSet: index == 0,
                             onChanged: (updatedSet) {

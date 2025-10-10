@@ -7,25 +7,25 @@
 These are small, high-impact changes that improve search relevance and the UX for body-weight / time-based exercises.
 
 - [ ] Body-weight / skill exercises: support exercises that are not weight+reps (e.g., handstand, free handstand)
-  - [ ] Add exercise type/flag that signals "time-based" or "skill" so UI shows a timer input instead of KG & reps by default
-  - [ ] Ensure handstand / free handstand (and similar balance/skill moves) are seeded with the correct type
-  - [ ] Allow optional fields for intensity (RPE) and notes for these exercises
+  - [x] Add exercise type/flag that signals "time-based" or "skill" so UI shows a timer input instead of KG & reps by default
+  - [x] Ensure handstand / free handstand (and similar balance/skill moves) are seeded with the correct type
+  - [x] Allow optional fields for intensity (RPE) and notes for these exercises
 
 - [ ] Time-based exercise quick-entry UI
-  - [ ] Add a compact timer input next to set entry for exercises of type "timer" (presets: 10s/20s/30s/45s/60s)
+  - [x] Add a compact timer input next to set entry for exercises of type "timer" (presets: 10s/20s/30s/45s/60s)
   - [ ] Support keyboard shortcuts on web for quick time presets
-  - [ ] Persist last-used timer presets per exercise as a quick-recall
+  - [ ] Persist last-used timer presets per exercise as a quick-recall (partial: rest-timer prefs exist; persisting last-used set duration is planned)
 
 - [ ] Search improvements (synonyms & muscle-group aware)
-  - [ ] Use the new `aliases` column in `exercises` for synonym matching (supports hspu → handstand push up)
-  - [ ] Implement a tokenizer that matches aliases, exercise title, and tags (case-insensitive, partial matches)
-  - [ ] Muscle-group search: when user searches for "bicep" or "biceps" return exercises whose primary/secondary muscle group includes biceps (e.g., dumbbell curl)
-  - [ ] Add unit tests for search behavior (alias match, muscle-group match, partial match)
+  - [x] Use the new `aliases` column in `exercises` for synonym matching (supports hspu → handstand push up)
+  - [x] Implement a tokenizer that matches aliases, exercise title, and tags (case-insensitive, partial matches) — implemented as SQL LIKE across name, primary_muscle_group, aliases, tags (fine for now; advanced tokenizer planned)
+  - [x] Muscle-group search: when user searches for "bicep" or "biceps" return exercises whose primary/secondary muscle group includes biceps (e.g., dumbbell curl)
+  - [x] Add unit tests for search behavior (alias match, muscle-group match, partial match)
 
 - [ ] Preacher exercise & seeds
-  - [ ] Add `preacher_curl` (and common variants: barbell_preacher_curl, db_preacher_curl, machine_preacher_curl) to seed packs
-  - [ ] Include aliases (e.g., "preacher", "preacher curl") and muscle group tag `biceps`
-  - [ ] Ensure search returns preacher variants for queries like "preacher" and "bicep"
+  - [x] Add `preacher_curl` (and common variants: barbell_preacher_curl, db_preacher_curl, machine_preacher_curl) to seed packs
+  - [x] Include aliases (e.g., "preacher", "preacher curl") and muscle group tag `biceps`
+  - [x] Ensure search returns preacher variants for queries like "preacher" and "bicep"
 
 - [ ] In-app notification redesign (revamp)
   - [ ] Design: create a sleek, professional notification style (mockups + Figma link placeholder)
@@ -40,6 +40,17 @@ These are small, high-impact changes that improve search relevance and the UX fo
 - [x] Test helpers & DB test fixes (in-memory DB helper, updated database tests)
 - [x] Safe notification initialization for tests (notification service guarded)
 - [x] Groq service resilient mock mode (falls back to deterministic mock when API key missing)
+
+## ✅ Changes implemented in this session (summary)
+
+- Persisted timer durations for completed sets: `duration_seconds` is now written to local `set_entries` and included when syncing to Supabase. (see `lib/src/features/workout/presentation/providers/active_workout_provider.dart`)
+- Timer-aware UI: `SetEntryWidget` and ActiveWorkout models updated to support exercises with `exerciseType == 'timer'` and show compact duration inputs. (see `lib/src/features/workout/presentation/widgets/set_entry_widget.dart` and `lib/src/features/workout/domain/models/active_workout.dart`)
+- Search/aliases: search provider updated to match `name`, `primary_muscle_group`, `aliases`, and `tags` (case-insensitive partial matches). Added a unit test that verifies alias and muscle-group searches. (see `lib/src/features/exercises/presentation/providers/exercise_providers.dart` and `test/exercise_search_test.dart`)
+- Preacher variants & aliases: added `barbell_preacher_curl`, `db_preacher_curl`, and `machine_preacher_curl` to the seed and populated alias rows so searches for "preacher" return variants. (see `lib/src/core/database/database.dart`)
+
+Notes:
+- The core behavior for timer sets is in place (UI, domain model, local + Supabase persistence). Persisting "last-used set duration" as a dedicated quick-recall preference is partially covered by the existing `exerciseTimerPreferencesProvider` (which stores rest-timer prefs); storing the last completed duration per-exercise is a small follow-up (I can add this next).
+- The analyzer still reports many repository-wide lint/style hints (deprecated `withOpacity`, unawaited futures, context usage across async gaps). Those are separate cleanup tasks and I can tackle them in prioritized batches.
 
 Notes: These were implemented as low-risk, backwards-compatible changes to support development and tests. See `lib/src/core/database/database.dart`, `lib/src/core/services/notification_service.dart`, and `lib/src/core/services/groq_service.dart`.
 

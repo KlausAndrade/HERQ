@@ -77,12 +77,14 @@ class ActiveExercise {
   final String name;
   final List<ActiveSet> sets;
   final int restTimerSeconds;
+  final String exerciseType; // 'reps' | 'timer' | 'body_weighted' | etc.
 
   const ActiveExercise({
     required this.id,
     required this.name,
     required this.sets,
     this.restTimerSeconds = 90, // Default 90 seconds rest
+    this.exerciseType = 'reps',
   });
 
   // JSON serialization
@@ -90,7 +92,8 @@ class ActiveExercise {
         'id': id,
         'name': name,
         'sets': sets.map((s) => s.toJson()).toList(),
-        'restTimerSeconds': restTimerSeconds,
+    'restTimerSeconds': restTimerSeconds,
+    'exerciseType': exerciseType,
       };
 
   factory ActiveExercise.fromJson(Map<String, dynamic> json) => ActiveExercise(
@@ -99,7 +102,8 @@ class ActiveExercise {
         sets: (json['sets'] as List)
             .map((s) => ActiveSet.fromJson(s as Map<String, dynamic>))
             .toList(),
-        restTimerSeconds: json['restTimerSeconds'] as int? ?? 90,
+    restTimerSeconds: json['restTimerSeconds'] as int? ?? 90,
+    exerciseType: json['exerciseType'] as String? ?? 'reps',
       );
 }
 
@@ -107,6 +111,7 @@ class ActiveSet {
   final int number;
   final double? weight;
   final int reps;
+  final int? durationSeconds; // Used for timer-based sets (e.g. handstand hold)
   final int? rpe;
   final bool isCompleted;
   final bool isPRWeight;  // True if this set beat previous max weight
@@ -116,6 +121,7 @@ class ActiveSet {
     required this.number,
     this.weight,
     required this.reps,
+    this.durationSeconds,
     this.rpe,
     this.isCompleted = false,
     this.isPRWeight = false,
@@ -127,6 +133,7 @@ class ActiveSet {
         'number': number,
         'weight': weight,
         'reps': reps,
+    'durationSeconds': durationSeconds,
         'rpe': rpe,
         'isCompleted': isCompleted,
         'isPRWeight': isPRWeight,
@@ -137,6 +144,7 @@ class ActiveSet {
         number: json['number'] as int,
         weight: (json['weight'] as num?)?.toDouble(),
         reps: json['reps'] as int,
+    durationSeconds: json['durationSeconds'] as int?,
         rpe: json['rpe'] as int?,
         isCompleted: json['isCompleted'] as bool? ?? false,
         isPRWeight: json['isPRWeight'] as bool? ?? false,

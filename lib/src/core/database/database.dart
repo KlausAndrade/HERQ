@@ -1034,6 +1034,51 @@ class AppDatabase extends _$AppDatabase {
         difficulty: Value('intermediate'),
       ),
       const ExercisesCompanion(
+        id: Value('barbell_preacher_curl'),
+        name: Value('Barbell Preacher Curl'),
+        primaryMuscleGroup: Value('biceps'),
+        secondaryMuscleGroups: Value(['forearms']),
+        equipment: Value('preacher_bench'),
+        instructions: Value('Preacher curl using an EZ or straight bar for isolation'),
+        tags: Value(['isolation','biceps']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        parentExerciseId: Value('preacher_curls'),
+        variantType: Value('equipment'),
+        difficulty: Value('intermediate'),
+      ),
+      const ExercisesCompanion(
+        id: Value('db_preacher_curl'),
+        name: Value('Dumbbell Preacher Curl'),
+        primaryMuscleGroup: Value('biceps'),
+        secondaryMuscleGroups: Value(['forearms']),
+        equipment: Value('dumbbells'),
+        instructions: Value('Single-arm or alternating preacher curl using dumbbells'),
+        tags: Value(['isolation','biceps','dumbbell']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        parentExerciseId: Value('preacher_curls'),
+        variantType: Value('equipment'),
+        difficulty: Value('intermediate'),
+      ),
+      const ExercisesCompanion(
+        id: Value('machine_preacher_curl'),
+        name: Value('Machine Preacher Curl'),
+        primaryMuscleGroup: Value('biceps'),
+        secondaryMuscleGroups: Value(['forearms']),
+        equipment: Value('preacher_machine'),
+        instructions: Value('Preacher curl using a machine for guided motion'),
+        tags: Value(['isolation','biceps','machine']),
+        isBodyweight: Value(false),
+        exerciseType: Value('reps'),
+        category: Value('strength'),
+        parentExerciseId: Value('preacher_curls'),
+        variantType: Value('equipment'),
+        difficulty: Value('beginner'),
+      ),
+      const ExercisesCompanion(
         id: Value('cable_curls'),
         name: Value('Cable Curls'),
         primaryMuscleGroup: Value('biceps'),
@@ -1738,9 +1783,12 @@ class AppDatabase extends _$AppDatabase {
     // UPDATE statements so we don't need to re-run code generation for the
     // ExercisesCompanion to accept an `aliases` field yet keep the seeder idempotent.
     try {
-      await customStatement("UPDATE exercises SET aliases = '[\"hspu\",\"handstand pushup\"]' WHERE id = 'handstand_push_up'");
-      await customStatement("UPDATE exercises SET aliases = '[\"dumbbell curl\",\"db curl\",\"bicep curl\"]' WHERE id = 'dumbbell_curls'");
-      await customStatement("UPDATE exercises SET aliases = '[\"preacher\",\"preacher_curl\",\"preacher curl\"]' WHERE id = 'preacher_curls'");
+  await customStatement("UPDATE exercises SET aliases = '[\"hspu\",\"handstand pushup\"]' WHERE id = 'handstand_push_up'");
+  await customStatement("UPDATE exercises SET aliases = '[\"dumbbell curl\",\"db curl\",\"bicep curl\"]' WHERE id = 'dumbbell_curls'");
+  await customStatement("UPDATE exercises SET aliases = '[\"preacher\",\"preacher_curl\",\"preacher curl\"]' WHERE id = 'preacher_curls'");
+  await customStatement("UPDATE exercises SET aliases = '[\"barbell preacher\",\"barbell preacher curl\"]' WHERE id = 'barbell_preacher_curl'");
+  await customStatement("UPDATE exercises SET aliases = '[\"db preacher\",\"dumbbell preacher curl\"]' WHERE id = 'db_preacher_curl'");
+  await customStatement("UPDATE exercises SET aliases = '[\"machine preacher\",\"machine preacher curl\"]' WHERE id = 'machine_preacher_curl'");
     } catch (e) {
       // Non-fatal: if the UPDATE fails (e.g., running on older DB without aliases column), ignore.
     }

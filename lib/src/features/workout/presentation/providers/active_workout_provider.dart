@@ -161,13 +161,16 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         final initialReps = lastSet?.reps ?? 0;
 
         // Start with 3 prefilled sets using last completed values (if any)
+        // For timer exercises, prefill durationSeconds instead of reps/weight
+        final isTimer = exercise.exerciseType == 'timer';
         activeExercises.add(ActiveExercise(
           id: exercise.id,
           name: exercise.name,
+          exerciseType: exercise.exerciseType,
           sets: [
-            ActiveSet(number: 1, weight: initialWeight, reps: initialReps, isCompleted: false),
-            ActiveSet(number: 2, weight: initialWeight, reps: initialReps, isCompleted: false),
-            ActiveSet(number: 3, weight: initialWeight, reps: initialReps, isCompleted: false),
+            ActiveSet(number: 1, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
+            ActiveSet(number: 2, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
+            ActiveSet(number: 3, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
           ],
           restTimerSeconds: savedTimer,
         ));
@@ -266,13 +269,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         final initialWeight = lastSet?.weight;
         final initialReps = lastSet?.reps ?? 0;
 
+        final isTimer = exercise.exerciseType == 'timer';
         activeExercises.add(ActiveExercise(
           id: exercise.id,
           name: exercise.name,
+          exerciseType: exercise.exerciseType,
           sets: [
-            ActiveSet(number: 1, weight: initialWeight, reps: initialReps, isCompleted: false),
-            ActiveSet(number: 2, weight: initialWeight, reps: initialReps, isCompleted: false),
-            ActiveSet(number: 3, weight: initialWeight, reps: initialReps, isCompleted: false),
+            ActiveSet(number: 1, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
+            ActiveSet(number: 2, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
+            ActiveSet(number: 3, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
           ],
           restTimerSeconds: savedTimer,
         ));
@@ -785,22 +790,23 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           );
 
       // Save all completed sets to database
-      for (final exercise in workout.exercises) {
-        for (final set in exercise.sets.where((s) => s.isCompleted)) {
-          await db.into(db.setEntries).insert(
-                SetEntriesCompanion.insert(
-                  id: const Uuid().v4(),
-                  workoutSessionId: sessionId,
-                  exerciseId: exercise.id,
-                  setNumber: set.number,
-                  weight: Value(set.weight),
-                  reps: set.reps,
-                  rpe: Value(set.rpe),
-                  completedAt: now,
-                ),
-              );
-        }
-      }
+          for (final exercise in workout.exercises) {
+            for (final set in exercise.sets.where((s) => s.isCompleted)) {
+              await db.into(db.setEntries).insert(
+                    SetEntriesCompanion.insert(
+                      id: const Uuid().v4(),
+                      workoutSessionId: sessionId,
+                      exerciseId: exercise.id,
+                      setNumber: set.number,
+                      weight: Value(set.weight),
+                      reps: set.reps,
+                      durationSeconds: Value(set.durationSeconds),
+                      rpe: Value(set.rpe),
+                      completedAt: now,
+                    ),
+                  );
+            }
+          }
 
       // 🌩️ SYNC TO SUPABASE (background sync for cross-platform access)
       try {
@@ -836,6 +842,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                 'set_number': set.number,
                 'weight': set.weight,
                 'reps': set.reps,
+                'duration_seconds': set.durationSeconds,
                 'rpe': set.rpe,
                 'completed': true,
               });

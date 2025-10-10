@@ -17,6 +17,7 @@ class SetEntryWidget extends ConsumerStatefulWidget {
     this.totalSets,
     this.previousSet,
     this.isFirstSet = false,
+    this.exerciseType,
   });
   final ActiveSet set;
   final int setNumber;
@@ -26,6 +27,7 @@ class SetEntryWidget extends ConsumerStatefulWidget {
   final int? totalSets;
   final ActiveSet? previousSet; // Previous workout's set data
   final bool isFirstSet; // Whether this is the first set (to show header)
+  final String? exerciseType;
 
   @override
   ConsumerState<SetEntryWidget> createState() => _SetEntryWidgetState();
@@ -41,9 +43,16 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     _weightController = TextEditingController(
       text: widget.set.weight?.toString() ?? '',
     );
-    _repsController = TextEditingController(
-      text: widget.set.reps > 0 ? widget.set.reps.toString() : '',
-    );
+    // For timer exercises we store seconds in durationSeconds and reuse reps controller
+    if (widget.exerciseType == 'timer') {
+      _repsController = TextEditingController(
+        text: widget.set.durationSeconds != null ? widget.set.durationSeconds.toString() : '',
+      );
+    } else {
+      _repsController = TextEditingController(
+        text: widget.set.reps > 0 ? widget.set.reps.toString() : '',
+      );
+    }
   }
 
   @override
@@ -54,8 +63,14 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     if (oldWidget.set.weight != widget.set.weight && !_weightController.selection.isValid) {
       _weightController.text = widget.set.weight?.toString() ?? '';
     }
-    if (oldWidget.set.reps != widget.set.reps && !_repsController.selection.isValid) {
-      _repsController.text = widget.set.reps > 0 ? widget.set.reps.toString() : '';
+    if (widget.exerciseType == 'timer') {
+      if (oldWidget.set.durationSeconds != widget.set.durationSeconds && !_repsController.selection.isValid) {
+        _repsController.text = widget.set.durationSeconds != null ? widget.set.durationSeconds.toString() : '';
+      }
+    } else {
+      if (oldWidget.set.reps != widget.set.reps && !_repsController.selection.isValid) {
+        _repsController.text = widget.set.reps > 0 ? widget.set.reps.toString() : '';
+      }
     }
   }
 
@@ -281,112 +296,142 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
               ),
               const SizedBox(width: 6),
 
-              // Weight Input
-              Expanded(
-                flex: 2,
-                child: SizedBox(
-                  height: 40,
-                  child: TextField(
-                    controller: _weightController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                    ],
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+              // If exerciseType == 'timer', show a compact duration input instead of weight/reps
+              if (widget.exerciseType == 'timer') ...[
+                Expanded(
+                  flex: 4,
+                  child: SizedBox(
+                    height: 40,
+                    child: TextField(
+                      controller: _repsController, // reuse reps controller to store seconds
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        hintText: 'secs',
+                        hintStyle: TextStyle(color: colorScheme.onSurface.withAlpha((0.3 * 255).round())),
+                        filled: true,
+                        fillColor: colorScheme.surface,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+                        isDense: true,
+                      ),
+                      onChanged: (value) {
+                        final secs = value.isEmpty ? null : int.tryParse(value);
+                        _updateSet(durationSeconds: secs);
+                      },
                     ),
-                    decoration: InputDecoration(
-                      hintText: '-',
-                      hintStyle: TextStyle(
-                        color: colorScheme.onSurface.withAlpha((0.3 * 255).round()),
-                      ),
-                      filled: true,
-                      fillColor: colorScheme.surface,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: colorScheme.outline.withAlpha((0.3 * 255).round()),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: colorScheme.outline.withAlpha((0.3 * 255).round()),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: colorScheme.primary,
-                          width: 1.5,
-                        ),
-                      ),
-                      isDense: true,
-                    ),
-                    onChanged: (value) {
-                      final weight = value.isEmpty ? null : double.tryParse(value);
-                      _updateSet(weight: weight);
-                    },
                   ),
                 ),
-              ),
-              const SizedBox(width: 6),
+                const SizedBox(width: 6),
+              ] else ...[
+                // Weight Input
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(
+                    height: 40,
+                    child: TextField(
+                      controller: _weightController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                      ],
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: '-',
+                        hintStyle: TextStyle(
+                          color: colorScheme.onSurface.withAlpha((0.3 * 255).round()),
+                        ),
+                        filled: true,
+                        fillColor: colorScheme.surface,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: BorderSide(
+                            color: colorScheme.outline.withAlpha((0.3 * 255).round()),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: BorderSide(
+                            color: colorScheme.outline.withAlpha((0.3 * 255).round()),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: BorderSide(
+                            color: colorScheme.primary,
+                            width: 1.5,
+                          ),
+                        ),
+                        isDense: true,
+                      ),
+                      onChanged: (value) {
+                        final weight = value.isEmpty ? null : double.tryParse(value);
+                        _updateSet(weight: weight);
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
 
-              // Reps Input
-              Expanded(
-                flex: 2,
-                child: SizedBox(
-                  height: 40,
-                  child: TextField(
-                    controller: _repsController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                // Reps Input
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(
+                    height: 40,
+                    child: TextField(
+                      controller: _repsController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: '-',
+                        hintStyle: TextStyle(
+                          color: colorScheme.onSurface.withAlpha((0.3 * 255).round()),
+                        ),
+                        filled: true,
+                        fillColor: colorScheme.surface,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: BorderSide(
+                            color: colorScheme.outline.withAlpha((0.3 * 255).round()),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: BorderSide(
+                            color: colorScheme.outline.withAlpha((0.3 * 255).round()),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: BorderSide(
+                            color: colorScheme.primary,
+                            width: 1.5,
+                          ),
+                        ),
+                        isDense: true,
+                      ),
+                      onChanged: (value) {
+                        final reps = value.isEmpty ? 0 : (int.tryParse(value) ?? 0);
+                        _updateSet(reps: reps);
+                      },
                     ),
-                    decoration: InputDecoration(
-                      hintText: '-',
-                      hintStyle: TextStyle(
-                        color: colorScheme.onSurface.withAlpha((0.3 * 255).round()),
-                      ),
-                      filled: true,
-                      fillColor: colorScheme.surface,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: colorScheme.outline.withAlpha((0.3 * 255).round()),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: colorScheme.outline.withAlpha((0.3 * 255).round()),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: colorScheme.primary,
-                          width: 1.5,
-                        ),
-                      ),
-                      isDense: true,
-                    ),
-                    onChanged: (value) {
-                      final reps = value.isEmpty ? 0 : (int.tryParse(value) ?? 0);
-                      _updateSet(reps: reps);
-                    },
                   ),
                 ),
-              ),
+              ],
               const SizedBox(width: 6),
 
               // Complete Button
@@ -424,12 +469,14 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   void _updateSet({
     double? weight,
     int? reps,
+    int? durationSeconds,
     bool? isCompleted,
   }) {
     final updatedSet = ActiveSet(
       number: widget.set.number,
       weight: weight ?? widget.set.weight,
       reps: reps ?? widget.set.reps,
+  durationSeconds: durationSeconds ?? widget.set.durationSeconds,
       rpe: widget.set.rpe,
       isCompleted: isCompleted ?? widget.set.isCompleted,
     );

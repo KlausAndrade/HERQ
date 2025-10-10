@@ -46,10 +46,23 @@ final exerciseSearchProvider =
     return await database.select(database.exercises).get();
   }
 
-  // Use SQL LIKE operator for text search
-  return await (database.select(database.exercises)
-        ..where((tbl) => tbl.name.like('%$query%')))
-      .get();
+  // Use SQL LIKE operator across name, aliases, tags and primary muscle group.
+  // aliases and tags are stored as comma-separated strings via StringListConverter.
+  final q = '%${query.toLowerCase()}%';
+
+  final rows = await database.customSelect(
+    'SELECT * FROM exercises WHERE LOWER(name) LIKE ? OR LOWER(primary_muscle_group) LIKE ? OR LOWER(aliases) LIKE ? OR LOWER(tags) LIKE ? COLLATE NOCASE',
+    variables: [
+      Variable<String>(q),
+      Variable<String>(q),
+      Variable<String>(q),
+      Variable<String>(q),
+    ],
+  ).get();
+
+  // Map rows to Exercise data objects using database mapping
+  final results = rows.map((r) => database.exercises.map(r.data)).toList();
+  return results;
 });
 
 // Provider for a single exercise by ID
