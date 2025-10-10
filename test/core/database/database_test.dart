@@ -19,7 +19,8 @@ void main() {
 
     test('should initialize database correctly', () {
       expect(database, isA<AppDatabase>());
-      expect(database.schemaVersion, equals(8));
+      // schemaVersion was bumped to 13 as part of the aliases migration
+      expect(database.schemaVersion, equals(13));
     });
 
     group('Exercise Tests', () {
