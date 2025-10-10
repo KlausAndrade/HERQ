@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/providers/auth_provider.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -308,13 +309,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         );
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Account created successfully! Please check your email to verify.'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          NotificationService().showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Account created',
+            body: 'Please check your email to verify.',
+          ).catchError((_) {});
         }
       } else {
         await authService.signInWithEmail(
@@ -328,12 +327,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error',
+          body: '${e.toString()}',
+        ).catchError((_) {});
       }
     } finally {
       if (mounted) {
@@ -358,12 +356,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error',
+          body: '${e.toString()}',
+        ).catchError((_) {});
       }
     } finally {
       if (mounted) {
@@ -388,12 +385,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error',
+          body: '${e.toString()}',
+        ).catchError((_) {});
       }
     } finally {
       if (mounted) {
@@ -418,12 +414,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error',
+          body: '${e.toString()}',
+        ).catchError((_) {});
       }
     } finally {
       if (mounted) {
@@ -436,11 +431,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   Future<void> _handleForgotPassword() async {
     if (_emailController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your email first'),
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Missing email',
+        body: 'Please enter your email first',
+      ).catchError((_) {});
       return;
     }
 
@@ -449,21 +444,19 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       await authService.resetPassword(_emailController.text.trim());
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password reset email sent!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Password reset',
+          body: 'Password reset email sent!',
+        ).catchError((_) {});
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error',
+          body: '${e.toString()}',
+        ).catchError((_) {});
       }
     }
   }

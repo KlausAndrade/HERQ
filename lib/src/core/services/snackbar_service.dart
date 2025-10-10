@@ -13,7 +13,7 @@ enum SnackbarType {
 
 /// Centralized snackbar service for consistent feedback messages
 class SnackbarService {
-  /// Show a snackbar with customizable type and haptic feedback
+
   static void show(
     BuildContext context, {
     required String message,
@@ -108,7 +108,11 @@ class SnackbarService {
   /// display the SnackBar as before. This helper lets us migrate callers
   /// incrementally by replacing `ScaffoldMessenger.of(context).showSnackBar(...)`
   /// with `SnackbarService.showFromSnackBar(context, ...)`.
-  static void showFromSnackBar(BuildContext context, SnackBar snackBar) {
+  /// Convert an existing [SnackBar] widget into an in-app notification and
+  /// display the SnackBar as before. By default this will publish the
+  /// in-app overlay only. Pass `preserveFallback: true` to also show the
+  /// original SnackBar (useful during staged rollouts).
+  static void showFromSnackBar(BuildContext context, SnackBar snackBar, {bool preserveFallback = false}) {
     if (!context.mounted) return;
 
     // Attempt to extract a simple text message from the SnackBar content.
@@ -149,10 +153,12 @@ class SnackbarService {
       // may not be available.
     }
 
-    // Preserve original behavior and show the SnackBar as before.
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
+    // Optionally preserve the original SnackBar fallback for staged rollouts.
+    if (preserveFallback) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
+    }
   }
 
   /// Show success message

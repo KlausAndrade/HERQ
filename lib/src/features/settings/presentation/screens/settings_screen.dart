@@ -7,7 +7,7 @@ import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/widgets/animated_switch.dart';
 import '../../../../core/widgets/app_card.dart';
-import '../../../../core/services/snackbar_service.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../providers/data_export_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/workout_settings_provider.dart';
@@ -65,11 +65,15 @@ class SettingsScreen extends ConsumerWidget {
                       ListTile(
                         leading: const Icon(Icons.logout, color: Colors.red),
                         title: const Text('Sign Out'),
-                        onTap: () async {
+                          onTap: () async {
                           final authService = ref.read(authServiceProvider);
                           await authService.signOut();
                           if (context.mounted) {
-                            SnackbarService.showSuccess(context, 'Signed out successfully');
+                            NotificationService().showInAppNotification(
+                              id: DateTime.now().millisecondsSinceEpoch.toString(),
+                              title: 'Signed out',
+                              body: 'Signed out successfully',
+                            ).catchError((_) {});
                           }
                         },
                       ),
@@ -532,21 +536,19 @@ class SettingsScreen extends ConsumerWidget {
       await Clipboard.setData(ClipboardData(text: jsonData));
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Data exported to clipboard as JSON'),
-            duration: Duration(seconds: 3),
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Exported',
+          body: 'Data exported to clipboard as JSON',
+        ).catchError((_) {});
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ Export failed: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Export failed',
+          body: '${e.toString()}',
+        ).catchError((_) {});
       }
     }
   }
@@ -559,21 +561,19 @@ class SettingsScreen extends ConsumerWidget {
       await Clipboard.setData(ClipboardData(text: csvData));
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Workouts exported to clipboard as CSV'),
-            duration: Duration(seconds: 3),
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Exported',
+          body: 'Workouts exported to clipboard as CSV',
+        ).catchError((_) {});
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ Export failed: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Export failed',
+          body: '${e.toString()}',
+        ).catchError((_) {});
       }
     }
   }
@@ -672,31 +672,28 @@ class SettingsScreen extends ConsumerWidget {
 
                   if (context.mounted) {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Account data deleted'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
+                    NotificationService().showInAppNotification(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Deleted',
+                      body: 'Account data deleted',
+                    ).catchError((_) {});
                   }
                 } catch (e) {
                   if (context.mounted) {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error: $e'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
+                    NotificationService().showInAppNotification(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Error',
+                      body: '$e',
+                    ).catchError((_) {});
                   }
                 }
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please type DELETE to confirm'),
-                    backgroundColor: Colors.orange,
-                  ),
-                );
+                NotificationService().showInAppNotification(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  title: 'Confirmation required',
+                  body: 'Please type DELETE to confirm',
+                ).catchError((_) {});
               }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),

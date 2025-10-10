@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
@@ -231,16 +232,20 @@ class WorkoutDetailScreen extends ConsumerWidget {
 
                 if (context.mounted) {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Notes updated')),
-                  );
+                  NotificationService().showInAppNotification(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: 'Notes updated',
+                    body: '',
+                  ).catchError((_) {});
                 }
-              } catch (e) {
+                } catch (e) {
                 if (context.mounted) {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error updating notes: $e')),
-                  );
+                  NotificationService().showInAppNotification(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: 'Error updating notes',
+                    body: '$e',
+                  ).catchError((_) {});
                 }
               }
             },
@@ -306,18 +311,22 @@ class WorkoutDetailScreen extends ConsumerWidget {
                   }
 
                   if (context.mounted) {
-                    // Provide user feedback
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Repeat workout started')),
-                    );
+                      // Provide user feedback
+                      NotificationService().showInAppNotification(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        title: 'Repeat workout started',
+                        body: '',
+                      ).catchError((_) {});
 
-                    context.go('/active-workout');
-                  }
+                      context.go('/active-workout');
+                    }
                 } catch (e) {
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error: $e')),
-                    );
+                    NotificationService().showInAppNotification(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Error',
+                      body: '$e',
+                    ).catchError((_) {});
                   }
                 }
               },
@@ -403,19 +412,23 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
                     .delete(database.workoutSessions)
                     .delete(workoutSession);
 
-                if (context.mounted) {
+                  if (context.mounted) {
                   Navigator.pop(context);
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Workout deleted')),
-                  );
+                  NotificationService().showInAppNotification(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: 'Workout deleted',
+                    body: '',
+                  ).catchError((_) {});
                 }
               } catch (e) {
                 if (context.mounted) {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error deleting workout: $e')),
-                  );
+                  NotificationService().showInAppNotification(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: 'Error deleting workout: $e',
+                    body: '',
+                  ).catchError((_) {});
                 }
               }
             },

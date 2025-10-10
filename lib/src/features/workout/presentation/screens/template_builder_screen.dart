@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
+import 'package:gym_ai/src/core/services/snackbar_service.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
 import '../widgets/exercise_picker_dialog.dart';
 import '../widgets/multi_exercise_picker_dialog.dart';
@@ -410,12 +412,11 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedExerciseIds.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please add at least one exercise'),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Please add at least one exercise',
+        body: '',
+      ).catchError((_) {});
       return;
     }
 
@@ -447,24 +448,20 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
     if (mounted) {
       if (success) {
         ref.invalidate(workoutTemplatesProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.templateId == null
-                  ? 'Template created successfully'
-                  : 'Template updated successfully',
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: widget.templateId == null
+              ? 'Template created successfully'
+              : 'Template updated successfully',
+          body: '',
+        ).catchError((_) {});
         context.pop();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to save template'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Failed to save template',
+          body: '',
+        ).catchError((_) {});
       }
     }
   }
