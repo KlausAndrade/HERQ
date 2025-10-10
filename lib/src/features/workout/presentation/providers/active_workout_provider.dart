@@ -63,8 +63,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   @override
   void dispose() {
     _foregroundService.stopService();
-    // Clear any active rest timer when disposing
-    _ref.read(restTimerProvider.notifier).stopTimer();
+    // Clear any active rest timer when disposing. Wrap in try/catch because
+    // reading other providers during dispose can throw if the container is
+    // already being torn down in tests.
+    try {
+      _ref.read(restTimerProvider.notifier).stopTimer();
+    } catch (_) {
+      // ignore - safe to swallow during dispose
+    }
     super.dispose();
   }
 

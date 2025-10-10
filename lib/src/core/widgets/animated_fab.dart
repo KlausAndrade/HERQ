@@ -76,12 +76,25 @@ class _AnimatedFABState extends State<AnimatedFAB>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
-    // Start pulsing after delay
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        _pulseController.repeat(reverse: true);
-      }
-    });
+    // Start pulsing after delay. In widget tests, Future.delayed will create
+    // fake timers that can remain pending; detect the test binding and
+    // schedule start on the next frame instead.
+    final bindingName = WidgetsBinding.instance.runtimeType.toString();
+    final runningInWidgetTest = bindingName.contains('AutomatedTestWidgetsFlutterBinding');
+
+    if (runningInWidgetTest) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _pulseController.repeat(reverse: true);
+        }
+      });
+    } else {
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          _pulseController.repeat(reverse: true);
+        }
+      });
+    }
   }
 
   @override

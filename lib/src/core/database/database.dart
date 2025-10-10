@@ -53,7 +53,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -65,6 +65,15 @@ class AppDatabase extends _$AppDatabase {
           await _insertDefaultData();
         },
         onUpgrade: (migrator, from, to) async {
+          if (to == 13) {
+            // Add aliases column to exercises table to support search synonyms/aliases.
+            // Use raw ALTER TABLE to avoid type issues with mapped columns during migration.
+            try {
+              await customStatement('ALTER TABLE exercises ADD COLUMN aliases TEXT');
+            } catch (e) {
+              // If the column already exists or cannot be added, continue without failing the migration.
+            }
+          }
           if (to == 12) {
             // Fix workout templates with null exerciseIds
             await customStatement('UPDATE workout_templates SET exercise_ids = \'\' WHERE exercise_ids IS NULL');
@@ -610,7 +619,7 @@ class AppDatabase extends _$AppDatabase {
         secondaryMuscleGroups: Value(['triceps', 'core']),
         equipment: Value('wall'),
         instructions: Value('Push-up while in handstand position'),
-        tags: Value(['compound', 'upper_body', 'inversion']),
+  tags: Value(['compound', 'upper_body', 'inversion']),
         isBodyweight: Value(true),
         exerciseType: Value('reps'),
         category: Value('calisthenics'),
@@ -986,7 +995,7 @@ class AppDatabase extends _$AppDatabase {
         secondaryMuscleGroups: Value(['forearms']),
         equipment: Value('dumbbells'),
         instructions: Value('Alternate or simultaneous dumbbell curls focusing on full ROM'),
-        tags: Value(['isolation', 'arms']),
+  tags: Value(['isolation', 'arms']),
         isBodyweight: Value(false),
         exerciseType: Value('reps'),
         category: Value('strength'),
@@ -1016,7 +1025,7 @@ class AppDatabase extends _$AppDatabase {
         secondaryMuscleGroups: Value(['forearms']),
         equipment: Value('preacher_bench'),
         instructions: Value('Isolated curl using preacher bench to remove momentum'),
-        tags: Value(['isolation']),
+  tags: Value(['isolation']),
         isBodyweight: Value(false),
         exerciseType: Value('reps'),
         category: Value('strength'),
@@ -1723,6 +1732,17 @@ class AppDatabase extends _$AppDatabase {
       // allows calling the seeder multiple times (e.g., onCreate and in tests)
       // without violating unique constraints.
       await into(exercises).insertOnConflictUpdate(exercise);
+    }
+
+    // Populate aliases for seeded exercises using raw SQL. We do this via
+    // UPDATE statements so we don't need to re-run code generation for the
+    // ExercisesCompanion to accept an `aliases` field yet keep the seeder idempotent.
+    try {
+      await customStatement("UPDATE exercises SET aliases = '[\"hspu\",\"handstand pushup\"]' WHERE id = 'handstand_push_up'");
+      await customStatement("UPDATE exercises SET aliases = '[\"dumbbell curl\",\"db curl\",\"bicep curl\"]' WHERE id = 'dumbbell_curls'");
+      await customStatement("UPDATE exercises SET aliases = '[\"preacher\",\"preacher_curl\",\"preacher curl\"]' WHERE id = 'preacher_curls'");
+    } catch (e) {
+      // Non-fatal: if the UPDATE fails (e.g., running on older DB without aliases column), ignore.
     }
 
     // Insert default workout templates

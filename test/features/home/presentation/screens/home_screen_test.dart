@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../helpers/test_db_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gym_ai/src/features/home/presentation/screens/home_screen.dart';
 
@@ -9,6 +10,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: ProviderScope(
+            overrides: overrideWithTestProviders(),
             child: const HomeScreen(),
           ),
         ),
@@ -23,6 +25,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: ProviderScope(
+            overrides: overrideWithTestProviders(),
             child: const HomeScreen(),
           ),
         ),
@@ -39,6 +42,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: ProviderScope(
+            overrides: overrideWithTestProviders(),
             child: const HomeScreen(),
           ),
         ),

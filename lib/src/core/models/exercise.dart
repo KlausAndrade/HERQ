@@ -10,6 +10,9 @@ class Exercises extends Table {
   TextColumn get equipment => text()();
   TextColumn get instructions => text()();
   TextColumn get tags => text().map(const StringListConverter())();
+    // Optional list of search aliases / synonyms for this exercise (e.g. "hspu" -> "handstand push up").
+    // Stored as a JSON text column via StringListConverter. Nullable for backward-compatible migrations.
+    TextColumn get aliases => text().map(const StringListConverter()).nullable()();
   BoolColumn get isBodyweight => boolean().withDefault(const Constant(false))();
 
   // New fields for exercise types and variants

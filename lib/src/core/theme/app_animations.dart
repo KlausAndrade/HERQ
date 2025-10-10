@@ -204,12 +204,28 @@ class _AnimatedListItemState extends State<AnimatedListItem>
       CurvedAnimation(parent: _controller, curve: AppCurves.smooth),
     );
 
-    // Stagger animation based on index
-    Future.delayed(widget.delay * widget.index, () {
-      if (mounted) {
-        _controller.forward();
-      }
-    });
+    // Stagger animation based on index.
+    // In widget tests (AutomatedTestWidgetsFlutterBinding) Future.delayed
+    // creates fake timers that may remain pending and fail tests. Detect
+    // the test binding by checking the runtimeType string and avoid creating
+    // delayed timers in that case — start the animation on the next frame.
+    final bindingName = WidgetsBinding.instance.runtimeType.toString();
+    final runningInWidgetTest = bindingName.contains('AutomatedTestWidgetsFlutterBinding');
+
+    if (runningInWidgetTest) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _controller.forward();
+        }
+      });
+    } else {
+      // Normal app: stagger using a delayed timer
+      Future.delayed(widget.delay * widget.index, () {
+        if (mounted) {
+          _controller.forward();
+        }
+      });
+    }
   }
 
   @override

@@ -385,7 +385,7 @@ void main() {
               WorkoutTemplatesCompanion.insert(
                 id: templateId,
                 name: 'Push Day Template',
-                exerciseIds: const [],
+                exerciseIds: Value(const []),
                 tags: const ['push', 'strength'],
                 description: const Value('Chest, Shoulders, Triceps'),
               ),
@@ -407,7 +407,7 @@ void main() {
               WorkoutTemplatesCompanion.insert(
                 id: templateId,
                 name: 'Original Template',
-                exerciseIds: const [],
+                exerciseIds: Value(const []),
                 tags: const [],
               ),
             );
