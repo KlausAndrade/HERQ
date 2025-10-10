@@ -290,17 +290,32 @@ class _WorkoutTemplatesWithFoldersScreenState
                       return Padding(
                         padding: const EdgeInsets.all(16),
                         child: Center(
-                          child: Text(
-                            'No templates in this folder',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.5),
-                                ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'No templates in this folder',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.5),
+                                    ),
+                              ),
+                              const SizedBox(height: 12),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  // Navigate to template builder with folder preselected
+                                  final folderId = Uri.encodeComponent(folder.id);
+                                  context.push('/template-builder?folderId=$folderId');
+                                },
+                                icon: const Icon(Icons.add),
+                                label: const Text('Create Template'),
+                              ),
+                            ],
                           ),
                         ),
                       );

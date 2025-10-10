@@ -65,8 +65,9 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
           name: 'template-builder',
           pageBuilder: (context, state) {
             final templateId = state.uri.queryParameters['templateId'];
+            final folderId = state.uri.queryParameters['folderId'];
             return AppPageTransitions.slideRightTransition(
-              TemplateBuilderScreen(templateId: templateId),
+              TemplateBuilderScreen(templateId: templateId, folderId: folderId),
               key: state.pageKey,
             );
           },

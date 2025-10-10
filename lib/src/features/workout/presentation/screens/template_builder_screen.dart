@@ -13,8 +13,9 @@ import '../providers/template_providers.dart';
 
 class TemplateBuilderScreen extends ConsumerStatefulWidget {
   final String? templateId; // For editing existing templates
+  final String? folderId; // Optional: preselect folder when creating
 
-  const TemplateBuilderScreen({super.key, this.templateId});
+  const TemplateBuilderScreen({super.key, this.templateId, this.folderId});
 
   @override
   ConsumerState<TemplateBuilderScreen> createState() =>
@@ -39,7 +40,17 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
     if (widget.templateId != null) {
       _loadTemplate();
     }
+    // If a folderId is provided and we're creating a new template, prefill
+    // internal state to hint the template should be created inside that folder.
+    if (widget.templateId == null && widget.folderId != null) {
+      // Store folder id temporarily in tags to avoid changing DB models here;
+      // the actual assignment occurs on save via TemplateActions.createTemplate.
+      // We'll keep a private variable to hold the folderId.
+      _initialFolderId = widget.folderId;
+    }
   }
+
+  String? _initialFolderId;
 
   @override
   void dispose() {
@@ -430,6 +441,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
           : _descriptionController.text.trim(),
       category: _selectedCategory,
       sortOrder: 0,
+      folderId: _initialFolderId,
       exerciseIds: _selectedExerciseIds,
       tags: _tags,
       estimatedDurationMinutes: _estimatedDuration,
