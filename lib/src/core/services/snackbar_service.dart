@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import 'haptic_service.dart';
+import 'notification_service.dart';
 
 enum SnackbarType {
   success,
@@ -84,6 +85,71 @@ class SnackbarService {
           : null,
     );
 
+    // Also publish through the in-app notification system so overlays are
+    // consistent across the app (transition path: both SnackBar and overlay).
+    try {
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: message.length > 60 ? '${message.substring(0, 57)}...' : message,
+        body: '',
+        primaryActionLabel: actionLabel,
+        onPrimaryAction: onAction,
+      );
+    } catch (_) {
+      // Best-effort: ignore if notification system unavailable in tests.
+    }
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
+  /// Convert an existing [SnackBar] widget into an in-app notification and
+  /// display the SnackBar as before. This helper lets us migrate callers
+  /// incrementally by replacing `ScaffoldMessenger.of(context).showSnackBar(...)`
+  /// with `SnackbarService.showFromSnackBar(context, ...)`.
+  static void showFromSnackBar(BuildContext context, SnackBar snackBar) {
+    if (!context.mounted) return;
+
+    // Attempt to extract a simple text message from the SnackBar content.
+    String extractText(Widget? w) {
+      if (w == null) return '';
+      if (w is Text) return w.data ?? '';
+      if (w is RichText) return w.text.toPlainText();
+      if (w is Row) {
+        for (final child in w.children) {
+          final t = extractText(child);
+          if (t.isNotEmpty) return t;
+        }
+      }
+      if (w is Expanded) return extractText(w.child);
+      if (w is Padding) return extractText(w.child);
+      if (w is Container) return extractText(w.child);
+      if (w is Center) return extractText(w.child);
+      // Fallback: empty
+      return '';
+    }
+
+    final contentText = extractText(snackBar.content);
+
+    // Map action to primaryActionLabel when possible
+    final actionLabel = snackBar.action?.label;
+    final actionCallback = snackBar.action != null ? () { snackBar.action!.onPressed(); } : null;
+
+    try {
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: contentText.length > 60 ? '${contentText.substring(0, 57)}...' : contentText,
+        body: '',
+        primaryActionLabel: actionLabel,
+        onPrimaryAction: actionCallback,
+      );
+    } catch (_) {
+      // Best-effort: ignore in test envs where SemanticsService/NotificationService
+      // may not be available.
+    }
+
+    // Preserve original behavior and show the SnackBar as before.
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(snackBar);
@@ -194,6 +260,17 @@ class SnackbarService {
         ),
       ),
     );
+
+    // Mirror to in-app notification overlay
+    try {
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: message.length > 60 ? '${message.substring(0, 57)}...' : message,
+        body: '',
+        primaryActionLabel: actionLabel,
+        onPrimaryAction: onAction,
+      );
+    } catch (_) {}
   }
 
   static IconData _getIcon(SnackbarType type) {

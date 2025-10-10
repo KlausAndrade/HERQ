@@ -6,6 +6,7 @@ import '../../../../core/database/database.dart';
 import '../../../../providers/template_folder_provider.dart';
 import '../providers/template_providers.dart';
 import '../../../workouts/widgets/create_folder_dialog.dart';
+import 'package:gym_ai/src/core/services/snackbar_service.dart';
 
 /// Drag item type used to indicate what kind of object is being dragged.
 enum _DragItemType { exercise }
@@ -162,7 +163,7 @@ class _WorkoutTemplatesWithFoldersScreenState
       key: key,
       onWillAccept: (data) => data != null && data.type == _DragItemType.exercise && data.sourceFolderId != folder.id,
       onAccept: (data) {
-        _moveTemplate(data.templateId, folder.id);
+        _moveTemplate(data.templateId, folder);
       },
       builder: (context, candidateData, rejectedData) {
         final isDraggingOver = candidateData.isNotEmpty;
@@ -763,13 +764,15 @@ class _WorkoutTemplatesWithFoldersScreenState
               color: result['color'],
             );
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          SnackbarService.showFromSnackBar(
+            context,
             SnackBar(content: Text('Folder "${result['name']}" created')),
           );
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          SnackbarService.showFromSnackBar(
+            context,
             SnackBar(content: Text('Error creating folder: $e')),
           );
         }
@@ -825,13 +828,15 @@ class _WorkoutTemplatesWithFoldersScreenState
               color: result['color'],
             );
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          SnackbarService.showFromSnackBar(
+            context,
             const SnackBar(content: Text('Folder updated')),
           );
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          SnackbarService.showFromSnackBar(
+            context,
             SnackBar(content: Text('Error updating folder: $e')),
           );
         }
@@ -869,13 +874,15 @@ class _WorkoutTemplatesWithFoldersScreenState
             .read(templateFolderNotifierProvider.notifier)
             .deleteFolder(folder.id);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          SnackbarService.showFromSnackBar(
+            context,
             const SnackBar(content: Text('Folder deleted')),
           );
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          SnackbarService.showFromSnackBar(
+            context,
             SnackBar(content: Text('Error deleting folder: $e')),
           );
         }
@@ -883,27 +890,29 @@ class _WorkoutTemplatesWithFoldersScreenState
     }
   }
 
-  void _moveTemplate(String templateId, String? folderId) async {
-    // Move a template to a new folder (null folderId indicates root).
+  void _moveTemplate(String templateId, TemplateFolder? folder) async {
+    // Move a template to a new folder (null folder indicates root).
     try {
       await ref.read(templateFolderNotifierProvider.notifier).moveTemplateToFolder(
             templateId: templateId,
-            folderId: folderId,
+            folderId: folder?.id,
           );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        SnackbarService.showFromSnackBar(
+          context,
           SnackBar(
             content: Text(
-              folderId == null
+              folder == null
                   ? 'Template moved to Uncategorized'
-                  : 'Template moved to folder',
+                  : 'Template moved to ${folder.name}',
             ),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        SnackbarService.showFromSnackBar(
+          context,
           SnackBar(content: Text('Error moving template: $e')),
         );
       }
