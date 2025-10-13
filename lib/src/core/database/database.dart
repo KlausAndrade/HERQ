@@ -187,4 +187,180 @@ class AppDatabase extends _$AppDatabase {
 
   // Public wrapper for seeding default data in tests/CI
   Future<void> seedDefaultData() async => _insertDefaultData();
+
+  /// Migrate existing exercises to use correct exercise types
+  /// This updates all exercises in the database with the auto-assigned type
+  Future<void> migrateExerciseTypes() async {
+    try {
+      // Import the mapper in the method to avoid circular dependencies
+      final allExercises = await select(exercises).get();
+      
+      print('Starting exercise type migration for ${allExercises.length} exercises...');
+      
+      int updatedCount = 0;
+      for (final exercise in allExercises) {
+        // Use the auto-assignment logic to determine the correct type
+        final correctType = _assignExerciseType(
+          name: exercise.name,
+          equipment: exercise.equipment,
+          category: exercise.category,
+        );
+        
+        // Only update if the type is different
+        if (exercise.exerciseType != correctType) {
+          await (update(exercises)..where((e) => e.id.equals(exercise.id)))
+              .write(ExercisesCompanion(
+            exerciseType: Value(correctType),
+          ));
+          
+          updatedCount++;
+          print('Updated "${exercise.name}" from "${exercise.exerciseType}" to "$correctType"');
+        }
+      }
+      
+      print('Exercise type migration complete. Updated $updatedCount exercises.');
+    } catch (e) {
+      print('Error during exercise type migration: $e');
+      rethrow;
+    }
+  }
+
+  /// Auto-assign exercise type based on name, equipment, and category
+  /// This is a simplified version of ExerciseTypeMapper to avoid circular dependencies
+  String _assignExerciseType({
+    required String name,
+    required String equipment,
+    required String category,
+  }) {
+    final lowerName = name.toLowerCase();
+    final lowerEquipment = equipment.toLowerCase();
+
+    // Duration-based exercises (planks, holds, isometric)
+    if (_isDurationExercise(lowerName)) {
+      return 'duration';
+    }
+
+    // Distance & duration (cardio)
+    if (_isDistanceDurationExercise(lowerName, category)) {
+      return 'distance_duration';
+    }
+
+    // Duration & weight (loaded carries for time)
+    if (_isDurationWeightExercise(lowerName)) {
+      return 'duration_weight';
+    }
+
+    // Weight & distance (loaded carries for distance)
+    if (_isWeightDistanceExercise(lowerName)) {
+      return 'weight_distance';
+    }
+
+    // Weighted bodyweight exercises
+    if (lowerName.contains('weighted') && _isBodyweightBase(lowerName)) {
+      return 'weighted_bodyweight';
+    }
+
+    // Assisted bodyweight exercises
+    if ((lowerName.contains('assisted') || lowerEquipment.contains('assisted') || 
+         lowerEquipment.contains('machine')) && _isBodyweightBase(lowerName)) {
+      return 'assisted_bodyweight';
+    }
+
+    // Bodyweight reps (push-ups, pull-ups, etc.)
+    if (lowerEquipment == 'bodyweight' || _isBodyweightBase(lowerName)) {
+      return 'bodyweight_reps';
+    }
+
+    // Default: weight & reps
+    return 'weight_reps';
+  }
+
+  bool _isDurationExercise(String name) {
+    final durationKeywords = [
+      'plank',
+      'hold',
+      'wall sit',
+      'dead hang',
+      'hollow hold',
+      'l-sit',
+      'l sit',
+      'handstand',
+      'hollow body',
+      'arch hold',
+      'support hold',
+      'static hold',
+      'isometric',
+      'bridge hold',
+      'horse stance',
+    ];
+    return durationKeywords.any((keyword) => name.contains(keyword));
+  }
+
+  bool _isDistanceDurationExercise(String name, String category) {
+    if (category.toLowerCase() == 'cardio') return true;
+    
+    final keywords = [
+      'run',
+      'jog',
+      'sprint',
+      'row',
+      'swim',
+      'cycle',
+      'bike',
+      'elliptical',
+      'ski erg',
+      'assault bike',
+      'air bike',
+    ];
+    return keywords.any((keyword) => name.contains(keyword));
+  }
+
+  bool _isDurationWeightExercise(String name) {
+    final keywords = [
+      'farmer walk',
+      'farmers walk',
+      'sled push',
+      'sled pull',
+      'prowler push',
+      'yoke walk',
+      'sandbag carry',
+    ];
+    return keywords.any((keyword) => name.contains(keyword));
+  }
+
+  bool _isWeightDistanceExercise(String name) {
+    final keywords = [
+      'farmer carry',
+      'farmers carry',
+      'waiter carry',
+      'overhead carry',
+      'suitcase carry',
+      'zercher carry',
+    ];
+    return keywords.any((keyword) => name.contains(keyword));
+  }
+
+  bool _isBodyweightBase(String name) {
+    final bodyweightExercises = [
+      'pull up',
+      'pull-up',
+      'pullup',
+      'chin up',
+      'chin-up',
+      'chinup',
+      'push up',
+      'push-up',
+      'pushup',
+      'dip',
+      'muscle up',
+      'muscle-up',
+      'pistol squat',
+      'lunge',
+      'squat',
+      'burpee',
+      'jumping jack',
+      'mountain climber',
+    ];
+    return bodyweightExercises.any((keyword) => name.contains(keyword));
+  }
 }

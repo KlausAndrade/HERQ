@@ -220,6 +220,29 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
 
+          // Maintenance Section
+          Text(
+            'Maintenance',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.build_outlined, color: Colors.orange),
+                  title: const Text('Update Exercise Types'),
+                  subtitle: const Text('Reassign exercise types to all exercises'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showMigrateExerciseTypesDialog(context, ref),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
           // About Section
           Text(
             'About',
@@ -817,6 +840,81 @@ By using GymAI, you agree to these terms.''',
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMigrateExerciseTypesDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Update Exercise Types'),
+        content: const Text(
+          'This will reassign exercise types to all exercises based on their names and properties.\n\n'
+          'Examples:\n'
+          '• Plank → Duration\n'
+          '• Pull-up → Bodyweight Reps\n'
+          '• Assisted Pull-up → Assisted Bodyweight\n'
+          '• Running → Distance & Duration\n\n'
+          'This may take a moment. Continue?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              
+              // Show loading dialog
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Updating exercise types...'),
+                    ],
+                  ),
+                ),
+              );
+              
+              try {
+                final database = ref.read(databaseProvider);
+                if (database != null) {
+                  await database.migrateExerciseTypes();
+                  
+                  if (context.mounted) {
+                    Navigator.pop(context); // Close loading dialog
+                    
+                    NotificationService().showInAppNotification(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Exercise types updated',
+                      body: 'All exercises have been updated with correct types',
+                    ).catchError((_) {});
+                  }
+                } else {
+                  throw Exception('Database not available');
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context); // Close loading dialog
+                  
+                  NotificationService().showInAppNotification(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: 'Error',
+                    body: 'Failed to update exercise types: $e',
+                  ).catchError((_) {});
+                }
+              }
+            },
+            child: const Text('Update'),
           ),
         ],
       ),
