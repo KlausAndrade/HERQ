@@ -125,7 +125,7 @@ final setEntriesBySessionProviderNew =
                   distance: entry.distance,
                   rpe: entry.rpe,
                   notes: entry.notes,
-                  completed: entry.completed,
+                  completed: true, // All entries in DB are completed
                   createdAt: entry.createdAt,
                 ))
             .toList());
@@ -189,16 +189,16 @@ final exercisesProviderNew = StreamProvider<List<ExerciseDto>>((ref) {
             .map((exercise) => ExerciseDto(
                   id: exercise.id,
                   name: exercise.name,
-                  description: exercise.description,
+                  description: exercise.instructions, // Use instructions as description
                   primaryMuscleGroup: exercise.primaryMuscleGroup,
                   secondaryMuscleGroups: (exercise.secondaryMuscleGroups as List<dynamic>?)
                           ?.map((e) => e.toString())
                           .toList() ??
                       [],
-                  equipmentType: exercise.equipmentType,
+                  equipmentType: exercise.equipment,
                   category: exercise.category,
                   difficulty: exercise.difficulty,
-                  isCustom: exercise.isCustom,
+                  isCustom: exercise.id.startsWith('custom_'), // Custom exercises have IDs starting with 'custom_'
                 ))
             .toList());
   }

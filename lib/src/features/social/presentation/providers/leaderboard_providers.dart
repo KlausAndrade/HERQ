@@ -9,7 +9,10 @@ import '../../domain/models/leaderboard_models.dart';
 // Leaderboard service provider
 final leaderboardServiceProvider = Provider<LeaderboardService?>((ref) {
   final db = ref.watch(databaseProvider);
-  if (db == null || kIsWeb) return null;
+  // Note: Leaderboards need Supabase to work properly across all users
+  // Local database only has the current user's data
+  // TODO: Implement Supabase-based leaderboard service for real multi-user leaderboards
+  if (db == null) return null;
   return LeaderboardService(db);
 });
 

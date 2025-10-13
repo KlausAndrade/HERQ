@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/widgets/animated_switch.dart';
-import '../../../../core/widgets/app_card.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/database/seed_database.dart';
 import '../../providers/data_export_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/workout_settings_provider.dart';
@@ -237,6 +237,14 @@ class SettingsScreen extends ConsumerWidget {
                   subtitle: const Text('Reassign exercise types to all exercises'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showMigrateExerciseTypesDialog(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.refresh, color: Colors.blue),
+                  title: const Text('Reload Templates & Exercises'),
+                  subtitle: const Text('Load new workout templates and exercises'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showReloadTemplatesDialog(context, ref),
                 ),
               ],
             ),
@@ -915,6 +923,79 @@ By using GymAI, you agree to these terms.''',
               }
             },
             child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showReloadTemplatesDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reload Templates & Exercises'),
+        content: const Text(
+          'This will reload all workout templates and exercises, including:\n\n'
+          '• Calisthenics templates (5 workouts)\n'
+          '• AcroYoga folder and templates (4 workouts)\n'
+          '• 16 new AcroYoga exercises\n\n'
+          'Existing custom data will not be affected. Continue?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              
+              // Show loading dialog
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Reloading templates and exercises...'),
+                    ],
+                  ),
+                ),
+              );
+              
+              try {
+                final database = ref.read(databaseProvider);
+                if (database != null) {
+                  await seedDatabase(database);
+                  
+                  if (context.mounted) {
+                    Navigator.pop(context); // Close loading dialog
+                    
+                    NotificationService().showInAppNotification(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Templates reloaded',
+                      body: 'All templates and exercises have been updated',
+                    ).catchError((_) {});
+                  }
+                } else {
+                  throw Exception('Database not available');
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context); // Close loading dialog
+                  
+                  NotificationService().showInAppNotification(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: 'Error',
+                    body: 'Failed to reload templates: $e',
+                  ).catchError((_) {});
+                }
+              }
+            },
+            child: const Text('Reload'),
           ),
         ],
       ),

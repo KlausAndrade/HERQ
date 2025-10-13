@@ -489,6 +489,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ? workout.completedAt!.difference(workout.startedAt)
                     : Duration.zero;
 
+                String durationText;
+                if (workout.completedAt != null) {
+                  // Completed workout
+                  durationText = duration.inMinutes > 0
+                      ? '${duration.inMinutes}m'
+                      : '< 1m';
+                } else {
+                  // In progress workout
+                  durationText = 'In progress';
+                }
+
                 return AnimatedListItem(
                   index: index,
                   delay: const Duration(milliseconds: 80),
@@ -496,9 +507,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     workoutId: workout.id,
                     name: workout.name,
                     date: DateFormat('MMM d').format(workout.startedAt),
-                    duration: duration.inMinutes > 0
-                        ? '${duration.inMinutes}m'
-                        : 'In progress',
+                    duration: durationText,
                     onTap: () async {
                       await HapticService.lightImpact();
                       if (context.mounted) context.go('/workout/${workout.id}');

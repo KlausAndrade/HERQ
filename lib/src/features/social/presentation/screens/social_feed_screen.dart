@@ -19,31 +19,37 @@ class SocialFeedScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider);
     final currentUser = ref.watch(currentUserProvider);
     final tabController = useTabController(initialLength: 2);
 
-    return authState.when(
-      data: (user) {
-        if (currentUser == null) {
-        return Scaffold(
-          body: TabBarView(
+    if (currentUser == null) {
+      return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/'),
+          ),
+          title: const Text('Social'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Column(
-                children: [
-                  const Center(child: Text('Please sign in')),
-                  ElevatedButton(
-                    onPressed: () => context.go('/auth'),
-                    child: const Text('Sign In'),
-                  ),
-                ],
+              const Icon(Icons.lock_outline, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
+              const Text('Please sign in to access social features'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => context.go('/auth'),
+                child: const Text('Sign In'),
               ),
             ],
           ),
-        );
-        }
+        ),
+      );
+    }
 
-        return DefaultTabController(
+    return DefaultTabController(
           length: 2,
           child: Scaffold(
             appBar: AppBar(
@@ -86,16 +92,6 @@ class SocialFeedScreen extends HookConsumerWidget {
             ),
           ),
         );
-      },
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, stack) => Scaffold(
-        body: Center(
-          child: Text('Authentication error: $error'),
-        ),
-      ),
-    );
   }
 
   void _showUserSearch(BuildContext context, WidgetRef ref) {

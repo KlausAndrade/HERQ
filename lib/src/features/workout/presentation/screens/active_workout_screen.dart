@@ -572,12 +572,36 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
               print('🏁 Finish button pressed');
               Navigator.of(context).pop();
               
+              // Show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const Center(
+                  child: Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text('Saving workout...'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+              
               // Finish workout and get summary
               final summary = await ref.read(activeWorkoutProvider.notifier).finishWorkout();
               
               print('🏁 Finish result - Summary: ${summary != null ? 'available' : 'null'}');
               
               if (context.mounted) {
+                // Close loading dialog
+                Navigator.of(context).pop();
+                
                 if (summary != null) {
                   print('🏁 Navigating to workout summary');
                   // Navigate to summary screen

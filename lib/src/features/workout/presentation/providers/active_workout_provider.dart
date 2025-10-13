@@ -138,10 +138,17 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       // Create exercise map for ordering
       final exerciseMap = {for (final ex in exercisesList) ex.id: ex};
 
+      // Check for missing exercises and log warning
+      final missingExercises = template.exerciseIds.where((id) => !exerciseMap.containsKey(id)).toList();
+      if (missingExercises.isNotEmpty) {
+        print('⚠️ Template "${template.name}" references ${missingExercises.length} missing exercises: $missingExercises');
+        print('💡 Tip: Go to Settings → Maintenance → "Reload Templates & Exercises" to load all exercises');
+      }
+
       // Get timer preferences
       final timerPrefs = _ref.read(exerciseTimerPreferencesProvider);
 
-      // Create active exercises in template order
+      // Create active exercises in template order (skip missing exercises)
       final activeExercises = <ActiveExercise>[];
       for (final id in template.exerciseIds.where((id) => exerciseMap.containsKey(id))) {
         final exercise = exerciseMap[id]!;
@@ -759,14 +766,21 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final summaryService = _ref.read(workoutSummaryServiceProvider);
       print('🏁 Summary service: ${summaryService != null ? 'available' : 'null'}');
       
-      final summary = summaryService != null
-          ? await summaryService.calculateSummary(
-              workout: workout,
-              duration: workout.elapsedTime,
-            )
-          : null;
+      WorkoutSummary? summary;
+      try {
+        summary = summaryService != null
+            ? await summaryService.calculateSummary(
+                workout: workout,
+                duration: workout.elapsedTime,
+              )
+            : null;
+      } catch (e) {
+        print('⚠️ Error calculating summary: $e');
+        summary = null;
+      }
       
       print('🏁 Summary calculated: ${summary != null ? 'success' : 'null'}');
+      
       // Calculate workout stats
       final totalSets = _calculateTotalSets(workout.exercises);
       final totalVolume = _calculateTotalVolume(workout.exercises);
@@ -778,6 +792,43 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           .expand((e) => e.sets)
           .where((s) => s.isCompleted && s.weight != null)
           .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
+      
+      // Create fallback summary if service failed
+      if (summary == null && totalSets > 0) {
+        print('🏁 Creating fallback summary');
+        summary = WorkoutSummary(
+          workoutName: workout.name,
+          duration: workout.elapsedTime,
+          totalSets: totalSets,
+          totalReps: totalReps,
+          totalVolume: totalVolume,
+          totalTonnage: totalTonnage,
+          exercises: workout.exercises.map((e) {
+            final completedSets = e.sets.where((s) => s.isCompleted).toList();
+            final exerciseVolume = completedSets
+                .where((s) => s.weight != null)
+                .fold<double>(0.0, (sum, s) => sum + (s.weight! * s.reps));
+            final maxWeight = completedSets
+                .map((s) => s.weight)
+                .whereType<double>()
+                .fold<double?>(null, (max, w) => max == null || w > max ? w : max);
+            
+            return ExerciseSummary(
+              exerciseId: e.id,
+              exerciseName: e.name,
+              sets: completedSets.length,
+              totalReps: completedSets.fold<int>(0, (sum, s) => sum + s.reps),
+              maxWeight: maxWeight,
+              totalVolume: exerciseVolume,
+            );
+          }).toList(),
+          prs: const [],
+          achievements: WorkoutAchievements(
+            perfectCompletion: workout.isFullyCompleted(),
+            streak: 0,
+          ),
+        );
+      }
 
       // Save workout session to database
       await db.into(db.workoutSessions).insert(

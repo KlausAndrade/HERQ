@@ -75,7 +75,14 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
         for (final ex in exercisesList) ex['id'] as String: ex
       };
 
-      // Create active exercises in template order
+      // Check for missing exercises and log warning
+      final missingExercises = exerciseIds.where((id) => !exerciseMap.containsKey(id)).toList();
+      if (missingExercises.isNotEmpty) {
+        print('⚠️ Template "${templateData['name']}" references ${missingExercises.length} missing exercises: $missingExercises');
+        print('💡 Tip: Make sure all exercises exist in your Supabase database');
+      }
+
+      // Create active exercises in template order (skip missing exercises)
       final activeExercises = exerciseIds
           .where((id) => exerciseMap.containsKey(id))
           .map((id) {

@@ -4,10 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/database/database.dart';
-import '../../../../core/widgets/app_card.dart';
-import '../../../../core/widgets/custom_refresh_indicator.dart';
-import '../../../../core/widgets/empty_state.dart';
-import '../../../../core/widgets/skeleton_loader.dart';
+import '../../../../core/providers/database_provider.dart';
 import '../providers/workout_providers.dart';
 import '../providers/filter_providers.dart';
 import '../widgets/workout_calendar.dart';
@@ -63,6 +60,66 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
       ),
       body: Column(
         children: [
+          // Active Filter Indicator
+          Consumer(
+            builder: (context, ref, _) {
+              final filterState = ref.watch(workoutFilterProvider);
+              if (filterState.filter == WorkoutFilter.all) {
+                return const SizedBox.shrink();
+              }
+              
+              String filterText;
+              switch (filterState.filter) {
+                case WorkoutFilter.thisWeek:
+                  filterText = 'This Week';
+                  break;
+                case WorkoutFilter.thisMonth:
+                  filterText = 'This Month';
+                  break;
+                case WorkoutFilter.all:
+                  filterText = 'All';
+                  break;
+              }
+              
+              return Container(
+                margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.filter_alt,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Filter: $filterText',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: () {
+                        ref.read(workoutFilterProvider.notifier).setFilter(WorkoutFilter.all);
+                      },
+                      child: Icon(
+                        Icons.close,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
           // Workout Stats Header
           workoutStatsAsync.when(
             data: (stats) => _WorkoutStatsHeader(stats: stats),
@@ -350,23 +407,13 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             ),
             const SizedBox(height: 8),
             ListTile(
-              leading: const Icon(Icons.check_circle),
-              title: const Text('Completed Only'),
+              leading: const Icon(Icons.all_inclusive),
+              title: const Text('All Completed'),
               onTap: () {
                 Navigator.pop(context);
                 ref
                     .read(workoutFilterProvider.notifier)
-                    .setFilter(WorkoutFilter.completed);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.schedule),
-              title: const Text('In Progress'),
-              onTap: () {
-                Navigator.pop(context);
-                ref
-                    .read(workoutFilterProvider.notifier)
-                    .setFilter(WorkoutFilter.inProgress);
+                    .setFilter(WorkoutFilter.all);
               },
             ),
             ListTile(
