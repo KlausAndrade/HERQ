@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/database/database.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -754,12 +755,14 @@ class _WorkoutTemplatesScreenState
     final actions = ref.read(templateActionsProvider);
     final success = await actions.renameTemplate(templateId, newName);
 
-    if (success) {
+      if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Template renamed successfully')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Renamed',
+          body: 'Template renamed successfully',
+        ).catchError((_) {});
       }
     }
   }
@@ -768,12 +771,14 @@ class _WorkoutTemplatesScreenState
     final actions = ref.read(templateActionsProvider);
     final success = await actions.duplicateTemplate(templateId, newName);
 
-    if (success) {
+      if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Template duplicated successfully')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Duplicated',
+          body: 'Template duplicated successfully',
+        ).catchError((_) {});
       }
     }
   }
@@ -785,9 +790,11 @@ class _WorkoutTemplatesScreenState
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Template moved successfully')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Moved',
+          body: 'Template moved successfully',
+        ).catchError((_) {});
       }
     }
   }
@@ -799,9 +806,11 @@ class _WorkoutTemplatesScreenState
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Template deleted successfully')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Deleted',
+          body: 'Template deleted successfully',
+        ).catchError((_) {});
       }
     }
   }
@@ -813,10 +822,11 @@ class _WorkoutTemplatesScreenState
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Default templates loaded successfully')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Defaults loaded',
+          body: 'Default templates loaded successfully',
+        ).catchError((_) {});
       }
     }
   }

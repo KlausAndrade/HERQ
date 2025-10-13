@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/auth_provider.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 
 class EmailVerificationBanner extends ConsumerWidget {
   const EmailVerificationBanner({super.key});
@@ -54,15 +55,19 @@ class EmailVerificationBanner extends ConsumerWidget {
               try {
                 await ref.read(authServiceProvider).resendEmailVerification();
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Verification email sent!')),
-                  );
+                  NotificationService().showInAppNotification(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: 'Verification sent',
+                    body: 'Verification email sent!',
+                  ).catchError((_) {});
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to send: $e')),
-                  );
+                  NotificationService().showInAppNotification(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: 'Failed to send',
+                    body: '$e',
+                  ).catchError((_) {});
                 }
               }
             },

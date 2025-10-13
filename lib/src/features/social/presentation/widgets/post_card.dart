@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 
 import '../providers/social_providers.dart';
 import 'edit_post_dialog.dart';
@@ -182,9 +183,11 @@ class PostCard extends ConsumerWidget {
       );
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to share: $e')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Failed to share',
+          body: '$e',
+        ).catchError((_) {});
       }
     }
   }
@@ -267,19 +270,19 @@ class PostCard extends ConsumerWidget {
                   ref.invalidate(userPostsProvider(currentUserId));
                   
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Post deleted successfully')),
-                    );
+                    NotificationService().showInAppNotification(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Deleted',
+                      body: 'Post deleted successfully',
+                    ).catchError((_) {});
                   }
-                } catch (e) {
+                  } catch (e) {
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Failed to delete post: $e'),
-                        backgroundColor: Colors.red,
-                        duration: const Duration(seconds: 5),
-                      ),
-                    );
+                    NotificationService().showInAppNotification(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Failed to delete post',
+                      body: '$e',
+                    ).catchError((_) {});
                   }
                   print('Delete post error: $e');
                 }

@@ -59,54 +59,40 @@ class LeaderboardService {
   /// Get total volume leaderboard (sum of weight × reps)
   Future<List<LeaderboardEntry>> _getTotalVolumeLeaderboard(
       (DateTime?, DateTime?) dateRange) async {
-    final (start, end) = dateRange;
-
-    // Get all users
+    // Local DB doesn't associate WorkoutSessions with users. We keep a
+    // per-user summary in `userStats` which is the correct source for
+    // aggregated leaderboards on-device.
     final users = await _db.select(_db.users).get();
-    final Map<String, double> userVolumes = {};
+    final stats = await _db.select(_db.userStats).get();
 
-    for (final user in users) {
-      final query = _db.select(_db.workoutSessions)
-        ..where((t) {
-          var condition = t.id.contains(user.id) & t.completedAt.isNotNull();
-          if (start != null) {
-            condition = condition & t.completedAt.isBiggerOrEqualValue(start);
-          }
-          if (end != null) {
-            condition = condition & t.completedAt.isSmallerThanValue(end);
-          }
-          return condition;
-        });
+    final entries = <LeaderboardEntry>[];
+    for (final s in stats) {
+      User? user;
+      try {
+        user = users.firstWhere((u) => u.id == s.userId);
+      } catch (_) {
+        user = null;
+      }
 
-      final sessions = await query.get();
-      final totalVolume = sessions.fold<double>(
-        0,
-        (sum, session) => sum + session.totalVolume,
-      );
+      final displayName = user != null ? user.displayName : s.userId;
+      final avatar = user != null ? user.avatarUrl : null;
 
-      if (totalVolume > 0) {
-        userVolumes[user.id] = totalVolume;
+      if (s.totalVolumeLifted > 0) {
+        entries.add(LeaderboardEntry(
+          userId: s.userId,
+          displayName: displayName,
+          avatarUrl: avatar,
+          value: s.totalVolumeLifted,
+          rank: 0,
+          formattedValue: '${s.totalVolumeLifted.toStringAsFixed(0)} kg',
+        ));
       }
     }
 
-    // Convert to entries
-    final entries = userVolumes.entries.map((e) {
-      final user = users.firstWhere((u) => u.id == e.key);
-      return LeaderboardEntry(
-        userId: user.id,
-        displayName: user.displayName,
-        avatarUrl: user.avatarUrl,
-        value: e.value,
-        rank: 0,
-        formattedValue: '${e.value.toStringAsFixed(0)} kg',
-      );
-    }).toList();
-
     entries.sort((a, b) => b.value.compareTo(a.value));
 
-    // Assign ranks
-    return List.generate(entries.length, (i) {
-      return LeaderboardEntry(
+    for (int i = 0; i < entries.length; i++) {
+      entries[i] = LeaderboardEntry(
         userId: entries[i].userId,
         displayName: entries[i].displayName,
         avatarUrl: entries[i].avatarUrl,
@@ -114,54 +100,40 @@ class LeaderboardService {
         rank: i + 1,
         formattedValue: entries[i].formattedValue,
       );
-    });
+    }
+
+    return entries;
   }
 
   /// Get workout count leaderboard
   Future<List<LeaderboardEntry>> _getWorkoutCountLeaderboard(
       (DateTime?, DateTime?) dateRange) async {
-    final (start, end) = dateRange;
-
-    // Get all users
+    // Use userStats.totalWorkouts as the authoritative on-device count
     final users = await _db.select(_db.users).get();
-    final Map<String, int> userCounts = {};
+    final stats = await _db.select(_db.userStats).get();
 
-    for (final user in users) {
-      final query = _db.select(_db.workoutSessions)
-        ..where((t) {
-          var condition = t.id.equals(user.id) &
-              t.completedAt.isNotNull();
-          if (start != null) {
-            condition = condition & t.completedAt.isBiggerOrEqualValue(start);
-          }
-          if (end != null) {
-            condition = condition & t.completedAt.isSmallerThanValue(end);
-          }
-          return condition;
-        });
+    final entries = <LeaderboardEntry>[];
+    for (final s in stats) {
+      if (s.totalWorkouts > 0) {
+        User? user;
+        try {
+          user = users.firstWhere((u) => u.id == s.userId);
+        } catch (_) {
+          user = null;
+        }
 
-      final count = await query.get().then((sessions) => sessions.length);
-      if (count > 0) {
-        userCounts[user.id] = count;
+        entries.add(LeaderboardEntry(
+          userId: s.userId,
+          displayName: user != null ? user.displayName : s.userId,
+          avatarUrl: user != null ? user.avatarUrl : null,
+          value: s.totalWorkouts.toDouble(),
+          rank: 0,
+          formattedValue: '${s.totalWorkouts} workouts',
+        ));
       }
     }
 
-    final entries = <LeaderboardEntry>[];
-    for (final entry in userCounts.entries) {
-      final user = users.firstWhere((u) => u.id == entry.key);
-      entries.add(LeaderboardEntry(
-        userId: user.id,
-        displayName: user.displayName,
-        avatarUrl: user.avatarUrl,
-        value: entry.value.toDouble(),
-        rank: 0,
-        formattedValue: '${entry.value} workouts',
-      ));
-    }
-
     entries.sort((a, b) => b.value.compareTo(a.value));
-
-    // Assign ranks
     for (int i = 0; i < entries.length; i++) {
       entries[i] = LeaderboardEntry(
         userId: entries[i].userId,
@@ -178,16 +150,24 @@ class LeaderboardService {
 
   /// Get streak leaderboard (consecutive days with workouts)
   Future<List<LeaderboardEntry>> _getStreakLeaderboard() async {
+    // Use userStats.currentStreak if available
     final users = await _db.select(_db.users).get();
+    final stats = await _db.select(_db.userStats).get();
     final entries = <LeaderboardEntry>[];
 
-    for (final user in users) {
-      final streak = await _calculateStreak(user.id);
+    for (final s in stats) {
+      final streak = s.currentStreak;
       if (streak > 0) {
+        User? user;
+        try {
+          user = users.firstWhere((u) => u.id == s.userId);
+        } catch (_) {
+          user = null;
+        }
         entries.add(LeaderboardEntry(
-          userId: user.id,
-          displayName: user.displayName,
-          avatarUrl: user.avatarUrl,
+          userId: s.userId,
+          displayName: user != null ? user.displayName : s.userId,
+          avatarUrl: user != null ? user.avatarUrl : null,
           value: streak.toDouble(),
           rank: 0,
           formattedValue: '$streak days',
@@ -196,8 +176,6 @@ class LeaderboardService {
     }
 
     entries.sort((a, b) => b.value.compareTo(a.value));
-
-    // Assign ranks
     for (int i = 0; i < entries.length; i++) {
       entries[i] = LeaderboardEntry(
         userId: entries[i].userId,
@@ -215,109 +193,15 @@ class LeaderboardService {
   /// Get PR count leaderboard
   Future<List<LeaderboardEntry>> _getPRCountLeaderboard(
       (DateTime?, DateTime?) dateRange) async {
-    final (start, end) = dateRange;
-    final users = await _db.select(_db.users).get();
-    final Map<String, int> userPRCounts = {};
-
-    for (final user in users) {
-      final query = _db.select(_db.personalRecords)
-        ..where((t) {
-          var condition = t.id.equals(user.id); 
-          if (start != null) {
-            condition = condition & t.achievedAt.isBiggerOrEqualValue(start);
-          }
-          if (end != null) {
-            condition = condition & t.achievedAt.isSmallerThanValue(end);
-          }
-          return condition;
-        });
-
-      final count = await query.get().then((prs) => prs.length);
-      if (count > 0) {
-        userPRCounts[user.id] = count;
-      }
-    }
-
-    final entries = <LeaderboardEntry>[];
-    for (final entry in userPRCounts.entries) {
-      final user = users.firstWhere((u) => u.id == entry.key);
-      entries.add(LeaderboardEntry(
-        userId: user.id,
-        displayName: user.displayName,
-        avatarUrl: user.avatarUrl,
-        value: entry.value.toDouble(),
-        rank: 0,
-        formattedValue: '${entry.value} PRs',
-      ));
-    }
-
-    entries.sort((a, b) => b.value.compareTo(a.value));
-
-    // Assign ranks
-    for (int i = 0; i < entries.length; i++) {
-      entries[i] = LeaderboardEntry(
-        userId: entries[i].userId,
-        displayName: entries[i].displayName,
-        avatarUrl: entries[i].avatarUrl,
-        value: entries[i].value,
-        rank: i + 1,
-        formattedValue: entries[i].formattedValue,
-      );
-    }
-
-    return entries;
+    // Personal records in the local database are currently stored without a
+    // userId (they're per-device). For accurate PR leaderboards across users
+    // we rely on a server (Supabase). Return an empty list locally and mark
+    // this as a TODO to implement via server-side aggregation.
+    return const [];
   }
 
   /// Calculate current streak for a user
-  Future<int> _calculateStreak(String userId) async {
-    final sessions = await (_db.select(_db.workoutSessions)
-          ..where((t) => t.id.equals(userId) & t.completedAt.isNotNull())
-          ..orderBy([(t) => OrderingTerm.desc(t.completedAt)]))
-        .get();
-
-    if (sessions.isEmpty) return 0;
-
-    int streak = 0;
-    DateTime? lastDate;
-
-    for (final session in sessions) {
-      if (session.completedAt == null) continue;
-
-      final sessionDate = DateTime(
-        session.completedAt!.year,
-        session.completedAt!.month,
-        session.completedAt!.day,
-      );
-
-      if (lastDate == null) {
-        // First session
-        final today = DateTime.now();
-        final todayDate = DateTime(today.year, today.month, today.day);
-        
-        // Only count if workout was today or yesterday
-        if (sessionDate.difference(todayDate).inDays <= 1) {
-          streak = 1;
-          lastDate = sessionDate;
-        } else {
-          break; // Streak broken
-        }
-      } else {
-        // Check if consecutive day
-        final diff = lastDate.difference(sessionDate).inDays;
-        if (diff == 1) {
-          streak++;
-          lastDate = sessionDate;
-        } else if (diff == 0) {
-          // Same day, don't break streak
-          continue;
-        } else {
-          break; // Streak broken
-        }
-      }
-    }
-
-    return streak;
-  }
+  // Note: streak calculations are now driven from `userStats` in the DB.
 
   /// Get date range for period
   (DateTime?, DateTime?) _getDateRange(Period period) {

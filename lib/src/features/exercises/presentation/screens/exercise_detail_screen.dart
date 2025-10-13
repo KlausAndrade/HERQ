@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 import '../providers/exercise_providers.dart';
 import '../providers/exercise_favorites_provider.dart';
 
@@ -759,9 +760,11 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error starting workout: $e')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error starting workout',
+          body: '$e',
+        ).catchError((_) {});
       }
     }
   }
@@ -771,12 +774,11 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
     final database = ref.read(databaseProvider);
     if (database == null) {
       // Web platform or no database available
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Template management not available on web platform'),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Not available',
+        body: 'Template management not available on web platform',
+      ).catchError((_) {});
       return;
     }
 
@@ -831,14 +833,13 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
                                     template.copyWith(exerciseIds: updatedIds),
                                   );
 
-                              if (context.mounted) {
+                                if (context.mounted) {
                                 Navigator.of(context).pop();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Added ${exercise.name} to ${template.name}'),
-                                  ),
-                                );
+                                NotificationService().showInAppNotification(
+                                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                                  title: 'Added to template',
+                                  body: 'Added ${exercise.name} to ${template.name}',
+                                ).catchError((_) {});
                               }
                             },
                     );
@@ -864,12 +865,11 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
     } catch (e) {
       print('❌ Error loading templates: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error loading templates. Please try again.'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error',
+          body: 'Error loading templates. Please try again.',
+        ).catchError((_) {});
       }
     }
   }

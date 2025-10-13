@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'package:gym_ai/src/core/services/notification_service.dart';
+
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../workout/presentation/providers/template_providers.dart';
@@ -328,12 +330,11 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
       
       if (database == null) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Database not available. Please try again.'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          NotificationService().showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Database not available. Please try again.',
+            body: '',
+          ).catchError((_) {});
         }
         return;
       }
@@ -359,36 +360,33 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
       
       if (!success) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to create workout template'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          NotificationService().showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Failed to create workout template',
+            body: '',
+          ).catchError((_) {});
         }
         return;
       }
 
       if (context.mounted) {
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Starting "${recommendation.name}"...'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        
+        // Show success message via in-app overlay
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Starting "${recommendation.name}"...',
+          body: '',
+        ).catchError((_) {});
+
         // Navigate to active workout with the template
         context.go('/active-workout?templateId=$templateId');
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error starting workout: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error starting workout: $e',
+          body: '',
+        ).catchError((_) {});
       }
     }
   }
@@ -974,25 +972,20 @@ class ProgressAnalysisTab extends HookConsumerWidget {
         
         // Here you would normally save to user preferences or update templates
         // For this implementation, we'll show a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Progressive overload applied! Next ${suggestion.exerciseId} workout: '
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Progressive overload applied!',
+          body: 'Next ${suggestion.exerciseId} workout: '
               '${suggestion.suggestedWeight}kg × ${suggestion.suggestedReps} × ${suggestion.suggestedSets}',
-            ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        ).catchError((_) {});
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error applying suggestion: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error applying suggestion',
+          body: '$e',
+        ).catchError((_) {});
       }
     }
   }
@@ -1223,12 +1216,11 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
       );
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error applying suggestion: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error applying suggestion',
+          body: '$e',
+        ).catchError((_) {});
       }
     }
   }
@@ -1273,12 +1265,11 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Exercise substitution saved to preferences!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Exercise saved',
+        body: 'Exercise substitution saved to preferences!',
+      ).catchError((_) {});
     }
   }
 
@@ -1322,12 +1313,11 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Nutrition reminder set!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Reminder set',
+        body: 'Nutrition reminder set!',
+      ).catchError((_) {});
     }
   }
 
@@ -1371,12 +1361,11 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Form tip saved!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Saved',
+        body: 'Form tip saved!',
+      ).catchError((_) {});
     }
   }
 
@@ -1385,13 +1374,11 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     AISuggestion suggestion,
   ) async {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Recovery advice noted: ${suggestion.title}'),
-          backgroundColor: Colors.blue,
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Recovery advice noted',
+        body: '${suggestion.title}',
+      ).catchError((_) {});
     }
   }
 
@@ -1435,12 +1422,11 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Deload week scheduled!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Deload scheduled',
+        body: 'Deload week scheduled!',
+      ).catchError((_) {});
     }
   }
 
@@ -1449,19 +1435,13 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     AISuggestion suggestion,
   ) async {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Check the Recommendations tab for workout suggestions!'),
-          backgroundColor: Colors.blue,
-          action: SnackBarAction(
-            label: 'View',
-            onPressed: () {
-              // Switch to recommendations tab
-              DefaultTabController.of(context).animateTo(0);
-            },
-          ),
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Workout suggestions',
+        body: 'Check the Recommendations tab for workout suggestions!',
+        primaryActionLabel: 'View',
+        onPrimaryAction: () => DefaultTabController.of(context).animateTo(0),
+      ).catchError((_) {});
     }
   }
 
@@ -1470,12 +1450,11 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     AISuggestion suggestion,
   ) async {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Applied: ${suggestion.title}'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Applied',
+        body: '${suggestion.title}',
+      ).catchError((_) {});
     }
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/social_providers.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 
 class EditPostDialog extends ConsumerStatefulWidget {
   const EditPostDialog({
@@ -37,9 +38,11 @@ class _EditPostDialogState extends ConsumerState<EditPostDialog> {
     final caption = _captionController.text.trim();
     
     if (caption.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Caption cannot be empty')),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Empty caption',
+        body: 'Caption cannot be empty',
+      ).catchError((_) {});
       return;
     }
 
@@ -50,15 +53,19 @@ class _EditPostDialogState extends ConsumerState<EditPostDialog> {
       
       if (mounted) {
         Navigator.pop(context, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Post updated successfully')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Updated',
+          body: 'Post updated successfully',
+        ).catchError((_) {});
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update post: $e')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Failed to update post',
+          body: '$e',
+        ).catchError((_) {});
       }
     } finally {
       if (mounted) {
