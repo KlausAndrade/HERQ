@@ -87,7 +87,7 @@ class GamificationService {
     
     if (existingUser == null) {
       print('  ⚠️ User record not found, creating one...');
-      final displayName = userDisplayName ?? userEmail?.split('@').first ?? 'User';
+      final displayName = userDisplayName ?? 'Unknown Athlete';
       await database.into(database.users).insertOnConflictUpdate(
         UsersCompanion.insert(
           id: uid,
@@ -112,18 +112,18 @@ class GamificationService {
       print('     Email: ${existingUser.email}');
       print('     Display Name: ${existingUser.displayName}');
       
-      if (existingUser.displayName.isEmpty && (userDisplayName != null || userEmail != null)) {
+      if (existingUser.displayName.isEmpty && userDisplayName != null) {
         // Update existing user if they have no display name but we have one now
         print('  🔄 Updating user record with display name...');
         await database.into(database.users).insertOnConflictUpdate(
           UsersCompanion.insert(
             id: uid,
             email: Value(userEmail ?? existingUser.email),
-            displayName: userDisplayName ?? userEmail?.split('@').first ?? existingUser.displayName,
+            displayName: userDisplayName,
             createdAt: Value(existingUser.createdAt),
           ),
         );
-        print('  ✅ User record updated with name: ${userDisplayName ?? userEmail?.split('@').first}');
+        print('  ✅ User record updated with name: $userDisplayName');
       }
     }
 

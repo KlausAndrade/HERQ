@@ -81,7 +81,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                     CircleAvatar(
                       radius: 20,
                       child: Text(
-                        profile?.displayName?[0].toUpperCase() ?? currentUser?.email?[0].toUpperCase() ?? '?',
+                        profile?.displayName?[0].toUpperCase() ?? 'U',
                       ),
                     ),
                   const SizedBox(width: 12),
@@ -89,7 +89,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        profile?.displayName ?? currentUser?.email?.split('@').first ?? 'User',
+                        profile?.displayName ?? 'Unknown Athlete',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -138,11 +138,11 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  child: Text(currentUser?.email?[0].toUpperCase() ?? '?'),
+                  child: Text('U'),
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  currentUser?.email?.split('@').first ?? 'User',
+                  'Unknown Athlete',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),

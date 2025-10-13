@@ -6,6 +6,19 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import '../../domain/models/leaderboard_models.dart';
 import '../providers/leaderboard_providers.dart';
 
+/// Sanitize display name - never show emails in UI
+String _sanitizeDisplayName(String displayName) {
+  // If it contains @, it's an email - replace with Unknown Athlete
+  if (displayName.contains('@')) {
+    return 'Unknown Athlete';
+  }
+  // If it's the old "User" fallback, replace it
+  if (displayName == 'User') {
+    return 'Unknown Athlete';
+  }
+  return displayName;
+}
+
 class LeaderboardsScreen extends HookConsumerWidget {
   const LeaderboardsScreen({super.key});
 
@@ -256,7 +269,7 @@ class LeaderboardTab extends HookConsumerWidget {
   }
 
   Widget _buildPodiumPlace(BuildContext context, LeaderboardEntry entry, int place, double height) {
-    final isCurrentUser = entry.displayName == 'You' || entry.userId.contains('default');
+    final isCurrentUser = _sanitizeDisplayName(entry.displayName) == 'You' || entry.userId.contains('default');
     
     Color podiumColor;
     IconData medalIcon;
@@ -304,7 +317,7 @@ class LeaderboardTab extends HookConsumerWidget {
                   : null,
               child: entry.avatarUrl == null
                   ? Text(
-                      entry.displayName[0].toUpperCase(),
+                      _sanitizeDisplayName(entry.displayName)[0].toUpperCase(),
                       style: TextStyle(
                         fontSize: place == 1 ? 20 : 16,
                         fontWeight: FontWeight.bold,
@@ -339,7 +352,7 @@ class LeaderboardTab extends HookConsumerWidget {
         const SizedBox(height: 10),
         // Name
         Text(
-          entry.displayName,
+          _sanitizeDisplayName(entry.displayName),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: place == 1 ? 13 : 12,
@@ -404,7 +417,7 @@ class LeaderboardTab extends HookConsumerWidget {
     if (isTopThree)
       return const SizedBox.shrink(); // Skip top 3 as they're shown in podium
 
-    final isCurrentUser = entry.displayName == 'You' || entry.userId.contains('default');
+    final isCurrentUser = _sanitizeDisplayName(entry.displayName) == 'You' || entry.userId.contains('default');
     final theme = Theme.of(context);
     
     // Get rank color
@@ -474,7 +487,7 @@ class LeaderboardTab extends HookConsumerWidget {
                   : null,
               child: entry.avatarUrl == null
                   ? Text(
-                      entry.displayName[0].toUpperCase(),
+                      _sanitizeDisplayName(entry.displayName)[0].toUpperCase(),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: isCurrentUser ? Colors.white : Colors.black54,
@@ -490,7 +503,7 @@ class LeaderboardTab extends HookConsumerWidget {
                 children: [
                   Flexible(
                     child: Text(
-                      entry.displayName,
+                      _sanitizeDisplayName(entry.displayName),
                       style: TextStyle(
                         fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.w600,
                         fontSize: 15,

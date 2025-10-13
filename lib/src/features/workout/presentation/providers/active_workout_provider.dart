@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/sync_provider.dart';
 import '../../../../core/services/live_activity_service.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/workout_foreground_service.dart';
@@ -1094,6 +1095,29 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             },
           );
           print('✅ Gamification stats updated');
+          
+          // Sync stats to Supabase for multi-user leaderboards
+          if (uid != null) {
+            print('🌐 Syncing stats to Supabase for leaderboards...');
+            try {
+              final syncService = _ref.read(workoutSyncServiceProvider);
+              if (syncService != null) {
+                await syncService.syncUserStats(uid).timeout(
+                  const Duration(seconds: 5),
+                  onTimeout: () {
+                    print('⚠️ Supabase sync timed out after 5s');
+                    throw TimeoutException('Supabase sync timed out');
+                  },
+                );
+                print('✅ Stats synced to Supabase');
+              } else {
+                print('⚠️ Sync service not available');
+              }
+            } catch (e) {
+              print('⚠️ Non-critical Supabase sync error: $e');
+              // Don't throw - sync errors shouldn't block workout save
+            }
+          }
         } catch (e) {
           // Log error but don't block workout completion
           print('⚠️ Error updating gamification stats: $e');

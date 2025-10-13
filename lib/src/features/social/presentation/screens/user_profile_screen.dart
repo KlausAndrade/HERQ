@@ -192,14 +192,11 @@ class UserProfileScreen extends ConsumerWidget {
   }
 
   String _getDisplayName(dynamic user) {
-    if (user == null) return 'User';
+    if (user == null) return 'Unknown Athlete';
     if (user.displayName != null && user.displayName.isNotEmpty) {
       return user.displayName;
     }
-    if (user.email != null && user.email.isNotEmpty) {
-      return user.email!.split('@').first;
-    }
-    return 'User';
+    return 'Unknown Athlete';
   }
 
   Widget _buildStatCard(BuildContext context, String emoji, String value, String label) {

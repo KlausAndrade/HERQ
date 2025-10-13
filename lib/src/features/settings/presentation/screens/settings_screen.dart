@@ -6,9 +6,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/sync_provider.dart';
 import '../../../../core/widgets/animated_switch.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/database/seed_database.dart';
+import '../../../../core/database/fix_display_names.dart';
 import '../../../gamification/data/providers/gamification_provider.dart';
 import '../../../social/presentation/providers/leaderboard_providers.dart';
 import '../../providers/data_export_provider.dart';
@@ -256,6 +258,30 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text('View raw user_stats table data'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _showUserStatsDebug(context, ref),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.cloud_upload, color: Colors.indigo),
+                title: const Text('Sync to Supabase'),
+                subtitle: const Text('Upload stats to cloud for multi-user leaderboards'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _syncToSupabase(context, ref),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.cleaning_services, color: Colors.red),
+                title: const Text('Clean Duplicate Stats'),
+                subtitle: const Text('Remove duplicate local user_stats entries'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _cleanDuplicateStats(context, ref),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.person_remove, color: Colors.purple),
+                title: const Text('Fix Display Names'),
+                subtitle: const Text('Remove emails from display names'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _fixDisplayNames(context, ref),
               ),
                 const Divider(height: 1),
                 ListTile(
@@ -987,8 +1013,9 @@ By using GymAI, you agree to these terms.''',
 
       // Invalidate ALL leaderboard providers (it's a family provider)
       // This forces all leaderboard tabs to refresh with new data
-      ref.invalidate(leaderboardServiceProvider);
-      print('✅ Leaderboard service provider invalidated - all tabs will refresh');
+      ref.invalidate(supabaseLeaderboardServiceProvider);
+      ref.invalidate(localLeaderboardServiceProvider);
+      print('✅ Leaderboard service providers invalidated - all tabs will refresh');
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1203,5 +1230,253 @@ By using GymAI, you agree to these terms.''',
         ],
       ),
     );
+  }
+
+  void _syncToSupabase(BuildContext context, WidgetRef ref) async {
+    print('🌐 Sync to Supabase button clicked');
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Syncing to Supabase...'),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      final syncService = ref.read(workoutSyncServiceProvider);
+      if (syncService == null) {
+        throw StateError('Sync service not available');
+      }
+      
+      final currentUser = ref.read(currentUserProvider);
+      if (currentUser == null) {
+        throw StateError('No user logged in');
+      }
+
+      print('🔄 Starting full sync...');
+      await syncService.fullSync(currentUser.id);
+
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // Close loading dialog
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ Successfully synced to Supabase!\n\nYour stats are now on the cloud leaderboards!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 4),
+        ),
+      );
+      
+      // Refresh leaderboards
+      ref.invalidate(supabaseLeaderboardServiceProvider);
+      ref.invalidate(localLeaderboardServiceProvider);
+    } catch (e) {
+      print('❌ Error syncing to Supabase: $e');
+      
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // Close loading dialog
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error syncing: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
+  }
+
+  void _cleanDuplicateStats(BuildContext context, WidgetRef ref) async {
+    print('🧹 Clean Duplicate Stats button clicked');
+    
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Clean Duplicate Stats'),
+        content: const Text(
+          'This will remove ALL user_stats entries except for your current account.\n\n'
+          'This is useful if you have duplicate/test data in your local database.\n\n'
+          'Are you sure?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Clean Up'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Cleaning up duplicate stats...'),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      final db = ref.read(databaseProvider);
+      if (db == null) {
+        throw StateError('Database not available');
+      }
+      
+      final currentUser = ref.read(currentUserProvider);
+      if (currentUser == null) {
+        throw StateError('No user logged in');
+      }
+
+      final userId = currentUser.id;
+      print('🧹 Keeping only stats for user: $userId');
+
+      // Get all stats before deletion
+      final allStats = await db.select(db.userStats).get();
+      print('  📊 Total stats entries before: ${allStats.length}');
+
+      // Delete all stats except current user
+      final deleted = await (db.delete(db.userStats)
+            ..where((s) => s.userId.equals(userId).not()))
+          .go();
+      
+      print('  🗑️ Deleted $deleted duplicate entries');
+      
+      // Verify
+      final remainingStats = await db.select(db.userStats).get();
+      print('  📊 Total stats entries after: ${remainingStats.length}');
+
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // Close loading dialog
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✅ Cleaned up $deleted duplicate entries!\n\nYou now have ${remainingStats.length} stat(s).'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+      
+      // Refresh leaderboards
+      ref.invalidate(supabaseLeaderboardServiceProvider);
+      ref.invalidate(localLeaderboardServiceProvider);
+    } catch (e) {
+      print('❌ Error cleaning stats: $e');
+      
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // Close loading dialog
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
+  }
+
+  void _fixDisplayNames(BuildContext context, WidgetRef ref) async {
+    print('🔧 Fix Display Names button clicked');
+    
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Fix Display Names'),
+        content: const Text(
+          'This will remove all emails from user display names and replace them with "Unknown Athlete".\n\n'
+          'This fixes leaderboards showing emails instead of names.\n\n'
+          'Are you sure?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.purple),
+            child: const Text('Fix Names'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Fixing display names...'),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      final db = ref.read(databaseProvider);
+      if (db == null) {
+        throw StateError('Database not available');
+      }
+
+      print('🔧 Starting display name fix...');
+      await fixDisplayNames(db);
+
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // Close loading dialog
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ Display names fixed!\n\nEmails removed from all user names.'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 4),
+        ),
+      );
+      
+      // Refresh leaderboards
+      ref.invalidate(supabaseLeaderboardServiceProvider);
+      ref.invalidate(localLeaderboardServiceProvider);
+    } catch (e) {
+      print('❌ Error fixing display names: $e');
+      
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // Close loading dialog
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
   }
 }

@@ -82,19 +82,15 @@ class LeaderboardService {
         print('    ⚠️ No user record found for ${s.userId}');
       }
 
-      // Create display name - prefer real names
+      // Create display name - prefer real names, never show emails
       String displayName;
       if (s.userId.contains('default')) {
         displayName = 'You';
       } else if (user != null && user.displayName.isNotEmpty) {
         displayName = user.displayName;
-      } else if (user != null && user.email != null && user.email!.isNotEmpty) {
-        // Extract name from email (before @)
-        displayName = user.email!.split('@').first;
       } else {
-        // Fallback to "Athlete" + number instead of UUID
-        final athleteNumber = (s.userId.hashCode % 9999).abs();
-        displayName = 'Athlete #$athleteNumber';
+        // Fallback to "Unknown Athlete" (never show email)
+        displayName = 'Unknown Athlete';
         print('    ⚠️ Using fallback display name: $displayName');
       }
 
@@ -148,17 +144,15 @@ class LeaderboardService {
           user = users.firstWhere((u) => u.id == s.userId);
         } catch (_) {}
 
-        // Create display name - prefer real names
+        // Create display name - prefer real names, never show emails
         String displayName;
         if (s.userId.contains('default')) {
           displayName = 'You';
         } else if (user != null && user.displayName.isNotEmpty) {
           displayName = user.displayName;
-        } else if (user != null && user.email != null && user.email!.isNotEmpty) {
-          displayName = user.email!.split('@').first;
         } else {
-          final athleteNumber = (s.userId.hashCode % 9999).abs();
-          displayName = 'Athlete #$athleteNumber';
+          // Fallback to "Unknown Athlete" (never show email)
+          displayName = 'Unknown Athlete';
         }
 
         print('  ✅ Adding entry: $displayName - ${s.totalWorkouts} workouts');
@@ -209,17 +203,15 @@ class LeaderboardService {
           user = users.firstWhere((u) => u.id == s.userId);
         } catch (_) {}
 
-        // Create display name - prefer real names
+        // Create display name - prefer real names, never show emails
         String displayName;
         if (s.userId.contains('default')) {
           displayName = 'You';
         } else if (user != null && user.displayName.isNotEmpty) {
           displayName = user.displayName;
-        } else if (user != null && user.email != null && user.email!.isNotEmpty) {
-          displayName = user.email!.split('@').first;
         } else {
-          final athleteNumber = (s.userId.hashCode % 9999).abs();
-          displayName = 'Athlete #$athleteNumber';
+          // Fallback to "Unknown Athlete" (never show email)
+          displayName = 'Unknown Athlete';
         }
 
         print('  ✅ Adding streak entry: $displayName - $streak days');
