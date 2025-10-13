@@ -9,6 +9,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/utils/display_name_sanitizer.dart';
 import '../providers/social_providers.dart';
 
 class CreatePostSheet extends ConsumerStatefulWidget {
@@ -81,7 +82,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                     CircleAvatar(
                       radius: 20,
                       child: Text(
-                        profile?.displayName?[0].toUpperCase() ?? 'U',
+                        DisplayNameSanitizer.getInitial(profile?.displayName),
                       ),
                     ),
                   const SizedBox(width: 12),
@@ -89,7 +90,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        profile?.displayName ?? 'Unknown Athlete',
+                        DisplayNameSanitizer.sanitize(profile?.displayName),
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),

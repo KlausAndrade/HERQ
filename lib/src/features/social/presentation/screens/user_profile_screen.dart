@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/utils/display_name_sanitizer.dart';
 
 class UserProfileScreen extends ConsumerWidget {
   final String userId;
@@ -112,16 +113,6 @@ class UserProfileScreen extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if (_getEmail(user) != null && !_getEmail(user)!.contains('@')) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    _getEmail(user)!,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
                 const SizedBox(height: 32),
                 
                 // Stats
@@ -197,28 +188,18 @@ class UserProfileScreen extends ConsumerWidget {
   String _getDisplayName(dynamic user) {
     if (user == null) return 'Unknown Athlete';
     
+    String? rawDisplayName;
+    
     // Handle both User object (local DB) and Map (Supabase)
     if (user is Map) {
-      final displayName = user['displayName'] as String?;
-      if (displayName != null && displayName.isNotEmpty) {
-        return displayName;
-      }
-      return 'Unknown Athlete';
+      rawDisplayName = user['displayName'] as String?;
+    } else {
+      // User object from local DB
+      rawDisplayName = user.displayName;
     }
     
-    // User object from local DB
-    if (user.displayName != null && user.displayName.isNotEmpty) {
-      return user.displayName;
-    }
-    return 'Unknown Athlete';
-  }
-  
-  String? _getEmail(dynamic user) {
-    if (user == null) return null;
-    if (user is Map) {
-      return user['email'] as String?;
-    }
-    return user.email;
+    // Use centralized sanitizer - ensures emails are NEVER shown
+    return DisplayNameSanitizer.sanitize(rawDisplayName);
   }
   
   String? _getAvatarUrl(dynamic user) {
