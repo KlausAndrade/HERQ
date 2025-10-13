@@ -46,6 +46,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   final AppDatabase? database;
   final Ref _ref;
   final _foregroundService = WorkoutForegroundService();
+  Timer? _workoutTimer;
+  DateTime? _workoutStartTime;
 
   ActiveWorkoutNotifier(this.database, this._ref) : super(null) {
     // Listen to state changes to update checkpoint
@@ -62,6 +64,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
   @override
   void dispose() {
+    _stopWorkoutTimer();
     _foregroundService.stopService();
     // Clear any active rest timer when disposing. Wrap in try/catch because
     // reading other providers during dispose can throw if the container is
@@ -74,12 +77,62 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     super.dispose();
   }
 
+  /// Start the workout duration timer
+  void _startWorkoutTimer() {
+    _stopWorkoutTimer(); // Stop any existing timer
+    _workoutStartTime = DateTime.now();
+    
+    _workoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (state != null && _workoutStartTime != null) {
+        final elapsed = DateTime.now().difference(_workoutStartTime!);
+        state = ActiveWorkout(
+          id: state!.id,
+          name: state!.name,
+          exercises: state!.exercises,
+          currentExerciseIndex: state!.currentExerciseIndex,
+          elapsedTime: elapsed,
+          totalSets: state!.totalSets,
+          totalVolume: state!.totalVolume,
+        );
+      }
+    });
+  }
+
+  /// Stop the workout duration timer
+  void _stopWorkoutTimer() {
+    _workoutTimer?.cancel();
+    _workoutTimer = null;
+  }
+
+  /// Manually adjust the workout elapsed time
+  /// This recalculates the start time to reflect the new elapsed duration
+  void adjustElapsedTime(Duration newElapsed) {
+    if (state != null && _workoutStartTime != null) {
+      // Recalculate start time based on new elapsed duration
+      _workoutStartTime = DateTime.now().subtract(newElapsed);
+      
+      // Update state immediately
+      state = ActiveWorkout(
+        id: state!.id,
+        name: state!.name,
+        exercises: state!.exercises,
+        currentExerciseIndex: state!.currentExerciseIndex,
+        elapsedTime: newElapsed,
+        totalSets: state!.totalSets,
+        totalVolume: state!.totalVolume,
+      );
+      
+      print('⏱️ Workout time adjusted to: ${newElapsed.inMinutes}m ${newElapsed.inSeconds % 60}s');
+    }
+  }
+
   /// Clear any existing workout and cleanup resources
   Future<void> _clearActiveWorkout() async {
     if (state != null) {
       print('🧹 Clearing existing active workout: ${state!.name}');
       
       // Stop all services and timers
+      _stopWorkoutTimer();
       await _foregroundService.stopService();
       _ref.read(restTimerProvider.notifier).stopTimer();
       
@@ -200,6 +253,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       print('🏁 New workout created: ${template.name}');
       
+      // Start the workout duration timer
+      _startWorkoutTimer();
+      
       // Reset modifications flag - this is a fresh workout
       _ref.read(workoutModificationsProvider.notifier).reset();
 
@@ -226,6 +282,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       );
 
       print('🏁 Fallback workout created: Quick Start Workout');
+      
+      // Start the workout duration timer
+      _startWorkoutTimer();
       
       // Reset modifications flag
       _ref.read(workoutModificationsProvider.notifier).reset();
@@ -307,6 +366,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalVolume: 0,
       );
 
+      // Start the workout duration timer
+      _startWorkoutTimer();
+
       // Reset modifications flag
       _ref.read(workoutModificationsProvider.notifier).reset();
 
@@ -332,6 +394,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalVolume: 0,
       );
 
+      // Start the workout duration timer
+      _startWorkoutTimer();
+
       // Reset modifications flag
       _ref.read(workoutModificationsProvider.notifier).reset();
 
@@ -356,6 +421,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     state = workout;
     
     print('🏁 Workout resumed: ${workout.name}');
+    
+    // Restart the workout duration timer
+    _startWorkoutTimer();
     
     // Restart foreground service
     await _foregroundService.startService(
@@ -1032,6 +1100,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         }
       }
 
+      // Stop the workout duration timer
+      _stopWorkoutTimer();
+      
       // Clear the active workout FIRST (before cleanup to prevent race conditions)
       state = null;
       

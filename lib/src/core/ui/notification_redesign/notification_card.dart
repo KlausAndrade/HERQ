@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
-/// A compact, accessible notification card used across the app.
+/// A compact, modern notification card with swipe-to-dismiss.
 ///
 /// Features:
-/// - Title, body (multiline) and optional leading icon.
-/// - Up to two optional action buttons (primary/secondary).
-/// - Built for accessibility: semantic labels, hints and respects textScaleFactor.
-/// - Responsive padding and typography for mobile & web.
+/// - Compact design with minimal padding
+/// - Title and body with smart text overflow
+/// - Optional leading icon (smaller, 24x24)
+/// - Optional action buttons (inline, compact)
+/// - Swipe to dismiss gesture
+/// - Smooth animations
+/// - Modern glassmorphic design
 class NotificationCard extends StatelessWidget {
   final String id;
   final String title;
@@ -17,6 +20,7 @@ class NotificationCard extends StatelessWidget {
   final String? secondaryActionLabel;
   final VoidCallback? onSecondaryAction;
   final Color? backgroundColor;
+  final VoidCallback? onDismiss;
 
   const NotificationCard({
     Key? key,
@@ -29,78 +33,215 @@ class NotificationCard extends StatelessWidget {
     this.secondaryActionLabel,
     this.onSecondaryAction,
     this.backgroundColor,
+    this.onDismiss,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textScale = MediaQuery.textScaleFactorOf(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    // Determine if we have actions
+    final hasActions = (primaryActionLabel != null && onPrimaryAction != null) ||
+                      (secondaryActionLabel != null && onSecondaryAction != null);
 
-    return Semantics(
-      container: true,
-      label: 'Notification: $title',
-      hint: body,
-      child: Card(
-        color: backgroundColor ?? theme.cardColor,
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 2,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (leading != null) ...[
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: Semantics(
-                    label: 'Notification icon',
-                    child: SizedBox(width: 40, height: 40, child: leading),
-                  ),
-                )
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textScaleFactor: textScale,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      body,
-                      style: theme.textTheme.bodyMedium,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                      textScaleFactor: textScale,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        if (secondaryActionLabel != null && onSecondaryAction != null)
-                          TextButton(
-                            onPressed: onSecondaryAction,
-                            child: Text(secondaryActionLabel!),
-                          ),
-                        const Spacer(),
-                        if (primaryActionLabel != null && onPrimaryAction != null)
-                          ElevatedButton(
-                            onPressed: onPrimaryAction,
-                            child: Text(primaryActionLabel!),
-                          ),
-                      ],
+    return Dismissible(
+      key: Key(id),
+      direction: DismissDirection.horizontal,
+      onDismissed: (direction) {
+        onDismiss?.call();
+      },
+      background: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 20),
+        child: const Icon(Icons.delete_outline, color: Colors.red),
+      ),
+      secondaryBackground: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: const Icon(Icons.delete_outline, color: Colors.red),
+      ),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        decoration: BoxDecoration(
+          color: backgroundColor ?? (isDark 
+            ? theme.colorScheme.surfaceContainerHighest.withOpacity(0.95)
+            : Colors.white.withOpacity(0.95)),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+            width: 1,
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: hasActions ? null : onDismiss,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Leading icon (compact)
+                  if (leading != null) ...[
+                    Container(
+                      width: 24,
+                      height: 24,
+                      margin: const EdgeInsets.only(right: 10),
+                      child: IconTheme(
+                        data: IconThemeData(
+                          size: 20,
+                          color: theme.colorScheme.primary,
+                        ),
+                        child: leading!,
+                      ),
                     ),
                   ],
-                ),
+                  
+                  // Content
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Title
+                        Text(
+                          title,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            height: 1.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        
+                        // Body
+                        const SizedBox(height: 2),
+                        Text(
+                          body,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.textTheme.bodySmall?.color?.withOpacity(0.8),
+                            height: 1.3,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        
+                        // Actions (compact, inline)
+                        if (hasActions) ...[
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (secondaryActionLabel != null && onSecondaryAction != null)
+                                _CompactActionButton(
+                                  label: secondaryActionLabel!,
+                                  onPressed: onSecondaryAction!,
+                                  isPrimary: false,
+                                ),
+                              if (secondaryActionLabel != null && 
+                                  onSecondaryAction != null &&
+                                  primaryActionLabel != null && 
+                                  onPrimaryAction != null)
+                                const SizedBox(width: 8),
+                              if (primaryActionLabel != null && onPrimaryAction != null)
+                                _CompactActionButton(
+                                  label: primaryActionLabel!,
+                                  onPressed: onPrimaryAction!,
+                                  isPrimary: true,
+                                ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  
+                  // Close button (only if no actions)
+                  if (!hasActions) ...[
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 18),
+                      onPressed: onDismiss,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
+                      iconSize: 18,
+                      splashRadius: 16,
+                    ),
+                  ],
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
+  }
+}
+
+/// Compact action button for notification cards
+class _CompactActionButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
+  final bool isPrimary;
+
+  const _CompactActionButton({
+    required this.label,
+    required this.onPressed,
+    required this.isPrimary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    if (isPrimary) {
+      return FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          minimumSize: const Size(0, 28),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textStyle: theme.textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        child: Text(label),
+      );
+    } else {
+      return TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          minimumSize: const Size(0, 28),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textStyle: theme.textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        child: Text(label),
+      );
+    }
   }
 }

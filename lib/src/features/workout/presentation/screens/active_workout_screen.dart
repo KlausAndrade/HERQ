@@ -26,6 +26,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   final Set<int> _expandedExercises = {};
   final ScrollController _scrollController = ScrollController();
   final Map<int, GlobalKey> _exerciseKeys = {};
+  bool _isEditingTimer = false;
+  final TextEditingController _timerController = TextEditingController();
+  final FocusNode _timerFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -96,6 +99,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _timerController.dispose();
+    _timerFocusNode.dispose();
     super.dispose();
   }
 
@@ -199,18 +204,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                                       fontWeight: FontWeight.w600,
                                     ),
                               ),
-                              Text(
-                                _formatDuration(activeWorkout.elapsedTime),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withOpacity(0.7),
-                                    ),
-                              ),
+                              _buildEditableTimer(context, activeWorkout),
                             ],
                           ),
                           const Spacer(),
@@ -660,6 +654,142 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     });
   }
 
+  Widget _buildEditableTimer(BuildContext context, ActiveWorkout workout) {
+    if (_isEditingTimer) {
+      return SizedBox(
+        width: 100,
+        height: 32,
+        child: TextField(
+          controller: _timerController,
+          focusNode: _timerFocusNode,
+          keyboardType: TextInputType.number,
+          textAlign: TextAlign.start,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+          decoration: InputDecoration(
+            hintText: '0m 0s',
+            hintStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              fontSize: 14,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+            ),
+            isDense: true,
+          ),
+          onSubmitted: (value) => _saveTimerEdit(value),
+          onTapOutside: (event) {
+            _saveTimerEdit(_timerController.text);
+          },
+        ),
+      );
+    }
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isEditingTimer = true;
+          _timerController.text = _formatDurationForEdit(workout.elapsedTime);
+          _timerFocusNode.requestFocus();
+        });
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _formatDuration(workout.elapsedTime),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Icon(
+            Icons.edit,
+            size: 14,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDurationForEdit(Duration duration) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60);
+
+    if (hours > 0) {
+      return '${hours}h ${minutes}m';
+    } else {
+      return '${minutes}m ${seconds}s';
+    }
+  }
+
+  void _saveTimerEdit(String value) {
+    setState(() {
+      _isEditingTimer = false;
+    });
+
+    if (value.trim().isEmpty) return;
+
+    // Parse the input (supports formats like: "5m 30s", "1h 15m", "90s", "45")
+    final parsed = _parseDuration(value.trim());
+    if (parsed != null) {
+      ref.read(activeWorkoutProvider.notifier).adjustElapsedTime(parsed);
+    }
+
+    _timerController.clear();
+  }
+
+  Duration? _parseDuration(String input) {
+    try {
+      int hours = 0;
+      int minutes = 0;
+      int seconds = 0;
+
+      // Remove all spaces
+      input = input.replaceAll(' ', '');
+
+      // Try to match hours
+      final hoursMatch = RegExp(r'(\d+)h').firstMatch(input);
+      if (hoursMatch != null) {
+        hours = int.parse(hoursMatch.group(1)!);
+      }
+
+      // Try to match minutes
+      final minutesMatch = RegExp(r'(\d+)m').firstMatch(input);
+      if (minutesMatch != null) {
+        minutes = int.parse(minutesMatch.group(1)!);
+      }
+
+      // Try to match seconds
+      final secondsMatch = RegExp(r'(\d+)s').firstMatch(input);
+      if (secondsMatch != null) {
+        seconds = int.parse(secondsMatch.group(1)!);
+      }
+
+      // If no units specified, assume minutes
+      if (hours == 0 && minutes == 0 && seconds == 0) {
+        final number = int.tryParse(input);
+        if (number != null) {
+          minutes = number;
+        }
+      }
+
+      return Duration(hours: hours, minutes: minutes, seconds: seconds);
+    } catch (e) {
+      print('⚠️ Error parsing duration: $e');
+      return null;
+    }
+  }
+
   String _formatDuration(Duration duration) {
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
@@ -760,22 +890,24 @@ class _ExerciseCard extends ConsumerWidget {
                   children: [
                     // Rest Timer Controls
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: Theme.of(context)
                               .colorScheme
                               .outline
-                              .withOpacity(0.2),
+                              .withOpacity(0.15),
+                          width: 1,
                         ),
                       ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
                             Icons.timer_outlined,
-                            size: 18,
+                            size: 16,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 6),
@@ -786,13 +918,13 @@ class _ExerciseCard extends ConsumerWidget {
                                 .bodySmall
                                 ?.copyWith(
                                   fontWeight: FontWeight.w500,
+                                  fontSize: 12,
                                 ),
                           ),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(Icons.remove_circle_outline),
-                            iconSize: 20,
-                            onPressed: exercise.restTimerSeconds > 15
+                          const SizedBox(width: 8),
+                          // Compact minus button
+                          InkWell(
+                            onTap: exercise.restTimerSeconds > 15
                                 ? () {
                                     ref
                                         .read(activeWorkoutProvider.notifier)
@@ -802,30 +934,42 @@ class _ExerciseCard extends ConsumerWidget {
                                         );
                                   }
                                 : null,
+                            borderRadius: BorderRadius.circular(6),
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                Icons.remove,
+                                size: 16,
+                                color: exercise.restTimerSeconds > 15
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                              ),
+                            ),
                           ),
+                          // Compact value display
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
+                                horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: Theme.of(context)
                                   .colorScheme
                                   .primary
                                   .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               '${exercise.restTimerSeconds}s',
                               style: TextStyle(
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                                 color: Theme.of(context).colorScheme.primary,
-                                fontSize: 14,
+                                fontSize: 12,
+                                height: 1,
                               ),
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.add_circle_outline),
-                            iconSize: 20,
-                            onPressed: () {
+                          // Compact plus button
+                          InkWell(
+                            onTap: () {
                               ref
                                   .read(activeWorkoutProvider.notifier)
                                   .updateExerciseRestTimer(
@@ -833,6 +977,15 @@ class _ExerciseCard extends ConsumerWidget {
                                     exercise.restTimerSeconds + 15,
                                   );
                             },
+                            borderRadius: BorderRadius.circular(6),
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                Icons.add,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
                           ),
                         ],
                       ),
