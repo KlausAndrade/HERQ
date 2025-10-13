@@ -967,8 +967,19 @@ By using GymAI, you agree to these terms.''',
         throw StateError('Gamification service not available');
       }
       
+      // Get current user info to pass to recalculateUserStats
+      final currentUser = ref.read(currentUserProvider);
+      final userEmail = currentUser?.email;
+      final userDisplayName = currentUser?.userMetadata?['display_name'] as String?;
+      
       print('✅ Gamification service found, calling recalculateUserStats...');
-      final stats = await gamificationService.recalculateUserStats();
+      print('  Current user email: $userEmail');
+      print('  Current user display name: $userDisplayName');
+      
+      final stats = await gamificationService.recalculateUserStats(
+        userEmail: userEmail,
+        userDisplayName: userDisplayName,
+      );
       print('✅ Stats recalculated: ${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted} kg');
 
       if (!context.mounted) return;

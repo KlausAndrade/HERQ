@@ -197,7 +197,7 @@ class LeaderboardTab extends HookConsumerWidget {
           padding: const EdgeInsets.all(16),
           itemCount: listCount,
           itemBuilder: (context, index) {
-            if (index == 0) return _buildPodium(entries.take(3).toList());
+            if (index == 0) return _buildPodium(context, entries.take(3).toList());
             final realIndex = index - 1 + 3; // map list index to entries
             final entry = entries[realIndex];
             return _buildLeaderboardEntry(context, entry, false);
@@ -223,7 +223,7 @@ class LeaderboardTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildPodium(List<LeaderboardEntry> topThree) {
+  Widget _buildPodium(BuildContext context, List<LeaderboardEntry> topThree) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       child: Row(
@@ -233,19 +233,21 @@ class LeaderboardTab extends HookConsumerWidget {
           // 2nd place - Equal width
           Expanded(
             child: topThree.length > 1
-                ? _buildPodiumPlace(topThree[1], 2, 80)
+                ? _buildPodiumPlace(context, topThree[1], 2, 80)
                 : const SizedBox.shrink(),
           ),
           const SizedBox(width: 12),
           // 1st place - Equal width, centered, tallest
           Expanded(
-            child: _buildPodiumPlace(topThree[0], 1, 110),
+            child: topThree.isNotEmpty
+                ? _buildPodiumPlace(context, topThree[0], 1, 110)
+                : const SizedBox.shrink(),
           ),
           const SizedBox(width: 12),
           // 3rd place - Equal width
           Expanded(
             child: topThree.length > 2
-                ? _buildPodiumPlace(topThree[2], 3, 65)
+                ? _buildPodiumPlace(context, topThree[2], 3, 65)
                 : const SizedBox.shrink(),
           ),
         ],
@@ -253,7 +255,9 @@ class LeaderboardTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildPodiumPlace(LeaderboardEntry entry, int place, double height) {
+  Widget _buildPodiumPlace(BuildContext context, LeaderboardEntry entry, int place, double height) {
+    final isCurrentUser = entry.displayName == 'You' || entry.userId.contains('default');
+    
     Color podiumColor;
     IconData medalIcon;
 
@@ -275,7 +279,16 @@ class LeaderboardTab extends HookConsumerWidget {
         medalIcon = Icons.emoji_events;
     }
 
-    return Column(
+    return InkWell(
+      onTap: isCurrentUser ? null : () {
+        print('🔍 Navigating to profile from podium:');
+        print('  Entry: ${entry.displayName}');
+        print('  UserId: ${entry.userId}');
+        print('  Full route: /user/${entry.userId}');
+        context.push('/user/${entry.userId}');
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -382,6 +395,7 @@ class LeaderboardTab extends HookConsumerWidget {
           ),
         ),
       ],
+      ),
     );
   }
 
@@ -420,8 +434,11 @@ class LeaderboardTab extends HookConsumerWidget {
           borderRadius: BorderRadius.circular(12),
           onTap: isCurrentUser ? null : () {
             // Navigate to user profile
-            print('🔍 Navigating to profile: ${entry.userId}');
-            context.go('/user/${entry.userId}');
+            print('🔍 Navigating to profile:');
+            print('  Entry: ${entry.displayName}');
+            print('  UserId: ${entry.userId}');
+            print('  Full route: /user/${entry.userId}');
+            context.push('/user/${entry.userId}');
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

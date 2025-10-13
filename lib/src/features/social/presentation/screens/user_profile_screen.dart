@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 
 class UserProfileScreen extends ConsumerWidget {
@@ -21,7 +22,14 @@ class UserProfileScreen extends ConsumerWidget {
         title: const Text('Profile'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            // If we can pop, do it, otherwise go to home screen
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
         ),
       ),
       body: FutureBuilder(
@@ -51,7 +59,14 @@ class UserProfileScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: () => context.pop(),
+                    onPressed: () {
+                      // If we can pop, do it, otherwise go to home screen
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        context.go('/home');
+                      }
+                    },
                     child: const Text('Go Back'),
                   ),
                 ],
@@ -217,28 +232,49 @@ class UserProfileScreen extends ConsumerWidget {
     );
   }
 
-  Future<Map<String, dynamic>> _loadUserData(db, String userId) async {
+  Future<Map<String, dynamic>> _loadUserData(AppDatabase? db, String userId) async {
     if (db == null) throw Exception('Database not available');
 
+    print('👤 Loading user profile for userId: $userId');
+
     try {
+      // Get all users to debug
+      final allUsers = await db.select(db.users).get();
+      print('  📊 Total users in DB: ${allUsers.length}');
+      for (final u in allUsers) {
+        print('  👥 User: id=${u.id}, email=${u.email}, displayName=${u.displayName}');
+      }
+      
       final users = await (db.select(db.users)
-            ..where((tbl) => tbl.id.equals(userId)))
+            ..where((u) => u.id.equals(userId)))
           .get();
       
+      print('  🔍 Found ${users.length} users matching userId: $userId');
       final user = users.isNotEmpty ? users.first : null;
+      
+      if (user != null) {
+        print('  ✅ User found: email=${user.email}, displayName=${user.displayName}');
+      } else {
+        print('  ⚠️ User not found for userId: $userId');
+      }
 
       final stats = await (db.select(db.userStats)
-            ..where((tbl) => tbl.userId.equals(userId)))
+            ..where((s) => s.userId.equals(userId)))
           .get();
       
       final userStats = stats.isNotEmpty ? stats.first : null;
+      print('  📊 Stats found: ${userStats != null}');
+
+      if (user == null) {
+        throw Exception('User not found for userId: $userId');
+      }
 
       return {
         'user': user,
         'stats': userStats,
       };
     } catch (e) {
-      print('Error loading user: $e');
+      print('❌ Error loading user: $e');
       rethrow;
     }
   }

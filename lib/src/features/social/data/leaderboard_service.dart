@@ -63,14 +63,24 @@ class LeaderboardService {
     final stats = await _db.select(_db.userStats).get();
     
     print('  Found ${users.length} users, ${stats.length} stats entries');
+    
+    // Debug: Print all users
+    for (final u in users) {
+      print('  👤 User: id=${u.id}, email=${u.email}, displayName=${u.displayName}');
+    }
 
     final entries = <LeaderboardEntry>[];
     for (final s in stats) {
+      print('  📊 Processing stat: userId=${s.userId}, volume=${s.totalVolumeLifted}');
+      
       // Get user info or create friendly display name
       User? user;
       try {
         user = users.firstWhere((u) => u.id == s.userId);
-      } catch (_) {}
+        print('    ✅ Found user: email=${user.email}, displayName=${user.displayName}');
+      } catch (_) {
+        print('    ⚠️ No user record found for ${s.userId}');
+      }
 
       // Create display name - prefer real names
       String displayName;
@@ -82,8 +92,10 @@ class LeaderboardService {
         // Extract name from email (before @)
         displayName = user.email!.split('@').first;
       } else {
-        // Fallback to shortened UUID
-        displayName = 'User #${s.userId.substring(0, 8).toUpperCase()}';
+        // Fallback to "Athlete" + number instead of UUID
+        final athleteNumber = (s.userId.hashCode % 9999).abs();
+        displayName = 'Athlete #$athleteNumber';
+        print('    ⚠️ Using fallback display name: $displayName');
       }
 
       if (s.totalVolumeLifted > 0) {
@@ -145,7 +157,8 @@ class LeaderboardService {
         } else if (user != null && user.email != null && user.email!.isNotEmpty) {
           displayName = user.email!.split('@').first;
         } else {
-          displayName = 'User #${s.userId.substring(0, 8).toUpperCase()}';
+          final athleteNumber = (s.userId.hashCode % 9999).abs();
+          displayName = 'Athlete #$athleteNumber';
         }
 
         print('  ✅ Adding entry: $displayName - ${s.totalWorkouts} workouts');
@@ -205,7 +218,8 @@ class LeaderboardService {
         } else if (user != null && user.email != null && user.email!.isNotEmpty) {
           displayName = user.email!.split('@').first;
         } else {
-          displayName = 'User #${s.userId.substring(0, 8).toUpperCase()}';
+          final athleteNumber = (s.userId.hashCode % 9999).abs();
+          displayName = 'Athlete #$athleteNumber';
         }
 
         print('  ✅ Adding streak entry: $displayName - $streak days');

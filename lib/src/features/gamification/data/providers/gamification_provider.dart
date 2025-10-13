@@ -65,7 +65,11 @@ class GamificationService {
 
   // Initialize user stats if they don't exist
   /// Recalculate user stats from all completed workouts
-  Future<UserStat> recalculateUserStats({String? userId}) async {
+  Future<UserStat> recalculateUserStats({
+    String? userId,
+    String? userEmail,
+    String? userDisplayName,
+  }) async {
     print('📊 Recalculating user stats...');
     
     final uid = userId ?? defaultUserId;
@@ -73,6 +77,55 @@ class GamificationService {
       throw StateError('No userId available for gamification');
     }
     print('  User ID: $uid');
+    print('  User Email: $userEmail');
+    print('  User Display Name: $userDisplayName');
+
+    // Ensure user record exists
+    final existingUser = await (database.select(database.users)
+          ..where((tbl) => tbl.id.equals(uid)))
+        .getSingleOrNull();
+    
+    if (existingUser == null) {
+      print('  ⚠️ User record not found, creating one...');
+      final displayName = userDisplayName ?? userEmail?.split('@').first ?? 'User';
+      await database.into(database.users).insertOnConflictUpdate(
+        UsersCompanion.insert(
+          id: uid,
+          email: Value(userEmail),
+          displayName: displayName,
+          createdAt: Value(DateTime.now()),
+        ),
+      );
+      print('  ✅ User record created:');
+      print('     ID: $uid');
+      print('     Email: $userEmail');
+      print('     Display Name: $displayName');
+      
+      // Verify it was created
+      final verifyUser = await (database.select(database.users)
+            ..where((tbl) => tbl.id.equals(uid)))
+        .getSingleOrNull();
+      print('  🔍 Verification: User ${verifyUser != null ? "FOUND" : "NOT FOUND"} in DB');
+    } else {
+      print('  ✅ User record already exists:');
+      print('     ID: ${existingUser.id}');
+      print('     Email: ${existingUser.email}');
+      print('     Display Name: ${existingUser.displayName}');
+      
+      if (existingUser.displayName.isEmpty && (userDisplayName != null || userEmail != null)) {
+        // Update existing user if they have no display name but we have one now
+        print('  🔄 Updating user record with display name...');
+        await database.into(database.users).insertOnConflictUpdate(
+          UsersCompanion.insert(
+            id: uid,
+            email: Value(userEmail ?? existingUser.email),
+            displayName: userDisplayName ?? userEmail?.split('@').first ?? existingUser.displayName,
+            createdAt: Value(existingUser.createdAt),
+          ),
+        );
+        print('  ✅ User record updated with name: ${userDisplayName ?? userEmail?.split('@').first}');
+      }
+    }
 
     // Get all completed workouts
     final workouts = await (database.select(database.workoutSessions)
