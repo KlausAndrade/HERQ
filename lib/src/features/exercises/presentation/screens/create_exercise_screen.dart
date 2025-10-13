@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 import '../providers/exercise_providers.dart';
 
 class CreateExerciseScreen extends ConsumerStatefulWidget {
@@ -124,23 +125,21 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
   Future<void> _saveExercise() async {
     if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fix the errors before saving'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Validation error',
+        body: 'Please fix the errors before saving',
+      ).catchError((_) {});
       return;
     }
 
     // Additional check for empty name
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Exercise name is required'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Missing name',
+        body: 'Exercise name is required',
+      ).catchError((_) {});
       return;
     }
 
@@ -180,22 +179,20 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
       ref.invalidate(exercisesProvider);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Exercise "${_nameController.text}" created!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Exercise created',
+          body: '"${_nameController.text}" created!',
+        ).catchError((_) {});
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error creating exercise: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error creating exercise',
+          body: '$e',
+        ).catchError((_) {});
       }
     } finally {
       if (mounted) {

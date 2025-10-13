@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../domain/models/leaderboard_models.dart';
 import '../providers/leaderboard_providers.dart';
@@ -52,53 +53,48 @@ class LeaderboardTab extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedPeriod = ValueNotifier<Period>(Period.monthly);
+    final selectedPeriod = useState<Period>(Period.monthly);
 
-    return ValueListenableBuilder<Period>(
-      valueListenable: selectedPeriod,
-      builder: (context, period, child) {
-        final params = LeaderboardParams(type: type, period: period);
-        final leaderboardAsync = ref.watch(leaderboardProvider(params));
+    final params = LeaderboardParams(type: type, period: selectedPeriod.value);
+    final leaderboardAsync = ref.watch(leaderboardProvider(params));
 
-        return Column(
-          children: [
-            _buildPeriodSelector(selectedPeriod),
-            Expanded(
-              child: leaderboardAsync.when(
-                data: (leaderboard) => _buildLeaderboard(context, leaderboard),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Failed to load leaderboard',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        error.toString(),
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => ref.invalidate(leaderboardProvider),
-                        child: const Text('Retry'),
-                      ),
-                    ],
+    return Column(
+      children: [
+        _buildPeriodSelector(selectedPeriod),
+        Expanded(
+          child: leaderboardAsync.when(
+            data: (leaderboard) => _buildLeaderboard(context, ref, leaderboard, params),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stack) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.error,
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Failed to load leaderboard',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    error.toString(),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => ref.invalidate(leaderboardProvider(params)),
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 
@@ -134,24 +130,38 @@ class LeaderboardTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildLeaderboard(BuildContext context, Leaderboard leaderboard) {
-    if (leaderboard.entries.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.emoji_events,
-              size: 64,
-              color: Colors.grey,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'No data available',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey,
+  Widget _buildLeaderboard(BuildContext context, WidgetRef ref, Leaderboard leaderboard, LeaderboardParams params) {
+    final entries = leaderboard.entries;
+
+    // Empty state: show a scrollable area so RefreshIndicator works
+    if (entries.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: () async => await ref.refresh(leaderboardProvider(params)),
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.emoji_events,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'No data available',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -159,24 +169,35 @@ class LeaderboardTab extends HookConsumerWidget {
       );
     }
 
-    return Column(
-      children: [
-        // Top 3 podium
-        if (leaderboard.entries.length >= 3)
-          _buildPodium(leaderboard.entries.take(3).toList()),
-
-        // Rest of the leaderboard
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: leaderboard.entries.length,
-            itemBuilder: (context, index) {
-              final entry = leaderboard.entries[index];
-              return _buildLeaderboardEntry(context, entry, index < 3);
-            },
-          ),
+    // Non-empty: show podium (if present) plus scrollable list with RefreshIndicator
+    if (entries.length >= 3) {
+      final listCount = 1 + (entries.length - 3); // podium + rest
+      return RefreshIndicator(
+        onRefresh: () async => await ref.refresh(leaderboardProvider(params)),
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: listCount,
+          itemBuilder: (context, index) {
+            if (index == 0) return _buildPodium(entries.take(3).toList());
+            final realIndex = index - 1 + 3; // map list index to entries
+            final entry = entries[realIndex];
+            return _buildLeaderboardEntry(context, entry, false);
+          },
         ),
-      ],
+      );
+    }
+
+    // 1 or 2 entries (no full podium) — show them directly in a refreshable list
+    return RefreshIndicator(
+      onRefresh: () async => await ref.refresh(leaderboardProvider(params)),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: entries.length,
+        itemBuilder: (context, index) {
+          final entry = entries[index];
+          return _buildLeaderboardEntry(context, entry, index < 3);
+        },
+      ),
     );
   }
 

@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/services/notification_service.dart';
 import '../providers/social_providers.dart';
 
 class CreatePostSheet extends ConsumerStatefulWidget {
@@ -256,12 +257,12 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
         
         if (fileSize > _maxImageSizeBytes) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Image too large. Maximum size is 10MB'),
-              ),
-            );
-          }
+              NotificationService().showInAppNotification(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: 'Image too large',
+                body: 'Maximum size is 10MB',
+              ).catchError((_) {});
+            }
           return;
         }
 
@@ -269,9 +270,11 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking image: $e')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error picking image',
+          body: '$e',
+        ).catchError((_) {});
       }
     }
   }
@@ -297,10 +300,12 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
   Future<void> _createPost() async {
     final caption = _captionController.text.trim();
     
-    if (caption.isEmpty && _selectedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please add a caption or photo')),
-      );
+      if (caption.isEmpty && _selectedImage == null) {
+      NotificationService().showInAppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Empty post',
+        body: 'Please add a caption or photo',
+      ).catchError((_) {});
       return;
     }
 
@@ -344,15 +349,19 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Post created!')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Post created',
+          body: '',
+        ).catchError((_) {});
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating post: $e')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error creating post',
+          body: '$e',
+        ).catchError((_) {});
       }
     } finally {
       if (mounted) {

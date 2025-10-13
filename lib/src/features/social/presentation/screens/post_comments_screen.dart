@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/services/notification_service.dart';
 import '../providers/social_providers.dart';
 
 class PostCommentsScreen extends ConsumerStatefulWidget {
@@ -326,9 +327,11 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding comment: $e')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error adding comment',
+          body: '$e',
+        ).catchError((_) {});
       }
     }
   }
@@ -341,9 +344,11 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
       ref.invalidate(singlePostProvider(widget.postId));
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting comment: $e')),
-        );
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Error deleting comment',
+          body: '$e',
+        ).catchError((_) {});
       }
     }
   }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/routing/app_router.dart';
 import 'core/services/app_lifecycle_observer.dart';
+import 'features/onboarding/presentation/splash_screen.dart';
 import 'core/theme/app_theme.dart';
 import 'features/settings/providers/theme_provider.dart';
 import 'generated/l10n.dart';
@@ -18,12 +19,28 @@ class GymAIApp extends ConsumerStatefulWidget {
 
 class _GymAIAppState extends ConsumerState<GymAIApp> {
   late final AppLifecycleObserver _lifecycleObserver;
+  bool _showSplash = true;
 
   @override
   void initState() {
     super.initState();
     _lifecycleObserver = AppLifecycleObserver(ref);
     WidgetsBinding.instance.addObserver(_lifecycleObserver);
+
+    // Show the splash screen on every cold start as an initial loader.
+    // Auto-hide after a short delay so users aren't blocked.
+    Future.delayed(const Duration(milliseconds: 100), () {
+      // small micro-delay to allow the widget tree to settle before starting
+      // the splash lifecycle (helps in tests/hot-reload scenarios).
+      if (!mounted) return;
+      // Auto-dismiss splash after 1 seconds to avoid blocking startup.
+      Future.delayed(const Duration(seconds: 1), () {
+        if (!mounted) return;
+        setState(() {
+          _showSplash = false;
+        });
+      });
+    });
   }
 
   @override
@@ -37,6 +54,25 @@ class _GymAIAppState extends ConsumerState<GymAIApp> {
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
+
+    if (_showSplash) {
+      return MaterialApp(
+        title: 'GymAI - Workout Tracker',
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: themeMode,
+        debugShowCheckedModeBanner: false,
+        home: SplashScreen(
+          onFinished: () async {
+            // Hide the splash and rebuild to show the app.
+            if (!mounted) return;
+            setState(() {
+              _showSplash = false;
+            });
+          },
+        ),
+      );
+    }
 
     return MaterialApp.router(
       title: 'GymAI - Workout Tracker',

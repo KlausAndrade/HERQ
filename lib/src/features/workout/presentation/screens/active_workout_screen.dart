@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/models/active_workout.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 import '../providers/active_workout_provider.dart';
 import '../widgets/exercise_picker_dialog.dart';
 import '../widgets/rest_timer_widget.dart';
@@ -281,23 +282,13 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                                     message = '🔥 New PR! Max reps achieved!';
                                   }
                                   
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(message),
-                                      backgroundColor: Colors.amber.shade700,
-                                      behavior: SnackBarBehavior.floating,
-                                      duration: const Duration(seconds: 3),
-                                      margin: const EdgeInsets.all(16),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      action: SnackBarAction(
-                                        label: '🎉',
-                                        textColor: Colors.white,
-                                        onPressed: () {},
-                                      ),
-                                    ),
-                                  );
+                                  NotificationService().showInAppNotification(
+                                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                                    title: message,
+                                    body: '',
+                                    primaryActionLabel: '🎉',
+                                    onPrimaryAction: () {},
+                                  ).catchError((_) {});
                                 }
                               }
                             }
@@ -854,13 +845,17 @@ class _ExerciseCard extends ConsumerWidget {
                                 .read(activeWorkoutProvider.notifier)
                                 .removeSet(exerciseIndex, index);
                             
-                            // Show snackbar with undo option
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Set ${index + 1} removed'),
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
+                            // Show in-app notification with undo option
+                            NotificationService().showInAppNotification(
+                              id: DateTime.now().millisecondsSinceEpoch.toString(),
+                              title: 'Set removed',
+                              body: 'Set ${index + 1} removed',
+                              primaryActionLabel: 'Undo',
+                              onPrimaryAction: () {
+                                // Simple undo: re-add a set at this exercise
+                                ref.read(activeWorkoutProvider.notifier).addSet(exerciseIndex);
+                              },
+                            ).catchError((_) {});
                           },
                           child: SetEntryWidget(
                             set: set,

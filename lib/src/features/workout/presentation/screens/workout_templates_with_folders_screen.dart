@@ -6,7 +6,7 @@ import '../../../../core/database/database.dart';
 import '../../../../providers/template_folder_provider.dart';
 import '../providers/template_providers.dart';
 import '../../../workouts/widgets/create_folder_dialog.dart';
-import 'package:gym_ai/src/core/services/snackbar_service.dart';
+import 'package:gym_ai/src/core/services/notification_service.dart';
 
 /// Drag item type used to indicate what kind of object is being dragged.
 enum _DragItemType { exercise }
@@ -290,17 +290,32 @@ class _WorkoutTemplatesWithFoldersScreenState
                       return Padding(
                         padding: const EdgeInsets.all(16),
                         child: Center(
-                          child: Text(
-                            'No templates in this folder',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.5),
-                                ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'No templates in this folder',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.5),
+                                    ),
+                              ),
+                              const SizedBox(height: 12),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  // Navigate to template builder with folder preselected
+                                  final folderId = Uri.encodeComponent(folder.id);
+                                  context.push('/template-builder?folderId=$folderId');
+                                },
+                                icon: const Icon(Icons.add),
+                                label: const Text('Create Template'),
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -764,17 +779,23 @@ class _WorkoutTemplatesWithFoldersScreenState
               color: result['color'],
             );
         if (mounted) {
-          SnackbarService.showFromSnackBar(
-            context,
-            SnackBar(content: Text('Folder "${result['name']}" created')),
-          );
+          try {
+            await NotificationService().showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Folder "${result['name']}" created',
+              body: '',
+            );
+          } catch (_) {}
         }
       } catch (e) {
         if (mounted) {
-          SnackbarService.showFromSnackBar(
-            context,
-            SnackBar(content: Text('Error creating folder: $e')),
-          );
+          try {
+            await NotificationService().showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error creating folder: $e',
+              body: '',
+            );
+          } catch (_) {}
         }
       }
     }
@@ -828,17 +849,23 @@ class _WorkoutTemplatesWithFoldersScreenState
               color: result['color'],
             );
         if (mounted) {
-          SnackbarService.showFromSnackBar(
-            context,
-            const SnackBar(content: Text('Folder updated')),
-          );
+          try {
+            await NotificationService().showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Folder updated',
+              body: '',
+            );
+          } catch (_) {}
         }
       } catch (e) {
         if (mounted) {
-          SnackbarService.showFromSnackBar(
-            context,
-            SnackBar(content: Text('Error updating folder: $e')),
-          );
+          try {
+            await NotificationService().showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error updating folder: $e',
+              body: '',
+            );
+          } catch (_) {}
         }
       }
     }
@@ -874,17 +901,23 @@ class _WorkoutTemplatesWithFoldersScreenState
             .read(templateFolderNotifierProvider.notifier)
             .deleteFolder(folder.id);
         if (mounted) {
-          SnackbarService.showFromSnackBar(
-            context,
-            const SnackBar(content: Text('Folder deleted')),
-          );
+          try {
+            await NotificationService().showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Folder deleted',
+              body: '',
+            );
+          } catch (_) {}
         }
       } catch (e) {
         if (mounted) {
-          SnackbarService.showFromSnackBar(
-            context,
-            SnackBar(content: Text('Error deleting folder: $e')),
-          );
+          try {
+            await NotificationService().showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error deleting folder: $e',
+              body: '',
+            );
+          } catch (_) {}
         }
       }
     }
@@ -898,23 +931,31 @@ class _WorkoutTemplatesWithFoldersScreenState
             folderId: folder?.id,
           );
       if (mounted) {
-        SnackbarService.showFromSnackBar(
-          context,
-          SnackBar(
-            content: Text(
-              folder == null
-                  ? 'Template moved to Uncategorized'
-                  : 'Template moved to ${folder.name}',
-            ),
-          ),
-        );
+        // Publish a curated in-app notification for template moves. We intentionally
+        // avoid the SnackBar fallback here to make the in-app overlay the primary
+        // feedback channel for this interaction.
+        try {
+          await NotificationService().showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: folder == null
+                ? 'Template moved to Uncategorized'
+                : 'Template moved to ${folder.name}',
+            body: '',
+          );
+        } catch (_) {
+          // Best-effort: ignore failures in test/headless environments.
+        }
       }
     } catch (e) {
       if (mounted) {
-        SnackbarService.showFromSnackBar(
-          context,
-          SnackBar(content: Text('Error moving template: $e')),
-        );
+        try {
+          await NotificationService().showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Error moving template',
+            body: 'Error moving template: $e',
+            backgroundColor: Colors.red,
+          );
+        } catch (_) {}
       }
     }
   }

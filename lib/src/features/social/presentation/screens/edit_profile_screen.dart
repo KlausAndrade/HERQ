@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/services/notification_service.dart';
 import '../providers/social_providers.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
@@ -121,21 +122,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       ref.invalidate(userProfileProvider(currentUser.id));
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully!'),
-            backgroundColor: Colors.green,
-          ),
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Profile updated',
+          body: 'Profile updated successfully!',
+          backgroundColor: Colors.green,
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error updating profile: $e'),
-            backgroundColor: Colors.red,
-          ),
+        NotificationService().showInAppNotification(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: 'Profile update failed',
+          body: 'Error updating profile: $e',
+          backgroundColor: Colors.red,
         );
       }
     } finally {
