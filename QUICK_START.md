@@ -71,7 +71,7 @@ The AcroYoga templates and exercises need to be loaded into your database first.
 ✅ **Workout History** - Simplified filters (All/This Week/This Month)  
 ✅ **Workout History** - Shows only completed workouts  
 ✅ **Workout Completion** - Shows loading dialog and summary screen (no more "No active workout")
-✅ **Analytics** - Route verified and working  
+✅ **Analytics** - Fixed "Too many elements" error  
 ⚠️ **Achievements** - Will populate after completing a workout  
 ⚠️ **Leaderboards** - Limited to local data (needs Supabase for multi-user)
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../providers/analytics_provider.dart';
 import '../widgets/power_score_card.dart';
@@ -20,6 +21,11 @@ class AnalyticsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/progress'),
+          tooltip: 'Back to Progress',
+        ),
         title: const Text('Analytics'),
         actions: [
           IconButton(

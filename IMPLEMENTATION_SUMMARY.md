@@ -100,8 +100,28 @@ All exercises use:
 - Requires Supabase implementation for true multi-user leaderboards
 **TODO**: Implement Supabase-based leaderboard queries for cross-user data
 
-### 4. Analytics Route
-**Status**: ✅ Verified working
+### 4. Analytics Screen
+**Status**: ✅ Fixed and working
+**File**: `lib/src/features/analytics/data/services/analytics_service.dart`
+- **Issues Fixed**:
+  1. **"Bad state: Too many elements"** - Two queries used `getSingleOrNull()` without `.limit(1)`
+     - Line 204: Added `.limit(1)` in `findNearMissPRs()`
+     - Line 580: Added `.limit(1)` in `detectPlateaus()`
+  2. **"SqliteException: no such column: is_completed"** - SQL queries used wrong column name
+     - Changed 4 SQL queries from `se.is_completed = 1` to `se.completed_at IS NOT NULL`
+     - Lines 217, 422, 479, 664: Database uses `completed_at` timestamp, not `is_completed` boolean
+  3. **"type null is not a subtype of double in type cast"** - Null weight values not handled
+     - Lines 229, 494, 511, 542: Changed `read<double>()` to `read<double?>()` for nullable weight
+     - Added null checks and default values to prevent crashes on bodyweight exercises
+     - Skip exercises without weight data in progress calculations
+  4. **"Prediction has NaN kg"** - PR predictions calculation producing NaN values
+     - Line 291: Skip exercises without weight data entirely
+     - Lines 294-306: Filter out null/zero weights before regression
+     - Lines 311-314: Validate regression results (check for NaN/Infinity)
+     - Lines 327-331: Validate predicted weight before displaying
+     - Lines 379-426: Added comprehensive NaN/division-by-zero checks in linear regression
+- **UI Improvements**:
+  - Added back button to AppBar (line 23)
 - Route `/analytics` exists and is properly configured in `app_router.dart`
 - Navigation from Progress screen works correctly
 

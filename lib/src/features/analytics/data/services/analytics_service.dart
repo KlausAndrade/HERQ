@@ -200,7 +200,8 @@ class AnalyticsService {
       // Get current PR
       final currentPR = await (database.select(database.personalRecords)
             ..where((pr) => pr.exerciseId.equals(exercise.id))
-            ..orderBy([(pr) => OrderingTerm.desc(pr.weight)]))
+            ..orderBy([(pr) => OrderingTerm.desc(pr.weight)])
+            ..limit(1))
           .getSingleOrNull();
 
       if (currentPR == null) continue;
@@ -213,7 +214,7 @@ class AnalyticsService {
         SELECT se.*, ws.completed_at
         FROM set_entries se
         JOIN workout_sessions ws ON se.workout_session_id = ws.id
-        WHERE se.exercise_id = ? AND ws.completed_at >= ? AND se.is_completed = 1
+        WHERE se.exercise_id = ? AND ws.completed_at >= ? AND se.completed_at IS NOT NULL
         ORDER BY se.weight DESC, se.reps DESC
         LIMIT 10
         ''',
@@ -225,9 +226,12 @@ class AnalyticsService {
       )).get();
 
       for (final row in recentSets) {
-        final weight = row.read<double>('weight');
+        final weight = row.read<double?>('weight');
         final reps = row.read<int>('reps');
         final completedAt = row.read<DateTime>('completed_at');
+        
+        // Skip sets without weight (e.g., bodyweight exercises)
+        if (weight == null) continue;
 
         // Calculate 1RM equivalent
         final attempt1RM = weight * (1 + reps / 30);
@@ -283,19 +287,31 @@ class AnalyticsService {
 
       if (prs.length < 3) continue; // Need at least 3 PRs to predict
 
+      // Skip exercises without weight data (bodyweight/duration exercises)
+      if (prs.every((pr) => pr.weight == null || pr.weight == 0)) continue;
+
       // Calculate linear regression for weight progression
-      final dataPoints = prs.map((pr) {
+      final dataPoints = prs
+          .where((pr) => pr.weight != null && pr.weight! > 0)
+          .map((pr) {
         final daysSinceFirst =
             pr.achievedAt.difference(prs.first.achievedAt).inDays;
         return {
           'x': daysSinceFirst.toDouble(),
-          'y': (pr.weight ?? 0).toDouble(),
+          'y': pr.weight!.toDouble(),
         };
       }).toList();
 
+      // Need at least 3 valid data points
+      if (dataPoints.length < 3) continue;
+
       final regression = _calculateLinearRegression(dataPoints);
 
-      if (regression['slope']! <= 0) continue; // Not progressing
+      // Skip if regression calculation failed or invalid
+      if (regression['slope'] == null || 
+          regression['slope']!.isNaN || 
+          regression['slope']!.isInfinite ||
+          regression['slope']! <= 0) continue; // Not progressing or invalid data
 
       // Predict next PR (assume in 30 days)
       final lastPR = prs.last;
@@ -307,6 +323,12 @@ class AnalyticsService {
       final predictedWeight =
           regression['slope']! * predictedX + regression['intercept']!;
       final currentWeight = lastPR.weight ?? 0;
+
+      // Skip if prediction is invalid
+      if (predictedWeight.isNaN || 
+          predictedWeight.isInfinite || 
+          predictedWeight <= 0 ||
+          currentWeight <= 0) continue;
 
       // Only predict if there's expected improvement
       if (predictedWeight <= currentWeight) continue;
@@ -354,13 +376,43 @@ class AnalyticsService {
     final sumX2 =
         data.fold<double>(0, (sum, point) => sum + point['x']! * point['x']!);
 
-    final slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    final denominator = (n * sumX2 - sumX * sumX);
+    
+    // Prevent division by zero
+    if (denominator == 0 || denominator.isNaN) {
+      return {
+        'slope': 0.0,
+        'intercept': 0.0,
+        'rSquared': 0.0,
+      };
+    }
+    
+    final slope = (n * sumXY - sumX * sumY) / denominator;
     final intercept = (sumY - slope * sumX) / n;
+
+    // Check for invalid values
+    if (slope.isNaN || slope.isInfinite || intercept.isNaN || intercept.isInfinite) {
+      return {
+        'slope': 0.0,
+        'intercept': 0.0,
+        'rSquared': 0.0,
+      };
+    }
 
     // Calculate R² (coefficient of determination)
     final yMean = sumY / n;
     final ssTotal =
         data.fold<double>(0, (sum, point) => sum + pow(point['y']! - yMean, 2));
+    
+    // Prevent division by zero in R² calculation
+    if (ssTotal == 0 || ssTotal.isNaN) {
+      return {
+        'slope': slope / 7, // Convert to weekly gain
+        'intercept': intercept,
+        'rSquared': 0.0,
+      };
+    }
+    
     final ssResidual = data.fold<double>(0, (sum, point) {
       final predicted = slope * point['x']! + intercept;
       return sum + pow(point['y']! - predicted, 2);
@@ -418,7 +470,7 @@ class AnalyticsService {
         FROM set_entries se
         JOIN workout_sessions ws ON se.workout_session_id = ws.id
         JOIN exercises e ON se.exercise_id = e.id
-        WHERE ws.completed_at >= ? AND ws.completed_at < ? AND se.is_completed = 1
+        WHERE ws.completed_at >= ? AND ws.completed_at < ? AND se.completed_at IS NOT NULL
         GROUP BY e.primary_muscle_group
         ''',
         variables: [
@@ -475,7 +527,7 @@ class AnalyticsService {
         SELECT se.*, ws.completed_at
         FROM set_entries se
         JOIN workout_sessions ws ON se.workout_session_id = ws.id
-        WHERE se.exercise_id = ? AND se.is_completed = 1
+        WHERE se.exercise_id = ? AND se.completed_at IS NOT NULL
         ORDER BY ws.completed_at ASC
         ''',
         variables: [Variable.withString(exercise.id)],
@@ -487,8 +539,12 @@ class AnalyticsService {
       final firstSet = sets.first;
       final lastSet = sets.last;
 
-      final startWeight = firstSet.read<double>('weight');
-      final currentWeight = lastSet.read<double>('weight');
+      final startWeight = firstSet.read<double?>('weight');
+      final currentWeight = lastSet.read<double?>('weight');
+      
+      // Skip exercises without weight data (e.g., bodyweight exercises)
+      if (startWeight == null || currentWeight == null || startWeight == 0) continue;
+      
       final totalGain = currentWeight - startWeight;
       final percentageGain = (totalGain / startWeight) * 100;
 
@@ -500,7 +556,7 @@ class AnalyticsService {
       // Build history and mark PRs when a set matches a personal record
       final history = sets.map((row) {
         final setDate = row.read<DateTime>('completed_at');
-        final setWeight = row.read<double>('weight');
+        final setWeight = row.read<double?>('weight') ?? 0.0;
         final setReps = row.read<int>('reps');
 
         // Tolerances to account for small precision differences
@@ -531,15 +587,21 @@ class AnalyticsService {
       TrendDirection trend;
       if (sets.length >= 3) {
         final recent = sets.sublist(max(0, sets.length - 5));
-        final weights = recent.map((r) => r.read<double>('weight')).toList();
-        final avgRecent = weights.reduce((a, b) => a + b) / weights.length;
-
-        if (avgRecent > currentWeight * 0.95) {
-          trend = TrendDirection.increasing;
-        } else if (avgRecent > currentWeight * 0.90) {
+        final weights = recent.map((r) => r.read<double?>('weight') ?? 0.0).where((w) => w > 0).toList();
+        
+        // Skip trend calculation if no valid weights
+        if (weights.isEmpty) {
           trend = TrendDirection.stable;
         } else {
-          trend = TrendDirection.decreasing;
+          final avgRecent = weights.reduce((a, b) => a + b) / weights.length;
+
+          if (avgRecent > currentWeight * 0.95) {
+            trend = TrendDirection.increasing;
+          } else if (avgRecent > currentWeight * 0.90) {
+            trend = TrendDirection.stable;
+          } else {
+            trend = TrendDirection.decreasing;
+          }
         }
       } else {
         trend = TrendDirection.stable;
@@ -575,7 +637,8 @@ class AnalyticsService {
       // Get last PR date
       final lastPR = await (database.select(database.personalRecords)
             ..where((pr) => pr.exerciseId.equals(exercise.id))
-            ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)]))
+            ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)])
+            ..limit(1))
           .getSingleOrNull();
 
       if (lastPR == null) continue;
@@ -659,7 +722,7 @@ class AnalyticsService {
       FROM set_entries se
       JOIN workout_sessions ws ON se.workout_session_id = ws.id
       JOIN exercises e ON se.exercise_id = e.id
-      WHERE ws.completed_at >= ? AND se.is_completed = 1
+      WHERE ws.completed_at >= ? AND se.completed_at IS NOT NULL
       GROUP BY e.primary_muscle_group
       ''',
       variables: [Variable.withDateTime(thirtyDaysAgo)],
