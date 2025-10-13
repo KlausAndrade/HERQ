@@ -161,16 +161,18 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         final initialReps = lastSet?.reps ?? 0;
 
         // Start with 3 prefilled sets using last completed values (if any)
-        // For timer exercises, prefill durationSeconds instead of reps/weight
-        final isTimer = exercise.exerciseType == 'timer';
+        // Prefill based on exercise type
+        final isDuration = exercise.exerciseType == 'duration';
+        final initialDuration = isDuration ? (lastSet?.durationSeconds ?? 30) : null;
+        
         activeExercises.add(ActiveExercise(
           id: exercise.id,
           name: exercise.name,
           exerciseType: exercise.exerciseType,
           sets: [
-            ActiveSet(number: 1, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
-            ActiveSet(number: 2, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
-            ActiveSet(number: 3, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
+            ActiveSet(number: 1, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
+            ActiveSet(number: 2, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
+            ActiveSet(number: 3, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
           ],
           restTimerSeconds: savedTimer,
         ));
@@ -269,15 +271,17 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         final initialWeight = lastSet?.weight;
         final initialReps = lastSet?.reps ?? 0;
 
-        final isTimer = exercise.exerciseType == 'timer';
+        final isDuration = exercise.exerciseType == 'duration';
+        final initialDuration = isDuration ? (lastSet?.durationSeconds ?? 30) : null;
+        
         activeExercises.add(ActiveExercise(
           id: exercise.id,
           name: exercise.name,
           exerciseType: exercise.exerciseType,
           sets: [
-            ActiveSet(number: 1, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
-            ActiveSet(number: 2, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
-            ActiveSet(number: 3, weight: isTimer ? null : initialWeight, reps: isTimer ? 0 : initialReps, durationSeconds: isTimer ? (lastSet?.reps ?? 10) : null, isCompleted: false),
+            ActiveSet(number: 1, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
+            ActiveSet(number: 2, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
+            ActiveSet(number: 3, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
           ],
           restTimerSeconds: savedTimer,
         ));
@@ -590,6 +594,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           exercises.add(ActiveExercise(
             id: exercise.id,
             name: exercise.name,
+            exerciseType: exercise.exerciseType,
             sets: [initialSet],
             restTimerSeconds: restTimerSeconds,
           ));
@@ -801,6 +806,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                       weight: Value(set.weight),
                       reps: set.reps,
                       durationSeconds: Value(set.durationSeconds),
+                      distance: Value(set.distance),
+                      assistanceWeight: Value(set.assistanceWeight),
+                      addedWeight: Value(set.addedWeight),
                       rpe: Value(set.rpe),
                       completedAt: now,
                     ),
@@ -843,6 +851,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                 'weight': set.weight,
                 'reps': set.reps,
                 'duration_seconds': set.durationSeconds,
+                'distance': set.distance,
+                'assistance_weight': set.assistanceWeight,
+                'added_weight': set.addedWeight,
                 'rpe': set.rpe,
                 'completed': true,
               });

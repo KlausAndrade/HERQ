@@ -230,6 +230,9 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                     return _ExerciseCard(
                       exercise: exercise,
                       onTap: () => context.go('/exercise/${exercise.id}'),
+                      onEdit: exercise.id.startsWith('custom_')
+                          ? () => context.push('/exercises/create?id=${exercise.id}')
+                          : null,
                     );
                   },
                 );
@@ -471,10 +474,12 @@ class _ExerciseCard extends StatelessWidget {
   const _ExerciseCard({
     required this.exercise,
     required this.onTap,
+    this.onEdit,
   });
 
   final Exercise exercise;
   final VoidCallback onTap;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) => AppCard(
@@ -564,7 +569,13 @@ class _ExerciseCard extends StatelessWidget {
               ),
             ],
           ),
-          trailing: const Icon(Icons.chevron_right),
+          trailing: onEdit != null
+              ? IconButton(
+                  icon: const Icon(Icons.edit, size: 20),
+                  onPressed: onEdit,
+                  tooltip: 'Edit exercise',
+                )
+              : const Icon(Icons.chevron_right),
           onTap: onTap,
         ),
       );

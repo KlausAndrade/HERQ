@@ -99,6 +99,8 @@ class SetEntryDto extends Equatable {
   final int? reps;
   final int? durationSeconds;
   final double? distance;
+  final double? assistanceWeight;
+  final double? addedWeight;
   final int? rpe;
   final String? notes;
   final bool completed;
@@ -113,6 +115,8 @@ class SetEntryDto extends Equatable {
     this.reps,
     this.durationSeconds,
     this.distance,
+    this.assistanceWeight,
+    this.addedWeight,
     this.rpe,
     this.notes,
     this.completed = false,
@@ -129,6 +133,8 @@ class SetEntryDto extends Equatable {
       reps: json['reps'] as int?,
       durationSeconds: json['duration_seconds'] as int?,
       distance: (json['distance'] as num?)?.toDouble(),
+      assistanceWeight: (json['assistance_weight'] as num?)?.toDouble(),
+      addedWeight: (json['added_weight'] as num?)?.toDouble(),
       rpe: json['rpe'] as int?,
       notes: json['notes'] as String?,
       completed: (json['completed'] as bool?) ?? false,
@@ -146,6 +152,8 @@ class SetEntryDto extends Equatable {
       'reps': reps,
       'duration_seconds': durationSeconds,
       'distance': distance,
+      'assistance_weight': assistanceWeight,
+      'added_weight': addedWeight,
       'rpe': rpe,
       'notes': notes,
       'completed': completed,
@@ -163,6 +171,8 @@ class SetEntryDto extends Equatable {
         reps,
         durationSeconds,
         distance,
+        assistanceWeight,
+        addedWeight,
         rpe,
         notes,
         completed,

@@ -131,10 +131,13 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         GoRoute(
           path: '/exercises/create',
           name: 'create-exercise',
-          pageBuilder: (context, state) => AppPageTransitions.slideUpTransition(
-            const CreateExerciseScreen(),
-            key: state.pageKey,
-          ),
+          pageBuilder: (context, state) {
+            final exerciseId = state.uri.queryParameters['id'];
+            return AppPageTransitions.slideUpTransition(
+              CreateExerciseScreen(exerciseId: exerciseId),
+              key: state.pageKey,
+            );
+          },
         ),
         GoRoute(
           path: '/exercise/:id',

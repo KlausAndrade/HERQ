@@ -67,6 +67,13 @@ class ExerciseDetailScreen extends ConsumerWidget {
                   icon: Icon(Icons.favorite_border),
                 ),
               ),
+              // Edit button for custom exercises
+              if (exercise.id.startsWith('custom_'))
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () => context.push('/exercises/create?id=${exercise.id}'),
+                  tooltip: 'Edit exercise',
+                ),
             ],
           ),
           body: SingleChildScrollView(

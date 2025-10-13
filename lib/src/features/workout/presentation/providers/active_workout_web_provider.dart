@@ -80,10 +80,12 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
           .where((id) => exerciseMap.containsKey(id))
           .map((id) {
         final exercise = exerciseMap[id]!;
+        final exerciseType = exercise['exercise_type'] as String? ?? 'weight_reps';
 
         return ActiveExercise(
           id: id,
           name: exercise['name'] as String,
+          exerciseType: exerciseType,
           sets: const [
             ActiveSet(number: 1, reps: 0, isCompleted: false),
             ActiveSet(number: 2, reps: 0, isCompleted: false),
@@ -128,6 +130,7 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
         name: exercise.name,
+        exerciseType: exercise.exerciseType,
         sets: sets,
         restTimerSeconds: exercise.restTimerSeconds,
       );
@@ -155,12 +158,17 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
         number: sets.length + 1,
         weight: lastSet?.weight,
         reps: lastSet?.reps ?? 0,
+        durationSeconds: lastSet?.durationSeconds,
+        distance: lastSet?.distance,
+        assistanceWeight: lastSet?.assistanceWeight,
+        addedWeight: lastSet?.addedWeight,
         isCompleted: false,
       ));
 
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
         name: exercise.name,
+        exerciseType: exercise.exerciseType,
         sets: sets,
         restTimerSeconds: exercise.restTimerSeconds,
       );
@@ -247,6 +255,10 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
             'set_number': set.number,
             'weight': set.weight,
             'reps': set.reps,
+            'duration_seconds': set.durationSeconds,
+            'distance': set.distance,
+            'assistance_weight': set.assistanceWeight,
+            'added_weight': set.addedWeight,
             'rpe': set.rpe,
             'completed': true,
           });

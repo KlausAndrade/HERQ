@@ -53,7 +53,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -68,6 +68,15 @@ class AppDatabase extends _$AppDatabase {
         onUpgrade: (migrator, from, to) async {
           // Apply lightweight per-version migrations. Keep in sync with
           // native implementation in `database_native.dart`.
+          if (to == 14) {
+            try {
+              // Add distance field to set_entries for distance-based exercises
+              await customStatement('ALTER TABLE set_entries ADD COLUMN distance REAL');
+            } catch (e) {
+              // Column may already exist, ignore error
+            }
+          }
+          
           if (to == 13) {
             try {
               await customStatement('ALTER TABLE exercises ADD COLUMN aliases TEXT');

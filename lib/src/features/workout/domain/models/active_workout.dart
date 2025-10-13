@@ -112,6 +112,9 @@ class ActiveSet {
   final double? weight;
   final int reps;
   final int? durationSeconds; // Used for timer-based sets (e.g. handstand hold)
+  final double? distance; // Used for distance-based exercises (stored in meters)
+  final double? assistanceWeight; // For assisted bodyweight exercises
+  final double? addedWeight; // For weighted bodyweight exercises
   final int? rpe;
   final bool isCompleted;
   final bool isPRWeight;  // True if this set beat previous max weight
@@ -122,6 +125,9 @@ class ActiveSet {
     this.weight,
     required this.reps,
     this.durationSeconds,
+    this.distance,
+    this.assistanceWeight,
+    this.addedWeight,
     this.rpe,
     this.isCompleted = false,
     this.isPRWeight = false,
@@ -133,7 +139,10 @@ class ActiveSet {
         'number': number,
         'weight': weight,
         'reps': reps,
-    'durationSeconds': durationSeconds,
+        'durationSeconds': durationSeconds,
+        'distance': distance,
+        'assistanceWeight': assistanceWeight,
+        'addedWeight': addedWeight,
         'rpe': rpe,
         'isCompleted': isCompleted,
         'isPRWeight': isPRWeight,
@@ -144,7 +153,10 @@ class ActiveSet {
         number: json['number'] as int,
         weight: (json['weight'] as num?)?.toDouble(),
         reps: json['reps'] as int,
-    durationSeconds: json['durationSeconds'] as int?,
+        durationSeconds: json['durationSeconds'] as int?,
+        distance: (json['distance'] as num?)?.toDouble(),
+        assistanceWeight: (json['assistanceWeight'] as num?)?.toDouble(),
+        addedWeight: (json['addedWeight'] as num?)?.toDouble(),
         rpe: json['rpe'] as int?,
         isCompleted: json['isCompleted'] as bool? ?? false,
         isPRWeight: json['isPRWeight'] as bool? ?? false,

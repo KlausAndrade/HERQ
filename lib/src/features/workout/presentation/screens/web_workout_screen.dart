@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/exercise_types.dart';
 import '../../domain/models/active_workout.dart';
 import '../providers/active_workout_web_provider.dart';
 
@@ -65,14 +67,8 @@ class WebWorkoutScreen extends ConsumerWidget {
                         exercise.sets.length,
                         (setIndex) => _SetRow(
                           set: exercise.sets[setIndex],
-                          onUpdate: (weight, reps) {
-                            final updatedSet = ActiveSet(
-                              number: exercise.sets[setIndex].number,
-                              weight: weight,
-                              reps: reps,
-                              rpe: exercise.sets[setIndex].rpe,
-                              isCompleted: true,
-                            );
+                          exerciseType: exercise.exerciseType,
+                          onUpdate: (updatedSet) {
                             ref.read(activeWorkoutWebProvider.notifier).updateSet(
                               exerciseIndex,
                               setIndex,
@@ -127,10 +123,15 @@ class WebWorkoutScreen extends ConsumerWidget {
 }
 
 class _SetRow extends StatefulWidget {
-  final dynamic set;
-  final Function(double, int) onUpdate;
+  final ActiveSet set;
+  final String exerciseType;
+  final Function(ActiveSet) onUpdate;
 
-  const _SetRow({required this.set, required this.onUpdate});
+  const _SetRow({
+    required this.set,
+    required this.exerciseType,
+    required this.onUpdate,
+  });
 
   @override
   State<_SetRow> createState() => _SetRowState();
@@ -139,6 +140,10 @@ class _SetRow extends StatefulWidget {
 class _SetRowState extends State<_SetRow> {
   late TextEditingController weightController;
   late TextEditingController repsController;
+  late TextEditingController durationController;
+  late TextEditingController distanceController;
+  late TextEditingController assistanceWeightController;
+  late TextEditingController addedWeightController;
 
   @override
   void initState() {
@@ -147,7 +152,19 @@ class _SetRowState extends State<_SetRow> {
       text: widget.set.weight?.toString() ?? '',
     );
     repsController = TextEditingController(
-      text: widget.set.reps.toString(),
+      text: widget.set.reps > 0 ? widget.set.reps.toString() : '',
+    );
+    durationController = TextEditingController(
+      text: widget.set.durationSeconds?.toString() ?? '',
+    );
+    distanceController = TextEditingController(
+      text: widget.set.distance?.toString() ?? '',
+    );
+    assistanceWeightController = TextEditingController(
+      text: widget.set.assistanceWeight?.toString() ?? '',
+    );
+    addedWeightController = TextEditingController(
+      text: widget.set.addedWeight?.toString() ?? '',
     );
   }
 
@@ -155,11 +172,18 @@ class _SetRowState extends State<_SetRow> {
   void dispose() {
     weightController.dispose();
     repsController.dispose();
+    durationController.dispose();
+    distanceController.dispose();
+    assistanceWeightController.dispose();
+    addedWeightController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final config = ExerciseTypeConfig.fromString(widget.exerciseType);
+    final fields = config.requiredFields;
+
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: widget.set.isCompleted ? Colors.green : Colors.grey,
@@ -167,43 +191,128 @@ class _SetRowState extends State<_SetRow> {
       ),
       title: Row(
         children: [
-          Expanded(
-            child: TextField(
-              controller: weightController,
-              decoration: const InputDecoration(
-                labelText: 'Weight (kg)',
-                border: OutlineInputBorder(),
-                isDense: true,
+          // Dynamic input fields based on exercise type
+          ...fields.map((field) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: _buildInputField(field),
               ),
-              keyboardType: TextInputType.number,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: TextField(
-              controller: repsController,
-              decoration: const InputDecoration(
-                labelText: 'Reps',
-                border: OutlineInputBorder(),
-                isDense: true,
-              ),
-              keyboardType: TextInputType.number,
-            ),
-          ),
-          const SizedBox(width: 12),
+            );
+          }).toList(),
+          
+          // Complete button
           IconButton(
             icon: Icon(
               widget.set.isCompleted ? Icons.check_circle : Icons.circle_outlined,
               color: widget.set.isCompleted ? Colors.green : null,
             ),
             onPressed: () {
-              final weight = double.tryParse(weightController.text) ?? 0;
-              final reps = int.tryParse(repsController.text) ?? 0;
-              widget.onUpdate(weight, reps);
+              final updatedSet = ActiveSet(
+                number: widget.set.number,
+                weight: _parseDouble(weightController.text),
+                reps: _parseInt(repsController.text) ?? 0,
+                durationSeconds: _parseInt(durationController.text),
+                distance: _parseDouble(distanceController.text),
+                assistanceWeight: _parseDouble(assistanceWeightController.text),
+                addedWeight: _parseDouble(addedWeightController.text),
+                rpe: widget.set.rpe,
+                isCompleted: true,
+              );
+              widget.onUpdate(updatedSet);
             },
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildInputField(ExerciseField field) {
+    switch (field) {
+      case ExerciseField.weight:
+        return TextField(
+          controller: weightController,
+          decoration: InputDecoration(
+            labelText: field.label,
+            border: const OutlineInputBorder(),
+            isDense: true,
+          ),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+        );
+      case ExerciseField.reps:
+        return TextField(
+          controller: repsController,
+          decoration: InputDecoration(
+            labelText: field.label,
+            border: const OutlineInputBorder(),
+            isDense: true,
+          ),
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        );
+      case ExerciseField.duration:
+        return TextField(
+          controller: durationController,
+          decoration: InputDecoration(
+            labelText: field.label,
+            border: const OutlineInputBorder(),
+            isDense: true,
+          ),
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        );
+      case ExerciseField.distance:
+        return TextField(
+          controller: distanceController,
+          decoration: InputDecoration(
+            labelText: field.label,
+            border: const OutlineInputBorder(),
+            isDense: true,
+          ),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+        );
+      case ExerciseField.assistanceWeight:
+        return TextField(
+          controller: assistanceWeightController,
+          decoration: InputDecoration(
+            labelText: field.label,
+            border: const OutlineInputBorder(),
+            isDense: true,
+          ),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+        );
+      case ExerciseField.addedWeight:
+        return TextField(
+          controller: addedWeightController,
+          decoration: InputDecoration(
+            labelText: field.label,
+            border: const OutlineInputBorder(),
+            isDense: true,
+          ),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+        );
+    }
+  }
+
+  double? _parseDouble(String text) {
+    if (text.isEmpty) return null;
+    return double.tryParse(text);
+  }
+
+  int? _parseInt(String text) {
+    if (text.isEmpty) return null;
+    return int.tryParse(text);
   }
 }

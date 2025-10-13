@@ -6,11 +6,15 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/constants/exercise_types.dart';
+import '../../../../core/utils/exercise_type_mapper.dart';
 import 'package:gym_ai/src/core/services/notification_service.dart';
 import '../providers/exercise_providers.dart';
 
 class CreateExerciseScreen extends ConsumerStatefulWidget {
-  const CreateExerciseScreen({super.key});
+  final String? exerciseId; // If provided, we're in edit mode
+  
+  const CreateExerciseScreen({super.key, this.exerciseId});
 
   @override
   ConsumerState<CreateExerciseScreen> createState() =>
@@ -26,7 +30,8 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
   String _selectedEquipment = 'Barbell';
   String _selectedCategory = 'strength';
   String _selectedDifficulty = 'intermediate';
-  String _selectedExerciseType = 'reps';
+  String _selectedExerciseType = 'weight_reps';
+  bool _autoAssignType = true; // Auto-assign exercise type
   bool _isBodyweight = false;
   final List<String> _selectedSecondaryMuscles = [];
   final List<String> _selectedTags = [];
@@ -82,13 +87,8 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
     'expert',
   ];
 
-  // Exercise types
-  final List<String> _exerciseTypes = [
-    'reps',
-    'timer',
-    'body_weighted',
-    'assisted',
-  ];
+  // Get all exercise type configs
+  List<ExerciseTypeConfig> get _exerciseTypeConfigs => ExerciseTypeConfig.allConfigs;
 
   // Common tags
   final List<String> _availableTags = [
@@ -117,10 +117,65 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.exerciseId != null) {
+      _loadExercise();
+    }
+  }
+
+  Future<void> _loadExercise() async {
+    final database = ref.read(databaseProvider);
+    if (database == null) return;
+
+    try {
+      final exercise = await (database.select(database.exercises)
+            ..where((tbl) => tbl.id.equals(widget.exerciseId!)))
+          .getSingleOrNull();
+
+      if (exercise != null && mounted) {
+        setState(() {
+          _nameController.text = exercise.name;
+          _instructionsController.text = exercise.instructions;
+          _selectedMuscleGroup = exercise.primaryMuscleGroup;
+          _selectedSecondaryMuscles.addAll(exercise.secondaryMuscleGroups);
+          _selectedEquipment = exercise.equipment;
+          _selectedCategory = exercise.category;
+          _selectedDifficulty = exercise.difficulty;
+          _selectedExerciseType = exercise.exerciseType;
+          _isBodyweight = exercise.isBodyweight;
+          _selectedTags.addAll(exercise.tags);
+          if (exercise.parentExerciseId != null) {
+            _isVariant = true;
+            _parentExerciseId = exercise.parentExerciseId;
+            _variantType = exercise.variantType;
+          }
+        });
+      }
+    } catch (e) {
+      print('Error loading exercise: $e');
+    }
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _instructionsController.dispose();
     super.dispose();
+  }
+
+  /// Auto-assign exercise type based on name, equipment, and category
+  void _updateExerciseType() {
+    if (_autoAssignType) {
+      final assignedType = ExerciseTypeMapper.assignExerciseType(
+        name: _nameController.text,
+        equipment: _selectedEquipment,
+        category: _selectedCategory,
+      );
+      setState(() {
+        _selectedExerciseType = assignedType.value;
+      });
+    }
   }
 
   Future<void> _saveExercise() async {
@@ -151,29 +206,34 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
         throw Exception('Database not available');
       }
 
-      // Generate unique ID with custom prefix
-      final exerciseId = 'custom_${const Uuid().v4()}';
+      final isEdit = widget.exerciseId != null;
+      final exerciseId = isEdit ? widget.exerciseId! : 'custom_${const Uuid().v4()}';
 
-      // Create exercise
-      await database.into(database.exercises).insert(
-            ExercisesCompanion.insert(
-              id: exerciseId,
-              name: _nameController.text.trim(),
-              primaryMuscleGroup: _selectedMuscleGroup,
-              secondaryMuscleGroups: _selectedSecondaryMuscles,
-              equipment: _selectedEquipment,
-              instructions: _instructionsController.text.trim().isEmpty
-                  ? 'No instructions provided'
-                  : _instructionsController.text.trim(),
-              tags: _selectedTags,
-              isBodyweight: Value(_isBodyweight),
-              exerciseType: Value(_selectedExerciseType),
-              category: Value(_selectedCategory),
-              difficulty: Value(_selectedDifficulty),
-              parentExerciseId: Value(_isVariant ? _parentExerciseId : null),
-              variantType: Value(_isVariant ? _variantType : null),
-            ),
-          );
+      final companion = ExercisesCompanion.insert(
+        id: exerciseId,
+        name: _nameController.text.trim(),
+        primaryMuscleGroup: _selectedMuscleGroup,
+        secondaryMuscleGroups: _selectedSecondaryMuscles,
+        equipment: _selectedEquipment,
+        instructions: _instructionsController.text.trim().isEmpty
+            ? 'No instructions provided'
+            : _instructionsController.text.trim(),
+        tags: _selectedTags,
+        isBodyweight: Value(_isBodyweight),
+        exerciseType: Value(_selectedExerciseType),
+        category: Value(_selectedCategory),
+        difficulty: Value(_selectedDifficulty),
+        parentExerciseId: Value(_isVariant ? _parentExerciseId : null),
+        variantType: Value(_isVariant ? _variantType : null),
+      );
+
+      if (isEdit) {
+        // Update existing exercise
+        await database.update(database.exercises).replace(companion);
+      } else {
+        // Create new exercise
+        await database.into(database.exercises).insert(companion);
+      }
 
       // Refresh exercises
       ref.invalidate(exercisesProvider);
@@ -181,8 +241,8 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
       if (mounted) {
         NotificationService().showInAppNotification(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Exercise created',
-          body: '"${_nameController.text}" created!',
+          title: isEdit ? 'Exercise updated' : 'Exercise created',
+          body: '"${_nameController.text}" ${isEdit ? "updated" : "created"}!',
         ).catchError((_) {});
         context.pop();
       }
@@ -190,7 +250,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
       if (mounted) {
         NotificationService().showInAppNotification(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error creating exercise',
+          title: widget.exerciseId != null ? 'Error updating exercise' : 'Error creating exercise',
           body: '$e',
         ).catchError((_) {});
       }
@@ -203,9 +263,11 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isEdit = widget.exerciseId != null;
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Exercise'),
+        title: Text(isEdit ? 'Edit Exercise' : 'Create Exercise'),
         actions: [
           if (_isLoading)
             const Center(
@@ -240,6 +302,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
                 border: OutlineInputBorder(),
               ),
               textCapitalization: TextCapitalization.words,
+              onChanged: (_) => _updateExerciseType(),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Please enter an exercise name';
@@ -311,6 +374,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
                     _selectedEquipment = value;
                     _isBodyweight = value == 'Bodyweight' || value == 'None';
                   });
+                  _updateExerciseType();
                 }
               },
             ),
@@ -334,34 +398,73 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
               onChanged: (value) {
                 if (value != null) {
                   setState(() => _selectedCategory = value);
+                  _updateExerciseType();
                 }
               },
             ),
             const SizedBox(height: 16),
 
+            // Auto-assign Exercise Type Toggle
+            SwitchListTile(
+              title: const Text('Auto-assign Exercise Type'),
+              subtitle: Text(
+                _autoAssignType 
+                    ? ExerciseTypeMapper.getAssignmentReason(
+                        name: _nameController.text,
+                        equipment: _selectedEquipment,
+                        category: _selectedCategory,
+                      )
+                    : 'Manually select exercise type',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              value: _autoAssignType,
+              onChanged: (value) {
+                setState(() {
+                  _autoAssignType = value;
+                  if (value) {
+                    _updateExerciseType();
+                  }
+                });
+              },
+            ),
+            const SizedBox(height: 8),
+
             // Exercise Type
             DropdownButtonFormField<String>(
               value: _selectedExerciseType,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Exercise Type *',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
+                helperText: _autoAssignType 
+                    ? ExerciseTypeMapper.getAssignmentReason(
+                        name: _nameController.text,
+                        equipment: _selectedEquipment,
+                        category: _selectedCategory,
+                      )
+                    : null,
               ),
-              items: _exerciseTypes.map((type) {
+              items: _exerciseTypeConfigs.map((config) {
                 return DropdownMenuItem(
-                  value: type,
-                  child: Text(
-                    type.replaceAll('_', ' ').split(' ').map((word) {
-                      return word[0].toUpperCase() + word.substring(1);
-                    }).join(' '),
-                  ),
+                  value: config.type.value,
+                  child: Text(config.displayName),
                 );
               }).toList(),
-              onChanged: (value) {
+              onChanged: _autoAssignType ? null : (value) {
                 if (value != null) {
                   setState(() => _selectedExerciseType = value);
                 }
               },
             ),
+            if (!_autoAssignType && _selectedExerciseType.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8, left: 12, right: 12),
+                child: Text(
+                  ExerciseTypeConfig.fromString(_selectedExerciseType).description,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
             const SizedBox(height: 16),
 
             // Difficulty

@@ -28,6 +28,8 @@ class SetEntries extends Table {
       real().nullable()(); // For assisted exercises (negative weight)
   RealColumn get addedWeight =>
       real().nullable()(); // For body weighted exercises (additional weight)
+  RealColumn get distance =>
+      real().nullable()(); // For distance-based exercises (stored in meters)
 
   DateTimeColumn get completedAt => dateTime()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
