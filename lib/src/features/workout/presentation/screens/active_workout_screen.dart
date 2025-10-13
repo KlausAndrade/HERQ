@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/models/active_workout.dart';
+import '../../domain/models/workout_summary.dart';
 import 'package:gym_ai/src/core/services/notification_service.dart';
 import '../providers/active_workout_provider.dart';
 import '../widgets/exercise_picker_dialog.dart';
@@ -463,9 +464,10 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
             child: const Text('Continue'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context).pop();
-              _showConfirmFinishDialog(context);
+              // Skip confirmation - they already confirmed by clicking "Finish Anyway"
+              await _finishWorkout(context);
             },
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
@@ -530,6 +532,65 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     }
   }
 
+  Future<void> _finishWorkout(BuildContext context) async {
+    print('🏁 Finish workout called');
+    
+    // Get workout state before clearing
+    final workout = ref.read(activeWorkoutProvider);
+    if (workout == null) {
+      if (context.mounted) {
+        context.go('/');
+      }
+      return;
+    }
+    
+    print('🏁 Creating quick summary...');
+    
+    // Create a quick summary to show immediately
+    final quickSummary = WorkoutSummary(
+      workoutName: workout.name,
+      duration: workout.elapsedTime,
+      totalSets: workout.exercises.fold(0, (sum, e) => sum + e.sets.where((s) => s.isCompleted).length),
+      totalReps: workout.exercises.expand((e) => e.sets).where((s) => s.isCompleted).fold(0, (sum, s) => sum + s.reps),
+      totalVolume: workout.exercises.expand((e) => e.sets).where((s) => s.isCompleted && s.weight != null).fold(0.0, (sum, s) => sum + (s.weight! * s.reps)),
+      totalTonnage: workout.exercises.expand((e) => e.sets).where((s) => s.isCompleted && s.weight != null).fold(0.0, (sum, s) => sum + (s.weight! * s.reps)),
+      exercises: workout.exercises.map((e) {
+        final completedSets = e.sets.where((s) => s.isCompleted).toList();
+        final exerciseVolume = completedSets.where((s) => s.weight != null).fold<double>(0.0, (sum, s) => sum + (s.weight! * s.reps));
+        final maxWeight = completedSets.map((s) => s.weight).whereType<double>().fold<double?>(null, (max, w) => max == null || w > max ? w : max);
+        
+        return ExerciseSummary(
+          exerciseId: e.id,
+          exerciseName: e.name,
+          sets: completedSets.length,
+          totalReps: completedSets.fold<int>(0, (sum, s) => sum + s.reps),
+          maxWeight: maxWeight,
+          totalVolume: exerciseVolume,
+        );
+      }).toList(),
+      prs: const [],
+      achievements: WorkoutAchievements(
+        perfectCompletion: workout.isFullyCompleted(),
+        streak: 0,
+      ),
+    );
+    
+    print('🏁 Navigating to summary immediately...');
+    
+    // Navigate to summary immediately with quick data
+    if (context.mounted) {
+      context.go('/workout-summary', extra: quickSummary);
+    }
+    
+    // Save workout in background
+    print('🏁 Starting background save...');
+    ref.read(activeWorkoutProvider.notifier).finishWorkout().then((_) {
+      print('✅ Workout saved in background!');
+    }).catchError((e) {
+      print('❌ Background save error: $e');
+    });
+  }
+
   void _showConfirmFinishDialog(BuildContext context) {
     final hasModifications = ref.read(workoutModificationsProvider);
     
@@ -569,49 +630,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           ),
           FilledButton(
             onPressed: () async {
-              print('🏁 Finish button pressed');
               Navigator.of(context).pop();
-              
-              // Show loading indicator
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => const Center(
-                  child: Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text('Saving workout...'),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-              
-              // Finish workout and get summary
-              final summary = await ref.read(activeWorkoutProvider.notifier).finishWorkout();
-              
-              print('🏁 Finish result - Summary: ${summary != null ? 'available' : 'null'}');
-              
-              if (context.mounted) {
-                // Close loading dialog
-                Navigator.of(context).pop();
-                
-                if (summary != null) {
-                  print('🏁 Navigating to workout summary');
-                  // Navigate to summary screen
-                  context.go('/workout-summary', extra: summary);
-                } else {
-                  print('🏁 No summary, falling back to home');
-                  // Fallback to home if no summary
-                  context.go('/');
-                }
-              }
+              await _finishWorkout(context);
             },
             child: const Text('Finish'),
           ),

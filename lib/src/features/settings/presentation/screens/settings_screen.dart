@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -231,6 +232,14 @@ class SettingsScreen extends ConsumerWidget {
           Card(
             child: Column(
               children: [
+                ListTile(
+                  leading: const Icon(Icons.bug_report, color: Colors.purple),
+                  title: const Text('Debug Exercise Types'),
+                  subtitle: const Text('Show all exercises and their types'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showDebugExerciseTypesDialog(context, ref),
+                ),
+                const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.build_outlined, color: Colors.orange),
                   title: const Text('Update Exercise Types'),
@@ -847,6 +856,49 @@ By using GymAI, you agree to these terms.''',
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDebugExerciseTypesDialog(BuildContext context, WidgetRef ref) async {
+    final db = ref.read(databaseProvider);
+    if (db == null) return;
+    
+    final exercises = await (db.select(db.exercises)
+          ..orderBy([(tbl) => OrderingTerm.asc(tbl.name)]))
+        .get();
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exercise Types in Database'),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 400,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: exercises.length,
+            itemBuilder: (context, index) {
+              final ex = exercises[index];
+              return ListTile(
+                dense: true,
+                title: Text(ex.name, style: const TextStyle(fontSize: 13)),
+                subtitle: Text(
+                  'Type: ${ex.exerciseType} | Category: ${ex.category}',
+                  style: const TextStyle(fontSize: 11),
+                ),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
             child: const Text('Close'),
           ),
         ],

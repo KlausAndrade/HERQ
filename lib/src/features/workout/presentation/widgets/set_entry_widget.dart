@@ -68,6 +68,14 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   @override
   void didUpdateWidget(SetEntryWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+    
+    // Debug: Check if exercise type changed during rebuild
+    if (widget.setNumber == 1 && oldWidget.exerciseType != widget.exerciseType) {
+      print('⚠️ SetEntryWidget EXERCISE TYPE CHANGED on rebuild!');
+      print('   Old: ${oldWidget.exerciseType} → New: ${widget.exerciseType}');
+      print('   Exercise: ${widget.exerciseName}');
+    }
+    
     // Update controllers only if values changed AND we're not currently editing
     // This prevents the controller from being overwritten while the user is typing
     if (oldWidget.set.weight != widget.set.weight && !_weightController.selection.isValid) {
@@ -109,6 +117,12 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     
     // Get exercise type configuration
     final exerciseTypeString = widget.exerciseType ?? 'weight_reps';
+    
+    // Debug: Log received exercise type
+    if (widget.setNumber == 1 && widget.isFirstSet) {
+      print('🎯 SetEntryWidget for "${widget.exerciseName}": exerciseType="${widget.exerciseType}", using="${exerciseTypeString}"');
+    }
+    
     final config = ExerciseTypeConfig.fromString(exerciseTypeString);
     final fields = config.requiredFields;
 

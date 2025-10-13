@@ -152,6 +152,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final activeExercises = <ActiveExercise>[];
       for (final id in template.exerciseIds.where((id) => exerciseMap.containsKey(id))) {
         final exercise = exerciseMap[id]!;
+        
+        // Debug: Log exercise type
+        print('📝 Loading exercise: ${exercise.name}, Type: ${exercise.exerciseType}');
+        
         // Load saved timer preference or use default (90s)
         final savedTimer = timerPrefs[exercise.id] ?? 90;
 
@@ -414,6 +418,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             number: updatedSet.number,
             weight: updatedSet.weight,
             reps: updatedSet.reps,
+            durationSeconds: updatedSet.durationSeconds,
+            distance: updatedSet.distance,
+            assistanceWeight: updatedSet.assistanceWeight,
+            addedWeight: updatedSet.addedWeight,
             rpe: updatedSet.rpe,
             isCompleted: updatedSet.isCompleted,
             isPRWeight: prResult['isPRWeight'] ?? false,
@@ -423,20 +431,24 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       }
       
       // Auto-fill logic: if the user completed the first set (index 0) and
-      // there were no other completed sets before this action, copy the weight
-      // and reps to other sets that are not completed and currently empty.
+      // there were no other completed sets before this action, copy the values
+      // to other sets that are not completed and currently empty.
       if (updatedSet.isCompleted && setIndex == 0) {
         final hadOtherCompleted = sets.any((s) => s.isCompleted && s.number != updatedSet.number);
         if (!hadOtherCompleted) {
           for (int i = 0; i < sets.length; i++) {
             if (i != setIndex) {
               final s = sets[i];
-              final isEmpty = (s.weight == null) && (s.reps == 0);
+              final isEmpty = (s.weight == null) && (s.reps == 0) && (s.durationSeconds == null) && (s.distance == null);
               if (!s.isCompleted && isEmpty) {
                 sets[i] = ActiveSet(
                   number: s.number,
                   weight: updatedSet.weight,
                   reps: updatedSet.reps,
+                  durationSeconds: updatedSet.durationSeconds,
+                  distance: updatedSet.distance,
+                  assistanceWeight: updatedSet.assistanceWeight,
+                  addedWeight: updatedSet.addedWeight,
                   rpe: s.rpe,
                   isCompleted: s.isCompleted,
                 );
@@ -454,6 +466,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         name: exercise.name,
         sets: sets,
         restTimerSeconds: exercise.restTimerSeconds,
+        exerciseType: exercise.exerciseType,  // 🔧 FIX: Preserve exercise type!
       );
 
       state = ActiveWorkout(
@@ -499,6 +512,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         number: sets.length + 1,
         weight: templateSet?.weight,
         reps: templateSet?.reps ?? 0,
+        durationSeconds: templateSet?.durationSeconds,
+        distance: templateSet?.distance,
+        assistanceWeight: templateSet?.assistanceWeight,
+        addedWeight: templateSet?.addedWeight,
         isCompleted: false,
       ));
 
@@ -507,6 +524,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         name: exercise.name,
         sets: sets,
         restTimerSeconds: exercise.restTimerSeconds,
+        exerciseType: exercise.exerciseType,  // 🔧 FIX: Preserve exercise type!
       );
 
       state = ActiveWorkout(
@@ -546,6 +564,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           number: idx + 1,
           weight: set.weight,
           reps: set.reps,
+          durationSeconds: set.durationSeconds,
+          distance: set.distance,
+          assistanceWeight: set.assistanceWeight,
+          addedWeight: set.addedWeight,
           rpe: set.rpe,
           isCompleted: set.isCompleted,
           isPRWeight: set.isPRWeight,
@@ -558,6 +580,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         name: exercise.name,
         sets: renumberedSets,
         restTimerSeconds: exercise.restTimerSeconds,
+        exerciseType: exercise.exerciseType,  // 🔧 FIX: Preserve exercise type!
       );
 
       state = ActiveWorkout(
@@ -665,6 +688,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         name: exercise.name,
         sets: exercise.sets,
         restTimerSeconds: newRestTimerSeconds,
+        exerciseType: exercise.exerciseType,  // 🔧 FIX: Preserve exercise type!
       );
 
       state = ActiveWorkout(
@@ -762,7 +786,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     print('🏁 Finishing workout: ${workout.name}');
 
     try {
-      // Calculate workout summary before saving
+      // Calculate workout summary before saving (with timeout)
       final summaryService = _ref.read(workoutSummaryServiceProvider);
       print('🏁 Summary service: ${summaryService != null ? 'available' : 'null'}');
       
@@ -772,6 +796,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             ? await summaryService.calculateSummary(
                 workout: workout,
                 duration: workout.elapsedTime,
+              ).timeout(
+                const Duration(seconds: 5),
+                onTimeout: () {
+                  print('⚠️ Summary calculation timed out after 5s');
+                  throw TimeoutException('Summary calculation timed out');
+                },
               )
             : null;
       } catch (e) {
@@ -831,101 +861,129 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       }
 
       // Save workout session to database
-      await db.into(db.workoutSessions).insert(
-            WorkoutSessionsCompanion.insert(
-              id: sessionId,
-              name: workout.name,
-              startedAt: now.subtract(workout.elapsedTime),
-              completedAt: Value(now),
-              totalDurationSeconds: Value(workout.elapsedTime.inSeconds),
-              totalVolume: Value(totalVolume),
-              totalTonnage: Value(totalTonnage),
-              totalSets: Value(totalSets),
-              totalReps: Value(totalReps),
-            ),
-          );
+      print('💾 Saving workout session to local DB...');
+      try {
+        await db.into(db.workoutSessions).insert(
+              WorkoutSessionsCompanion.insert(
+                id: sessionId,
+                name: workout.name,
+                startedAt: now.subtract(workout.elapsedTime),
+                completedAt: Value(now),
+                totalDurationSeconds: Value(workout.elapsedTime.inSeconds),
+                totalVolume: Value(totalVolume),
+                totalTonnage: Value(totalTonnage),
+                totalSets: Value(totalSets),
+                totalReps: Value(totalReps),
+              ),
+            );
+        print('✅ Workout session saved');
+      } catch (e, stackTrace) {
+        print('❌ Error saving workout session: $e');
+        print('Stack trace: $stackTrace');
+        rethrow;
+      }
 
       // Save all completed sets to database
-          for (final exercise in workout.exercises) {
-            for (final set in exercise.sets.where((s) => s.isCompleted)) {
-              await db.into(db.setEntries).insert(
-                    SetEntriesCompanion.insert(
-                      id: const Uuid().v4(),
-                      workoutSessionId: sessionId,
-                      exerciseId: exercise.id,
-                      setNumber: set.number,
-                      weight: Value(set.weight),
-                      reps: set.reps,
-                      durationSeconds: Value(set.durationSeconds),
-                      distance: Value(set.distance),
-                      assistanceWeight: Value(set.assistanceWeight),
-                      addedWeight: Value(set.addedWeight),
-                      rpe: Value(set.rpe),
-                      completedAt: now,
-                    ),
-                  );
-            }
+      print('💾 Saving ${workout.exercises.length} exercises with sets...');
+      try {
+        for (final exercise in workout.exercises) {
+          for (final set in exercise.sets.where((s) => s.isCompleted)) {
+            print('  💾 Saving ${exercise.name} set ${set.number}...');
+            await db.into(db.setEntries).insert(
+                  SetEntriesCompanion.insert(
+                    id: const Uuid().v4(),
+                    workoutSessionId: sessionId,
+                    exerciseId: exercise.id,
+                    setNumber: set.number,
+                    weight: Value(set.weight),
+                    reps: set.reps,
+                    durationSeconds: Value(set.durationSeconds),
+                    distance: Value(set.distance),
+                    assistanceWeight: Value(set.assistanceWeight),
+                    addedWeight: Value(set.addedWeight),
+                    rpe: Value(set.rpe),
+                    completedAt: now,
+                  ),
+                );
           }
+        }
+        print('✅ All sets saved');
+      } catch (e, stackTrace) {
+        print('❌ Error saving set entries: $e');
+        print('Stack trace: $stackTrace');
+        rethrow;
+      }
 
       // 🌩️ SYNC TO SUPABASE (background sync for cross-platform access)
       try {
-        final supabase = _ref.read(supabaseClientProvider);
-        final user = supabase.auth.currentUser;
+        print('☁️ Attempting Supabase sync...');
         
-        if (user != null) {
-          print('☁️ Syncing workout to Supabase...');
+        // Wrap entire Supabase sync in timeout
+        await Future(() async {
+          final supabase = _ref.read(supabaseClientProvider);
+          final user = supabase.auth.currentUser;
           
-          // Sync workout session
-          await supabase.from('workout_sessions').insert({
-            'id': sessionId,
-            'user_id': user.id,
-            'name': workout.name,
-            'started_at': now.subtract(workout.elapsedTime).toIso8601String(),
-            'completed_at': now.toIso8601String(),
-            'total_duration_seconds': workout.elapsedTime.inSeconds,
-            'total_volume': totalVolume,
-            'total_tonnage': totalTonnage,
-            'total_sets': totalSets,
-            'total_reps': totalReps,
-          });
+          if (user != null) {
+            print('☁️ User authenticated, syncing workout to Supabase...');
+            
+            // Sync workout session
+            await supabase.from('workout_sessions').insert({
+              'id': sessionId,
+              'user_id': user.id,
+              'name': workout.name,
+              'started_at': now.subtract(workout.elapsedTime).toIso8601String(),
+              'completed_at': now.toIso8601String(),
+              'total_duration_seconds': workout.elapsedTime.inSeconds,
+              'total_volume': totalVolume,
+              'total_tonnage': totalTonnage,
+              'total_sets': totalSets,
+              'total_reps': totalReps,
+            });
 
-          // Sync all completed sets
-          final setEntries = <Map<String, dynamic>>[];
-          for (final exercise in workout.exercises) {
-            for (final set in exercise.sets.where((s) => s.isCompleted)) {
-              setEntries.add({
-                'id': const Uuid().v4(),
-                'user_id': user.id,
-                'workout_session_id': sessionId,
-                'exercise_id': exercise.id,
-                'set_number': set.number,
-                'weight': set.weight,
-                'reps': set.reps,
-                'duration_seconds': set.durationSeconds,
-                'distance': set.distance,
-                'assistance_weight': set.assistanceWeight,
-                'added_weight': set.addedWeight,
-                'rpe': set.rpe,
-                'completed': true,
-              });
+            // Sync all completed sets
+            final setEntries = <Map<String, dynamic>>[];
+            for (final exercise in workout.exercises) {
+              for (final set in exercise.sets.where((s) => s.isCompleted)) {
+                setEntries.add({
+                  'id': const Uuid().v4(),
+                  'user_id': user.id,
+                  'workout_session_id': sessionId,
+                  'exercise_id': exercise.id,
+                  'set_number': set.number,
+                  'weight': set.weight,
+                  'reps': set.reps,
+                  'duration_seconds': set.durationSeconds,
+                  'distance': set.distance,
+                  'assistance_weight': set.assistanceWeight,
+                  'added_weight': set.addedWeight,
+                  'rpe': set.rpe,
+                  'completed': true,
+                });
+              }
             }
-          }
 
-          if (setEntries.isNotEmpty) {
-            await supabase.from('set_entries').insert(setEntries);
+            if (setEntries.isNotEmpty) {
+              await supabase.from('set_entries').insert(setEntries);
+            }
+            
+            print('✅ Workout synced to Supabase successfully');
+          } else {
+            print('⚠️ Not authenticated - workout saved locally only');
           }
-          
-          print('✅ Workout synced to Supabase successfully');
-        } else {
-          print('⚠️ Not authenticated - workout saved locally only');
-        }
+        }).timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            print('⚠️ Supabase sync timed out after 10s - continuing with local save');
+          },
+        );
       } catch (syncError) {
         // Don't fail the workout save if cloud sync fails
         print('⚠️ Cloud sync failed (offline?): $syncError');
         print('💾 Workout saved locally - will sync when online');
       }
 
-      // Update gamification stats
+      // Update gamification stats (with timeout)
+      print('🎮 Updating gamification stats...');
       final gamificationService = _ref.read(gamificationServiceProvider);
       if (gamificationService != null) {
         try {
@@ -937,34 +995,70 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             volumeLifted: totalVolume,
             durationMinutes: workout.elapsedTime.inMinutes,
             userId: uid,
+          ).timeout(
+            const Duration(seconds: 5),
+            onTimeout: () {
+              print('⚠️ Gamification update timed out after 5s');
+              throw TimeoutException('Gamification update timed out');
+            },
           );
+          print('✅ Gamification stats updated');
         } catch (e) {
           // Log error but don't block workout completion
-          print('Error updating gamification stats: $e');
+          print('⚠️ Error updating gamification stats: $e');
         }
       }
 
-      // Invalidate providers to refresh UI with new data
-      _ref.invalidate(workoutSessionsProvider);
-      _ref.invalidate(recentWorkoutSessionsProvider);
-      _ref.invalidate(weeklyStatsProvider);
-      _ref.invalidate(workoutStatsProvider);
-      _ref.invalidate(workoutSessionsByMonthProvider);
-
-      // Stop foreground service
-      await _foregroundService.stopService();
-
-      // Stop auto-save and delete checkpoint (workout completed successfully)
-      final checkpointService = _ref.read(workoutCheckpointServiceProvider);
-      await checkpointService?.stopAutoSave(deleteCheckpoint: true);
-
-      // Clear any active rest timer
-      _ref.read(restTimerProvider.notifier).stopTimer();
-
-      // Clear the active workout
+      // Clear the active workout FIRST (before cleanup to prevent race conditions)
       state = null;
       
       print('🏁 Workout finished successfully. Summary: ${summary != null ? 'available' : 'null'}');
+      
+      // Do cleanup in background (don't await - let it happen asynchronously)
+      Future.microtask(() async {
+        print('🧹 Starting background cleanup...');
+        
+        try {
+          // Stop foreground service
+          await _foregroundService.stopService().timeout(const Duration(seconds: 3));
+          print('✅ Foreground service stopped');
+        } catch (e) {
+          print('⚠️ Error stopping foreground service: $e');
+        }
+
+        try {
+          // Stop auto-save and delete checkpoint
+          final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+          await checkpointService?.stopAutoSave(deleteCheckpoint: true).timeout(const Duration(seconds: 3));
+          print('✅ Checkpoint cleared');
+        } catch (e) {
+          print('⚠️ Error clearing checkpoint: $e');
+        }
+
+        try {
+          // Clear any active rest timer
+          _ref.read(restTimerProvider.notifier).stopTimer();
+          print('✅ Rest timer stopped');
+        } catch (e) {
+          print('⚠️ Error stopping rest timer: $e');
+        }
+
+        try {
+          // Invalidate providers to refresh UI with new data
+          _ref.invalidate(workoutSessionsProvider);
+          _ref.invalidate(recentWorkoutSessionsProvider);
+          _ref.invalidate(weeklyStatsProvider);
+          _ref.invalidate(workoutStatsProvider);
+          _ref.invalidate(workoutSessionsByMonthProvider);
+          print('✅ Providers invalidated');
+        } catch (e) {
+          print('⚠️ Error invalidating providers: $e');
+        }
+        
+        print('🧹 Background cleanup completed');
+      });
+      
+      // Return immediately with summary (don't wait for cleanup)
       return summary;
     } catch (e) {
       print('❌ Error finishing workout: $e');
