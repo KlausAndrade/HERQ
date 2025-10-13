@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/database/database.dart';
+import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 
 class UserProfileScreen extends ConsumerWidget {
@@ -16,6 +17,8 @@ class UserProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final db = ref.watch(databaseProvider);
+    final supabase = ref.watch(supabaseClientProvider);
+    final currentUser = ref.watch(currentUserProvider);
     
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +36,7 @@ class UserProfileScreen extends ConsumerWidget {
         ),
       ),
       body: FutureBuilder(
-        future: _loadUserData(db, userId),
+        future: _loadUserData(db, supabase, userId, currentUser?.id),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -86,10 +89,10 @@ class UserProfileScreen extends ConsumerWidget {
                 CircleAvatar(
                   radius: 50,
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  backgroundImage: user?.avatarUrl != null
-                      ? NetworkImage(user!.avatarUrl!)
+                  backgroundImage: _getAvatarUrl(user) != null
+                      ? NetworkImage(_getAvatarUrl(user)!)
                       : null,
-                  child: user?.avatarUrl == null
+                  child: _getAvatarUrl(user) == null
                       ? Text(
                           _getDisplayName(user)[0].toUpperCase(),
                           style: const TextStyle(
@@ -109,10 +112,10 @@ class UserProfileScreen extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if (user?.email != null) ...[
+                if (_getEmail(user) != null && !_getEmail(user)!.contains('@')) ...[
                   const SizedBox(height: 4),
                   Text(
-                    user!.email!,
+                    _getEmail(user)!,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -137,7 +140,7 @@ class UserProfileScreen extends ConsumerWidget {
                         child: _buildStatCard(
                           context,
                           '💪',
-                          stats.totalWorkouts.toString(),
+                          _getStatValue(stats, 'totalWorkouts', 0).toString(),
                           'Workouts',
                         ),
                       ),
@@ -146,7 +149,7 @@ class UserProfileScreen extends ConsumerWidget {
                         child: _buildStatCard(
                           context,
                           '🏋️',
-                          '${stats.totalVolumeLifted.toStringAsFixed(0)} kg',
+                          '${_getStatDoubleValue(stats, 'totalVolumeLifted', 0).toStringAsFixed(0)} kg',
                           'Volume',
                         ),
                       ),
@@ -159,7 +162,7 @@ class UserProfileScreen extends ConsumerWidget {
                         child: _buildStatCard(
                           context,
                           '🔥',
-                          '${stats.currentStreak}',
+                          '${_getStatValue(stats, 'currentStreak', 0)}',
                           'Day Streak',
                         ),
                       ),
@@ -168,8 +171,8 @@ class UserProfileScreen extends ConsumerWidget {
                         child: _buildStatCard(
                           context,
                           '⭐',
-                          'Level ${stats.level}',
-                          '${stats.experiencePoints} XP',
+                          'Level ${_getStatValue(stats, 'level', 1)}',
+                          'Athlete',
                         ),
                       ),
                     ],
@@ -193,10 +196,67 @@ class UserProfileScreen extends ConsumerWidget {
 
   String _getDisplayName(dynamic user) {
     if (user == null) return 'Unknown Athlete';
+    
+    // Handle both User object (local DB) and Map (Supabase)
+    if (user is Map) {
+      final displayName = user['displayName'] as String?;
+      if (displayName != null && displayName.isNotEmpty) {
+        return displayName;
+      }
+      return 'Unknown Athlete';
+    }
+    
+    // User object from local DB
     if (user.displayName != null && user.displayName.isNotEmpty) {
       return user.displayName;
     }
     return 'Unknown Athlete';
+  }
+  
+  String? _getEmail(dynamic user) {
+    if (user == null) return null;
+    if (user is Map) {
+      return user['email'] as String?;
+    }
+    return user.email;
+  }
+  
+  String? _getAvatarUrl(dynamic user) {
+    if (user == null) return null;
+    if (user is Map) {
+      return user['avatarUrl'] as String?;
+    }
+    return user.avatarUrl;
+  }
+  
+  int _getStatValue(dynamic stats, String key, int defaultValue) {
+    if (stats == null) return defaultValue;
+    if (stats is Map) {
+      return stats[key] as int? ?? defaultValue;
+    }
+    // Local DB UserStat object
+    switch (key) {
+      case 'totalWorkouts':
+        return stats.totalWorkouts;
+      case 'currentStreak':
+        return stats.currentStreak;
+      case 'level':
+        return stats.level;
+      default:
+        return defaultValue;
+    }
+  }
+  
+  double _getStatDoubleValue(dynamic stats, String key, double defaultValue) {
+    if (stats == null) return defaultValue;
+    if (stats is Map) {
+      return stats[key] as double? ?? defaultValue;
+    }
+    // Local DB UserStat object
+    if (key == 'totalVolumeLifted') {
+      return stats.totalVolumeLifted;
+    }
+    return defaultValue;
   }
 
   Widget _buildStatCard(BuildContext context, String emoji, String value, String label) {
@@ -229,30 +289,90 @@ class UserProfileScreen extends ConsumerWidget {
     );
   }
 
-  Future<Map<String, dynamic>> _loadUserData(AppDatabase? db, String userId) async {
+  Future<Map<String, dynamic>> _loadUserData(
+    AppDatabase? db,
+    dynamic supabase,
+    String userId,
+    String? currentUserId,
+  ) async {
+    print('👤 Loading user profile for userId: $userId');
+    print('  Current user ID: $currentUserId');
+    
+    // If viewing own profile or no Supabase, use local DB
+    if (userId == currentUserId || db == null) {
+      print('  💾 Loading from local database...');
+      return _loadFromLocalDB(db, userId);
+    }
+
+    // Try Supabase first for other users
+    try {
+      print('  🌐 Loading from Supabase...');
+      
+      // Get user stats from Supabase
+      final statsResponse = await supabase
+          .from('user_stats')
+          .select()
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (statsResponse == null) {
+        print('  ⚠️ No stats found in Supabase, trying local DB...');
+        return _loadFromLocalDB(db, userId);
+      }
+
+      // Try to get display name from profiles table
+      String displayName = 'Unknown Athlete';
+      String? email;
+      
+      try {
+        final profileResponse = await supabase
+            .from('profiles')
+            .select('display_name, bio, avatar_url')
+            .eq('id', userId)
+            .maybeSingle();
+        
+        if (profileResponse != null && profileResponse['display_name'] != null) {
+          displayName = profileResponse['display_name'] as String;
+        }
+      } catch (e) {
+        print('  ⚠️ Could not load profile: $e');
+      }
+
+      print('  ✅ Loaded from Supabase: $displayName');
+
+      return {
+        'user': {
+          'id': userId,
+          'displayName': displayName,
+          'email': email,
+        },
+        'stats': {
+          'totalWorkouts': statsResponse['total_workouts'] ?? 0,
+          'totalVolumeLifted': (statsResponse['total_volume'] as num?)?.toDouble() ?? 0.0,
+          'currentStreak': statsResponse['current_streak'] ?? 0,
+          'level': statsResponse['level'] ?? 1,
+        },
+      };
+    } catch (e) {
+      print('  ⚠️ Supabase error: $e, trying local DB...');
+      return _loadFromLocalDB(db, userId);
+    }
+  }
+
+  Future<Map<String, dynamic>> _loadFromLocalDB(AppDatabase? db, String userId) async {
     if (db == null) throw Exception('Database not available');
 
-    print('👤 Loading user profile for userId: $userId');
-
     try {
-      // Get all users to debug
-      final allUsers = await db.select(db.users).get();
-      print('  📊 Total users in DB: ${allUsers.length}');
-      for (final u in allUsers) {
-        print('  👥 User: id=${u.id}, email=${u.email}, displayName=${u.displayName}');
-      }
-      
       final users = await (db.select(db.users)
             ..where((u) => u.id.equals(userId)))
           .get();
       
-      print('  🔍 Found ${users.length} users matching userId: $userId');
       final user = users.isNotEmpty ? users.first : null;
       
       if (user != null) {
-        print('  ✅ User found: email=${user.email}, displayName=${user.displayName}');
+        print('  ✅ User found in local DB: ${user.displayName}');
       } else {
-        print('  ⚠️ User not found for userId: $userId');
+        print('  ⚠️ User not found in local DB');
       }
 
       final stats = await (db.select(db.userStats)
@@ -260,10 +380,9 @@ class UserProfileScreen extends ConsumerWidget {
           .get();
       
       final userStats = stats.isNotEmpty ? stats.first : null;
-      print('  📊 Stats found: ${userStats != null}');
 
       if (user == null) {
-        throw Exception('User not found for userId: $userId');
+        throw Exception('User not found');
       }
 
       return {
@@ -271,7 +390,7 @@ class UserProfileScreen extends ConsumerWidget {
         'stats': userStats,
       };
     } catch (e) {
-      print('❌ Error loading user: $e');
+      print('❌ Error loading from local DB: $e');
       rethrow;
     }
   }
