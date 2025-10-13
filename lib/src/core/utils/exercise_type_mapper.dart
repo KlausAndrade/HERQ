@@ -15,8 +15,8 @@ class ExerciseTypeMapper {
     final equipmentLower = equipment?.toLowerCase().trim() ?? '';
     final categoryLower = category?.toLowerCase().trim() ?? '';
 
-    // Duration-based exercises (holds, planks, isometric)
-    if (_isDurationExercise(nameLower)) {
+    // Duration-based exercises (holds, planks, isometric, yoga poses)
+    if (_isDurationExercise(nameLower, category: categoryLower)) {
       return ExerciseType.duration;
     }
 
@@ -54,8 +54,13 @@ class ExerciseTypeMapper {
     return ExerciseType.weightReps;
   }
 
-  /// Check if exercise is duration-based (holds, planks, isometric)
-  static bool _isDurationExercise(String name) {
+  /// Check if exercise is duration-based (holds, planks, isometric, yoga poses)
+  static bool _isDurationExercise(String name, {String? category}) {
+    // If category is yoga, it's typically a duration exercise
+    if (category != null && (category.toLowerCase().contains('yoga') || category.toLowerCase().contains('acroyoga'))) {
+      return true;
+    }
+    
     final durationKeywords = [
       'plank',
       'hold',
@@ -72,6 +77,33 @@ class ExerciseTypeMapper {
       'isometric',
       'bridge hold',
       'horse stance',
+      // Yoga poses (typically held for duration)
+      'yoga pose',
+      'bird pose',
+      'throne pose',
+      'folded leaf',
+      'star pose',
+      'whale pose',
+      'front bird',
+      'straddle bat',
+      'flying whale',
+      'high flying whale',
+      'shoulder stand',
+      'free shoulder stand',
+      'foot to hand',
+      'foot to shin',
+      'bow pose',
+      'reverse bird',
+      'reverse star',
+      'ninja star',
+      'tree pose',
+      'warrior pose',
+      'downward dog',
+      'upward dog',
+      'child pose',
+      'cobra pose',
+      'mountain pose',
+      'triangle pose',
     ];
 
     return durationKeywords.any((keyword) => name.contains(keyword));
@@ -210,17 +242,17 @@ class ExerciseTypeMapper {
       'muscle-up',
       'muscle up',
       'burpee',
-      'squat' // bodyweight squat
+      'air squat',        // Specific bodyweight squat
+      'bodyweight squat', // Specific bodyweight squat
+      'pistol squat',     // Single-leg bodyweight squat
+      'sissy squat',      // Bodyweight squat variation
       'lunge',
       'jump',
       'jumping',
-      'pistol squat',
-      'sissy squat',
       'nordic curl',
       'nordic hamstring',
       'inverted row',
       'bodyweight',
-      'air squat',
       'box jump',
       'tuck',
       'hollow body',

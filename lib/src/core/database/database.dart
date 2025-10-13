@@ -6,6 +6,8 @@ import 'package:drift/drift.dart';
 import 'database_open.dart';
 import '../converters/json_converters.dart';
 import 'package:gym_ai/src/features/workout/data/seed/default_template_seed.dart';
+import '../utils/exercise_type_mapper.dart';
+import '../constants/exercise_types.dart';
 
 import '../models/user.dart';
 import '../models/exercise.dart';
@@ -226,141 +228,37 @@ class AppDatabase extends _$AppDatabase {
   }
 
   /// Auto-assign exercise type based on name, equipment, and category
-  /// This is a simplified version of ExerciseTypeMapper to avoid circular dependencies
+  /// Uses the centralized ExerciseTypeMapper for consistent type assignment
   String _assignExerciseType({
     required String name,
     required String equipment,
     required String category,
   }) {
-    final lowerName = name.toLowerCase();
-    final lowerEquipment = equipment.toLowerCase();
-
-    // Duration-based exercises (planks, holds, isometric)
-    if (_isDurationExercise(lowerName)) {
-      return 'duration';
-    }
-
-    // Distance & duration (cardio)
-    if (_isDistanceDurationExercise(lowerName, category)) {
-      return 'distance_duration';
-    }
-
-    // Duration & weight (loaded carries for time)
-    if (_isDurationWeightExercise(lowerName)) {
-      return 'duration_weight';
-    }
-
-    // Weight & distance (loaded carries for distance)
-    if (_isWeightDistanceExercise(lowerName)) {
-      return 'weight_distance';
-    }
-
-    // Weighted bodyweight exercises
-    if (lowerName.contains('weighted') && _isBodyweightBase(lowerName)) {
-      return 'weighted_bodyweight';
-    }
-
-    // Assisted bodyweight exercises
-    if ((lowerName.contains('assisted') || lowerEquipment.contains('assisted') || 
-         lowerEquipment.contains('machine')) && _isBodyweightBase(lowerName)) {
-      return 'assisted_bodyweight';
-    }
-
-    // Bodyweight reps (push-ups, pull-ups, etc.)
-    if (lowerEquipment == 'bodyweight' || _isBodyweightBase(lowerName)) {
-      return 'bodyweight_reps';
-    }
-
-    // Default: weight & reps
-    return 'weight_reps';
-  }
-
-  bool _isDurationExercise(String name) {
-    final durationKeywords = [
-      'plank',
-      'hold',
-      'wall sit',
-      'dead hang',
-      'hollow hold',
-      'l-sit',
-      'l sit',
-      'handstand',
-      'hollow body',
-      'arch hold',
-      'support hold',
-      'static hold',
-      'isometric',
-      'bridge hold',
-      'horse stance',
-    ];
-    return durationKeywords.any((keyword) => name.contains(keyword));
-  }
-
-  bool _isDistanceDurationExercise(String name, String category) {
-    if (category.toLowerCase() == 'cardio') return true;
+    // Use the centralized mapper to ensure consistency
+    final exerciseType = ExerciseTypeMapper.assignExerciseType(
+      name: name,
+      equipment: equipment,
+      category: category,
+    );
     
-    final keywords = [
-      'run',
-      'jog',
-      'sprint',
-      'row',
-      'swim',
-      'cycle',
-      'bike',
-      'elliptical',
-      'ski erg',
-      'assault bike',
-      'air bike',
-    ];
-    return keywords.any((keyword) => name.contains(keyword));
-  }
-
-  bool _isDurationWeightExercise(String name) {
-    final keywords = [
-      'farmer walk',
-      'farmers walk',
-      'sled push',
-      'sled pull',
-      'prowler push',
-      'yoke walk',
-      'sandbag carry',
-    ];
-    return keywords.any((keyword) => name.contains(keyword));
-  }
-
-  bool _isWeightDistanceExercise(String name) {
-    final keywords = [
-      'farmer carry',
-      'farmers carry',
-      'waiter carry',
-      'overhead carry',
-      'suitcase carry',
-      'zercher carry',
-    ];
-    return keywords.any((keyword) => name.contains(keyword));
-  }
-
-  bool _isBodyweightBase(String name) {
-    final bodyweightExercises = [
-      'pull up',
-      'pull-up',
-      'pullup',
-      'chin up',
-      'chin-up',
-      'chinup',
-      'push up',
-      'push-up',
-      'pushup',
-      'dip',
-      'muscle up',
-      'muscle-up',
-      'pistol squat',
-      'lunge',
-      'squat',
-      'burpee',
-      'jumping jack',
-      'mountain climber',
-    ];
-    return bodyweightExercises.any((keyword) => name.contains(keyword));
+    // Convert enum to string for database storage
+    switch (exerciseType) {
+      case ExerciseType.duration:
+        return 'duration';
+      case ExerciseType.distanceDuration:
+        return 'distance_duration';
+      case ExerciseType.durationWeight:
+        return 'duration_weight';
+      case ExerciseType.weightDistance:
+        return 'weight_distance';
+      case ExerciseType.weightedBodyweight:
+        return 'weighted_bodyweight';
+      case ExerciseType.assistedBodyweight:
+        return 'assisted_bodyweight';
+      case ExerciseType.bodyweightReps:
+        return 'bodyweight_reps';
+      case ExerciseType.weightReps:
+        return 'weight_reps';
+    }
   }
 }
