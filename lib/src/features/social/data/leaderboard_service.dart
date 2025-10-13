@@ -1,5 +1,3 @@
-import 'package:drift/drift.dart';
-
 import '../../../core/database/database.dart';
 import '../domain/models/leaderboard_models.dart';
 
@@ -59,35 +57,49 @@ class LeaderboardService {
   /// Get total volume leaderboard (sum of weight × reps)
   Future<List<LeaderboardEntry>> _getTotalVolumeLeaderboard(
       (DateTime?, DateTime?) dateRange) async {
-    // Local DB doesn't associate WorkoutSessions with users. We keep a
-    // per-user summary in `userStats` which is the correct source for
-    // aggregated leaderboards on-device.
+    print('🏆 Getting volume leaderboard...');
+    
     final users = await _db.select(_db.users).get();
     final stats = await _db.select(_db.userStats).get();
+    
+    print('  Found ${users.length} users, ${stats.length} stats entries');
 
     final entries = <LeaderboardEntry>[];
     for (final s in stats) {
+      // Get user info or create friendly display name
       User? user;
       try {
         user = users.firstWhere((u) => u.id == s.userId);
-      } catch (_) {
-        user = null;
+      } catch (_) {}
+
+      // Create display name - prefer real names
+      String displayName;
+      if (s.userId.contains('default')) {
+        displayName = 'You';
+      } else if (user != null && user.displayName.isNotEmpty) {
+        displayName = user.displayName;
+      } else if (user != null && user.email != null && user.email!.isNotEmpty) {
+        // Extract name from email (before @)
+        displayName = user.email!.split('@').first;
+      } else {
+        // Fallback to shortened UUID
+        displayName = 'User #${s.userId.substring(0, 8).toUpperCase()}';
       }
 
-      final displayName = user != null ? user.displayName : s.userId;
-      final avatar = user != null ? user.avatarUrl : null;
-
       if (s.totalVolumeLifted > 0) {
+        print('  ✅ Adding entry: $displayName - ${s.totalVolumeLifted.toStringAsFixed(0)} kg');
         entries.add(LeaderboardEntry(
           userId: s.userId,
           displayName: displayName,
-          avatarUrl: avatar,
+          avatarUrl: user?.avatarUrl,
           value: s.totalVolumeLifted,
           rank: 0,
-          formattedValue: '${s.totalVolumeLifted.toStringAsFixed(0)} kg',
+          formattedValue: '${s.totalVolumeLifted.toStringAsFixed(1)} kg',
         ));
       }
     }
+    
+    print('  Total entries: ${entries.length}');
 
     entries.sort((a, b) => b.value.compareTo(a.value));
 
@@ -108,27 +120,43 @@ class LeaderboardService {
   /// Get workout count leaderboard
   Future<List<LeaderboardEntry>> _getWorkoutCountLeaderboard(
       (DateTime?, DateTime?) dateRange) async {
-    // Use userStats.totalWorkouts as the authoritative on-device count
+    print('🏆 Getting workout count leaderboard...');
+    
     final users = await _db.select(_db.users).get();
     final stats = await _db.select(_db.userStats).get();
+    
+    print('  Found ${users.length} users, ${stats.length} stats entries');
 
     final entries = <LeaderboardEntry>[];
     for (final s in stats) {
       if (s.totalWorkouts > 0) {
+        // Get user info or create friendly display name
         User? user;
         try {
           user = users.firstWhere((u) => u.id == s.userId);
-        } catch (_) {
-          user = null;
+        } catch (_) {}
+
+        // Create display name - prefer real names
+        String displayName;
+        if (s.userId.contains('default')) {
+          displayName = 'You';
+        } else if (user != null && user.displayName.isNotEmpty) {
+          displayName = user.displayName;
+        } else if (user != null && user.email != null && user.email!.isNotEmpty) {
+          displayName = user.email!.split('@').first;
+        } else {
+          displayName = 'User #${s.userId.substring(0, 8).toUpperCase()}';
         }
 
+        print('  ✅ Adding entry: $displayName - ${s.totalWorkouts} workouts');
+        
         entries.add(LeaderboardEntry(
           userId: s.userId,
-          displayName: user != null ? user.displayName : s.userId,
-          avatarUrl: user != null ? user.avatarUrl : null,
+          displayName: displayName,
+          avatarUrl: user?.avatarUrl,
           value: s.totalWorkouts.toDouble(),
           rank: 0,
-          formattedValue: '${s.totalWorkouts} workouts',
+          formattedValue: '${s.totalWorkouts} ${s.totalWorkouts == 1 ? "workout" : "workouts"}',
         ));
       }
     }
@@ -150,27 +178,45 @@ class LeaderboardService {
 
   /// Get streak leaderboard (consecutive days with workouts)
   Future<List<LeaderboardEntry>> _getStreakLeaderboard() async {
-    // Use userStats.currentStreak if available
+    print('🏆 Getting streak leaderboard...');
+    
     final users = await _db.select(_db.users).get();
     final stats = await _db.select(_db.userStats).get();
+    
+    print('  Found ${users.length} users, ${stats.length} stats entries');
+    
     final entries = <LeaderboardEntry>[];
 
     for (final s in stats) {
       final streak = s.currentStreak;
       if (streak > 0) {
+        // Get user info or create friendly display name
         User? user;
         try {
           user = users.firstWhere((u) => u.id == s.userId);
-        } catch (_) {
-          user = null;
+        } catch (_) {}
+
+        // Create display name - prefer real names
+        String displayName;
+        if (s.userId.contains('default')) {
+          displayName = 'You';
+        } else if (user != null && user.displayName.isNotEmpty) {
+          displayName = user.displayName;
+        } else if (user != null && user.email != null && user.email!.isNotEmpty) {
+          displayName = user.email!.split('@').first;
+        } else {
+          displayName = 'User #${s.userId.substring(0, 8).toUpperCase()}';
         }
+
+        print('  ✅ Adding streak entry: $displayName - $streak days');
+        
         entries.add(LeaderboardEntry(
           userId: s.userId,
-          displayName: user != null ? user.displayName : s.userId,
-          avatarUrl: user != null ? user.avatarUrl : null,
+          displayName: displayName,
+          avatarUrl: user?.avatarUrl,
           value: streak.toDouble(),
           rank: 0,
-          formattedValue: '$streak days',
+          formattedValue: '$streak ${streak == 1 ? "day" : "days"} 🔥',
         ));
       }
     }
@@ -193,11 +239,44 @@ class LeaderboardService {
   /// Get PR count leaderboard
   Future<List<LeaderboardEntry>> _getPRCountLeaderboard(
       (DateTime?, DateTime?) dateRange) async {
-    // Personal records in the local database are currently stored without a
-    // userId (they're per-device). For accurate PR leaderboards across users
-    // we rely on a server (Supabase). Return an empty list locally and mark
-    // this as a TODO to implement via server-side aggregation.
-    return const [];
+    print('🏆 Getting PR count leaderboard...');
+    // Count PRs from personal_records table
+    final users = await _db.select(_db.users).get();
+    final entries = <LeaderboardEntry>[];
+    
+    // For local database, PRs don't have userId - they're device-local
+    // So we count all PRs for the current user
+    final prs = await _db.select(_db.personalRecords).get();
+    
+    print('  Found ${users.length} users, ${prs.length} PRs');
+    
+    if (prs.isEmpty) {
+      print('  ⚠️ No PRs found, returning empty');
+      return entries;
+    }
+    
+    // All PRs belong to the device's user (local-only)
+    final prCount = prs.length;
+    final userId = 'local_user'; // Device-local user ID
+    
+    User? user;
+    if (users.isNotEmpty) {
+      user = users.first; // Use first user in local DB
+    }
+    
+    print('  ✅ Adding PR entry: ${user?.displayName ?? "You"} - $prCount PRs');
+    
+    entries.add(LeaderboardEntry(
+      userId: userId,
+      displayName: user?.displayName ?? 'You',
+      avatarUrl: user?.avatarUrl,
+      value: prCount.toDouble(),
+      rank: 1,
+      formattedValue: '$prCount PRs',
+    ));
+    
+    print('  Total PR entries: ${entries.length}');
+    return entries;
   }
 
   /// Calculate current streak for a user

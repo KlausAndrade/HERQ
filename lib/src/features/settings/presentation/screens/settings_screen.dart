@@ -9,6 +9,8 @@ import '../../../../core/providers/database_provider.dart';
 import '../../../../core/widgets/animated_switch.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/database/seed_database.dart';
+import '../../../gamification/data/providers/gamification_provider.dart';
+import '../../../social/presentation/providers/leaderboard_providers.dart';
 import '../../providers/data_export_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/workout_settings_provider.dart';
@@ -232,13 +234,29 @@ class SettingsScreen extends ConsumerWidget {
           Card(
             child: Column(
               children: [
-                ListTile(
-                  leading: const Icon(Icons.bug_report, color: Colors.purple),
-                  title: const Text('Debug Exercise Types'),
-                  subtitle: const Text('Show all exercises and their types'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showDebugExerciseTypesDialog(context, ref),
-                ),
+              ListTile(
+                leading: const Icon(Icons.bug_report, color: Colors.purple),
+                title: const Text('Debug Exercise Types'),
+                subtitle: const Text('Show all exercises and their types'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _showDebugExerciseTypesDialog(context, ref),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.leaderboard, color: Colors.green),
+                title: const Text('Refresh Leaderboard Stats'),
+                subtitle: const Text('Recalculate stats from all workouts'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _refreshLeaderboardStats(context, ref),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.visibility, color: Colors.blue),
+                title: const Text('Debug: Show User Stats'),
+                subtitle: const Text('View raw user_stats table data'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _showUserStatsDebug(context, ref),
+              ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.build_outlined, color: Colors.orange),
@@ -861,6 +879,128 @@ By using GymAI, you agree to these terms.''',
         ],
       ),
     );
+  }
+
+  void _showUserStatsDebug(BuildContext context, WidgetRef ref) async {
+    final db = ref.read(databaseProvider);
+    if (db == null) return;
+    
+    print('🔍 Fetching user_stats table...');
+    final stats = await db.select(db.userStats).get();
+    
+    print('  Found ${stats.length} stats entries');
+    for (final s in stats) {
+      print('  - userId: ${s.userId}');
+      print('    totalWorkouts: ${s.totalWorkouts}');
+      print('    totalVolume: ${s.totalVolumeLifted}');
+      print('    totalSets: ${s.totalSetsCompleted}');
+      print('    streak: ${s.currentStreak}');
+    }
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('User Stats Table'),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 400,
+          child: stats.isEmpty
+              ? const Center(child: Text('❌ No user stats found!\n\nRun "Refresh Leaderboard Stats" first.'))
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: stats.length,
+                  itemBuilder: (context, index) {
+                    final s = stats[index];
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('User: ${s.userId}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                            const SizedBox(height: 8),
+                            Text('Workouts: ${s.totalWorkouts}', style: const TextStyle(fontSize: 11)),
+                            Text('Volume: ${s.totalVolumeLifted.toStringAsFixed(1)} kg', style: const TextStyle(fontSize: 11)),
+                            Text('Sets: ${s.totalSetsCompleted}', style: const TextStyle(fontSize: 11)),
+                            Text('Streak: ${s.currentStreak} days', style: const TextStyle(fontSize: 11)),
+                            Text('Level: ${s.level}', style: const TextStyle(fontSize: 11)),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _refreshLeaderboardStats(BuildContext context, WidgetRef ref) async {
+    print('🔄 Refresh Leaderboard Stats button clicked');
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 20),
+            Text('Refreshing stats...'),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      final gamificationService = ref.read(gamificationServiceProvider);
+      if (gamificationService == null) {
+        print('❌ Gamification service is null!');
+        throw StateError('Gamification service not available');
+      }
+      
+      print('✅ Gamification service found, calling recalculateUserStats...');
+      final stats = await gamificationService.recalculateUserStats();
+      print('✅ Stats recalculated: ${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted} kg');
+
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // Close loading dialog
+
+      // Invalidate ALL leaderboard providers (it's a family provider)
+      // This forces all leaderboard tabs to refresh with new data
+      ref.invalidate(leaderboardServiceProvider);
+      print('✅ Leaderboard service provider invalidated - all tabs will refresh');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✅ Stats refreshed!\n${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted.toStringAsFixed(1)} kg volume\n\nOpen Leaderboards to see updates!'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } catch (e, stackTrace) {
+      print('❌ Error refreshing stats: $e');
+      print('Stack trace: $stackTrace');
+      
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // Close loading dialog
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e\nCheck console for details'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
   }
 
   void _showDebugExerciseTypesDialog(BuildContext context, WidgetRef ref) async {

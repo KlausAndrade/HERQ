@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/auth_provider.dart';
@@ -19,10 +18,13 @@ final leaderboardServiceProvider = Provider<LeaderboardService?>((ref) {
 // Leaderboard provider
 final leaderboardProvider = FutureProvider.autoDispose
     .family<Leaderboard, LeaderboardParams>((ref, params) async {
+  print('🔄 Leaderboard provider called for type: ${params.type}, period: ${params.period}');
+  
   final service = ref.watch(leaderboardServiceProvider);
   final currentUser = ref.watch(currentUserProvider);
 
   if (service == null) {
+    print('  ⚠️ Leaderboard service is null');
     // Return empty leaderboard if service unavailable (web platform)
     return Leaderboard(
       type: params.type,
@@ -32,9 +34,13 @@ final leaderboardProvider = FutureProvider.autoDispose
     );
   }
 
-  return await service.getLeaderboard(
+  print('  ✅ Leaderboard service available, fetching data...');
+  final result = await service.getLeaderboard(
     type: params.type,
     period: params.period,
     currentUserId: currentUser?.id,
   );
+  
+  print('  📊 Leaderboard result: ${result.entries.length} entries');
+  return result;
 });

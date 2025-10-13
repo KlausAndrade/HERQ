@@ -2,266 +2,214 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/providers/auth_provider.dart';
-import '../providers/social_providers.dart';
-import '../widgets/post_card.dart';
+import '../../../../core/providers/database_provider.dart';
 
 class UserProfileScreen extends ConsumerWidget {
+  final String userId;
+
   const UserProfileScreen({
     super.key,
     required this.userId,
   });
 
-  final String userId;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
-    final profileUserAsync = ref.watch(userProfileProvider(userId));
-    final isCurrentUser = currentUser?.id == userId;
-    final isFollowingAsync = ref.watch(isFollowingProvider(userId));
-    final followersCountAsync = ref.watch(followersCountProvider(userId));
-    final followingCountAsync = ref.watch(followingCountProvider(userId));
-    final userPostsAsync = ref.watch(userPostsProvider(userId));
-
+    final db = ref.watch(databaseProvider);
+    
     return Scaffold(
       appBar: AppBar(
-        title: profileUserAsync.when(
-          data: (user) => Text(
-            user?.displayName?.isNotEmpty ?? false
-                ? user!.displayName!
-                : 'Profile',
-          ),
-          loading: () => const Text('Profile'),
-          error: (_, __) => const Text('Profile'),
+        title: const Text('Profile'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
         ),
-        actions: [
-          if (isCurrentUser) ...[
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () => context.push('/edit-profile'),
-              tooltip: 'Edit Profile',
-            ),
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () => context.go('/settings'),
-              tooltip: 'Settings',
-            ),
-          ],
-        ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(userProfileProvider(userId));
-          ref.invalidate(userPostsProvider(userId));
-          ref.invalidate(followersCountProvider(userId));
-          ref.invalidate(followingCountProvider(userId));
-        },
-        child: CustomScrollView(
-          slivers: [
-            // Profile header
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: profileUserAsync.when(
-                  data: (user) => Column(
-                    children: [
-                      // Avatar and name
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: user?.avatarUrl != null
-                            ? NetworkImage(user!.avatarUrl!)
-                            : null,
-                        child: user?.avatarUrl == null
-                            ? Text(
-                                ((user?.displayName?.isNotEmpty ?? false)
-                                        ? user!.displayName!
-                                        : userId)[0]
-                                    .toUpperCase(),
-                                style: const TextStyle(fontSize: 32),
-                              )
-                            : null,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        (user?.displayName?.isNotEmpty ?? false)
-                            ? user!.displayName!
-                            : 'User ${userId.substring(0, 8)}',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      if (user?.bio != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          user!.bio!,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(0.6),
-                              ),
-                        ),
-                      ],
-                      const SizedBox(height: 24),
+      body: FutureBuilder(
+        future: _loadUserData(db, userId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                      // Stats
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _StatColumn(
-                            label: 'Posts',
-                            value: userPostsAsync.when(
-                              data: (posts) => posts.length.toString(),
-                              loading: () => '-',
-                              error: (_, __) => '0',
-                            ),
-                          ),
-                          _StatColumn(
-                            label: 'Followers',
-                            value: followersCountAsync.when(
-                              data: (count) => count.toString(),
-                              loading: () => '-',
-                              error: (_, __) => '0',
-                            ),
-                            onTap: () => context.push('/user/$userId/followers'),
-                          ),
-                          _StatColumn(
-                            label: 'Following',
-                            value: followingCountAsync.when(
-                              data: (count) => count.toString(),
-                              loading: () => '-',
-                              error: (_, __) => '0',
-                            ),
-                            onTap: () => context.push('/user/$userId/following'),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Follow/Edit button
-                      if (!isCurrentUser)
-                        SizedBox(
-                          width: double.infinity,
-                          child: isFollowingAsync.when(
-                            data: (isFollowing) => ElevatedButton(
-                              onPressed: () => _toggleFollow(ref, isFollowing),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isFollowing
-                                    ? Theme.of(context).colorScheme.surfaceVariant
-                                    : Theme.of(context).colorScheme.primary,
-                                foregroundColor: isFollowing
-                                    ? Theme.of(context).colorScheme.onSurfaceVariant
-                                    : Theme.of(context).colorScheme.onPrimary,
-                              ),
-                              child: Text(isFollowing ? 'Following' : 'Follow'),
-                            ),
-                            loading: () => const ElevatedButton(
-                              onPressed: null,
-                              child: Text('Loading...'),
-                            ),
-                            error: (_, __) => const SizedBox.shrink(),
-                          ),
-                        ),
-                      if (isCurrentUser)
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () => context.go('/settings'),
-                            child: const Text('Edit Profile'),
-                          ),
-                        ),
-                    ],
+          if (snapshot.hasError || !snapshot.hasData) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.person_off,
+                    size: 64,
+                    color: Colors.grey[400],
                   ),
-                  loading: () => const Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        child: Icon(Icons.person, size: 32),
-                      ),
-                      SizedBox(height: 16),
-                      CircularProgressIndicator(),
-                    ],
-                  ),
-                  error: (_, __) => Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        child: Text(
-                          userId[0].toUpperCase(),
-                          style: const TextStyle(fontSize: 32),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'User ${userId.substring(0, 8)}',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // Posts section
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  'Posts',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ),
-            ),
-
-            // Posts grid/list
-            userPostsAsync.when(
-              data: (posts) {
-                if (posts.isEmpty) {
-                  return SliverFillRemaining(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.photo_library_outlined,
-                            size: 64,
-                            color: Colors.grey[400],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            isCurrentUser ? 'No posts yet' : 'No posts',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ],
-                      ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'User not found',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
                     ),
-                  );
-                }
-
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final post = posts[index];
-                      return PostCard(
-                        post: post,
-                        currentUserId: currentUser?.id ?? '',
-                      );
-                    },
-                    childCount: posts.length,
                   ),
-                );
-              },
-              loading: () => const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () => context.pop(),
+                    child: const Text('Go Back'),
+                  ),
+                ],
               ),
-              error: (error, _) => SliverFillRemaining(
-                child: Center(child: Text('Error: $error')),
+            );
+          }
+
+          final data = snapshot.data as Map<String, dynamic>;
+          final user = data['user'];
+          final stats = data['stats'];
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // Avatar
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  backgroundImage: user?.avatarUrl != null
+                      ? NetworkImage(user!.avatarUrl!)
+                      : null,
+                  child: user?.avatarUrl == null
+                      ? Text(
+                          _getDisplayName(user)[0].toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        )
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                // Name
+                Text(
+                  _getDisplayName(user),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (user?.email != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    user!.email!,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 32),
+                
+                // Stats
+                if (stats != null) ...[
+                  const Text(
+                    'Statistics',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          '💪',
+                          stats.totalWorkouts.toString(),
+                          'Workouts',
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          '🏋️',
+                          '${stats.totalVolumeLifted.toStringAsFixed(0)} kg',
+                          'Volume',
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          '🔥',
+                          '${stats.currentStreak}',
+                          'Day Streak',
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          '⭐',
+                          'Level ${stats.level}',
+                          '${stats.experiencePoints} XP',
+                        ),
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  Text(
+                    'No workout data',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  String _getDisplayName(dynamic user) {
+    if (user == null) return 'User';
+    if (user.displayName != null && user.displayName.isNotEmpty) {
+      return user.displayName;
+    }
+    if (user.email != null && user.email.isNotEmpty) {
+      return user.email!.split('@').first;
+    }
+    return 'User';
+  }
+
+  Widget _buildStatCard(BuildContext context, String emoji, String value, String label) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 32)),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -269,60 +217,30 @@ class UserProfileScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _toggleFollow(WidgetRef ref, bool isFollowing) async {
-    final currentUser = ref.read(currentUserProvider);
-    if (currentUser == null) return;
+  Future<Map<String, dynamic>> _loadUserData(db, String userId) async {
+    if (db == null) throw Exception('Database not available');
 
     try {
-      final social = ref.read(supabaseSocialServiceProvider);
+      final users = await (db.select(db.users)
+            ..where((tbl) => tbl.id.equals(userId)))
+          .get();
       
-      if (isFollowing) {
-        await social.unfollowUser(currentUser.id, userId);
-      } else {
-        await social.followUser(currentUser.id, userId);
-      }
+      final user = users.isNotEmpty ? users.first : null;
 
-      ref.invalidate(isFollowingProvider(userId));
-      ref.invalidate(followersCountProvider(userId));
-      ref.invalidate(feedPostsProvider);
+      final stats = await (db.select(db.userStats)
+            ..where((tbl) => tbl.userId.equals(userId)))
+          .get();
+      
+      final userStats = stats.isNotEmpty ? stats.first : null;
+
+      return {
+        'user': user,
+        'stats': userStats,
+      };
     } catch (e) {
-      debugPrint('Error toggling follow: $e');
+      print('Error loading user: $e');
+      rethrow;
     }
   }
 }
 
-class _StatColumn extends StatelessWidget {
-  const _StatColumn({
-    required this.label,
-    required this.value,
-    this.onTap,
-  });
-
-  final String label;
-  final String value;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-}

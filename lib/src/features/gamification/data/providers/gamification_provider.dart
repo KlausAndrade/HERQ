@@ -64,6 +64,97 @@ class GamificationService {
   }
 
   // Initialize user stats if they don't exist
+  /// Recalculate user stats from all completed workouts
+  Future<UserStat> recalculateUserStats({String? userId}) async {
+    print('📊 Recalculating user stats...');
+    
+    final uid = userId ?? defaultUserId;
+    if (uid == null) {
+      throw StateError('No userId available for gamification');
+    }
+    print('  User ID: $uid');
+
+    // Get all completed workouts
+    final workouts = await (database.select(database.workoutSessions)
+          ..where((tbl) => tbl.completedAt.isNotNull()))
+        .get();
+    
+    print('  Found ${workouts.length} completed workouts');
+    
+    if (workouts.isEmpty) {
+      print('  ⚠️ No completed workouts found!');
+      // Still create/update the stats entry with zeros
+      await database.into(database.userStats).insertOnConflictUpdate(
+        UserStatsCompanion.insert(
+          userId: uid,
+          totalWorkouts: const Value(0),
+          currentStreak: const Value(0),
+          longestStreak: const Value(0),
+          totalVolumeLifted: const Value(0.0),
+          totalSetsCompleted: const Value(0),
+          experiencePoints: const Value(0),
+          level: const Value(1),
+          lastWorkoutDate: const Value(null),
+        ),
+      );
+      final updated = await database.getUserStats(uid);
+      if (updated == null) {
+        throw StateError('Failed to create user stats');
+      }
+      return updated;
+    }
+    
+    // Calculate totals
+    final totalWorkouts = workouts.length;
+    final totalVolume = workouts.fold<double>(0, (sum, w) => sum + w.totalVolume);
+    final totalSets = workouts.fold<int>(0, (sum, w) => sum + w.totalSets);
+    
+    print('  Total workouts: $totalWorkouts');
+    print('  Total volume: ${totalVolume.toStringAsFixed(1)} kg');
+    print('  Total sets: $totalSets');
+    
+    // Calculate streak
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final workedOutToday = workouts.any((w) {
+      final workoutDate = DateTime(w.startedAt.year, w.startedAt.month, w.startedAt.day);
+      return workoutDate.isAtSameMomentAs(today);
+    });
+    
+    // Get existing stats
+    final existing = await database.getUserStats(uid);
+    final currentStreak = workedOutToday ? ((existing?.currentStreak ?? 0) > 0 ? (existing!.currentStreak) : 1) : 0;
+    final longestStreak = existing != null && existing.longestStreak > currentStreak ? existing.longestStreak : currentStreak;
+    
+    print('  Current streak: $currentStreak days');
+    print('  Longest streak: $longestStreak days');
+    
+    // Update or insert user stats
+    await database.into(database.userStats).insertOnConflictUpdate(
+      UserStatsCompanion.insert(
+        userId: uid,
+        totalWorkouts: Value(totalWorkouts),
+        currentStreak: Value(currentStreak),
+        longestStreak: Value(longestStreak),
+        totalVolumeLifted: Value(totalVolume),
+        totalSetsCompleted: Value(totalSets),
+        experiencePoints: Value(existing?.experiencePoints ?? totalWorkouts * 100),
+        level: Value(existing?.level ?? 1),
+        lastWorkoutDate: Value(workouts.isNotEmpty ? workouts.last.completedAt : null),
+      ),
+    );
+    
+    print('  ✅ User stats updated');
+    
+    final updated = await database.getUserStats(uid);
+    if (updated == null) {
+      throw StateError('Failed to update user stats');
+    }
+    
+    print('  📊 Final stats: ${updated.totalWorkouts} workouts, ${updated.totalVolumeLifted.toStringAsFixed(1)} kg volume');
+    return updated;
+  }
+
   Future<UserStat> initializeUserStats({String? userId}) async {
     final uid = userId ?? defaultUserId;
     if (uid == null) throw StateError('No userId available for gamification');

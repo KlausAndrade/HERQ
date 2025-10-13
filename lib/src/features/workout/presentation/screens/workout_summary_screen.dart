@@ -38,13 +38,12 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
     // Start animations
     _animationController.forward();
     
-    // Show confetti if there are PRs or achievements
-    if (widget.summary.prs.isNotEmpty ||
-        widget.summary.achievements.hasAnyAchievement) {
-      Future.delayed(const Duration(milliseconds: 500), () {
+    // Always show confetti - finishing a workout is always an achievement! 🎉
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
         _confettiController.play();
-      });
-    }
+      }
+    });
   }
 
   @override

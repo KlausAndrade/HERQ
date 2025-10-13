@@ -430,17 +430,35 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         }
       }
       
-      // Auto-fill logic: if the user completed the first set (index 0) and
-      // there were no other completed sets before this action, copy the values
-      // to other sets that are not completed and currently empty.
-      if (updatedSet.isCompleted && setIndex == 0) {
+      // Auto-fill logic: when completing ANY set, if no other sets are completed,
+      // copy the values to all empty incomplete sets
+      if (updatedSet.isCompleted) {
+        print('🔄 Set ${updatedSet.number} completed! Checking auto-fill...');
+        print('  Updated set values: weight=${updatedSet.weight}, reps=${updatedSet.reps}, duration=${updatedSet.durationSeconds}, distance=${updatedSet.distance}, assistance=${updatedSet.assistanceWeight}, added=${updatedSet.addedWeight}');
+        
         final hadOtherCompleted = sets.any((s) => s.isCompleted && s.number != updatedSet.number);
         if (!hadOtherCompleted) {
+          print('  ✅ No other completed sets - AUTO-FILL TRIGGERED!');
           for (int i = 0; i < sets.length; i++) {
             if (i != setIndex) {
               final s = sets[i];
-              final isEmpty = (s.weight == null) && (s.reps == 0) && (s.durationSeconds == null) && (s.distance == null);
+              print('  📋 Checking set ${s.number}: weight=${s.weight}, reps=${s.reps}, duration=${s.durationSeconds}, distance=${s.distance}, completed=${s.isCompleted}');
+              
+              // Check if set is empty based on what fields have been filled
+              // A set is empty if none of the value fields have meaningful data
+              final hasWeight = s.weight != null && s.weight! > 0;
+              final hasReps = s.reps > 0;
+              final hasDuration = s.durationSeconds != null && s.durationSeconds! > 0;
+              final hasDistance = s.distance != null && s.distance! > 0;
+              final hasAssistance = s.assistanceWeight != null && s.assistanceWeight! != 0;
+              final hasAdded = s.addedWeight != null && s.addedWeight! > 0;
+              
+              final isEmpty = !hasWeight && !hasReps && !hasDuration && !hasDistance && !hasAssistance && !hasAdded;
+              
+              print('    hasWeight=$hasWeight, hasReps=$hasReps, hasDuration=$hasDuration, hasDistance=$hasDistance, isEmpty=$isEmpty');
+              
               if (!s.isCompleted && isEmpty) {
+                print('  ✅ Auto-filling set ${s.number} with values from set ${updatedSet.number}');
                 sets[i] = ActiveSet(
                   number: s.number,
                   weight: updatedSet.weight,
@@ -452,9 +470,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                   rpe: s.rpe,
                   isCompleted: s.isCompleted,
                 );
+                print('    Set ${s.number} after auto-fill: weight=${sets[i].weight}, reps=${sets[i].reps}, duration=${sets[i].durationSeconds}, distance=${sets[i].distance}');
+              } else {
+                print('  ⏭️ Skipping set ${s.number} (not empty or completed)');
               }
             }
           }
+        } else {
+          print('  ⏭️ Auto-fill skipped (other sets already completed)');
         }
       }
       
