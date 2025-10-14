@@ -54,6 +54,9 @@ class SEs extends S {
   String get appTitle => 'GymAI';
 
   @override
+  String get description => 'The title of the application';
+
+  @override
   String get home => 'Inicio';
 
   @override
@@ -469,8 +472,8 @@ class SEs extends S {
   String get workoutInProgress => 'Entrenamiento en Progreso';
 
   @override
-  String haveActiveWorkout(Object name) {
-    return 'Tienes un entrenamiento activo \"$name\" en progreso.';
+  String haveActiveWorkout(String workoutName) {
+    return 'Tienes un entrenamiento activo: $workoutName';
   }
 
   @override
@@ -511,7 +514,7 @@ class SEs extends S {
   }
 
   @override
-  String get viewAchievements => 'Ver\nLogros';
+  String get viewAchievements => 'Ver\\nLogros';
 
   @override
   String get library => 'Biblioteca';
@@ -531,18 +534,20 @@ class SEs extends S {
       'Tienes un entrenamiento sin terminar:';
 
   @override
-  String finishedTimeAgo(String timeAgo) {
+  String finishedTimeAgo(Object timeAgo) {
     return 'Finalizado hace $timeAgo - ¡no olvides guardar!';
   }
 
   @override
-  String pausedTimeAgo(String timeAgo) {
+  String get type => 'String';
+
+  @override
+  String pausedTimeAgo(Object timeAgo) {
     return 'Pausado hace $timeAgo';
   }
 
   @override
-  String get tapFinalizeToSave =>
-      'Toca \"Finalizar\" para guardar tu entrenamiento y ver el resumen!';
+  String get tapFinalizeToSave => 'Toca \\';
 
   @override
   String get wouldYouLikeToContinue =>
@@ -561,7 +566,7 @@ class SEs extends S {
   String get resumeWorkoutTitle => 'Reanudar Entrenamiento';
 
   @override
-  String continueWorkoutName(String name) {
+  String continueWorkoutName(Object name) {
     return 'Continuar $name';
   }
 
@@ -611,7 +616,7 @@ class SEs extends S {
   String get yesterday => 'Ayer';
 
   @override
-  String daysAgo(int count) {
+  String daysAgo(Object count) {
     return 'hace $count días';
   }
 
@@ -1004,7 +1009,7 @@ class SEs extends S {
   String get gamificationNotAvailable => 'Gamificación no disponible';
 
   @override
-  String xpToLevel(int xp, int needed, int level) {
+  String xpToLevel(Object level, Object needed, Object xp) {
     return '$xp / $needed XP para Nivel $level';
   }
 
@@ -1030,12 +1035,12 @@ class SEs extends S {
   String get specialMilestones => 'Hitos Especiales';
 
   @override
-  String levelN(int level) {
+  String levelN(Object level) {
     return 'Nivel $level';
   }
 
   @override
-  String xpProgress(int current, int total) {
+  String xpProgress(Object current, Object total) {
     return '$current / $total XP';
   }
 
@@ -1096,22 +1101,22 @@ class SEs extends S {
   String get applyProgressiveOverload => 'Aplicar Sobrecarga Progresiva';
 
   @override
-  String applySuggestionQuestion(String exercise) {
+  String applySuggestionQuestion(Object exercise) {
     return '¿Aplicar esta sugerencia a tu próximo entrenamiento de $exercise?';
   }
 
   @override
-  String suggestedWeight(String weight) {
+  String suggestedWeight(Object weight) {
     return 'Peso: ${weight}kg';
   }
 
   @override
-  String suggestedReps(String reps) {
+  String suggestedReps(Object reps) {
     return 'Repeticiones: $reps';
   }
 
   @override
-  String suggestedSets(String sets) {
+  String suggestedSets(Object sets) {
     return 'Series: $sets';
   }
 
@@ -1185,7 +1190,7 @@ class SEs extends S {
 
   @override
   String get removeEmailsFromDisplayNames =>
-      'Esto eliminará todos los correos electrónicos de los nombres de visualización de los usuarios y los reemplazará con \"Atleta Desconocido\".';
+      'Esto eliminará todos los correos electrónicos de los nombres de visualización de los usuarios y los reemplazará con \\';
 
   @override
   String get thisFixesLeaderboards =>
@@ -1414,12 +1419,6 @@ class SEs extends S {
   String get reset => 'Restablecer';
 
   @override
-  String get name => 'Nombre';
-
-  @override
-  String get description => 'Descripción';
-
-  @override
   String get notes => 'Notas';
 
   @override
@@ -1430,9 +1429,6 @@ class SEs extends S {
 
   @override
   String get time => 'Hora';
-
-  @override
-  String get type => 'Tipo';
 
   @override
   String get status => 'Estado';

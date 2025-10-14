@@ -1,5 +1,4 @@
 {
-  "@@locale": "es",
   "save": "Guardar",
   "cancel": "Cancelar",
   "delete": "Eliminar",
@@ -15,44 +14,25 @@
   "confirm": "Confirmar",
   "gotIt": "Entendido",
   "appTitle": "GymAI",
-  "@appTitle": {
-    "description": "The title of the application"
-  },
+  "description": "The title of the application",
   "home": "Inicio",
-  "@home": {
   "exercises": "Ejercicios",
-  "@exercises": {
   "social": "Social",
   "progress": "Progreso",
-  "@progress": {
   "settings": "Configuración",
-  "@settings": {
   "welcomeBack": "¡Bienvenido de nuevo!",
-  "@welcomeBack": {
   "readyForWorkout": "¿Listo para tu próximo entrenamiento?",
-  "@readyForWorkout": {
   "quickActions": "Acciones Rápidas",
-  "@quickActions": {
   "startWorkout": "Iniciar Entrenamiento",
-  "@startWorkout": {
   "viewProgress": "Ver Progreso",
-  "@viewProgress": {
   "exerciseLibrary": "Biblioteca de Ejercicios",
-  "@exerciseLibrary": {
   "history": "Historial",
-  "@history": {
   "thisWeek": "Esta Semana",
-  "@thisWeek": {
   "workouts": "Entrenamientos",
-  "@workouts": {
   "totalVolume": "Volumen Total",
-  "@totalVolume": {
   "prsSet": "RPs Establecidos",
-  "@prsSet": {
   "recentWorkouts": "Entrenamientos Recientes",
-  "@recentWorkouts": {
   "viewAll": "Ver Todo",
-  "@viewAll": {
   "noWorkoutsYet": "Aún no hay entrenamientos",
   "startFirstWorkout": "Comenzar Primer Entrenamiento",
   "errorLoadingWorkouts": "Error al cargar entrenamientos",
@@ -171,7 +151,15 @@
   "completed": "Completado",
   "inProgress": "En Curso",
   "workoutInProgress": "Entrenamiento en Progreso",
-  "haveActiveWorkout": "Tienes un entrenamiento activo \"{name}\" en progreso.",
+  "haveActiveWorkout": "Tienes un entrenamiento activo: {workoutName}",
+  "@haveActiveWorkout": {
+    "description": "Message shown when user has an active workout",
+    "placeholders": {
+      "workoutName": {
+        "type": "String"
+      }
+    }
+  },
   "startingNewWillEnd": "Iniciar un nuevo entrenamiento finalizará el actual.",
   "doYouWantToContinue": "¿Deseas continuar?",
   "forceStartNewWorkout": "Forzar Inicio de Nuevo Entrenamiento",
@@ -183,34 +171,22 @@
   "finish": "Finalizar",
   "followingExercisesNoSets": "Los siguientes ejercicios no tienen series completadas:",
   "setsCount": "{count} series",
-  "viewAchievements": "Ver\nLogros",
+  "viewAchievements": "Ver\\nLogros",
   "library": "Biblioteca",
   "resumeWorkoutQuestion": "¿Reanudar Entrenamiento?",
   "workoutCompleteExclamation": "¡Entrenamiento Completo!",
   "youCompletedAllExercises": "Completaste todos los ejercicios pero olvidaste finalizar:",
   "youHaveUnfinishedWorkout": "Tienes un entrenamiento sin terminar:",
   "finishedTimeAgo": "Finalizado hace {timeAgo} - ¡no olvides guardar!",
-  "@finishedTimeAgo": {
-    "placeholders": {
-      "timeAgo": {
-        "type": "String"
-    }
-  },
+  "type": "String",
   "pausedTimeAgo": "Pausado hace {timeAgo}",
-  "@pausedTimeAgo": {
-    }
-  },
-  "tapFinalizeToSave": "Toca \"Finalizar\" para guardar tu entrenamiento y ver el resumen!",
+  "tapFinalizeToSave": "Toca \\",
   "wouldYouLikeToContinue": "¿Te gustaría continuar donde lo dejaste?",
   "addMore": "Añadir Más",
   "resume": "Reanudar",
   "finalize": "Finalizar",
   "resumeWorkoutTitle": "Reanudar Entrenamiento",
   "continueWorkoutName": "Continuar {name}",
-  "@continueWorkoutName": {
-      "name": {
-    }
-  },
   "beginNewSession": "Comenzar una nueva sesión",
   "checkYourStats": "Revisa tus estadísticas",
   "browseExercises": "Explorar ejercicios",
@@ -226,10 +202,6 @@
   "today": "Hoy",
   "yesterday": "Ayer",
   "daysAgo": "hace {count} días",
-  "@daysAgo": {
-      "count": {
-    }
-  },
   "exercise": "Ejercicio",
   "createExercise": "Crear Ejercicio",
   "editExercise": "Editar Ejercicio",
@@ -358,10 +330,6 @@
   "failedToLoadFeed": "Error al cargar el feed",
   "gamificationNotAvailable": "Gamificación no disponible",
   "xpToLevel": "{xp} / {needed} XP para Nivel {level}",
-  "@xpToLevel": {
-      "needed": {
-    }
-  },
   "achievementProgress": "Progreso de Logros",
   "unlocked": "Desbloqueado",
   "workoutMilestones": "Hitos de Entrenamiento",
@@ -370,15 +338,7 @@
   "consistencyAchievements": "Logros de Consistencia",
   "specialMilestones": "Hitos Especiales",
   "levelN": "Nivel {level}",
-  "@levelN": {
-    }
-  },
   "xpProgress": "{current} / {total} XP",
-  "@xpProgress": {
-      "current": {
-      "total": {
-    }
-  },
   "continueExercisesOrFinish": "¿Quieres continuar estos ejercicios o finalizar de todos modos?",
   "shareWorkout": "Compartir Entrenamiento",
   "noWorkoutHistory": "¡Aún no hay historial de entrenamientos!",
@@ -398,21 +358,9 @@
   "viewDetails": "Ver Detalles",
   "applyProgressiveOverload": "Aplicar Sobrecarga Progresiva",
   "applySuggestionQuestion": "¿Aplicar esta sugerencia a tu próximo entrenamiento de {exercise}?",
-  "@applySuggestionQuestion": {
-    }
-  },
   "suggestedWeight": "Peso: {weight}kg",
-  "@suggestedWeight": {
-    }
-  },
   "suggestedReps": "Repeticiones: {reps}",
-  "@suggestedReps": {
-    }
-  },
   "suggestedSets": "Series: {sets}",
-  "@suggestedSets": {
-    }
-  },
   "workoutTemplates": "Plantillas de Entrenamiento",
   "workoutInProgressTitle": "Entrenamiento en Curso",
   "startingNewWillEndCurrent": "Iniciar un nuevo entrenamiento finalizará el actual.",
@@ -435,7 +383,7 @@
   "enterEmail": "Ingresa tu correo electrónico",
   "enterPassword": "Ingresa tu contraseña",
   "fixingDisplayNames": "Corrigiendo nombres de visualización...",
-  "removeEmailsFromDisplayNames": "Esto eliminará todos los correos electrónicos de los nombres de visualización de los usuarios y los reemplazará con \"Atleta Desconocido\".",
+  "removeEmailsFromDisplayNames": "Esto eliminará todos los correos electrónicos de los nombres de visualización de los usuarios y los reemplazará con \\",
   "thisFixesLeaderboards": "Esto corrige las clasificaciones que muestran correos electrónicos en lugar de nombres.",
   "areYouSure": "¿Estás seguro?",
   "fixNames": "Corregir Nombres",
@@ -549,4 +497,34 @@
   "newFolder": "Nueva Carpeta",
   "folders": "Carpetas",
   "myTemplates": "Mis Plantillas",
-  "sharedTemplates": "Plantillas Compartidas"
+  "sharedTemplates": "Plantillas Compartidas",
+  "@appTitle": {},
+  "@home": {},
+  "@exercises": {},
+  "@progress": {},
+  "@settings": {},
+  "@welcomeBack": {},
+  "@readyForWorkout": {},
+  "@quickActions": {},
+  "@startWorkout": {},
+  "@viewProgress": {},
+  "@exerciseLibrary": {},
+  "@history": {},
+  "@thisWeek": {},
+  "@workouts": {},
+  "@totalVolume": {},
+  "@prsSet": {},
+  "@recentWorkouts": {},
+  "@viewAll": {},
+  "@finishedTimeAgo": {},
+  "@pausedTimeAgo": {},
+  "@continueWorkoutName": {},
+  "@daysAgo": {},
+  "@xpToLevel": {},
+  "@levelN": {},
+  "@xpProgress": {},
+  "@applySuggestionQuestion": {},
+  "@suggestedWeight": {},
+  "@suggestedReps": {},
+  "@suggestedSets": {}
+}

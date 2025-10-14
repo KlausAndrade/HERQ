@@ -54,6 +54,9 @@ class SEn extends S {
   String get appTitle => 'GymAI';
 
   @override
+  String get description => 'The title of the application';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -461,8 +464,8 @@ class SEn extends S {
   String get workoutInProgress => 'Workout in Progress';
 
   @override
-  String haveActiveWorkout(Object name) {
-    return 'You have an active workout \"$name\" in progress.';
+  String haveActiveWorkout(String workoutName) {
+    return 'You have an active workout: $workoutName';
   }
 
   @override
@@ -503,7 +506,7 @@ class SEn extends S {
   }
 
   @override
-  String get viewAchievements => 'View\nAchievements';
+  String get viewAchievements => 'View\\nAchievements';
 
   @override
   String get library => 'Library';
@@ -522,18 +525,20 @@ class SEn extends S {
   String get youHaveUnfinishedWorkout => 'You have an unfinished workout:';
 
   @override
-  String finishedTimeAgo(String timeAgo) {
+  String finishedTimeAgo(Object timeAgo) {
     return 'Finished $timeAgo ago - don\'t forget to save!';
   }
 
   @override
-  String pausedTimeAgo(String timeAgo) {
+  String get type => 'String';
+
+  @override
+  String pausedTimeAgo(Object timeAgo) {
     return 'Paused $timeAgo ago';
   }
 
   @override
-  String get tapFinalizeToSave =>
-      'Tap \"Finalize\" to save your workout and see your summary!';
+  String get tapFinalizeToSave => 'Tap \\';
 
   @override
   String get wouldYouLikeToContinue =>
@@ -552,7 +557,7 @@ class SEn extends S {
   String get resumeWorkoutTitle => 'Resume Workout';
 
   @override
-  String continueWorkoutName(String name) {
+  String continueWorkoutName(Object name) {
     return 'Continue $name';
   }
 
@@ -602,7 +607,7 @@ class SEn extends S {
   String get yesterday => 'Yesterday';
 
   @override
-  String daysAgo(int count) {
+  String daysAgo(Object count) {
     return '$count days ago';
   }
 
@@ -994,7 +999,7 @@ class SEn extends S {
   String get gamificationNotAvailable => 'Gamification not available';
 
   @override
-  String xpToLevel(int xp, int needed, int level) {
+  String xpToLevel(Object level, Object needed, Object xp) {
     return '$xp / $needed XP to Level $level';
   }
 
@@ -1020,12 +1025,12 @@ class SEn extends S {
   String get specialMilestones => 'Special Milestones';
 
   @override
-  String levelN(int level) {
+  String levelN(Object level) {
     return 'Level $level';
   }
 
   @override
-  String xpProgress(int current, int total) {
+  String xpProgress(Object current, Object total) {
     return '$current / $total XP';
   }
 
@@ -1086,22 +1091,22 @@ class SEn extends S {
   String get applyProgressiveOverload => 'Apply Progressive Overload';
 
   @override
-  String applySuggestionQuestion(String exercise) {
+  String applySuggestionQuestion(Object exercise) {
     return 'Apply this suggestion to your next $exercise workout?';
   }
 
   @override
-  String suggestedWeight(String weight) {
+  String suggestedWeight(Object weight) {
     return 'Weight: ${weight}kg';
   }
 
   @override
-  String suggestedReps(String reps) {
+  String suggestedReps(Object reps) {
     return 'Reps: $reps';
   }
 
   @override
-  String suggestedSets(String sets) {
+  String suggestedSets(Object sets) {
     return 'Sets: $sets';
   }
 
@@ -1174,7 +1179,7 @@ class SEn extends S {
 
   @override
   String get removeEmailsFromDisplayNames =>
-      'This will remove all emails from user display names and replace them with \"Unknown Athlete\".';
+      'This will remove all emails from user display names and replace them with \\';
 
   @override
   String get thisFixesLeaderboards =>
@@ -1403,12 +1408,6 @@ class SEn extends S {
   String get reset => 'Reset';
 
   @override
-  String get name => 'Name';
-
-  @override
-  String get description => 'Description';
-
-  @override
   String get notes => 'Notes';
 
   @override
@@ -1419,9 +1418,6 @@ class SEn extends S {
 
   @override
   String get time => 'Time';
-
-  @override
-  String get type => 'Type';
 
   @override
   String get status => 'Status';

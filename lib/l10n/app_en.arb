@@ -1,5 +1,4 @@
 {
-  "@@locale": "en",
   "save": "Save",
   "cancel": "Cancel",
   "delete": "Delete",
@@ -15,42 +14,23 @@
   "confirm": "Confirm",
   "gotIt": "Got it",
   "appTitle": "GymAI",
-  "@appTitle": {
-    "description": "The title of the application"
-  },
+  "description": "The title of the application",
   "home": "Home",
-  "@home": {
   "exercises": "Exercises",
-  "@exercises": {
   "social": "Social",
   "progress": "Progress",
-  "@progress": {
   "settings": "Settings",
-  "@settings": {
   "welcomeBack": "Welcome back!",
-  "@welcomeBack": {
   "readyForWorkout": "Ready for your next workout?",
-  "@readyForWorkout": {
   "quickActions": "Quick Actions",
-  "@quickActions": {
   "startWorkout": "Start Workout",
-  "@startWorkout": {
   "viewProgress": "View Progress",
-  "@viewProgress": {
-  "@exerciseLibrary": {
   "history": "History",
-  "@history": {
   "thisWeek": "This Week",
-  "@thisWeek": {
-  "@workouts": {
   "totalVolume": "Total Volume",
-  "@totalVolume": {
   "prsSet": "PRs Set",
-  "@prsSet": {
   "recentWorkouts": "Recent Workouts",
-  "@recentWorkouts": {
   "viewAll": "View All",
-  "@viewAll": {
   "noWorkoutsYet": "No workouts yet",
   "startFirstWorkout": "Start First Workout",
   "errorLoadingWorkouts": "Error loading workouts",
@@ -169,7 +149,15 @@
   "completed": "Completed",
   "inProgress": "In Progress",
   "workoutInProgress": "Workout in Progress",
-  "haveActiveWorkout": "You have an active workout \"{name}\" in progress.",
+  "haveActiveWorkout": "You have an active workout: {workoutName}",
+  "@haveActiveWorkout": {
+    "description": "Message shown when user has an active workout",
+    "placeholders": {
+      "workoutName": {
+        "type": "String"
+      }
+    }
+  },
   "startingNewWillEnd": "Starting a new workout will end the current one.",
   "doYouWantToContinue": "Do you want to continue?",
   "forceStartNewWorkout": "Force Start New Workout",
@@ -181,34 +169,22 @@
   "finish": "Finish",
   "followingExercisesNoSets": "The following exercises have no completed sets:",
   "setsCount": "{count} sets",
-  "viewAchievements": "View\nAchievements",
+  "viewAchievements": "View\\nAchievements",
   "library": "Library",
   "resumeWorkoutQuestion": "Resume Workout?",
   "workoutCompleteExclamation": "Workout Complete!",
   "youCompletedAllExercises": "You completed all exercises but forgot to finalize:",
   "youHaveUnfinishedWorkout": "You have an unfinished workout:",
   "finishedTimeAgo": "Finished {timeAgo} ago - don't forget to save!",
-  "@finishedTimeAgo": {
-    "placeholders": {
-      "timeAgo": {
-        "type": "String"
-    }
-  },
+  "type": "String",
   "pausedTimeAgo": "Paused {timeAgo} ago",
-  "@pausedTimeAgo": {
-    }
-  },
-  "tapFinalizeToSave": "Tap \"Finalize\" to save your workout and see your summary!",
+  "tapFinalizeToSave": "Tap \\",
   "wouldYouLikeToContinue": "Would you like to continue where you left off?",
   "addMore": "Add More",
   "resume": "Resume",
   "finalize": "Finalize",
   "resumeWorkoutTitle": "Resume Workout",
   "continueWorkoutName": "Continue {name}",
-  "@continueWorkoutName": {
-      "name": {
-    }
-  },
   "beginNewSession": "Begin a new session",
   "checkYourStats": "Check your stats",
   "browseExercises": "Browse exercises",
@@ -225,10 +201,6 @@
   "today": "Today",
   "yesterday": "Yesterday",
   "daysAgo": "{count} days ago",
-  "@daysAgo": {
-      "count": {
-    }
-  },
   "exercise": "Exercise",
   "exerciseLibrary": "Exercise Library",
   "createExercise": "Create Exercise",
@@ -358,10 +330,6 @@
   "failedToLoadFeed": "Failed to load feed",
   "gamificationNotAvailable": "Gamification not available",
   "xpToLevel": "{xp} / {needed} XP to Level {level}",
-  "@xpToLevel": {
-      "needed": {
-    }
-  },
   "achievementProgress": "Achievement Progress",
   "unlocked": "Unlocked",
   "workoutMilestones": "Workout Milestones",
@@ -370,15 +338,7 @@
   "consistencyAchievements": "Consistency Achievements",
   "specialMilestones": "Special Milestones",
   "levelN": "Level {level}",
-  "@levelN": {
-    }
-  },
   "xpProgress": "{current} / {total} XP",
-  "@xpProgress": {
-      "current": {
-      "total": {
-    }
-  },
   "continueExercisesOrFinish": "Do you want to continue these exercises or finish anyway?",
   "shareWorkout": "Share Workout",
   "noWorkoutHistory": "No workout history yet!",
@@ -398,21 +358,9 @@
   "viewDetails": "View Details",
   "applyProgressiveOverload": "Apply Progressive Overload",
   "applySuggestionQuestion": "Apply this suggestion to your next {exercise} workout?",
-  "@applySuggestionQuestion": {
-    }
-  },
   "suggestedWeight": "Weight: {weight}kg",
-  "@suggestedWeight": {
-    }
-  },
   "suggestedReps": "Reps: {reps}",
-  "@suggestedReps": {
-    }
-  },
   "suggestedSets": "Sets: {sets}",
-  "@suggestedSets": {
-    }
-  },
   "workoutTemplates": "Workout Templates",
   "workoutInProgressTitle": "Workout in Progress",
   "startingNewWillEndCurrent": "Starting a new workout will end the current one.",
@@ -435,7 +383,7 @@
   "enterEmail": "Enter your email",
   "enterPassword": "Enter your password",
   "fixingDisplayNames": "Fixing display names...",
-  "removeEmailsFromDisplayNames": "This will remove all emails from user display names and replace them with \"Unknown Athlete\".",
+  "removeEmailsFromDisplayNames": "This will remove all emails from user display names and replace them with \\",
   "thisFixesLeaderboards": "This fixes leaderboards showing emails instead of names.",
   "areYouSure": "Are you sure?",
   "fixNames": "Fix Names",
@@ -549,4 +497,34 @@
   "newFolder": "New Folder",
   "folders": "Folders",
   "myTemplates": "My Templates",
-  "sharedTemplates": "Shared Templates"
+  "sharedTemplates": "Shared Templates",
+  "@appTitle": {},
+  "@home": {},
+  "@exercises": {},
+  "@progress": {},
+  "@settings": {},
+  "@welcomeBack": {},
+  "@readyForWorkout": {},
+  "@quickActions": {},
+  "@startWorkout": {},
+  "@viewProgress": {},
+  "@exerciseLibrary": {},
+  "@history": {},
+  "@thisWeek": {},
+  "@workouts": {},
+  "@totalVolume": {},
+  "@prsSet": {},
+  "@recentWorkouts": {},
+  "@viewAll": {},
+  "@finishedTimeAgo": {},
+  "@pausedTimeAgo": {},
+  "@continueWorkoutName": {},
+  "@daysAgo": {},
+  "@xpToLevel": {},
+  "@levelN": {},
+  "@xpProgress": {},
+  "@applySuggestionQuestion": {},
+  "@suggestedWeight": {},
+  "@suggestedReps": {},
+  "@suggestedSets": {}
+}

@@ -54,6 +54,9 @@ class SPt extends S {
   String get appTitle => 'GymAI';
 
   @override
+  String get description => 'The title of the application';
+
+  @override
   String get home => 'Início';
 
   @override
@@ -468,8 +471,8 @@ class SPt extends S {
   String get workoutInProgress => 'Treino em Andamento';
 
   @override
-  String haveActiveWorkout(Object name) {
-    return 'Você tem um treino ativo \"$name\" em andamento.';
+  String haveActiveWorkout(String workoutName) {
+    return 'Você tem um treino ativo: $workoutName';
   }
 
   @override
@@ -509,7 +512,7 @@ class SPt extends S {
   }
 
   @override
-  String get viewAchievements => 'Ver\nConquistas';
+  String get viewAchievements => 'Ver\\nConquistas';
 
   @override
   String get library => 'Biblioteca';
@@ -528,18 +531,20 @@ class SPt extends S {
   String get youHaveUnfinishedWorkout => 'Você tem um treino inacabado:';
 
   @override
-  String finishedTimeAgo(String timeAgo) {
+  String finishedTimeAgo(Object timeAgo) {
     return 'Finalizado há $timeAgo - não esqueça de salvar!';
   }
 
   @override
-  String pausedTimeAgo(String timeAgo) {
+  String get type => 'String';
+
+  @override
+  String pausedTimeAgo(Object timeAgo) {
     return 'Pausado há $timeAgo';
   }
 
   @override
-  String get tapFinalizeToSave =>
-      'Toque em \"Finalizar\" para salvar seu treino e ver o resumo!';
+  String get tapFinalizeToSave => 'Toque em \\';
 
   @override
   String get wouldYouLikeToContinue => 'Gostaria de continuar de onde parou?';
@@ -557,7 +562,7 @@ class SPt extends S {
   String get resumeWorkoutTitle => 'Retomar Treino';
 
   @override
-  String continueWorkoutName(String name) {
+  String continueWorkoutName(Object name) {
     return 'Continuar $name';
   }
 
@@ -607,7 +612,7 @@ class SPt extends S {
   String get yesterday => 'Ontem';
 
   @override
-  String daysAgo(int count) {
+  String daysAgo(Object count) {
     return '$count dias atrás';
   }
 
@@ -1000,7 +1005,7 @@ class SPt extends S {
   String get gamificationNotAvailable => 'Gamificação não disponível';
 
   @override
-  String xpToLevel(int xp, int needed, int level) {
+  String xpToLevel(Object level, Object needed, Object xp) {
     return '$xp / $needed XP para Nível $level';
   }
 
@@ -1026,12 +1031,12 @@ class SPt extends S {
   String get specialMilestones => 'Marcos Especiais';
 
   @override
-  String levelN(int level) {
+  String levelN(Object level) {
     return 'Nível $level';
   }
 
   @override
-  String xpProgress(int current, int total) {
+  String xpProgress(Object current, Object total) {
     return '$current / $total XP';
   }
 
@@ -1092,22 +1097,22 @@ class SPt extends S {
   String get applyProgressiveOverload => 'Aplicar Sobrecarga Progressiva';
 
   @override
-  String applySuggestionQuestion(String exercise) {
+  String applySuggestionQuestion(Object exercise) {
     return 'Aplicar esta sugestão ao seu próximo treino de $exercise?';
   }
 
   @override
-  String suggestedWeight(String weight) {
+  String suggestedWeight(Object weight) {
     return 'Peso: ${weight}kg';
   }
 
   @override
-  String suggestedReps(String reps) {
+  String suggestedReps(Object reps) {
     return 'Repetições: $reps';
   }
 
   @override
-  String suggestedSets(String sets) {
+  String suggestedSets(Object sets) {
     return 'Séries: $sets';
   }
 
@@ -1181,7 +1186,7 @@ class SPt extends S {
 
   @override
   String get removeEmailsFromDisplayNames =>
-      'Isto removerá todos os e-mails dos nomes de exibição dos usuários e os substituirá por \"Atleta Desconhecido\".';
+      'Isto removerá todos os e-mails dos nomes de exibição dos usuários e os substituirá por \\';
 
   @override
   String get thisFixesLeaderboards =>
@@ -1410,12 +1415,6 @@ class SPt extends S {
   String get reset => 'Redefinir';
 
   @override
-  String get name => 'Nome';
-
-  @override
-  String get description => 'Descrição';
-
-  @override
   String get notes => 'Notas';
 
   @override
@@ -1426,9 +1425,6 @@ class SPt extends S {
 
   @override
   String get time => 'Hora';
-
-  @override
-  String get type => 'Tipo';
 
   @override
   String get status => 'Status';

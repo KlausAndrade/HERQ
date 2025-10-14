@@ -183,19 +183,25 @@ abstract class S {
   /// **'Got it'**
   String get gotIt;
 
-  /// The title of the application
+  /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
   /// **'GymAI'**
   String get appTitle;
 
-  /// Home navigation label
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'The title of the application'**
+  String get description;
+
+  /// No description provided for @home.
   ///
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
 
-  /// Exercises navigation label
+  /// No description provided for @exercises.
   ///
   /// In en, this message translates to:
   /// **'Exercises'**
@@ -207,79 +213,79 @@ abstract class S {
   /// **'Social'**
   String get social;
 
-  /// Progress navigation label
+  /// No description provided for @progress.
   ///
   /// In en, this message translates to:
   /// **'Progress'**
   String get progress;
 
-  /// Settings screen title
+  /// No description provided for @settings.
   ///
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
 
-  /// Welcome message on home screen
+  /// No description provided for @welcomeBack.
   ///
   /// In en, this message translates to:
   /// **'Welcome back!'**
   String get welcomeBack;
 
-  /// Subtitle on home screen
+  /// No description provided for @readyForWorkout.
   ///
   /// In en, this message translates to:
   /// **'Ready for your next workout?'**
   String get readyForWorkout;
 
-  /// Section title for quick action buttons
+  /// No description provided for @quickActions.
   ///
   /// In en, this message translates to:
   /// **'Quick Actions'**
   String get quickActions;
 
-  /// Start workout button text
+  /// No description provided for @startWorkout.
   ///
   /// In en, this message translates to:
   /// **'Start Workout'**
   String get startWorkout;
 
-  /// View progress button text
+  /// No description provided for @viewProgress.
   ///
   /// In en, this message translates to:
   /// **'View Progress'**
   String get viewProgress;
 
-  /// History button text
+  /// No description provided for @history.
   ///
   /// In en, this message translates to:
   /// **'History'**
   String get history;
 
-  /// This week stats section title
+  /// No description provided for @thisWeek.
   ///
   /// In en, this message translates to:
   /// **'This Week'**
   String get thisWeek;
 
-  /// Total volume label
+  /// No description provided for @totalVolume.
   ///
   /// In en, this message translates to:
   /// **'Total Volume'**
   String get totalVolume;
 
-  /// Personal records set label
+  /// No description provided for @prsSet.
   ///
   /// In en, this message translates to:
   /// **'PRs Set'**
   String get prsSet;
 
-  /// Recent workouts section title
+  /// No description provided for @recentWorkouts.
   ///
   /// In en, this message translates to:
   /// **'Recent Workouts'**
   String get recentWorkouts;
 
-  /// View all button text
+  /// No description provided for @viewAll.
   ///
   /// In en, this message translates to:
   /// **'View All'**
@@ -993,11 +999,11 @@ abstract class S {
   /// **'Workout in Progress'**
   String get workoutInProgress;
 
-  /// No description provided for @haveActiveWorkout.
+  /// Message shown when user has an active workout
   ///
   /// In en, this message translates to:
-  /// **'You have an active workout \"{name}\" in progress.'**
-  String haveActiveWorkout(Object name);
+  /// **'You have an active workout: {workoutName}'**
+  String haveActiveWorkout(String workoutName);
 
   /// No description provided for @startingNewWillEnd.
   ///
@@ -1068,7 +1074,7 @@ abstract class S {
   /// No description provided for @viewAchievements.
   ///
   /// In en, this message translates to:
-  /// **'View\nAchievements'**
+  /// **'View\\nAchievements'**
   String get viewAchievements;
 
   /// No description provided for @library.
@@ -1101,22 +1107,28 @@ abstract class S {
   /// **'You have an unfinished workout:'**
   String get youHaveUnfinishedWorkout;
 
-  /// Time since workout was finished
+  /// No description provided for @finishedTimeAgo.
   ///
   /// In en, this message translates to:
   /// **'Finished {timeAgo} ago - don\'t forget to save!'**
-  String finishedTimeAgo(String timeAgo);
+  String finishedTimeAgo(Object timeAgo);
 
-  /// Time since workout was paused
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'String'**
+  String get type;
+
+  /// No description provided for @pausedTimeAgo.
   ///
   /// In en, this message translates to:
   /// **'Paused {timeAgo} ago'**
-  String pausedTimeAgo(String timeAgo);
+  String pausedTimeAgo(Object timeAgo);
 
   /// No description provided for @tapFinalizeToSave.
   ///
   /// In en, this message translates to:
-  /// **'Tap \"Finalize\" to save your workout and see your summary!'**
+  /// **'Tap \\'**
   String get tapFinalizeToSave;
 
   /// No description provided for @wouldYouLikeToContinue.
@@ -1149,11 +1161,11 @@ abstract class S {
   /// **'Resume Workout'**
   String get resumeWorkoutTitle;
 
-  /// Continue workout with name
+  /// No description provided for @continueWorkoutName.
   ///
   /// In en, this message translates to:
   /// **'Continue {name}'**
-  String continueWorkoutName(String name);
+  String continueWorkoutName(Object name);
 
   /// No description provided for @beginNewSession.
   ///
@@ -1215,7 +1227,7 @@ abstract class S {
   /// **'App preferences'**
   String get appPreferences;
 
-  /// Workouts label
+  /// No description provided for @workouts.
   ///
   /// In en, this message translates to:
   /// **'Workouts'**
@@ -1245,11 +1257,11 @@ abstract class S {
   /// **'Yesterday'**
   String get yesterday;
 
-  /// How many days ago
+  /// No description provided for @daysAgo.
   ///
   /// In en, this message translates to:
   /// **'{count} days ago'**
-  String daysAgo(int count);
+  String daysAgo(Object count);
 
   /// No description provided for @exercise.
   ///
@@ -1257,7 +1269,7 @@ abstract class S {
   /// **'Exercise'**
   String get exercise;
 
-  /// Exercise library button text
+  /// No description provided for @exerciseLibrary.
   ///
   /// In en, this message translates to:
   /// **'Exercise Library'**
@@ -2019,11 +2031,11 @@ abstract class S {
   /// **'Gamification not available'**
   String get gamificationNotAvailable;
 
-  /// XP progress to next level
+  /// No description provided for @xpToLevel.
   ///
   /// In en, this message translates to:
   /// **'{xp} / {needed} XP to Level {level}'**
-  String xpToLevel(int xp, int needed, int level);
+  String xpToLevel(Object level, Object needed, Object xp);
 
   /// No description provided for @achievementProgress.
   ///
@@ -2067,17 +2079,17 @@ abstract class S {
   /// **'Special Milestones'**
   String get specialMilestones;
 
-  /// Level number
+  /// No description provided for @levelN.
   ///
   /// In en, this message translates to:
   /// **'Level {level}'**
-  String levelN(int level);
+  String levelN(Object level);
 
-  /// XP progress
+  /// No description provided for @xpProgress.
   ///
   /// In en, this message translates to:
   /// **'{current} / {total} XP'**
-  String xpProgress(int current, int total);
+  String xpProgress(Object current, Object total);
 
   /// No description provided for @continueExercisesOrFinish.
   ///
@@ -2187,29 +2199,29 @@ abstract class S {
   /// **'Apply Progressive Overload'**
   String get applyProgressiveOverload;
 
-  /// Question about applying AI suggestion
+  /// No description provided for @applySuggestionQuestion.
   ///
   /// In en, this message translates to:
   /// **'Apply this suggestion to your next {exercise} workout?'**
-  String applySuggestionQuestion(String exercise);
+  String applySuggestionQuestion(Object exercise);
 
   /// No description provided for @suggestedWeight.
   ///
   /// In en, this message translates to:
   /// **'Weight: {weight}kg'**
-  String suggestedWeight(String weight);
+  String suggestedWeight(Object weight);
 
   /// No description provided for @suggestedReps.
   ///
   /// In en, this message translates to:
   /// **'Reps: {reps}'**
-  String suggestedReps(String reps);
+  String suggestedReps(Object reps);
 
   /// No description provided for @suggestedSets.
   ///
   /// In en, this message translates to:
   /// **'Sets: {sets}'**
-  String suggestedSets(String sets);
+  String suggestedSets(Object sets);
 
   /// No description provided for @workoutTemplates.
   ///
@@ -2346,7 +2358,7 @@ abstract class S {
   /// No description provided for @removeEmailsFromDisplayNames.
   ///
   /// In en, this message translates to:
-  /// **'This will remove all emails from user display names and replace them with \"Unknown Athlete\".'**
+  /// **'This will remove all emails from user display names and replace them with \\'**
   String get removeEmailsFromDisplayNames;
 
   /// No description provided for @thisFixesLeaderboards.
@@ -2799,18 +2811,6 @@ abstract class S {
   /// **'Reset'**
   String get reset;
 
-  /// No description provided for @name.
-  ///
-  /// In en, this message translates to:
-  /// **'Name'**
-  String get name;
-
-  /// No description provided for @description.
-  ///
-  /// In en, this message translates to:
-  /// **'Description'**
-  String get description;
-
   /// No description provided for @notes.
   ///
   /// In en, this message translates to:
@@ -2834,12 +2834,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Time'**
   String get time;
-
-  /// No description provided for @type.
-  ///
-  /// In en, this message translates to:
-  /// **'Type'**
-  String get type;
 
   /// No description provided for @status.
   ///
