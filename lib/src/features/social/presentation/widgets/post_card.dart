@@ -172,8 +172,7 @@ class PostCard extends ConsumerWidget {
   Future<void> _sharePost(BuildContext context) async {
     try {
       // Create a shareable link to the post
-      final webLink =
-          'https://yourapp.com/post/${post.id}'; // Update with your actual domain
+      final webLink = 'https://herq.app/post/${post.id}';
 
       final l10n = S.of(context)!;
       final String shareText =

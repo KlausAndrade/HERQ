@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:herq/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutHerqScreen extends StatelessWidget {
   const AboutHerqScreen({super.key});
@@ -149,6 +150,59 @@ class AboutHerqScreen extends StatelessWidget {
                     textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 32),
+
+                  // Website & Contact Links
+                  Card(
+                    elevation: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          // Website Link
+                          ListTile(
+                            leading: Icon(
+                              Icons.language,
+                              color: theme.colorScheme.primary,
+                            ),
+                            title: const Text('Visit our website'),
+                            subtitle: const Text('herq.app'),
+                            trailing: const Icon(Icons.open_in_new),
+                            onTap: () async {
+                              final uri = Uri.parse('https://herq.app');
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(
+                                  uri,
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              }
+                            },
+                          ),
+                          const Divider(),
+                          // Contact Link
+                          ListTile(
+                            leading: Icon(
+                              Icons.email,
+                              color: theme.colorScheme.primary,
+                            ),
+                            title: const Text('Contact Us'),
+                            subtitle: const Text('Get in touch'),
+                            trailing: const Icon(Icons.open_in_new),
+                            onTap: () async {
+                              final uri =
+                                  Uri.parse('https://herq.app/#contact');
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(
+                                  uri,
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
 
                   // Version & Credits
                   Center(

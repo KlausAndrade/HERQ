@@ -138,6 +138,15 @@ class WebComingSoonScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          // Web users can see the URL in app store badges below
+                          // Direct navigation: window.location.href = 'https://herq.app'
+                        },
+                        icon: const Icon(Icons.info_outline),
+                        label: const Text('Learn more at herq.app'),
+                      ),
+                      const SizedBox(height: 16),
                       _buildFeatureList(),
                       const SizedBox(height: 24),
                       const Divider(),
