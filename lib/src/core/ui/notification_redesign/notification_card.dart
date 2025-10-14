@@ -40,10 +40,11 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     // Determine if we have actions
-    final hasActions = (primaryActionLabel != null && onPrimaryAction != null) ||
-                      (secondaryActionLabel != null && onSecondaryAction != null);
+    final hasActions =
+        (primaryActionLabel != null && onPrimaryAction != null) ||
+            (secondaryActionLabel != null && onSecondaryAction != null);
 
     return Dismissible(
       key: Key(id),
@@ -68,9 +69,10 @@ class NotificationCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         decoration: BoxDecoration(
-          color: backgroundColor ?? (isDark 
-            ? theme.colorScheme.surfaceContainerHighest.withOpacity(0.95)
-            : Colors.white.withOpacity(0.95)),
+          color: backgroundColor ??
+              (isDark
+                  ? theme.colorScheme.surfaceContainerHighest.withOpacity(0.95)
+                  : Colors.white.withOpacity(0.95)),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -109,7 +111,7 @@ class NotificationCard extends StatelessWidget {
                       ),
                     ),
                   ],
-                  
+
                   // Content
                   Expanded(
                     child: Column(
@@ -126,37 +128,40 @@ class NotificationCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        
+
                         // Body
                         const SizedBox(height: 2),
                         Text(
                           body,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.textTheme.bodySmall?.color?.withOpacity(0.8),
+                            color: theme.textTheme.bodySmall?.color
+                                ?.withOpacity(0.8),
                             height: 1.3,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        
+
                         // Actions (compact, inline)
                         if (hasActions) ...[
                           const SizedBox(height: 6),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (secondaryActionLabel != null && onSecondaryAction != null)
+                              if (secondaryActionLabel != null &&
+                                  onSecondaryAction != null)
                                 _CompactActionButton(
                                   label: secondaryActionLabel!,
                                   onPressed: onSecondaryAction!,
                                   isPrimary: false,
                                 ),
-                              if (secondaryActionLabel != null && 
+                              if (secondaryActionLabel != null &&
                                   onSecondaryAction != null &&
-                                  primaryActionLabel != null && 
+                                  primaryActionLabel != null &&
                                   onPrimaryAction != null)
                                 const SizedBox(width: 8),
-                              if (primaryActionLabel != null && onPrimaryAction != null)
+                              if (primaryActionLabel != null &&
+                                  onPrimaryAction != null)
                                 _CompactActionButton(
                                   label: primaryActionLabel!,
                                   onPressed: onPrimaryAction!,
@@ -168,7 +173,7 @@ class NotificationCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Close button (only if no actions)
                   if (!hasActions) ...[
                     const SizedBox(width: 8),
@@ -209,7 +214,7 @@ class _CompactActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     if (isPrimary) {
       return FilledButton(
         onPressed: onPressed,

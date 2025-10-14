@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../dto/workout_dto.dart';
 
 /// Base repository interface for workout data operations
-/// 
+///
 /// Implementations:
 /// - Mobile/Desktop: Uses local Drift database with background sync
 /// - Web: Uses Supabase directly (no local database)

@@ -70,12 +70,13 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   @override
   void didUpdateWidget(SetEntryWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     // Debug: Check if exercise type or variant changed during rebuild
     if (widget.setNumber == 1) {
       if (oldWidget.exerciseType != widget.exerciseType) {
         print('⚠️ SetEntryWidget EXERCISE TYPE CHANGED on rebuild!');
-        print('   Old: ${oldWidget.exerciseType} → New: ${widget.exerciseType}');
+        print(
+            '   Old: ${oldWidget.exerciseType} → New: ${widget.exerciseType}');
         print('   Exercise: ${widget.exerciseName}');
       }
       if (oldWidget.variantType != widget.variantType) {
@@ -84,25 +85,33 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         print('   Exercise: ${widget.exerciseName}');
       }
     }
-    
+
     // Update controllers only if values changed AND we're not currently editing
     // This prevents the controller from being overwritten while the user is typing
-    if (oldWidget.set.weight != widget.set.weight && !_weightController.selection.isValid) {
+    if (oldWidget.set.weight != widget.set.weight &&
+        !_weightController.selection.isValid) {
       _weightController.text = widget.set.weight?.toString() ?? '';
     }
-    if (oldWidget.set.reps != widget.set.reps && !_repsController.selection.isValid) {
-      _repsController.text = widget.set.reps > 0 ? widget.set.reps.toString() : '';
+    if (oldWidget.set.reps != widget.set.reps &&
+        !_repsController.selection.isValid) {
+      _repsController.text =
+          widget.set.reps > 0 ? widget.set.reps.toString() : '';
     }
-    if (oldWidget.set.durationSeconds != widget.set.durationSeconds && !_durationController.selection.isValid) {
+    if (oldWidget.set.durationSeconds != widget.set.durationSeconds &&
+        !_durationController.selection.isValid) {
       _durationController.text = widget.set.durationSeconds?.toString() ?? '';
     }
-    if (oldWidget.set.distance != widget.set.distance && !_distanceController.selection.isValid) {
+    if (oldWidget.set.distance != widget.set.distance &&
+        !_distanceController.selection.isValid) {
       _distanceController.text = widget.set.distance?.toString() ?? '';
     }
-    if (oldWidget.set.assistanceWeight != widget.set.assistanceWeight && !_assistanceWeightController.selection.isValid) {
-      _assistanceWeightController.text = widget.set.assistanceWeight?.toString() ?? '';
+    if (oldWidget.set.assistanceWeight != widget.set.assistanceWeight &&
+        !_assistanceWeightController.selection.isValid) {
+      _assistanceWeightController.text =
+          widget.set.assistanceWeight?.toString() ?? '';
     }
-    if (oldWidget.set.addedWeight != widget.set.addedWeight && !_addedWeightController.selection.isValid) {
+    if (oldWidget.set.addedWeight != widget.set.addedWeight &&
+        !_addedWeightController.selection.isValid) {
       _addedWeightController.text = widget.set.addedWeight?.toString() ?? '';
     }
   }
@@ -119,9 +128,10 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   }
 
   /// Adjust fields based on variant type
-  List<ExerciseField> _getFieldsForVariant(List<ExerciseField> baseFields, String variantType) {
+  List<ExerciseField> _getFieldsForVariant(
+      List<ExerciseField> baseFields, String variantType) {
     final variant = variantType.toLowerCase();
-    
+
     // For "assisted" variant: Add or replace with assistanceWeight (-kg)
     if (variant == 'assisted') {
       final hasWeight = baseFields.contains(ExerciseField.weight);
@@ -138,7 +148,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         return [ExerciseField.assistanceWeight, ...baseFields];
       }
     }
-    
+
     // For "weighted" variant: Add or replace with addedWeight (+kg)
     if (variant == 'weighted') {
       final hasWeight = baseFields.contains(ExerciseField.weight);
@@ -155,7 +165,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         return [ExerciseField.addedWeight, ...baseFields];
       }
     }
-    
+
     // For other variants (standard, tempo, pause), use base fields
     return baseFields;
   }
@@ -165,21 +175,23 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isCompleted = widget.set.isCompleted;
-    
+
     // Get exercise type configuration
     final exerciseTypeString = widget.exerciseType ?? 'weight_reps';
-    
+
     // Debug: Log received exercise type and variant
     if (widget.setNumber == 1 && widget.isFirstSet) {
       print('🎯 SetEntryWidget for "${widget.exerciseName}":');
       print('   exerciseType="${widget.exerciseType}"');
-      print('   variantType="${widget.variantType}" (${widget.variantType == null ? 'NULL' : 'NOT NULL'})');
-      print('   Will ${widget.variantType != null && widget.variantType != 'standard' ? 'APPLY' : 'SKIP'} variant override');
+      print(
+          '   variantType="${widget.variantType}" (${widget.variantType == null ? 'NULL' : 'NOT NULL'})');
+      print(
+          '   Will ${widget.variantType != null && widget.variantType != 'standard' ? 'APPLY' : 'SKIP'} variant override');
     }
-    
+
     final config = ExerciseTypeConfig.fromString(exerciseTypeString);
     var fields = config.requiredFields;
-    
+
     // Override fields based on variant type
     if (widget.variantType != null && widget.variantType != 'standard') {
       fields = _getFieldsForVariant(fields, widget.variantType!);
@@ -192,7 +204,8 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withAlpha((0.6 * 255).round()),
+              color: colorScheme.surfaceContainerHighest
+                  .withAlpha((0.6 * 255).round()),
             ),
             child: Row(
               children: [
@@ -205,14 +218,15 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                       style: theme.textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: 10,
-                        color: colorScheme.onSurface.withAlpha((0.6 * 255).round()),
+                        color: colorScheme.onSurface
+                            .withAlpha((0.6 * 255).round()),
                         letterSpacing: 0.5,
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 6),
-                
+
                 // Previous header
                 Expanded(
                   flex: 3,
@@ -221,32 +235,37 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                     style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 10,
-                      color: colorScheme.onSurface.withAlpha((0.6 * 255).round()),
+                      color:
+                          colorScheme.onSurface.withAlpha((0.6 * 255).round()),
                       letterSpacing: 0.5,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
                 const SizedBox(width: 6),
-                
+
                 // Dynamic field headers based on exercise type
-                ...fields.map((field) => [
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      field.label,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 10,
-                        color: colorScheme.onSurface.withAlpha((0.6 * 255).round()),
-                        letterSpacing: 0.5,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                ]).expand((element) => element).toList(),
-                
+                ...fields
+                    .map((field) => [
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              field.label,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 10,
+                                color: colorScheme.onSurface
+                                    .withAlpha((0.6 * 255).round()),
+                                letterSpacing: 0.5,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                        ])
+                    .expand((element) => element)
+                    .toList(),
+
                 // Checkmark header
                 SizedBox(
                   width: 42,
@@ -267,17 +286,20 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
             color: isCompleted
                 ? colorScheme.primary.withAlpha((0.12 * 255).round())
                 : (widget.setNumber % 2 == 0
-                    ? colorScheme.surfaceContainerHighest.withAlpha((0.3 * 255).round())
+                    ? colorScheme.surfaceContainerHighest
+                        .withAlpha((0.3 * 255).round())
                     : Colors.transparent),
             border: Border(
               bottom: BorderSide(
                 color: colorScheme.outline.withAlpha((0.1 * 255).round()),
                 width: 0.5,
               ),
-              left: isCompleted ? BorderSide(
-                color: colorScheme.primary.withAlpha((0.5 * 255).round()),
-                width: 3,
-              ) : BorderSide.none,
+              left: isCompleted
+                  ? BorderSide(
+                      color: colorScheme.primary.withAlpha((0.5 * 255).round()),
+                      width: 3,
+                    )
+                  : BorderSide.none,
             ),
           ),
           child: Row(
@@ -331,7 +353,8 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                           decoration: BoxDecoration(
                             color: isCompleted
                                 ? colorScheme.primary
-                                : colorScheme.surfaceContainerHighest.withAlpha((0.8 * 255).round()),
+                                : colorScheme.surfaceContainerHighest
+                                    .withAlpha((0.8 * 255).round()),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Center(
@@ -358,7 +381,8 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                   height: 36,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest.withAlpha((0.4 * 255).round()),
+                    color: colorScheme.surfaceContainerHighest
+                        .withAlpha((0.4 * 255).round()),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Center(
@@ -367,7 +391,8 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                             _formatPreviousSet(widget.previousSet!, config),
                             style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w500,
-                              color: colorScheme.onSurface.withAlpha((0.7 * 255).round()),
+                              color: colorScheme.onSurface
+                                  .withAlpha((0.7 * 255).round()),
                               fontSize: 13,
                             ),
                             textAlign: TextAlign.center,
@@ -375,7 +400,8 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                         : Text(
                             '—',
                             style: TextStyle(
-                              color: colorScheme.onSurface.withAlpha((0.3 * 255).round()),
+                              color: colorScheme.onSurface
+                                  .withAlpha((0.3 * 255).round()),
                               fontSize: 13,
                             ),
                           ),
@@ -385,13 +411,16 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
               const SizedBox(width: 6),
 
               // Dynamic input fields based on exercise type
-              ...fields.map((field) => [
-                Expanded(
-                  flex: 2,
-                  child: _buildInputField(field, colorScheme),
-                ),
-                const SizedBox(width: 6),
-              ]).expand((element) => element).toList(),
+              ...fields
+                  .map((field) => [
+                        Expanded(
+                          flex: 2,
+                          child: _buildInputField(field, colorScheme),
+                        ),
+                        const SizedBox(width: 6),
+                      ])
+                  .expand((element) => element)
+                  .toList(),
 
               // Complete Button
               SizedBox(
@@ -402,7 +431,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                   onPressed: () {
                     final newCompletionState = !isCompleted;
                     _updateSet(isCompleted: newCompletionState);
-                    
+
                     if (newCompletionState) {
                       _startRestTimer();
                     }
@@ -411,9 +440,8 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                     isCompleted
                         ? Icons.check_circle_rounded
                         : Icons.radio_button_unchecked_rounded,
-                    color: isCompleted
-                        ? colorScheme.primary
-                        : colorScheme.outline,
+                    color:
+                        isCompleted ? colorScheme.primary : colorScheme.outline,
                     size: 28,
                   ),
                 ),
@@ -681,7 +709,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   void _startRestTimer() {
     // Get live activity service
     final liveActivityService = ref.read(liveActivityServiceProvider);
-    
+
     // Start rest timer with the exercise's configured duration and context
     ref.read(restTimerProvider.notifier).startTimer(
           widget.restTimerSeconds,

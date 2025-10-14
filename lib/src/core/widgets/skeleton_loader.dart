@@ -42,14 +42,15 @@ class SkeletonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return SkeletonLoader(
       child: Container(
         height: height,
         width: width,
         decoration: BoxDecoration(
           color: isDark ? Colors.grey[800] : Colors.grey[300],
-          borderRadius: borderRadius ?? BorderRadius.circular(AppTheme.radiusMD),
+          borderRadius:
+              borderRadius ?? BorderRadius.circular(AppTheme.radiusMD),
         ),
         child: child,
       ),
@@ -72,7 +73,7 @@ class SkeletonText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return SkeletonLoader(
       child: Container(
         height: height,
@@ -97,7 +98,7 @@ class SkeletonAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return SkeletonLoader(
       child: Container(
         width: size,

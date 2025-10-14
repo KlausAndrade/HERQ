@@ -41,7 +41,7 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
       );
 
       await _database.into(_database.templateFolders).insert(folder);
-      
+
       final createdFolder = await (_database.select(_database.templateFolders)
             ..where((t) => t.id.equals(folderId)))
           .getSingle();
@@ -69,9 +69,11 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
           .write(
         TemplateFoldersCompanion(
           name: name != null ? Value(name) : const Value.absent(),
-          description: description != null ? Value(description) : const Value.absent(),
+          description:
+              description != null ? Value(description) : const Value.absent(),
           color: color != null ? Value(color) : const Value.absent(),
-          isExpanded: isExpanded != null ? Value(isExpanded) : const Value.absent(),
+          isExpanded:
+              isExpanded != null ? Value(isExpanded) : const Value.absent(),
           updatedAt: Value(DateTime.now()),
         ),
       );
@@ -90,8 +92,8 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
       await (_database.update(_database.workoutTemplates)
             ..where((t) => t.folderId.equals(folderId)))
           .write(const WorkoutTemplatesCompanion(
-            folderId: Value(null),
-          ));
+        folderId: Value(null),
+      ));
 
       // Then delete the folder
       await (_database.delete(_database.templateFolders)
@@ -115,9 +117,9 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
       await (_database.update(_database.workoutTemplates)
             ..where((t) => t.id.equals(templateId)))
           .write(WorkoutTemplatesCompanion(
-            folderId: Value(folderId),
-            updatedAt: Value(DateTime.now()),
-          ));
+        folderId: Value(folderId),
+        updatedAt: Value(DateTime.now()),
+      ));
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -134,9 +136,9 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
         await (_database.update(_database.templateFolders)
               ..where((t) => t.id.equals(folders[i].id)))
             .write(TemplateFoldersCompanion(
-              sortOrder: Value(sortValue),
-              updatedAt: Value(DateTime.now()),
-            ));
+          sortOrder: Value(sortValue),
+          updatedAt: Value(DateTime.now()),
+        ));
       }
       state = const AsyncValue.data(null);
     } catch (e, st) {
@@ -170,9 +172,10 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
 }
 
 // Provider for templates in a specific folder
-final templatesInFolderProvider = StreamProvider.family<List<WorkoutTemplate>, String?>((ref, folderId) {
+final templatesInFolderProvider =
+    StreamProvider.family<List<WorkoutTemplate>, String?>((ref, folderId) {
   final database = ref.watch(databaseProvider)!;
-  
+
   if (folderId == null) {
     // Return templates not in any folder
     return (database.select(database.workoutTemplates)

@@ -14,23 +14,23 @@ import 'src/features/workout/presentation/screens/web_auth_screen.dart';
 /// Uses Supabase for data persistence instead of SQLite
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
     // Load environment variables
     await dotenv.load(fileName: '.env');
-    
+
     // Initialize Supabase for web
     await Supabase.initialize(
       url: dotenv.env['SUPABASE_URL'] ?? '',
       anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
     );
-    
+
     print('✅ Web platform initialized with Supabase');
   } catch (e) {
     print('⚠️ Web initialization error: $e');
     // Continue anyway - app should handle missing env gracefully
   }
-  
+
   runApp(
     const ProviderScope(
       child: GymAIWebApp(),
@@ -64,15 +64,15 @@ final _router = GoRouter(
   redirect: (context, state) {
     final user = Supabase.instance.client.auth.currentUser;
     final isAuthRoute = state.matchedLocation == '/auth';
-    
+
     if (user == null && !isAuthRoute) {
       return '/auth';
     }
-    
+
     if (user != null && isAuthRoute) {
       return '/';
     }
-    
+
     return null;
   },
   routes: [

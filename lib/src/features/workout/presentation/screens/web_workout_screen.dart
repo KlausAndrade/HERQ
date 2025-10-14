@@ -19,7 +19,9 @@ class WebWorkoutScreen extends ConsumerWidget {
     // Start workout if not already active
     if (workout == null) {
       Future.microtask(() async {
-        await ref.read(activeWorkoutWebProvider.notifier).startWorkoutFromTemplate(templateId);
+        await ref
+            .read(activeWorkoutWebProvider.notifier)
+            .startWorkoutFromTemplate(templateId);
       });
     }
 
@@ -35,7 +37,9 @@ class WebWorkoutScreen extends ConsumerWidget {
             IconButton(
               icon: const Icon(Icons.check),
               onPressed: () async {
-                await ref.read(activeWorkoutWebProvider.notifier).finishWorkout();
+                await ref
+                    .read(activeWorkoutWebProvider.notifier)
+                    .finishWorkout();
                 if (context.mounted) {
                   context.go('/');
                 }
@@ -50,7 +54,7 @@ class WebWorkoutScreen extends ConsumerWidget {
               itemCount: workout.exercises.length,
               itemBuilder: (context, exerciseIndex) {
                 final exercise = workout.exercises[exerciseIndex];
-                
+
                 return Card(
                   margin: const EdgeInsets.only(bottom: 16),
                   child: Column(
@@ -69,11 +73,13 @@ class WebWorkoutScreen extends ConsumerWidget {
                           set: exercise.sets[setIndex],
                           exerciseType: exercise.exerciseType,
                           onUpdate: (updatedSet) {
-                            ref.read(activeWorkoutWebProvider.notifier).updateSet(
-                              exerciseIndex,
-                              setIndex,
-                              updatedSet,
-                            );
+                            ref
+                                .read(activeWorkoutWebProvider.notifier)
+                                .updateSet(
+                                  exerciseIndex,
+                                  setIndex,
+                                  updatedSet,
+                                );
                           },
                         ),
                       ),
@@ -81,7 +87,9 @@ class WebWorkoutScreen extends ConsumerWidget {
                         padding: const EdgeInsets.all(8),
                         child: TextButton.icon(
                           onPressed: () {
-                            ref.read(activeWorkoutWebProvider.notifier).addSet(exerciseIndex);
+                            ref
+                                .read(activeWorkoutWebProvider.notifier)
+                                .addSet(exerciseIndex);
                           },
                           icon: const Icon(Icons.add),
                           label: const Text('Add Set'),
@@ -200,11 +208,13 @@ class _SetRowState extends State<_SetRow> {
               ),
             );
           }).toList(),
-          
+
           // Complete button
           IconButton(
             icon: Icon(
-              widget.set.isCompleted ? Icons.check_circle : Icons.circle_outlined,
+              widget.set.isCompleted
+                  ? Icons.check_circle
+                  : Icons.circle_outlined,
               color: widget.set.isCompleted ? Colors.green : null,
             ),
             onPressed: () {

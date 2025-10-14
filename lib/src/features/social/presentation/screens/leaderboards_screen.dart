@@ -56,12 +56,13 @@ class LeaderboardTab extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedPeriod = useState<Period>(Period.monthly);
-    
+
     // Force refresh on first build
     useEffect(() {
       print('🎯 LeaderboardTab mounted for type: $type');
       Future.microtask(() {
-        final params = LeaderboardParams(type: type, period: selectedPeriod.value);
+        final params =
+            LeaderboardParams(type: type, period: selectedPeriod.value);
         ref.invalidate(leaderboardProvider(params));
       });
       return null;
@@ -76,7 +77,8 @@ class LeaderboardTab extends HookConsumerWidget {
         Expanded(
           child: leaderboardAsync.when(
             data: (leaderboard) {
-              print('📊 UI building with ${leaderboard.entries.length} entries for ${type}');
+              print(
+                  '📊 UI building with ${leaderboard.entries.length} entries for ${type}');
               return _buildLeaderboard(context, ref, leaderboard, params);
             },
             loading: () {
@@ -106,7 +108,8 @@ class LeaderboardTab extends HookConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => ref.invalidate(leaderboardProvider(params)),
+                      onPressed: () =>
+                          ref.invalidate(leaderboardProvider(params)),
                       child: Text(S.of(context)!.retry),
                     ),
                   ],
@@ -151,7 +154,8 @@ class LeaderboardTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildLeaderboard(BuildContext context, WidgetRef ref, Leaderboard leaderboard, LeaderboardParams params) {
+  Widget _buildLeaderboard(BuildContext context, WidgetRef ref,
+      Leaderboard leaderboard, LeaderboardParams params) {
     final entries = leaderboard.entries;
 
     // Empty state: show a scrollable area so RefreshIndicator works
@@ -199,7 +203,8 @@ class LeaderboardTab extends HookConsumerWidget {
           padding: const EdgeInsets.all(16),
           itemCount: listCount,
           itemBuilder: (context, index) {
-            if (index == 0) return _buildPodium(context, entries.take(3).toList());
+            if (index == 0)
+              return _buildPodium(context, entries.take(3).toList());
             final realIndex = index - 1 + 3; // map list index to entries
             final entry = entries[realIndex];
             return _buildLeaderboardEntry(context, entry, false);
@@ -217,7 +222,8 @@ class LeaderboardTab extends HookConsumerWidget {
         itemCount: entries.length,
         itemBuilder: (context, index) {
           final entry = entries[index];
-          print('  🎨 Building entry $index: ${entry.displayName} - ${entry.formattedValue}');
+          print(
+              '  🎨 Building entry $index: ${entry.displayName} - ${entry.formattedValue}');
           // Don't hide any entries when there's no podium! (< 3 entries)
           return _buildLeaderboardEntry(context, entry, false);
         },
@@ -257,9 +263,12 @@ class LeaderboardTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildPodiumPlace(BuildContext context, LeaderboardEntry entry, int place, double height) {
-    final isCurrentUser = DisplayNameSanitizer.sanitize(entry.displayName) == 'You' || entry.userId.contains('default');
-    
+  Widget _buildPodiumPlace(
+      BuildContext context, LeaderboardEntry entry, int place, double height) {
+    final isCurrentUser =
+        DisplayNameSanitizer.sanitize(entry.displayName) == 'You' ||
+            entry.userId.contains('default');
+
     Color podiumColor;
     IconData medalIcon;
 
@@ -282,121 +291,129 @@ class LeaderboardTab extends HookConsumerWidget {
     }
 
     return InkWell(
-      onTap: isCurrentUser ? null : () {
-        print('🔍 Navigating to profile from podium:');
-        print('  Entry: ${entry.displayName}');
-        print('  UserId: ${entry.userId}');
-        print('  Full route: /user/${entry.userId}');
-        context.push('/user/${entry.userId}');
-      },
+      onTap: isCurrentUser
+          ? null
+          : () {
+              print('🔍 Navigating to profile from podium:');
+              print('  Entry: ${entry.displayName}');
+              print('  UserId: ${entry.userId}');
+              print('  Full route: /user/${entry.userId}');
+              context.push('/user/${entry.userId}');
+            },
       borderRadius: BorderRadius.circular(12),
       child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // Avatar with medal
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            CircleAvatar(
-              radius: place == 1 ? 30 : 24,
-              backgroundColor: podiumColor.withOpacity(0.2),
-              backgroundImage: entry.avatarUrl != null
-                  ? NetworkImage(entry.avatarUrl!)
-                  : null,
-              child: entry.avatarUrl == null
-                  ? Text(
-                      DisplayNameSanitizer.sanitize(entry.displayName)[0].toUpperCase(),
-                      style: TextStyle(
-                        fontSize: place == 1 ? 20 : 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                  : null,
-            ),
-            Positioned(
-              bottom: -2,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: podiumColor,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: podiumColor.withOpacity(0.5),
-                      blurRadius: 4,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  medalIcon,
-                  color: Colors.white,
-                  size: place == 1 ? 18 : 14,
-                ),
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Avatar with medal
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              CircleAvatar(
+                radius: place == 1 ? 30 : 24,
+                backgroundColor: podiumColor.withOpacity(0.2),
+                backgroundImage: entry.avatarUrl != null
+                    ? NetworkImage(entry.avatarUrl!)
+                    : null,
+                child: entry.avatarUrl == null
+                    ? Text(
+                        DisplayNameSanitizer.sanitize(entry.displayName)[0]
+                            .toUpperCase(),
+                        style: TextStyle(
+                          fontSize: place == 1 ? 20 : 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        // Name
-        Text(
-          DisplayNameSanitizer.sanitize(entry.displayName),
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: place == 1 ? 13 : 12,
-          ),
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(height: 4),
-        // Value
-        Text(
-          entry.formattedValue,
-          style: TextStyle(
-            fontSize: place == 1 ? 12 : 10,
-            fontWeight: FontWeight.w600,
-            color: podiumColor,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 12),
-        // Podium base
-        Container(
-          width: double.infinity,
-          constraints: const BoxConstraints(maxWidth: 90),
-          height: height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                podiumColor.withOpacity(0.6),
-                podiumColor.withOpacity(0.3),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            border: Border.all(
-              color: podiumColor,
-              width: 2.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: podiumColor.withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
+              Positioned(
+                bottom: -2,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: podiumColor,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: podiumColor.withOpacity(0.5),
+                        blurRadius: 4,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    medalIcon,
+                    color: Colors.white,
+                    size: place == 1 ? 18 : 14,
+                  ),
+                ),
               ),
             ],
           ),
-          child: Center(
-            child: Text(
-              place == 1 ? '🥇' : place == 2 ? '🥈' : '🥉',
-              style: const TextStyle(fontSize: 32),
+          const SizedBox(height: 10),
+          // Name
+          Text(
+            DisplayNameSanitizer.sanitize(entry.displayName),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: place == 1 ? 13 : 12,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          // Value
+          Text(
+            entry.formattedValue,
+            style: TextStyle(
+              fontSize: place == 1 ? 12 : 10,
+              fontWeight: FontWeight.w600,
+              color: podiumColor,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          // Podium base
+          Container(
+            width: double.infinity,
+            constraints: const BoxConstraints(maxWidth: 90),
+            height: height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  podiumColor.withOpacity(0.6),
+                  podiumColor.withOpacity(0.3),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(12)),
+              border: Border.all(
+                color: podiumColor,
+                width: 2.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: podiumColor.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                place == 1
+                    ? '🥇'
+                    : place == 2
+                        ? '🥈'
+                        : '🥉',
+                style: const TextStyle(fontSize: 32),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
       ),
     );
   }
@@ -406,9 +423,11 @@ class LeaderboardTab extends HookConsumerWidget {
     if (isTopThree)
       return const SizedBox.shrink(); // Skip top 3 as they're shown in podium
 
-    final isCurrentUser = DisplayNameSanitizer.sanitize(entry.displayName) == 'You' || entry.userId.contains('default');
+    final isCurrentUser =
+        DisplayNameSanitizer.sanitize(entry.displayName) == 'You' ||
+            entry.userId.contains('default');
     final theme = Theme.of(context);
-    
+
     // Get rank color
     Color rankColor = Colors.grey[600]!;
     if (entry.rank == 1) rankColor = const Color(0xFFFFD700); // Gold
@@ -419,14 +438,14 @@ class LeaderboardTab extends HookConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: isCurrentUser 
-          ? theme.colorScheme.primary.withOpacity(0.08)
-          : theme.cardColor,
+        color: isCurrentUser
+            ? theme.colorScheme.primary.withOpacity(0.08)
+            : theme.cardColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isCurrentUser 
-            ? theme.colorScheme.primary.withOpacity(0.4)
-            : Colors.grey.withOpacity(0.15),
+          color: isCurrentUser
+              ? theme.colorScheme.primary.withOpacity(0.4)
+              : Colors.grey.withOpacity(0.15),
           width: isCurrentUser ? 1.5 : 1,
         ),
       ),
@@ -434,115 +453,128 @@ class LeaderboardTab extends HookConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: isCurrentUser ? null : () {
-            // Navigate to user profile
-            print('🔍 Navigating to profile:');
-            print('  Entry: ${entry.displayName}');
-            print('  UserId: ${entry.userId}');
-            print('  Full route: /user/${entry.userId}');
-            context.push('/user/${entry.userId}');
-          },
+          onTap: isCurrentUser
+              ? null
+              : () {
+                  // Navigate to user profile
+                  print('🔍 Navigating to profile:');
+                  print('  Entry: ${entry.displayName}');
+                  print('  UserId: ${entry.userId}');
+                  print('  Full route: /user/${entry.userId}');
+                  context.push('/user/${entry.userId}');
+                },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
-          children: [
-            // Compact rank badge
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: rankColor,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                '${entry.rank}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            // Compact avatar
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: isCurrentUser 
-                ? theme.colorScheme.primary
-                : Colors.grey[300],
-              backgroundImage: entry.avatarUrl != null
-                  ? NetworkImage(entry.avatarUrl!)
-                  : null,
-              child: entry.avatarUrl == null
-                  ? Text(
-                      DisplayNameSanitizer.sanitize(entry.displayName)[0].toUpperCase(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: isCurrentUser ? Colors.white : Colors.black54,
-                        fontSize: 14,
-                      ),
-                    )
-                  : null,
-            ),
-            const SizedBox(width: 10),
-            // Name and medal - single line
-            Expanded(
-              child: Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      DisplayNameSanitizer.sanitize(entry.displayName),
-                      style: TextStyle(
-                        fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.w600,
-                        fontSize: 15,
-                        color: isCurrentUser ? theme.colorScheme.primary : null,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+              children: [
+                // Compact rank badge
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: rankColor,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${entry.rank}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: Colors.white,
                     ),
                   ),
-                  if (entry.rank <= 3) ...[
-                    const SizedBox(width: 6),
-                    Text(
-                      entry.rank == 1 ? '🏆' : entry.rank == 2 ? '🥈' : '🥉',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
-                  if (isCurrentUser) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        S.of(context)!.you,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
+                ),
+                const SizedBox(width: 10),
+                // Compact avatar
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: isCurrentUser
+                      ? theme.colorScheme.primary
+                      : Colors.grey[300],
+                  backgroundImage: entry.avatarUrl != null
+                      ? NetworkImage(entry.avatarUrl!)
+                      : null,
+                  child: entry.avatarUrl == null
+                      ? Text(
+                          DisplayNameSanitizer.sanitize(entry.displayName)[0]
+                              .toUpperCase(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color:
+                                isCurrentUser ? Colors.white : Colors.black54,
+                            fontSize: 14,
+                          ),
+                        )
+                      : null,
+                ),
+                const SizedBox(width: 10),
+                // Name and medal - single line
+                Expanded(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          DisplayNameSanitizer.sanitize(entry.displayName),
+                          style: TextStyle(
+                            fontWeight: isCurrentUser
+                                ? FontWeight.bold
+                                : FontWeight.w600,
+                            fontSize: 15,
+                            color: isCurrentUser
+                                ? theme.colorScheme.primary
+                                : null,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                  ],
-                ],
-              ),
+                      if (entry.rank <= 3) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          entry.rank == 1
+                              ? '🏆'
+                              : entry.rank == 2
+                                  ? '🥈'
+                                  : '🥉',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                      if (isCurrentUser) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            S.of(context)!.you,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Value - clean and simple
+                Text(
+                  entry.formattedValue,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: rankColor,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            // Value - clean and simple
-            Text(
-              entry.formattedValue,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: rankColor,
-              ),
-            ),
-          ],
-        ),
           ),
         ),
       ),

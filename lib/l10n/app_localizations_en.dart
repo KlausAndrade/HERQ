@@ -1780,4 +1780,26 @@ class SEn extends S {
 
   @override
   String get aboutHerq => 'About HERQ';
+
+  @override
+  String checkOutThisPost(String appName) {
+    return 'Check out this post on $appName!';
+  }
+
+  @override
+  String postFrom(String appName) {
+    return 'Post from $appName';
+  }
+
+  @override
+  String get yourIntelligentWorkoutCompanion =>
+      'Your intelligent workout companion';
+
+  @override
+  String get mobileFirstWorkoutTracker => 'Mobile-First Workout Tracker';
+
+  @override
+  String optimizedForMobile(String appName) {
+    return '$appName is optimized for mobile devices with full offline support and native features.';
+  }
 }

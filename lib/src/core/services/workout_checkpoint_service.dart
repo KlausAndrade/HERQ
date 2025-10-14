@@ -32,18 +32,18 @@ class WorkoutCheckpointService {
   /// Saves every 2 minutes to balance between safety and performance
   void startAutoSave(ActiveWorkout workout) {
     _currentCheckpointId = workout.id;
-    
+
     // Cancel existing timer if any
     _autoSaveTimer?.cancel();
-    
+
     // Save immediately on start
     _saveCheckpoint(workout);
-    
+
     // Then save every 2 minutes
     _autoSaveTimer = Timer.periodic(const Duration(minutes: 2), (_) {
       _saveCheckpoint(workout);
     });
-    
+
     print('✅ Auto-save started for workout: ${workout.name}');
   }
 
@@ -57,12 +57,12 @@ class WorkoutCheckpointService {
   Future<void> stopAutoSave({bool deleteCheckpoint = true}) async {
     _autoSaveTimer?.cancel();
     _autoSaveTimer = null;
-    
+
     if (deleteCheckpoint && _currentCheckpointId != null) {
       await _deleteCheckpoint(_currentCheckpointId!);
       print('🗑️ Checkpoint deleted - workout completed normally');
     }
-    
+
     _currentCheckpointId = null;
   }
 
@@ -70,19 +70,20 @@ class WorkoutCheckpointService {
   Future<void> _saveCheckpoint(ActiveWorkout workout) async {
     try {
       final workoutJson = jsonEncode(workout.toJson());
-      
+
       await database.into(database.workoutCheckpoints).insertOnConflictUpdate(
-        WorkoutCheckpointsCompanion.insert(
-          id: workout.id,
-          workoutName: workout.name,
-          workoutData: workoutJson,
-          lastSavedAt: DateTime.now(),
-          startedAt: DateTime.now().subtract(workout.elapsedTime),
-          elapsedSeconds: workout.elapsedTime.inSeconds,
-        ),
-      );
-      
-      print('💾 Checkpoint saved: ${workout.name} (${workout.elapsedTime.inMinutes}min)');
+            WorkoutCheckpointsCompanion.insert(
+              id: workout.id,
+              workoutName: workout.name,
+              workoutData: workoutJson,
+              lastSavedAt: DateTime.now(),
+              startedAt: DateTime.now().subtract(workout.elapsedTime),
+              elapsedSeconds: workout.elapsedTime.inSeconds,
+            ),
+          );
+
+      print(
+          '💾 Checkpoint saved: ${workout.name} (${workout.elapsedTime.inMinutes}min)');
     } catch (e) {
       print('❌ Failed to save checkpoint: $e');
     }
@@ -96,15 +97,17 @@ class WorkoutCheckpointService {
             ..orderBy([(t) => OrderingTerm.desc(t.lastSavedAt)])
             ..limit(1))
           .getSingleOrNull();
-      
+
       if (checkpoint == null) return null;
-      
+
       // Parse JSON back to ActiveWorkout
-      final workoutJson = jsonDecode(checkpoint.workoutData) as Map<String, dynamic>;
+      final workoutJson =
+          jsonDecode(checkpoint.workoutData) as Map<String, dynamic>;
       final workout = ActiveWorkout.fromJson(workoutJson);
-      
-      print('📦 Found checkpoint: ${workout.name} from ${checkpoint.lastSavedAt}');
-      
+
+      print(
+          '📦 Found checkpoint: ${workout.name} from ${checkpoint.lastSavedAt}');
+
       return CheckpointData(
         id: checkpoint.id,
         workout: workout,

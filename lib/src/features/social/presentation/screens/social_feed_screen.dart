@@ -49,48 +49,50 @@ class SocialFeedScreen extends HookConsumerWidget {
     }
 
     return DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => context.go('/'),
-              ),
-              title: Text(S.of(context)!.social),
-              bottom: TabBar(
-                controller: tabController,
-                tabs: [
-                  Tab(icon: const Icon(Icons.home), text: S.of(context)!.feed),
-                  Tab(icon: const Icon(Icons.explore), text: S.of(context)!.explore),
-                ],
-              ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () => _showUserSearch(context, ref),
-                ),
-              ],
-            ),
-            body: TabBarView(
-              controller: tabController,
-              children: [
-                Column(
-                  children: [
-                    const EmailVerificationBanner(),
-                    const ProfileCompletionBanner(),
-                    Expanded(child: _FeedTab(currentUserId: currentUser.id)),
-                  ],
-                ),
-                _ExploreTab(currentUserId: currentUser.id),
-              ],
-            ),
-            floatingActionButton: AnimatedFAB(
-              icon: Icons.add,
-              onPressed: () => _showCreatePost(context),
-              tooltip: S.of(context)!.createPost,
-            ),
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/'),
           ),
-        );
+          title: Text(S.of(context)!.social),
+          bottom: TabBar(
+            controller: tabController,
+            tabs: [
+              Tab(icon: const Icon(Icons.home), text: S.of(context)!.feed),
+              Tab(
+                  icon: const Icon(Icons.explore),
+                  text: S.of(context)!.explore),
+            ],
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () => _showUserSearch(context, ref),
+            ),
+          ],
+        ),
+        body: TabBarView(
+          controller: tabController,
+          children: [
+            Column(
+              children: [
+                const EmailVerificationBanner(),
+                const ProfileCompletionBanner(),
+                Expanded(child: _FeedTab(currentUserId: currentUser.id)),
+              ],
+            ),
+            _ExploreTab(currentUserId: currentUser.id),
+          ],
+        ),
+        floatingActionButton: AnimatedFAB(
+          icon: Icons.add,
+          onPressed: () => _showCreatePost(context),
+          tooltip: S.of(context)!.createPost,
+        ),
+      ),
+    );
   }
 
   void _showUserSearch(BuildContext context, WidgetRef ref) {
@@ -113,7 +115,7 @@ class SocialFeedScreen extends HookConsumerWidget {
 // Feed Tab Widget
 class _FeedTab extends ConsumerWidget {
   const _FeedTab({required this.currentUserId});
-  
+
   final String currentUserId;
 
   @override
@@ -121,7 +123,8 @@ class _FeedTab extends ConsumerWidget {
     final feedAsync = ref.watch(feedPostsProvider);
 
     return feedAsync.when(
-      data: (feedItems) => _buildPostList(context, ref, feedItems, currentUserId),
+      data: (feedItems) =>
+          _buildPostList(context, ref, feedItems, currentUserId),
       loading: () => ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: 5,
@@ -165,7 +168,7 @@ class _FeedTab extends ConsumerWidget {
 // Explore Tab Widget
 class _ExploreTab extends ConsumerWidget {
   const _ExploreTab({required this.currentUserId});
-  
+
   final String currentUserId;
 
   @override
@@ -208,7 +211,8 @@ class _ExploreTab extends ConsumerWidget {
 }
 
 // Shared post list builder
-Widget _buildPostList(BuildContext context, WidgetRef ref, List<dynamic> feedItems, String currentUserId) {
+Widget _buildPostList(BuildContext context, WidgetRef ref,
+    List<dynamic> feedItems, String currentUserId) {
   if (feedItems.isEmpty) {
     return Center(
       child: Column(
@@ -353,9 +357,11 @@ class UserSearchSheet extends HookConsumerWidget {
                             itemCount: users.length,
                             itemBuilder: (context, index) {
                               final user = users[index];
-                              final currentUser = ref.watch(currentUserProvider);
+                              final currentUser =
+                                  ref.watch(currentUserProvider);
                               final isCurrentUser = user.id == currentUser?.id;
-                              final isFollowingAsync = ref.watch(isFollowingProvider(user.id));
+                              final isFollowingAsync =
+                                  ref.watch(isFollowingProvider(user.id));
 
                               return ListTile(
                                 leading: CircleAvatar(
@@ -363,11 +369,11 @@ class UserSearchSheet extends HookConsumerWidget {
                                       ? NetworkImage(user.avatarUrl!)
                                       : null,
                                   child: user.avatarUrl == null
-                                      ? Text(
-                                          ((user.displayName?.isNotEmpty ?? false)
-                                                  ? user.displayName!
-                                                  : user.id)[0]
-                                              .toUpperCase())
+                                      ? Text(((user.displayName?.isNotEmpty ??
+                                                  false)
+                                              ? user.displayName!
+                                              : user.id)[0]
+                                          .toUpperCase())
                                       : null,
                                 ),
                                 title: Text(
@@ -375,30 +381,39 @@ class UserSearchSheet extends HookConsumerWidget {
                                       ? user.displayName!
                                       : 'User ${user.id.substring(0, 8)}',
                                 ),
-                                subtitle: user.bio != null ? Text(user.bio!) : null,
+                                subtitle:
+                                    user.bio != null ? Text(user.bio!) : null,
                                 trailing: isCurrentUser
                                     ? null
                                     : isFollowingAsync.when(
                                         data: (isFollowing) => OutlinedButton(
                                           onPressed: () async {
-                                            final social = ref.read(supabaseSocialServiceProvider);
+                                            final social = ref.read(
+                                                supabaseSocialServiceProvider);
                                             if (currentUser == null) return;
 
                                             if (isFollowing) {
-                                              await social.unfollowUser(currentUser.id, user.id);
+                                              await social.unfollowUser(
+                                                  currentUser.id, user.id);
                                             } else {
-                                              await social.followUser(currentUser.id, user.id);
+                                              await social.followUser(
+                                                  currentUser.id, user.id);
                                             }
 
-                                            ref.invalidate(isFollowingProvider(user.id));
+                                            ref.invalidate(
+                                                isFollowingProvider(user.id));
                                             ref.invalidate(feedPostsProvider);
                                           },
                                           style: OutlinedButton.styleFrom(
                                             backgroundColor: isFollowing
-                                                ? Theme.of(context).colorScheme.surfaceVariant
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .surfaceVariant
                                                 : null,
                                           ),
-                                          child: Text(isFollowing ? 'Following' : 'Follow'),
+                                          child: Text(isFollowing
+                                              ? 'Following'
+                                              : 'Follow'),
                                         ),
                                         loading: () => const SizedBox(
                                           width: 80,
@@ -406,11 +421,13 @@ class UserSearchSheet extends HookConsumerWidget {
                                             child: SizedBox(
                                               width: 20,
                                               height: 20,
-                                              child: CircularProgressIndicator(strokeWidth: 2),
+                                              child: CircularProgressIndicator(
+                                                  strokeWidth: 2),
                                             ),
                                           ),
                                         ),
-                                        error: (_, __) => const SizedBox.shrink(),
+                                        error: (_, __) =>
+                                            const SizedBox.shrink(),
                                       ),
                                 onTap: () {
                                   Navigator.pop(context);

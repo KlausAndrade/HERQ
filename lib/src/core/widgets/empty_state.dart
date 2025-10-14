@@ -82,8 +82,7 @@ class _EmptyStateState extends State<EmptyState>
       child: SlideTransition(
         position: _slideAnimation,
         child: Padding(
-          padding: widget.padding ??
-              const EdgeInsets.all(AppTheme.spacingXL),
+          padding: widget.padding ?? const EdgeInsets.all(AppTheme.spacingXL),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -103,11 +102,11 @@ class _EmptyStateState extends State<EmptyState>
                       ),
                       child: Icon(
                         widget.icon ?? Icons.inbox_outlined,
-            size: 60,
-            color: Theme.of(context)
-              .colorScheme
-              .primary
-              .withAlpha((0.6 * 255).round()),
+                        size: 60,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withAlpha((0.6 * 255).round()),
                       ),
                     ),
               ),
@@ -122,7 +121,7 @@ class _EmptyStateState extends State<EmptyState>
                     ),
                 textAlign: TextAlign.center,
               ),
-              
+
               // Subtitle
               if (widget.subtitle != null) ...[
                 const SizedBox(height: AppTheme.spacingMD),

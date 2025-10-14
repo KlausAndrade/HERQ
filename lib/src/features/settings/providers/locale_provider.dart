@@ -10,7 +10,7 @@ final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
 /// Notifier for managing locale state with persistence
 class LocaleNotifier extends StateNotifier<Locale> {
   static const String _localeKey = 'app_locale';
-  
+
   LocaleNotifier() : super(const Locale('en')) {
     _loadLocale();
   }
@@ -20,7 +20,7 @@ class LocaleNotifier extends StateNotifier<Locale> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedLocaleCode = prefs.getString(_localeKey);
-      
+
       if (savedLocaleCode != null) {
         // Use saved locale if available
         state = Locale(savedLocaleCode);
@@ -29,14 +29,15 @@ class LocaleNotifier extends StateNotifier<Locale> {
         // Auto-detect from system locale
         final systemLocale = PlatformDispatcher.instance.locale;
         final supportedLocaleCodes = ['en', 'pt', 'es'];
-        
+
         if (supportedLocaleCodes.contains(systemLocale.languageCode)) {
           state = Locale(systemLocale.languageCode);
           print('📱 Auto-detected system locale: ${systemLocale.languageCode}');
         } else {
           // Default to English if system locale is not supported
           state = const Locale('en');
-          print('📱 Using default locale: en (system locale ${systemLocale.languageCode} not supported)');
+          print(
+              '📱 Using default locale: en (system locale ${systemLocale.languageCode} not supported)');
         }
       }
     } catch (e) {
@@ -73,9 +74,8 @@ class LocaleNotifier extends StateNotifier<Locale> {
 
   /// Get all supported locales
   static List<Locale> get supportedLocales => const [
-    Locale('en'),
-    Locale('pt'),
-    Locale('es'),
-  ];
+        Locale('en'),
+        Locale('pt'),
+        Locale('es'),
+      ];
 }
-

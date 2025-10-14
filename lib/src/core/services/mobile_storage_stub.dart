@@ -1,8 +1,6 @@
 /// Mobile storage stub that replaces web storage service on mobile platforms
 /// This provides empty implementations for web-specific functionality
 class WebStorageService {
-  static const String _keyPrefix = 'gymai_';
-
   /// Check if localStorage is available (always false on mobile)
   static bool get isSupported => false;
 

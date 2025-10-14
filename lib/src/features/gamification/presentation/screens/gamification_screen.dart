@@ -70,8 +70,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
           achievementsAsync.when(
             data: (achievements) => _buildAchievementsTab(achievements),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, __) =>
-                Center(child: Text(S.of(context)!.error)),
+            error: (_, __) => Center(child: Text(S.of(context)!.error)),
           ),
           // Calendar Tab
           workoutsAsync.when(
@@ -90,8 +89,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                   : Center(child: Text(S.of(context)!.noWorkoutHistory));
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, __) =>
-                Center(child: Text(S.of(context)!.error)),
+            error: (_, __) => Center(child: Text(S.of(context)!.error)),
           ),
         ],
       ),

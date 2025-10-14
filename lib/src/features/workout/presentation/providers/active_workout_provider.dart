@@ -20,7 +20,8 @@ import 'pr_detection_provider.dart';
 import '../../../gamification/data/providers/gamification_provider.dart';
 
 // Provider for tracking workout modifications
-final workoutModificationsProvider = StateNotifierProvider<WorkoutModificationsNotifier, bool>((ref) {
+final workoutModificationsProvider =
+    StateNotifierProvider<WorkoutModificationsNotifier, bool>((ref) {
   return WorkoutModificationsNotifier();
 });
 
@@ -82,7 +83,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   void _startWorkoutTimer() {
     _stopWorkoutTimer(); // Stop any existing timer
     _workoutStartTime = DateTime.now();
-    
+
     _workoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state != null && _workoutStartTime != null) {
         final elapsed = DateTime.now().difference(_workoutStartTime!);
@@ -111,7 +112,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     if (state != null && _workoutStartTime != null) {
       // Recalculate start time based on new elapsed duration
       _workoutStartTime = DateTime.now().subtract(newElapsed);
-      
+
       // Update state immediately
       state = ActiveWorkout(
         id: state!.id,
@@ -122,8 +123,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalSets: state!.totalSets,
         totalVolume: state!.totalVolume,
       );
-      
-      print('⏱️ Workout time adjusted to: ${newElapsed.inMinutes}m ${newElapsed.inSeconds % 60}s');
+
+      print(
+          '⏱️ Workout time adjusted to: ${newElapsed.inMinutes}m ${newElapsed.inSeconds % 60}s');
     }
   }
 
@@ -131,16 +133,16 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   Future<void> _clearActiveWorkout() async {
     if (state != null) {
       print('🧹 Clearing existing active workout: ${state!.name}');
-      
+
       // Stop all services and timers
       _stopWorkoutTimer();
       await _foregroundService.stopService();
       _ref.read(restTimerProvider.notifier).stopTimer();
-      
+
       // Stop auto-save and delete checkpoint
       final checkpointService = _ref.read(workoutCheckpointServiceProvider);
       await checkpointService?.stopAutoSave(deleteCheckpoint: true);
-      
+
       // Clear the state
       state = null;
     }
@@ -150,25 +152,25 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   /// This can be used to recover from inconsistent states
   Future<void> forceCleanup() async {
     print('🧹 Force cleanup - clearing all workout data');
-    
+
     // Stop all services and timers regardless of state
     await _foregroundService.stopService();
     _ref.read(restTimerProvider.notifier).stopTimer();
-    
+
     // Force clear checkpoints
     final checkpointService = _ref.read(workoutCheckpointServiceProvider);
     await checkpointService?.stopAutoSave(deleteCheckpoint: true);
-    
+
     // Clear state
     state = null;
-    
+
     print('🧹 Force cleanup completed');
   }
 
   Future<void> startWorkoutFromTemplate(String templateId) async {
     // First, clear any existing workout
     await _clearActiveWorkout();
-    
+
     final db = database;
     if (db == null) {
       throw Exception('Database not available');
@@ -193,10 +195,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final exerciseMap = {for (final ex in exercisesList) ex.id: ex};
 
       // Check for missing exercises and log warning
-      final missingExercises = template.exerciseIds.where((id) => !exerciseMap.containsKey(id)).toList();
+      final missingExercises = template.exerciseIds
+          .where((id) => !exerciseMap.containsKey(id))
+          .toList();
       if (missingExercises.isNotEmpty) {
-        print('⚠️ Template "${template.name}" references ${missingExercises.length} missing exercises: $missingExercises');
-        print('💡 Tip: Go to Settings → Maintenance → "Reload Templates & Exercises" to load all exercises');
+        print(
+            '⚠️ Template "${template.name}" references ${missingExercises.length} missing exercises: $missingExercises');
+        print(
+            '💡 Tip: Go to Settings → Maintenance → "Reload Templates & Exercises" to load all exercises');
       }
 
       // Get timer preferences
@@ -204,12 +210,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Create active exercises in template order (skip missing exercises)
       final activeExercises = <ActiveExercise>[];
-      for (final id in template.exerciseIds.where((id) => exerciseMap.containsKey(id))) {
+      for (final id
+          in template.exerciseIds.where((id) => exerciseMap.containsKey(id))) {
         final exercise = exerciseMap[id]!;
-        
+
         // Debug: Log exercise type
-        print('📝 Loading exercise: ${exercise.name}, Type: ${exercise.exerciseType}');
-        
+        print(
+            '📝 Loading exercise: ${exercise.name}, Type: ${exercise.exerciseType}');
+
         // Load saved timer preference or use default (90s)
         final savedTimer = timerPrefs[exercise.id] ?? 90;
 
@@ -217,7 +225,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         final lastSet = await (db.select(db.setEntries)
               ..where((tbl) => tbl.exerciseId.equals(exercise.id))
               ..orderBy([
-                (t) => OrderingTerm(expression: t.completedAt, mode: OrderingMode.desc)
+                (t) => OrderingTerm(
+                    expression: t.completedAt, mode: OrderingMode.desc)
               ])
               ..limit(1))
             .getSingleOrNull();
@@ -228,19 +237,36 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         // Start with 3 prefilled sets using last completed values (if any)
         // Prefill based on exercise type
         final isDuration = exercise.exerciseType == 'duration';
-        final initialDuration = isDuration ? (lastSet?.durationSeconds ?? 30) : null;
-        
+        final initialDuration =
+            isDuration ? (lastSet?.durationSeconds ?? 30) : null;
+
         activeExercises.add(ActiveExercise(
           id: exercise.id,
           name: exercise.name,
           exerciseType: exercise.exerciseType,
           sets: [
-            ActiveSet(number: 1, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
-            ActiveSet(number: 2, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
-            ActiveSet(number: 3, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
+            ActiveSet(
+                number: 1,
+                weight: isDuration ? null : initialWeight,
+                reps: isDuration ? 0 : initialReps,
+                durationSeconds: initialDuration,
+                isCompleted: false),
+            ActiveSet(
+                number: 2,
+                weight: isDuration ? null : initialWeight,
+                reps: isDuration ? 0 : initialReps,
+                durationSeconds: initialDuration,
+                isCompleted: false),
+            ActiveSet(
+                number: 3,
+                weight: isDuration ? null : initialWeight,
+                reps: isDuration ? 0 : initialReps,
+                durationSeconds: initialDuration,
+                isCompleted: false),
           ],
           restTimerSeconds: savedTimer,
-          equipmentUsed: exercise.equipment, // Use default equipment from exercise
+          equipmentUsed:
+              exercise.equipment, // Use default equipment from exercise
           variantType: null, // Start with standard variant
         ));
       }
@@ -255,10 +281,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       );
 
       print('🏁 New workout created: ${template.name}');
-      
+
       // Start the workout duration timer
       _startWorkoutTimer();
-      
+
       // Reset modifications flag - this is a fresh workout
       _ref.read(workoutModificationsProvider.notifier).reset();
 
@@ -285,10 +311,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       );
 
       print('🏁 Fallback workout created: Quick Start Workout');
-      
+
       // Start the workout duration timer
       _startWorkoutTimer();
-      
+
       // Reset modifications flag
       _ref.read(workoutModificationsProvider.notifier).reset();
 
@@ -307,7 +333,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   }
 
   /// Start a workout directly from a list of exercise IDs (no template record)
-  Future<void> startWorkoutFromExerciseIds(String name, List<String> exerciseIds) async {
+  Future<void> startWorkoutFromExerciseIds(
+      String name, List<String> exerciseIds) async {
     // First, clear any existing workout
     await _clearActiveWorkout();
 
@@ -319,7 +346,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     try {
       // Fetch exercises for the provided IDs
       final exercisesList = exerciseIds.isNotEmpty
-          ? await (db.select(db.exercises)..where((tbl) => tbl.id.isIn(exerciseIds))).get()
+          ? await (db.select(db.exercises)
+                ..where((tbl) => tbl.id.isIn(exerciseIds)))
+              .get()
           : <Exercise>[];
 
       final exerciseMap = {for (final ex in exercisesList) ex.id: ex};
@@ -336,7 +365,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         final lastSet = await (db.select(db.setEntries)
               ..where((tbl) => tbl.exerciseId.equals(exercise.id))
               ..orderBy([
-                (t) => OrderingTerm(expression: t.completedAt, mode: OrderingMode.desc)
+                (t) => OrderingTerm(
+                    expression: t.completedAt, mode: OrderingMode.desc)
               ])
               ..limit(1))
             .getSingleOrNull();
@@ -345,19 +375,36 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         final initialReps = lastSet?.reps ?? 0;
 
         final isDuration = exercise.exerciseType == 'duration';
-        final initialDuration = isDuration ? (lastSet?.durationSeconds ?? 30) : null;
-        
+        final initialDuration =
+            isDuration ? (lastSet?.durationSeconds ?? 30) : null;
+
         activeExercises.add(ActiveExercise(
           id: exercise.id,
           name: exercise.name,
           exerciseType: exercise.exerciseType,
           sets: [
-            ActiveSet(number: 1, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
-            ActiveSet(number: 2, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
-            ActiveSet(number: 3, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
+            ActiveSet(
+                number: 1,
+                weight: isDuration ? null : initialWeight,
+                reps: isDuration ? 0 : initialReps,
+                durationSeconds: initialDuration,
+                isCompleted: false),
+            ActiveSet(
+                number: 2,
+                weight: isDuration ? null : initialWeight,
+                reps: isDuration ? 0 : initialReps,
+                durationSeconds: initialDuration,
+                isCompleted: false),
+            ActiveSet(
+                number: 3,
+                weight: isDuration ? null : initialWeight,
+                reps: isDuration ? 0 : initialReps,
+                durationSeconds: initialDuration,
+                isCompleted: false),
           ],
           restTimerSeconds: savedTimer,
-          equipmentUsed: exercise.equipment, // Use default equipment from exercise
+          equipmentUsed:
+              exercise.equipment, // Use default equipment from exercise
           variantType: null, // Start with standard variant
         ));
       }
@@ -422,24 +469,24 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   Future<void> resumeWorkout(ActiveWorkout workout) async {
     // First, clear any existing workout
     await _clearActiveWorkout();
-    
+
     state = workout;
-    
+
     print('🏁 Workout resumed: ${workout.name}');
-    
+
     // Restart the workout duration timer
     _startWorkoutTimer();
-    
+
     // Restart foreground service
     await _foregroundService.startService(
       workoutName: workout.name,
       exerciseCount: workout.exercises.length,
     );
-    
+
     // Restart auto-save
     final checkpointService = _ref.read(workoutCheckpointServiceProvider);
     checkpointService?.startAutoSave(workout);
-    
+
     print('✅ Workout resumed: ${workout.name}');
   }
 
@@ -457,7 +504,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     }
   }
 
-  Future<void> updateSet(int exerciseIndex, int setIndex, ActiveSet updatedSet) async {
+  Future<void> updateSet(
+      int exerciseIndex, int setIndex, ActiveSet updatedSet) async {
     if (state != null) {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       final exercise = exercises[exerciseIndex];
@@ -479,14 +527,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
               });
             }
           }
-          
+
           final prResult = await prService.checkSetForPR(
             exerciseId: exercise.id,
             weight: updatedSet.weight,
             reps: updatedSet.reps,
             currentWorkoutSets: currentWorkoutCompletedSets,
           );
-          
+
           finalSet = ActiveSet(
             number: updatedSet.number,
             weight: updatedSet.weight,
@@ -502,36 +550,48 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           );
         }
       }
-      
+
       // Auto-fill logic: when completing ANY set, if no other sets are completed,
       // copy the values to all empty incomplete sets
       if (updatedSet.isCompleted) {
         print('🔄 Set ${updatedSet.number} completed! Checking auto-fill...');
-        print('  Updated set values: weight=${updatedSet.weight}, reps=${updatedSet.reps}, duration=${updatedSet.durationSeconds}, distance=${updatedSet.distance}, assistance=${updatedSet.assistanceWeight}, added=${updatedSet.addedWeight}');
-        
-        final hadOtherCompleted = sets.any((s) => s.isCompleted && s.number != updatedSet.number);
+        print(
+            '  Updated set values: weight=${updatedSet.weight}, reps=${updatedSet.reps}, duration=${updatedSet.durationSeconds}, distance=${updatedSet.distance}, assistance=${updatedSet.assistanceWeight}, added=${updatedSet.addedWeight}');
+
+        final hadOtherCompleted =
+            sets.any((s) => s.isCompleted && s.number != updatedSet.number);
         if (!hadOtherCompleted) {
           print('  ✅ No other completed sets - AUTO-FILL TRIGGERED!');
           for (int i = 0; i < sets.length; i++) {
             if (i != setIndex) {
               final s = sets[i];
-              print('  📋 Checking set ${s.number}: weight=${s.weight}, reps=${s.reps}, duration=${s.durationSeconds}, distance=${s.distance}, completed=${s.isCompleted}');
-              
+              print(
+                  '  📋 Checking set ${s.number}: weight=${s.weight}, reps=${s.reps}, duration=${s.durationSeconds}, distance=${s.distance}, completed=${s.isCompleted}');
+
               // Check if set is empty based on what fields have been filled
               // A set is empty if none of the value fields have meaningful data
               final hasWeight = s.weight != null && s.weight! > 0;
               final hasReps = s.reps > 0;
-              final hasDuration = s.durationSeconds != null && s.durationSeconds! > 0;
+              final hasDuration =
+                  s.durationSeconds != null && s.durationSeconds! > 0;
               final hasDistance = s.distance != null && s.distance! > 0;
-              final hasAssistance = s.assistanceWeight != null && s.assistanceWeight! != 0;
+              final hasAssistance =
+                  s.assistanceWeight != null && s.assistanceWeight! != 0;
               final hasAdded = s.addedWeight != null && s.addedWeight! > 0;
-              
-              final isEmpty = !hasWeight && !hasReps && !hasDuration && !hasDistance && !hasAssistance && !hasAdded;
-              
-              print('    hasWeight=$hasWeight, hasReps=$hasReps, hasDuration=$hasDuration, hasDistance=$hasDistance, isEmpty=$isEmpty');
-              
+
+              final isEmpty = !hasWeight &&
+                  !hasReps &&
+                  !hasDuration &&
+                  !hasDistance &&
+                  !hasAssistance &&
+                  !hasAdded;
+
+              print(
+                  '    hasWeight=$hasWeight, hasReps=$hasReps, hasDuration=$hasDuration, hasDistance=$hasDistance, isEmpty=$isEmpty');
+
               if (!s.isCompleted && isEmpty) {
-                print('  ✅ Auto-filling set ${s.number} with values from set ${updatedSet.number}');
+                print(
+                    '  ✅ Auto-filling set ${s.number} with values from set ${updatedSet.number}');
                 sets[i] = ActiveSet(
                   number: s.number,
                   weight: updatedSet.weight,
@@ -543,7 +603,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                   rpe: s.rpe,
                   isCompleted: s.isCompleted,
                 );
-                print('    Set ${s.number} after auto-fill: weight=${sets[i].weight}, reps=${sets[i].reps}, duration=${sets[i].durationSeconds}, distance=${sets[i].distance}');
+                print(
+                    '    Set ${s.number} after auto-fill: weight=${sets[i].weight}, reps=${sets[i].reps}, duration=${sets[i].durationSeconds}, distance=${sets[i].distance}');
               } else {
                 print('  ⏭️ Skipping set ${s.number} (not empty or completed)');
               }
@@ -553,7 +614,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           print('  ⏭️ Auto-fill skipped (other sets already completed)');
         }
       }
-      
+
       // Update the specific set and apply the PR/completion changes
       sets[setIndex] = finalSet;
 
@@ -562,7 +623,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         name: exercise.name,
         sets: sets,
         restTimerSeconds: exercise.restTimerSeconds,
-        exerciseType: exercise.exerciseType,  // 🔧 FIX: Preserve exercise type!
+        exerciseType: exercise.exerciseType, // 🔧 FIX: Preserve exercise type!
         equipmentUsed: exercise.equipmentUsed,
         variantType: exercise.variantType,
       );
@@ -579,8 +640,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Update foreground service notification with progress
       if (_foregroundService.isRunning) {
-        final completedExercises = exercises.where((e) => 
-          e.sets.every((s) => s.isCompleted || s.reps == 0)).length;
+        final completedExercises = exercises
+            .where((e) => e.sets.every((s) => s.isCompleted || s.reps == 0))
+            .length;
         await _foregroundService.updateService(
           workoutName: state!.name,
           completedExercises: completedExercises,
@@ -622,7 +684,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         name: exercise.name,
         sets: sets,
         restTimerSeconds: exercise.restTimerSeconds,
-        exerciseType: exercise.exerciseType,  // 🔧 FIX: Preserve exercise type!
+        exerciseType: exercise.exerciseType, // 🔧 FIX: Preserve exercise type!
         equipmentUsed: exercise.equipmentUsed,
         variantType: exercise.variantType,
       );
@@ -636,7 +698,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalSets: _calculateTotalSets(exercises),
         totalVolume: _calculateTotalVolume(exercises),
       );
-      
+
       // Mark as modified
       _ref.read(workoutModificationsProvider.notifier).markAsModified();
     }
@@ -680,7 +742,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         name: exercise.name,
         sets: renumberedSets,
         restTimerSeconds: exercise.restTimerSeconds,
-        exerciseType: exercise.exerciseType,  // 🔧 FIX: Preserve exercise type!
+        exerciseType: exercise.exerciseType, // 🔧 FIX: Preserve exercise type!
       );
 
       state = ActiveWorkout(
@@ -692,7 +754,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalSets: _calculateTotalSets(exercises),
         totalVolume: _calculateTotalVolume(exercises),
       );
-      
+
       // Mark as modified
       _ref.read(workoutModificationsProvider.notifier).markAsModified();
     }
@@ -751,7 +813,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           totalSets: _calculateTotalSets(exercises),
           totalVolume: _calculateTotalVolume(exercises),
         );
-        
+
         // Mark as modified
         _ref.read(workoutModificationsProvider.notifier).markAsModified();
       } catch (e) {
@@ -775,7 +837,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           totalSets: _calculateTotalSets(exercises),
           totalVolume: _calculateTotalVolume(exercises),
         );
-        
+
         // Mark as modified
         _ref.read(workoutModificationsProvider.notifier).markAsModified();
       }
@@ -794,7 +856,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         name: exercise.name,
         sets: exercise.sets,
         restTimerSeconds: newRestTimerSeconds,
-        exerciseType: exercise.exerciseType,  // 🔧 FIX: Preserve exercise type!
+        exerciseType: exercise.exerciseType, // 🔧 FIX: Preserve exercise type!
       );
 
       state = ActiveWorkout(
@@ -816,7 +878,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   }
 
   /// Update equipment and variant type for an exercise
-  void updateExerciseVariant(int exerciseIndex, {String? equipmentUsed, String? variantType}) {
+  void updateExerciseVariant(int exerciseIndex,
+      {String? equipmentUsed, String? variantType}) {
     if (state != null &&
         exerciseIndex >= 0 &&
         exerciseIndex < state!.exercises.length) {
@@ -825,7 +888,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       print('🔄 Updating exercise variant:');
       print('   Exercise: ${exercise.name}');
-      print('   Old equipment: ${exercise.equipmentUsed} → New: $equipmentUsed');
+      print(
+          '   Old equipment: ${exercise.equipmentUsed} → New: $equipmentUsed');
       print('   Old variant: ${exercise.variantType} → New: $variantType');
 
       exercises[exerciseIndex] = ActiveExercise(
@@ -850,7 +914,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Mark as modified
       _ref.read(workoutModificationsProvider.notifier).markAsModified();
-      
+
       print('✅ Exercise variant updated successfully');
     }
   }
@@ -858,16 +922,18 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   /// Reorder exercises during an active workout
   void reorderExercises(int oldIndex, int newIndex) {
     if (state == null) return;
-    
+
     final exercises = List<ActiveExercise>.from(state!.exercises);
-    if (oldIndex < 0 || oldIndex >= exercises.length ||
-        newIndex < 0 || newIndex >= exercises.length) {
+    if (oldIndex < 0 ||
+        oldIndex >= exercises.length ||
+        newIndex < 0 ||
+        newIndex >= exercises.length) {
       return;
     }
-    
+
     final item = exercises.removeAt(oldIndex);
     exercises.insert(newIndex, item);
-    
+
     // Update current exercise index if needed
     int currentIndex = state!.currentExerciseIndex;
     if (currentIndex == oldIndex) {
@@ -877,7 +943,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     } else if (oldIndex > currentIndex && newIndex <= currentIndex) {
       currentIndex++;
     }
-    
+
     state = ActiveWorkout(
       id: state!.id,
       name: state!.name,
@@ -887,10 +953,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       totalSets: state!.totalSets,
       totalVolume: state!.totalVolume,
     );
-    
+
     // Mark as modified
     _ref.read(workoutModificationsProvider.notifier).markAsModified();
-    
+
     // Checkpoint is automatically saved via state listener
   }
 
@@ -928,21 +994,24 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     final workout = state!;
     final now = DateTime.now();
     final sessionId = const Uuid().v4();
-    
+
     print('🏁 Finishing workout: ${workout.name}');
 
     try {
       // Calculate workout summary before saving (with timeout)
       final summaryService = _ref.read(workoutSummaryServiceProvider);
-      print('🏁 Summary service: ${summaryService != null ? 'available' : 'null'}');
-      
+      print(
+          '🏁 Summary service: ${summaryService != null ? 'available' : 'null'}');
+
       WorkoutSummary? summary;
       try {
         summary = summaryService != null
-            ? await summaryService.calculateSummary(
+            ? await summaryService
+                .calculateSummary(
                 workout: workout,
                 duration: workout.elapsedTime,
-              ).timeout(
+              )
+                .timeout(
                 const Duration(seconds: 5),
                 onTimeout: () {
                   print('⚠️ Summary calculation timed out after 5s');
@@ -954,9 +1023,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         print('⚠️ Error calculating summary: $e');
         summary = null;
       }
-      
+
       print('🏁 Summary calculated: ${summary != null ? 'success' : 'null'}');
-      
+
       // Calculate workout stats
       final totalSets = _calculateTotalSets(workout.exercises);
       final totalVolume = _calculateTotalVolume(workout.exercises);
@@ -968,7 +1037,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           .expand((e) => e.sets)
           .where((s) => s.isCompleted && s.weight != null)
           .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
-      
+
       // Create fallback summary if service failed
       if (summary == null && totalSets > 0) {
         print('🏁 Creating fallback summary');
@@ -987,8 +1056,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             final maxWeight = completedSets
                 .map((s) => s.weight)
                 .whereType<double>()
-                .fold<double?>(null, (max, w) => max == null || w > max ? w : max);
-            
+                .fold<double?>(
+                    null, (max, w) => max == null || w > max ? w : max);
+
             return ExerciseSummary(
               exerciseId: e.id,
               exerciseName: e.name,
@@ -1065,15 +1135,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       // 🌩️ SYNC TO SUPABASE (background sync for cross-platform access)
       try {
         print('☁️ Attempting Supabase sync...');
-        
+
         // Wrap entire Supabase sync in timeout
         await Future(() async {
           final supabase = _ref.read(supabaseClientProvider);
           final user = supabase.auth.currentUser;
-          
+
           if (user != null) {
             print('☁️ User authenticated, syncing workout to Supabase...');
-            
+
             // Sync workout session
             await supabase.from('workout_sessions').insert({
               'id': sessionId,
@@ -1115,7 +1185,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             if (setEntries.isNotEmpty) {
               await supabase.from('set_entries').insert(setEntries);
             }
-            
+
             print('✅ Workout synced to Supabase successfully');
           } else {
             print('⚠️ Not authenticated - workout saved locally only');
@@ -1123,7 +1193,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         }).timeout(
           const Duration(seconds: 10),
           onTimeout: () {
-            print('⚠️ Supabase sync timed out after 10s - continuing with local save');
+            print(
+                '⚠️ Supabase sync timed out after 10s - continuing with local save');
           },
         );
       } catch (syncError) {
@@ -1139,13 +1210,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         try {
           final currentUser = _ref.read(currentUserProvider);
           final uid = currentUser?.id;
-          await gamificationService.onWorkoutCompleted(
+          await gamificationService
+              .onWorkoutCompleted(
             workoutId: 0, // Using 0 as placeholder
             setsCompleted: totalSets,
             volumeLifted: totalVolume,
             durationMinutes: workout.elapsedTime.inMinutes,
             userId: uid,
-          ).timeout(
+          )
+              .timeout(
             const Duration(seconds: 5),
             onTimeout: () {
               print('⚠️ Gamification update timed out after 5s');
@@ -1153,7 +1226,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             },
           );
           print('✅ Gamification stats updated');
-          
+
           // Sync stats to Supabase for multi-user leaderboards
           if (uid != null) {
             print('🌐 Syncing stats to Supabase for leaderboards...');
@@ -1184,19 +1257,22 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Stop the workout duration timer
       _stopWorkoutTimer();
-      
+
       // Clear the active workout FIRST (before cleanup to prevent race conditions)
       state = null;
-      
-      print('🏁 Workout finished successfully. Summary: ${summary != null ? 'available' : 'null'}');
-      
+
+      print(
+          '🏁 Workout finished successfully. Summary: ${summary != null ? 'available' : 'null'}');
+
       // Do cleanup in background (don't await - let it happen asynchronously)
       Future.microtask(() async {
         print('🧹 Starting background cleanup...');
-        
+
         try {
           // Stop foreground service
-          await _foregroundService.stopService().timeout(const Duration(seconds: 3));
+          await _foregroundService
+              .stopService()
+              .timeout(const Duration(seconds: 3));
           print('✅ Foreground service stopped');
         } catch (e) {
           print('⚠️ Error stopping foreground service: $e');
@@ -1205,7 +1281,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         try {
           // Stop auto-save and delete checkpoint
           final checkpointService = _ref.read(workoutCheckpointServiceProvider);
-          await checkpointService?.stopAutoSave(deleteCheckpoint: true).timeout(const Duration(seconds: 3));
+          await checkpointService
+              ?.stopAutoSave(deleteCheckpoint: true)
+              .timeout(const Duration(seconds: 3));
           print('✅ Checkpoint cleared');
         } catch (e) {
           print('⚠️ Error clearing checkpoint: $e');
@@ -1230,15 +1308,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         } catch (e) {
           print('⚠️ Error invalidating providers: $e');
         }
-        
+
         print('🧹 Background cleanup completed');
       });
-      
+
       // Return immediately with summary (don't wait for cleanup)
       return summary;
     } catch (e) {
       print('❌ Error finishing workout: $e');
-      
+
       // Ensure cleanup happens even if save failed
       try {
         await _foregroundService.stopService();
@@ -1248,7 +1326,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       } catch (cleanupError) {
         print('❌ Error during cleanup: $cleanupError');
       }
-      
+
       // Still clear state even if save failed
       state = null;
       rethrow;
@@ -1295,7 +1373,7 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
   }) {
     _timer?.cancel();
     _liveActivityService = liveActivityService;
-    
+
     state = RestTimerState(
       isActive: true,
       remainingSeconds: durationSeconds,
@@ -1307,7 +1385,11 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
     );
 
     // Start live activity if service provided, otherwise fallback to notification
-    if (_liveActivityService != null && exerciseName != null && currentSet != null && totalSets != null && targetReps != null) {
+    if (_liveActivityService != null &&
+        exerciseName != null &&
+        currentSet != null &&
+        totalSets != null &&
+        targetReps != null) {
       _liveActivityService!.startTimerActivity(
         exerciseName: exerciseName,
         currentSet: currentSet,
@@ -1315,7 +1397,7 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
         targetReps: targetReps,
         remainingSeconds: durationSeconds,
       );
-      
+
       // Listen for action button taps
       _actionSubscription?.cancel();
       _actionSubscription = _liveActivityService!.actionStream.listen((action) {
@@ -1444,8 +1526,9 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
   /// Subtract 15 seconds from the timer (minimum 0)
   void subtractTime(int seconds) {
     if (state.isActive) {
-      final newRemainingSeconds = (state.remainingSeconds - seconds).clamp(0, state.totalSeconds);
-      
+      final newRemainingSeconds =
+          (state.remainingSeconds - seconds).clamp(0, state.totalSeconds);
+
       if (newRemainingSeconds == 0) {
         // Timer completed by user action
         stopTimer();

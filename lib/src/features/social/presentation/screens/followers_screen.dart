@@ -62,13 +62,17 @@ class FollowersScreen extends ConsumerWidget {
                       : null,
                   child: user.avatarUrl == null
                       ? Text(
-                          (user.displayName?.isNotEmpty ?? false ? user.displayName! : user.id)[0]
+                          (user.displayName?.isNotEmpty ?? false
+                                  ? user.displayName!
+                                  : user.id)[0]
                               .toUpperCase(),
                         )
                       : null,
                 ),
                 title: Text(
-                  user.displayName?.isNotEmpty ?? false ? user.displayName! : 'User ${user.id.substring(0, 8)}',
+                  user.displayName?.isNotEmpty ?? false
+                      ? user.displayName!
+                      : 'User ${user.id.substring(0, 8)}',
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 subtitle: user.bio != null
@@ -82,7 +86,8 @@ class FollowersScreen extends ConsumerWidget {
                     ? null
                     : isFollowingAsync.when(
                         data: (isFollowing) => OutlinedButton(
-                          onPressed: () => _toggleFollow(ref, user.id, isFollowing),
+                          onPressed: () =>
+                              _toggleFollow(ref, user.id, isFollowing),
                           style: OutlinedButton.styleFrom(
                             backgroundColor: isFollowing
                                 ? Theme.of(context).colorScheme.surfaceVariant
@@ -127,13 +132,14 @@ class FollowersScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _toggleFollow(WidgetRef ref, String targetUserId, bool isFollowing) async {
+  Future<void> _toggleFollow(
+      WidgetRef ref, String targetUserId, bool isFollowing) async {
     final currentUser = ref.read(currentUserProvider);
     if (currentUser == null) return;
 
     try {
       final social = ref.read(supabaseSocialServiceProvider);
-      
+
       if (isFollowing) {
         await social.unfollowUser(currentUser.id, targetUserId);
       } else {

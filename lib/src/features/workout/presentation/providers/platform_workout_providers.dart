@@ -3,15 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' hide JsonKey;
 
 import '../../../../core/data/dto/workout_dto.dart';
-import '../../../../core/database/database.dart' if (dart.library.html) '../../../../core/database/database_stub.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/repository_providers.dart';
 
 /// Platform-aware provider for workout sessions
-/// 
+///
 /// Mobile: Uses local Drift database
 /// Web: Uses Supabase through repository
-final workoutSessionsProviderNew = StreamProvider<List<WorkoutSessionDto>>((ref) {
+final workoutSessionsProviderNew =
+    StreamProvider<List<WorkoutSessionDto>>((ref) {
   if (kIsWeb) {
     // Web: Use repository
     final repository = ref.watch(workoutRepositoryProvider);
@@ -133,7 +133,8 @@ final setEntriesBySessionProviderNew =
 });
 
 /// Platform-aware provider for workout templates
-final workoutTemplatesProviderNew = StreamProvider<List<WorkoutTemplateDto>>((ref) {
+final workoutTemplatesProviderNew =
+    StreamProvider<List<WorkoutTemplateDto>>((ref) {
   if (kIsWeb) {
     // Web: Use repository
     final repository = ref.watch(workoutRepositoryProvider);
@@ -148,7 +149,8 @@ final workoutTemplatesProviderNew = StreamProvider<List<WorkoutTemplateDto>>((re
       return Stream.value([]);
     }
 
-    return (database.select(database.workoutTemplates)..orderBy([(tbl) => OrderingTerm.asc(tbl.name)]))
+    return (database.select(database.workoutTemplates)
+          ..orderBy([(tbl) => OrderingTerm.asc(tbl.name)]))
         .watch()
         .map((templates) => templates
             .map((template) => WorkoutTemplateDto(
@@ -183,22 +185,26 @@ final exercisesProviderNew = StreamProvider<List<ExerciseDto>>((ref) {
       return Stream.value([]);
     }
 
-    return (database.select(database.exercises)..orderBy([(tbl) => OrderingTerm.asc(tbl.name)]))
+    return (database.select(database.exercises)
+          ..orderBy([(tbl) => OrderingTerm.asc(tbl.name)]))
         .watch()
         .map((exercises) => exercises
             .map((exercise) => ExerciseDto(
                   id: exercise.id,
                   name: exercise.name,
-                  description: exercise.instructions, // Use instructions as description
+                  description:
+                      exercise.instructions, // Use instructions as description
                   primaryMuscleGroup: exercise.primaryMuscleGroup,
-                  secondaryMuscleGroups: (exercise.secondaryMuscleGroups as List<dynamic>?)
-                          ?.map((e) => e.toString())
-                          .toList() ??
-                      [],
+                  secondaryMuscleGroups:
+                      (exercise.secondaryMuscleGroups as List<dynamic>?)
+                              ?.map((e) => e.toString())
+                              .toList() ??
+                          [],
                   equipmentType: exercise.equipment,
                   category: exercise.category,
                   difficulty: exercise.difficulty,
-                  isCustom: exercise.id.startsWith('custom_'), // Custom exercises have IDs starting with 'custom_'
+                  isCustom: exercise.id.startsWith(
+                      'custom_'), // Custom exercises have IDs starting with 'custom_'
                 ))
             .toList());
   }

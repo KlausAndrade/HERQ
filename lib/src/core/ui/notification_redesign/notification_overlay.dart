@@ -8,7 +8,7 @@ import 'in_app_notification.dart';
 
 /// A floating overlay that listens to `NotificationService.inAppStream`
 /// and shows `NotificationCard` widgets stacked at the top of the app.
-/// 
+///
 /// Features:
 /// - Smooth slide-in animations
 /// - Auto-dismiss after 5 seconds
@@ -18,10 +18,11 @@ class NotificationOverlay extends ConsumerStatefulWidget {
   const NotificationOverlay({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<NotificationOverlay> createState() => _NotificationOverlayState();
+  ConsumerState<NotificationOverlay> createState() =>
+      _NotificationOverlayState();
 }
 
-class _NotificationOverlayState extends ConsumerState<NotificationOverlay> 
+class _NotificationOverlayState extends ConsumerState<NotificationOverlay>
     with TickerProviderStateMixin {
   late final StreamSubscription<InAppNotification> _sub;
   final List<InAppNotification> _active = [];
@@ -35,9 +36,10 @@ class _NotificationOverlayState extends ConsumerState<NotificationOverlay>
         setState(() {
           _active.insert(0, n);
           // Auto-dismiss after 5s (unless it has actions)
-          final hasActions = (n.primaryActionLabel != null && n.onPrimaryAction != null) ||
-                            (n.secondaryActionLabel != null && n.onSecondaryAction != null);
-          
+          final hasActions = (n.primaryActionLabel != null &&
+                  n.onPrimaryAction != null) ||
+              (n.secondaryActionLabel != null && n.onSecondaryAction != null);
+
           if (!hasActions) {
             _timers[n.id] = Timer(const Duration(seconds: 5), () {
               _dismissNotification(n.id);

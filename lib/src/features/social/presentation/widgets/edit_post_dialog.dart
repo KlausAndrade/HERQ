@@ -36,36 +36,43 @@ class _EditPostDialogState extends ConsumerState<EditPostDialog> {
 
   Future<void> _updatePost() async {
     final caption = _captionController.text.trim();
-    
+
     if (caption.isEmpty) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Empty caption',
-        body: 'Caption cannot be empty',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Empty caption',
+            body: 'Caption cannot be empty',
+          )
+          .catchError((_) {});
       return;
     }
 
     setState(() => _isUpdating = true);
 
     try {
-      await ref.read(editPostProvider((postId: widget.postId, caption: caption)).future);
-      
+      await ref.read(
+          editPostProvider((postId: widget.postId, caption: caption)).future);
+
       if (mounted) {
         Navigator.pop(context, true);
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Updated',
-          body: 'Post updated successfully',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Updated',
+              body: 'Post updated successfully',
+            )
+            .catchError((_) {});
       }
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Failed to update post',
-          body: '$e',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Failed to update post',
+              body: '$e',
+            )
+            .catchError((_) {});
       }
     } finally {
       if (mounted) {

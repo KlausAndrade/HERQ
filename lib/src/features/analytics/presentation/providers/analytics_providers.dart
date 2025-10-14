@@ -4,6 +4,7 @@ import '../../../../core/providers/database_provider.dart';
 
 final analyticsServiceProvider = Provider<AnalyticsService>((ref) {
   final db = ref.watch(databaseProvider);
-  if (db == null) throw UnimplementedError('Database is required for analytics');
+  if (db == null)
+    throw UnimplementedError('Database is required for analytics');
   return AnalyticsService(db);
 });

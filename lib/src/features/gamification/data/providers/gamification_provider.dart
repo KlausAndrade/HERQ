@@ -71,7 +71,7 @@ class GamificationService {
     String? userDisplayName,
   }) async {
     print('📊 Recalculating user stats...');
-    
+
     final uid = userId ?? defaultUserId;
     if (uid == null) {
       throw StateError('No userId available for gamification');
@@ -84,45 +84,46 @@ class GamificationService {
     final existingUser = await (database.select(database.users)
           ..where((tbl) => tbl.id.equals(uid)))
         .getSingleOrNull();
-    
+
     if (existingUser == null) {
       print('  ⚠️ User record not found, creating one...');
       final displayName = userDisplayName ?? 'Unknown Athlete';
       await database.into(database.users).insertOnConflictUpdate(
-        UsersCompanion.insert(
-          id: uid,
-          email: Value(userEmail),
-          displayName: displayName,
-          createdAt: Value(DateTime.now()),
-        ),
-      );
+            UsersCompanion.insert(
+              id: uid,
+              email: Value(userEmail),
+              displayName: displayName,
+              createdAt: Value(DateTime.now()),
+            ),
+          );
       print('  ✅ User record created:');
       print('     ID: $uid');
       print('     Email: $userEmail');
       print('     Display Name: $displayName');
-      
+
       // Verify it was created
       final verifyUser = await (database.select(database.users)
             ..where((tbl) => tbl.id.equals(uid)))
-        .getSingleOrNull();
-      print('  🔍 Verification: User ${verifyUser != null ? "FOUND" : "NOT FOUND"} in DB');
+          .getSingleOrNull();
+      print(
+          '  🔍 Verification: User ${verifyUser != null ? "FOUND" : "NOT FOUND"} in DB');
     } else {
       print('  ✅ User record already exists:');
       print('     ID: ${existingUser.id}');
       print('     Email: ${existingUser.email}');
       print('     Display Name: ${existingUser.displayName}');
-      
+
       if (existingUser.displayName.isEmpty && userDisplayName != null) {
         // Update existing user if they have no display name but we have one now
         print('  🔄 Updating user record with display name...');
         await database.into(database.users).insertOnConflictUpdate(
-          UsersCompanion.insert(
-            id: uid,
-            email: Value(userEmail ?? existingUser.email),
-            displayName: userDisplayName,
-            createdAt: Value(existingUser.createdAt),
-          ),
-        );
+              UsersCompanion.insert(
+                id: uid,
+                email: Value(userEmail ?? existingUser.email),
+                displayName: userDisplayName,
+                createdAt: Value(existingUser.createdAt),
+              ),
+            );
         print('  ✅ User record updated with name: $userDisplayName');
       }
     }
@@ -131,80 +132,90 @@ class GamificationService {
     final workouts = await (database.select(database.workoutSessions)
           ..where((tbl) => tbl.completedAt.isNotNull()))
         .get();
-    
+
     print('  Found ${workouts.length} completed workouts');
-    
+
     if (workouts.isEmpty) {
       print('  ⚠️ No completed workouts found!');
       // Still create/update the stats entry with zeros
       await database.into(database.userStats).insertOnConflictUpdate(
-        UserStatsCompanion.insert(
-          userId: uid,
-          totalWorkouts: const Value(0),
-          currentStreak: const Value(0),
-          longestStreak: const Value(0),
-          totalVolumeLifted: const Value(0.0),
-          totalSetsCompleted: const Value(0),
-          experiencePoints: const Value(0),
-          level: const Value(1),
-          lastWorkoutDate: const Value(null),
-        ),
-      );
+            UserStatsCompanion.insert(
+              userId: uid,
+              totalWorkouts: const Value(0),
+              currentStreak: const Value(0),
+              longestStreak: const Value(0),
+              totalVolumeLifted: const Value(0.0),
+              totalSetsCompleted: const Value(0),
+              experiencePoints: const Value(0),
+              level: const Value(1),
+              lastWorkoutDate: const Value(null),
+            ),
+          );
       final updated = await database.getUserStats(uid);
       if (updated == null) {
         throw StateError('Failed to create user stats');
       }
       return updated;
     }
-    
+
     // Calculate totals
     final totalWorkouts = workouts.length;
-    final totalVolume = workouts.fold<double>(0, (sum, w) => sum + w.totalVolume);
+    final totalVolume =
+        workouts.fold<double>(0, (sum, w) => sum + w.totalVolume);
     final totalSets = workouts.fold<int>(0, (sum, w) => sum + w.totalSets);
-    
+
     print('  Total workouts: $totalWorkouts');
     print('  Total volume: ${totalVolume.toStringAsFixed(1)} kg');
     print('  Total sets: $totalSets');
-    
+
     // Calculate streak
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final workedOutToday = workouts.any((w) {
-      final workoutDate = DateTime(w.startedAt.year, w.startedAt.month, w.startedAt.day);
+      final workoutDate =
+          DateTime(w.startedAt.year, w.startedAt.month, w.startedAt.day);
       return workoutDate.isAtSameMomentAs(today);
     });
-    
+
     // Get existing stats
     final existing = await database.getUserStats(uid);
-    final currentStreak = workedOutToday ? ((existing?.currentStreak ?? 0) > 0 ? (existing!.currentStreak) : 1) : 0;
-    final longestStreak = existing != null && existing.longestStreak > currentStreak ? existing.longestStreak : currentStreak;
-    
+    final currentStreak = workedOutToday
+        ? ((existing?.currentStreak ?? 0) > 0 ? (existing!.currentStreak) : 1)
+        : 0;
+    final longestStreak =
+        existing != null && existing.longestStreak > currentStreak
+            ? existing.longestStreak
+            : currentStreak;
+
     print('  Current streak: $currentStreak days');
     print('  Longest streak: $longestStreak days');
-    
+
     // Update or insert user stats
     await database.into(database.userStats).insertOnConflictUpdate(
-      UserStatsCompanion.insert(
-        userId: uid,
-        totalWorkouts: Value(totalWorkouts),
-        currentStreak: Value(currentStreak),
-        longestStreak: Value(longestStreak),
-        totalVolumeLifted: Value(totalVolume),
-        totalSetsCompleted: Value(totalSets),
-        experiencePoints: Value(existing?.experiencePoints ?? totalWorkouts * 100),
-        level: Value(existing?.level ?? 1),
-        lastWorkoutDate: Value(workouts.isNotEmpty ? workouts.last.completedAt : null),
-      ),
-    );
-    
+          UserStatsCompanion.insert(
+            userId: uid,
+            totalWorkouts: Value(totalWorkouts),
+            currentStreak: Value(currentStreak),
+            longestStreak: Value(longestStreak),
+            totalVolumeLifted: Value(totalVolume),
+            totalSetsCompleted: Value(totalSets),
+            experiencePoints:
+                Value(existing?.experiencePoints ?? totalWorkouts * 100),
+            level: Value(existing?.level ?? 1),
+            lastWorkoutDate:
+                Value(workouts.isNotEmpty ? workouts.last.completedAt : null),
+          ),
+        );
+
     print('  ✅ User stats updated');
-    
+
     final updated = await database.getUserStats(uid);
     if (updated == null) {
       throw StateError('Failed to update user stats');
     }
-    
-    print('  📊 Final stats: ${updated.totalWorkouts} workouts, ${updated.totalVolumeLifted.toStringAsFixed(1)} kg volume');
+
+    print(
+        '  📊 Final stats: ${updated.totalWorkouts} workouts, ${updated.totalVolumeLifted.toStringAsFixed(1)} kg volume');
     return updated;
   }
 

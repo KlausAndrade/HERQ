@@ -38,7 +38,8 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.initialName);
-    _descriptionController = TextEditingController(text: widget.initialDescription);
+    _descriptionController =
+        TextEditingController(text: widget.initialDescription);
   }
 
   @override
@@ -51,7 +52,7 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.folderId != null;
-    
+
     return AlertDialog(
       title: Text(isEditing ? 'Edit Folder' : 'Create Folder'),
       content: Form(
@@ -106,7 +107,7 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
                 children: _folderColors.map((colorHex) {
                   final color = Color(int.parse(colorHex));
                   final isSelected = _selectedColor == colorHex;
-                  
+
                   return GestureDetector(
                     onTap: () {
                       setState(() {

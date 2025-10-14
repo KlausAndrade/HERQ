@@ -57,10 +57,12 @@ class ExerciseTypeMapper {
   /// Check if exercise is duration-based (holds, planks, isometric, yoga poses)
   static bool _isDurationExercise(String name, {String? category}) {
     // If category is yoga, it's typically a duration exercise
-    if (category != null && (category.toLowerCase().contains('yoga') || category.toLowerCase().contains('acroyoga'))) {
+    if (category != null &&
+        (category.toLowerCase().contains('yoga') ||
+            category.toLowerCase().contains('acroyoga'))) {
       return true;
     }
-    
+
     final durationKeywords = [
       'plank',
       'hold',
@@ -132,8 +134,10 @@ class ExerciseTypeMapper {
       'air bike',
     ];
 
-    final isCardioCategory = category.contains('cardio') || category.contains('conditioning');
-    final hasDistanceKeyword = distanceDurationKeywords.any((keyword) => name.contains(keyword));
+    final isCardioCategory =
+        category.contains('cardio') || category.contains('conditioning');
+    final hasDistanceKeyword =
+        distanceDurationKeywords.any((keyword) => name.contains(keyword));
 
     return hasDistanceKeyword || isCardioCategory;
   }
@@ -207,24 +211,28 @@ class ExerciseTypeMapper {
       'machine dip',
     ];
 
-    final hasAssistedKeyword = assistedKeywords.any((keyword) => name.contains(keyword));
-    final hasAssistedEquipment = equipment.contains('assisted') || 
-                                  equipment.contains('machine') || 
-                                  equipment.contains('band');
+    final hasAssistedKeyword =
+        assistedKeywords.any((keyword) => name.contains(keyword));
+    final hasAssistedEquipment = equipment.contains('assisted') ||
+        equipment.contains('machine') ||
+        equipment.contains('band');
 
     // Must have assisted keyword in name or be a bodyweight exercise with assisted equipment
-    return hasAssistedKeyword || (hasAssistedEquipment && _isBodyweightExerciseBase(name));
+    return hasAssistedKeyword ||
+        (hasAssistedEquipment && _isBodyweightExerciseBase(name));
   }
 
   /// Check if exercise is bodyweight reps (no weight, just reps)
-  static bool _isBodyweightRepsExercise(String name, String equipment, String category) {
+  static bool _isBodyweightRepsExercise(
+      String name, String equipment, String category) {
     // Check if it's a calisthenics category
-    final isCalisthenics = category.contains('calisthenics') || category.contains('bodyweight');
-    
+    final isCalisthenics =
+        category.contains('calisthenics') || category.contains('bodyweight');
+
     // Check if equipment is bodyweight
-    final isBodyweightEquipment = equipment.contains('bodyweight') || 
-                                   equipment.contains('none') || 
-                                   equipment.isEmpty;
+    final isBodyweightEquipment = equipment.contains('bodyweight') ||
+        equipment.contains('none') ||
+        equipment.isEmpty;
 
     // Common bodyweight exercises
     final bodyweightKeywords = [
@@ -242,10 +250,10 @@ class ExerciseTypeMapper {
       'muscle-up',
       'muscle up',
       'burpee',
-      'air squat',        // Specific bodyweight squat
+      'air squat', // Specific bodyweight squat
       'bodyweight squat', // Specific bodyweight squat
-      'pistol squat',     // Single-leg bodyweight squat
-      'sissy squat',      // Bodyweight squat variation
+      'pistol squat', // Single-leg bodyweight squat
+      'sissy squat', // Bodyweight squat variation
       'lunge',
       'jump',
       'jumping',
@@ -266,16 +274,17 @@ class ExerciseTypeMapper {
       'mountain climber',
     ];
 
-    final hasBodyweightKeyword = bodyweightKeywords.any((keyword) => name.contains(keyword));
+    final hasBodyweightKeyword =
+        bodyweightKeywords.any((keyword) => name.contains(keyword));
 
     // Bodyweight if: calisthenics category, bodyweight equipment, or has bodyweight keyword
     // BUT not if it's weighted or assisted
     final isWeighted = _isWeightedBodyweightExercise(name);
     final isAssisted = _isAssistedBodyweightExercise(name, equipment);
 
-    return (isCalisthenics || isBodyweightEquipment || hasBodyweightKeyword) && 
-           !isWeighted && 
-           !isAssisted;
+    return (isCalisthenics || isBodyweightEquipment || hasBodyweightKeyword) &&
+        !isWeighted &&
+        !isAssisted;
   }
 
   /// Check if base exercise is a bodyweight movement (for assisted detection)
@@ -298,7 +307,8 @@ class ExerciseTypeMapper {
     String? equipment,
     String? category,
   }) {
-    final type = assignExerciseType(name: name, equipment: equipment, category: category);
+    final type = assignExerciseType(
+        name: name, equipment: equipment, category: category);
 
     switch (type) {
       case ExerciseType.duration:
@@ -320,4 +330,3 @@ class ExerciseTypeMapper {
     }
   }
 }
-

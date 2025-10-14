@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// A button that gracefully handles multi-line text
-/// 
+///
 /// This button automatically adjusts its layout when the label is long,
 /// ensuring the icon and text remain properly aligned.
 class AdaptiveButton extends StatelessWidget {
@@ -23,7 +23,7 @@ class AdaptiveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttonStyle = style ?? _defaultStyle();
-    
+
     final content = Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -82,4 +82,3 @@ enum ButtonType {
   outlined,
   text,
 }
-

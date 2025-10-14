@@ -8,7 +8,7 @@ class AboutHerqScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context)!.aboutHerq),
@@ -40,7 +40,8 @@ class AboutHerqScreen extends StatelessWidget {
                   // Logo Container (similar to splash screen)
                   Container(
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer.withOpacity(0.5),
+                      color:
+                          theme.colorScheme.primaryContainer.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
@@ -75,7 +76,8 @@ class AboutHerqScreen extends StatelessWidget {
                                   const SizedBox(height: 12),
                                   Text(
                                     S.of(context)!.appTitle,
-                                    style: theme.textTheme.headlineLarge?.copyWith(
+                                    style:
+                                        theme.textTheme.headlineLarge?.copyWith(
                                       fontWeight: FontWeight.w900,
                                       color: theme.colorScheme.onSurface,
                                     ),
@@ -102,7 +104,7 @@ class AboutHerqScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Brand Story Section
             Container(
               width: double.infinity,
@@ -120,7 +122,7 @@ class AboutHerqScreen extends StatelessWidget {
                     textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Divider with gradient
                   Container(
                     height: 2,
@@ -135,7 +137,7 @@ class AboutHerqScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Brand Mission
                   Text(
                     S.of(context)!.brandMission,
@@ -147,7 +149,7 @@ class AboutHerqScreen extends StatelessWidget {
                     textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 32),
-                  
+
                   // Version & Credits
                   Center(
                     child: Column(
@@ -178,4 +180,3 @@ class AboutHerqScreen extends StatelessWidget {
     );
   }
 }
-

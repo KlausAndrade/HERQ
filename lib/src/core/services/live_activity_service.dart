@@ -9,7 +9,7 @@ class LiveActivityService {
 
   final _liveActivitiesPlugin = LiveActivities();
   String? _currentActivityId;
-  
+
   // Stream controller for action events (button taps)
   final _actionController = StreamController<String>.broadcast();
   Stream<String> get actionStream => _actionController.stream;
@@ -53,13 +53,13 @@ class LiveActivityService {
 
       // Use a consistent activity ID for the timer
       const activityId = 'rest_timer';
-      
+
       // Start the live activity
       final result = await _liveActivitiesPlugin.createActivity(
         activityId,
         activityData,
       );
-      
+
       if (result != null) {
         _currentActivityId = result;
       }

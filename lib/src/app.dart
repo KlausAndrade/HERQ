@@ -59,8 +59,10 @@ class _GymAIAppState extends ConsumerState<GymAIApp> {
     final locale = ref.watch(localeProvider);
 
     // Select theme based on variant (HERQ or Default)
-    final lightTheme = themeVariant == 'herq' ? AppTheme.herqLightTheme : AppTheme.lightTheme;
-    final darkTheme = themeVariant == 'herq' ? AppTheme.herqDarkTheme : AppTheme.darkTheme;
+    final lightTheme =
+        themeVariant == 'herq' ? AppTheme.herqLightTheme : AppTheme.lightTheme;
+    final darkTheme =
+        themeVariant == 'herq' ? AppTheme.herqDarkTheme : AppTheme.darkTheme;
 
     if (_showSplash) {
       return MaterialApp(

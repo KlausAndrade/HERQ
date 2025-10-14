@@ -7,7 +7,8 @@ import '../../data/supabase_leaderboard_service.dart';
 import '../../domain/models/leaderboard_models.dart';
 
 // Supabase Leaderboard service provider (MULTI-USER)
-final supabaseLeaderboardServiceProvider = Provider<SupabaseLeaderboardService?>((ref) {
+final supabaseLeaderboardServiceProvider =
+    Provider<SupabaseLeaderboardService?>((ref) {
   final supabase = ref.watch(supabaseClientProvider);
   return SupabaseLeaderboardService(supabase);
 });
@@ -22,8 +23,9 @@ final localLeaderboardServiceProvider = Provider<LeaderboardService?>((ref) {
 // Leaderboard provider - Uses Supabase for multi-user data
 final leaderboardProvider = FutureProvider.autoDispose
     .family<Leaderboard, LeaderboardParams>((ref, params) async {
-  print('🔄 Leaderboard provider called for type: ${params.type}, period: ${params.period}');
-  
+  print(
+      '🔄 Leaderboard provider called for type: ${params.type}, period: ${params.period}');
+
   final supabaseService = ref.watch(supabaseLeaderboardServiceProvider);
   final localService = ref.watch(localLeaderboardServiceProvider);
   final currentUser = ref.watch(currentUserProvider);
@@ -37,8 +39,9 @@ final leaderboardProvider = FutureProvider.autoDispose
         period: params.period,
         currentUserId: currentUser?.id,
       );
-      
-      print('  📊 Supabase leaderboard result: ${result.entries.length} entries');
+
+      print(
+          '  📊 Supabase leaderboard result: ${result.entries.length} entries');
       return result;
     } catch (e) {
       print('  ⚠️ Supabase leaderboard error, falling back to local: $e');
@@ -53,7 +56,7 @@ final leaderboardProvider = FutureProvider.autoDispose
       period: params.period,
       currentUserId: currentUser?.id,
     );
-    
+
     print('  📊 Local leaderboard result: ${result.entries.length} entries');
     return result;
   }

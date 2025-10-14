@@ -73,7 +73,9 @@ class StreakBadge extends ConsumerWidget {
                 if (currentStreak > 0) ...[
                   const SizedBox(width: 4),
                   Text(
-                    currentStreak != 1 ? S.of(context)!.days : S.of(context)!.day,
+                    currentStreak != 1
+                        ? S.of(context)!.days
+                        : S.of(context)!.day,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: size * 0.3,

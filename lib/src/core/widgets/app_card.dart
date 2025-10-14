@@ -40,8 +40,7 @@ class AppCard extends StatefulWidget {
   State<AppCard> createState() => _AppCardState();
 }
 
-class _AppCardState extends State<AppCard>
-    with SingleTickerProviderStateMixin {
+class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _elevationAnimation;
@@ -130,8 +129,8 @@ class _AppCardState extends State<AppCard>
 
   BoxDecoration _getDecoration(BuildContext context) {
     final theme = Theme.of(context);
-    final borderRadius = widget.borderRadius ??
-        BorderRadius.circular(AppTheme.radiusMD);
+    final borderRadius =
+        widget.borderRadius ?? BorderRadius.circular(AppTheme.radiusMD);
 
     switch (widget.variant) {
       case AppCardVariant.elevated:
@@ -139,11 +138,12 @@ class _AppCardState extends State<AppCard>
           color: widget.gradient == null ? theme.colorScheme.surface : null,
           gradient: widget.gradient,
           borderRadius: borderRadius,
-            boxShadow: [
+          boxShadow: [
             BoxShadow(
               color: Colors.black.withAlpha((0.1 * 255).round()),
               blurRadius: widget.animateOnTap ? _elevationAnimation.value : 8,
-              offset: Offset(0, widget.animateOnTap ? _elevationAnimation.value / 2 : 4),
+              offset: Offset(
+                  0, widget.animateOnTap ? _elevationAnimation.value / 2 : 4),
             ),
           ],
         );
@@ -158,7 +158,7 @@ class _AppCardState extends State<AppCard>
           color: widget.gradient == null ? theme.colorScheme.surface : null,
           gradient: widget.gradient,
           borderRadius: borderRadius,
-            border: Border.all(
+          border: Border.all(
             color: theme.colorScheme.outline.withAlpha((0.2 * 255).round()),
             width: 1,
           ),

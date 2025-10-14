@@ -4,17 +4,37 @@
 // which are converted to Companion objects by the database importer.
 
 const defaultFoldersData = [
-  {'id': 'fold_ppl', 'name': 'Push/Pull/Legs', 'description': 'Classic 3-day split'},
-  {'id': 'fold_phul', 'name': 'PHUL', 'description': 'Power Hypertrophy Upper Lower'},
-  {'id': 'fold_hiit', 'name': 'HIIT', 'description': 'High intensity interval training'},
+  {
+    'id': 'fold_ppl',
+    'name': 'Push/Pull/Legs',
+    'description': 'Classic 3-day split'
+  },
+  {
+    'id': 'fold_phul',
+    'name': 'PHUL',
+    'description': 'Power Hypertrophy Upper Lower'
+  },
+  {
+    'id': 'fold_hiit',
+    'name': 'HIIT',
+    'description': 'High intensity interval training'
+  },
   {'id': 'fold_yoga', 'name': 'YOGA', 'description': 'Yoga flows and routines'},
   {'id': 'fold_circuit', 'name': 'Circuit Training'},
   {'id': 'fold_split', 'name': 'Split Training'},
   {'id': 'fold_crossfit', 'name': 'CrossFit'},
   {'id': 'fold_strength', 'name': 'Strength Building Routine'},
   {'id': 'fold_full', 'name': 'Full-Body Workouts'},
-  {'id': 'fold_calisthenics', 'name': 'Calisthenics', 'description': 'Bodyweight strength & skill training'},
-  {'id': 'fold_acroyoga', 'name': 'AcroYoga', 'description': 'Partner acrobatics and therapeutic flying'},
+  {
+    'id': 'fold_calisthenics',
+    'name': 'Calisthenics',
+    'description': 'Bodyweight strength & skill training'
+  },
+  {
+    'id': 'fold_acroyoga',
+    'name': 'AcroYoga',
+    'description': 'Partner acrobatics and therapeutic flying'
+  },
 ];
 
 const defaultTemplatesData = [
@@ -24,8 +44,15 @@ const defaultTemplatesData = [
     'description': 'Bench, incline, overhead press, and accessories',
     'category': 'Push Pull Legs',
     'folderId': 'fold_ppl',
-    'exerciseIds': ['bench_press','incline_dumbbell_press','overhead_press','lateral_raises','tricep_dips','close_grip_bench_press'],
-    'tags': ['push','strength'],
+    'exerciseIds': [
+      'bench_press',
+      'incline_dumbbell_press',
+      'overhead_press',
+      'lateral_raises',
+      'tricep_dips',
+      'close_grip_bench_press'
+    ],
+    'tags': ['push', 'strength'],
     'estimatedDurationMinutes': 75,
     'isDefault': true,
   },
@@ -35,8 +62,15 @@ const defaultTemplatesData = [
     'description': 'Deadlift, rows, pullups and posterior chain work',
     'category': 'Push Pull Legs',
     'folderId': 'fold_ppl',
-    'exerciseIds': ['deadlift','pull_up','barbell_rows','lat_pulldowns','face_pulls','barbell_curls'],
-    'tags': ['pull','strength'],
+    'exerciseIds': [
+      'deadlift',
+      'pull_up',
+      'barbell_rows',
+      'lat_pulldowns',
+      'face_pulls',
+      'barbell_curls'
+    ],
+    'tags': ['pull', 'strength'],
     'estimatedDurationMinutes': 75,
     'isDefault': true,
   },
@@ -46,8 +80,16 @@ const defaultTemplatesData = [
     'description': 'Squat variants, hinge, and accessory leg work',
     'category': 'Push Pull Legs',
     'folderId': 'fold_ppl',
-    'exerciseIds': ['squat','romanian_deadlift','leg_press','leg_curls','calf_raises','walking_lunges','planks'],
-    'tags': ['legs','strength'],
+    'exerciseIds': [
+      'squat',
+      'romanian_deadlift',
+      'leg_press',
+      'leg_curls',
+      'calf_raises',
+      'walking_lunges',
+      'planks'
+    ],
+    'tags': ['legs', 'strength'],
     'estimatedDurationMinutes': 80,
     'isDefault': true,
   },
@@ -57,8 +99,13 @@ const defaultTemplatesData = [
     'name': 'PHUL - Upper Power',
     'category': 'PHUL',
     'folderId': 'fold_phul',
-    'exerciseIds': ['barbell_bench_press','weighted_pull_up','overhead_press','barbell_rows'],
-    'tags': ['phul','power'],
+    'exerciseIds': [
+      'barbell_bench_press',
+      'weighted_pull_up',
+      'overhead_press',
+      'barbell_rows'
+    ],
+    'tags': ['phul', 'power'],
     'isDefault': true,
   },
   {
@@ -66,8 +113,8 @@ const defaultTemplatesData = [
     'name': 'PHUL - Lower Power',
     'category': 'PHUL',
     'folderId': 'fold_phul',
-    'exerciseIds': ['squat','deadlift','front_squats'],
-    'tags': ['phul','power'],
+    'exerciseIds': ['squat', 'deadlift', 'front_squats'],
+    'tags': ['phul', 'power'],
     'isDefault': true,
   },
   {
@@ -75,8 +122,13 @@ const defaultTemplatesData = [
     'name': 'PHUL - Upper Hypertrophy',
     'category': 'PHUL',
     'folderId': 'fold_phul',
-    'exerciseIds': ['incline_dumbbell_press','lat_pulldowns','dumbbell_shoulder_press','seated_cable_rows'],
-    'tags': ['phul','hypertrophy'],
+    'exerciseIds': [
+      'incline_dumbbell_press',
+      'lat_pulldowns',
+      'dumbbell_shoulder_press',
+      'seated_cable_rows'
+    ],
+    'tags': ['phul', 'hypertrophy'],
     'isDefault': true,
   },
   {
@@ -84,8 +136,13 @@ const defaultTemplatesData = [
     'name': 'PHUL - Lower Hypertrophy',
     'category': 'PHUL',
     'folderId': 'fold_phul',
-    'exerciseIds': ['leg_press','romanian_deadlift','leg_curls','walking_lunges'],
-    'tags': ['phul','hypertrophy'],
+    'exerciseIds': [
+      'leg_press',
+      'romanian_deadlift',
+      'leg_curls',
+      'walking_lunges'
+    ],
+    'tags': ['phul', 'hypertrophy'],
     'isDefault': true,
   },
   // HIIT
@@ -94,8 +151,8 @@ const defaultTemplatesData = [
     'name': 'HIIT - Tabata Circuit',
     'folderId': 'fold_hiit',
     'category': 'HIIT',
-    'exerciseIds': ['burpees','mountain_climbers','sprint','jump_rope'],
-    'tags': ['hiit','cardio'],
+    'exerciseIds': ['burpees', 'mountain_climbers', 'sprint', 'jump_rope'],
+    'tags': ['hiit', 'cardio'],
     'estimatedDurationMinutes': 20,
     'isDefault': true,
   },
@@ -104,8 +161,8 @@ const defaultTemplatesData = [
     'name': 'HIIT - 20/10 EMOM',
     'folderId': 'fold_hiit',
     'category': 'HIIT',
-    'exerciseIds': ['kettlebell_swings','box_jumps','push_up'],
-    'tags': ['hiit','emom'],
+    'exerciseIds': ['kettlebell_swings', 'box_jumps', 'push_up'],
+    'tags': ['hiit', 'emom'],
     'estimatedDurationMinutes': 25,
     'isDefault': true,
   },
@@ -115,8 +172,13 @@ const defaultTemplatesData = [
     'name': 'Yoga - Morning Flow',
     'folderId': 'fold_yoga',
     'category': 'YOGA',
-    'exerciseIds': ['sun_salutation_a','downward_dog','cobra_pose','child_pose'],
-    'tags': ['yoga','flow','morning'],
+    'exerciseIds': [
+      'sun_salutation_a',
+      'downward_dog',
+      'cobra_pose',
+      'child_pose'
+    ],
+    'tags': ['yoga', 'flow', 'morning'],
     'estimatedDurationMinutes': 20,
     'isDefault': true,
   },
@@ -125,8 +187,8 @@ const defaultTemplatesData = [
     'name': 'Yoga - Midday Reset',
     'folderId': 'fold_yoga',
     'category': 'YOGA',
-    'exerciseIds': ['seated_forward_fold','tree_pose','forward_fold'],
-    'tags': ['yoga','reset','midday'],
+    'exerciseIds': ['seated_forward_fold', 'tree_pose', 'forward_fold'],
+    'tags': ['yoga', 'reset', 'midday'],
     'estimatedDurationMinutes': 15,
     'isDefault': true,
   },
@@ -135,8 +197,8 @@ const defaultTemplatesData = [
     'name': 'Yoga - Evening Wind Down',
     'folderId': 'fold_yoga',
     'category': 'YOGA',
-    'exerciseIds': ['child_pose','pigeon_pose','bridge_pose'],
-    'tags': ['yoga','relax','evening'],
+    'exerciseIds': ['child_pose', 'pigeon_pose', 'bridge_pose'],
+    'tags': ['yoga', 'relax', 'evening'],
     'estimatedDurationMinutes': 20,
     'isDefault': true,
   },
@@ -146,8 +208,8 @@ const defaultTemplatesData = [
     'name': 'Circuit Training - Beginner',
     'folderId': 'fold_circuit',
     'category': 'Circuit Training',
-    'exerciseIds': ['burpees','push_up','squat','planks'],
-    'tags': ['circuit','conditioning'],
+    'exerciseIds': ['burpees', 'push_up', 'squat', 'planks'],
+    'tags': ['circuit', 'conditioning'],
     'estimatedDurationMinutes': 30,
     'isDefault': true,
   },
@@ -157,8 +219,8 @@ const defaultTemplatesData = [
     'name': 'CrossFit - Chipper',
     'folderId': 'fold_crossfit',
     'category': 'CrossFit',
-    'exerciseIds': ['row','box_jumps','kettlebell_swings','pull_up'],
-    'tags': ['crossfit','metcon'],
+    'exerciseIds': ['row', 'box_jumps', 'kettlebell_swings', 'pull_up'],
+    'tags': ['crossfit', 'metcon'],
     'estimatedDurationMinutes': 20,
     'isDefault': true,
   },
@@ -168,8 +230,8 @@ const defaultTemplatesData = [
     'name': 'Strength - 3x5 Full Body',
     'folderId': 'fold_strength',
     'category': 'Strength',
-    'exerciseIds': ['squat','bench_press','deadlift','overhead_press'],
-    'tags': ['strength','3x5'],
+    'exerciseIds': ['squat', 'bench_press', 'deadlift', 'overhead_press'],
+    'tags': ['strength', '3x5'],
     'estimatedDurationMinutes': 60,
     'isDefault': true,
   },
@@ -178,8 +240,8 @@ const defaultTemplatesData = [
     'name': 'Full Body - EMOM',
     'folderId': 'fold_full',
     'category': 'Full Body',
-    'exerciseIds': ['squat','push_up','pull_up','burpees'],
-    'tags': ['full_body','emom'],
+    'exerciseIds': ['squat', 'push_up', 'pull_up', 'burpees'],
+    'tags': ['full_body', 'emom'],
     'estimatedDurationMinutes': 30,
     'isDefault': true,
   },
@@ -189,8 +251,15 @@ const defaultTemplatesData = [
     'name': 'Calisthenics - Full Body (Beginner)',
     'folderId': 'fold_calisthenics',
     'category': 'Calisthenics',
-    'exerciseIds': ['push_up','pull_up','squat','planks','bridge_pose','burpees'],
-    'tags': ['calisthenics','beginner','bodyweight','full_body'],
+    'exerciseIds': [
+      'push_up',
+      'pull_up',
+      'squat',
+      'planks',
+      'bridge_pose',
+      'burpees'
+    ],
+    'tags': ['calisthenics', 'beginner', 'bodyweight', 'full_body'],
     'estimatedDurationMinutes': 40,
     'isDefault': true,
   },
@@ -199,8 +268,15 @@ const defaultTemplatesData = [
     'name': 'Calisthenics - Upper Strength',
     'folderId': 'fold_calisthenics',
     'category': 'Calisthenics',
-    'exerciseIds': ['pull_up','tricep_dips','push_up','false_grip_pull_up','weighted_pull_up','hollow_body_hold'],
-    'tags': ['calisthenics','upper','strength'],
+    'exerciseIds': [
+      'pull_up',
+      'tricep_dips',
+      'push_up',
+      'false_grip_pull_up',
+      'weighted_pull_up',
+      'hollow_body_hold'
+    ],
+    'tags': ['calisthenics', 'upper', 'strength'],
     'estimatedDurationMinutes': 50,
     'isDefault': true,
   },
@@ -209,8 +285,14 @@ const defaultTemplatesData = [
     'name': 'Calisthenics - Handstand & Skill Work',
     'folderId': 'fold_calisthenics',
     'category': 'Calisthenics',
-    'exerciseIds': ['wall_handstand','handstand','pseudo_planche_push_up','handstand_push_up','hollow_body_hold'],
-    'tags': ['calisthenics','skills','handstand'],
+    'exerciseIds': [
+      'wall_handstand',
+      'handstand',
+      'pseudo_planche_push_up',
+      'handstand_push_up',
+      'hollow_body_hold'
+    ],
+    'tags': ['calisthenics', 'skills', 'handstand'],
     'estimatedDurationMinutes': 30,
     'isDefault': true,
   },
@@ -219,8 +301,15 @@ const defaultTemplatesData = [
     'name': 'Calisthenics - Core & Legs',
     'folderId': 'fold_calisthenics',
     'category': 'Calisthenics',
-    'exerciseIds': ['squat','walking_lunges','romanian_deadlift','hanging_leg_raises','planks','mountain_climbers'],
-    'tags': ['calisthenics','core','legs'],
+    'exerciseIds': [
+      'squat',
+      'walking_lunges',
+      'romanian_deadlift',
+      'hanging_leg_raises',
+      'planks',
+      'mountain_climbers'
+    ],
+    'tags': ['calisthenics', 'core', 'legs'],
     'estimatedDurationMinutes': 45,
     'isDefault': true,
   },
@@ -229,8 +318,14 @@ const defaultTemplatesData = [
     'name': 'Calisthenics - HIIT Circuit',
     'folderId': 'fold_calisthenics',
     'category': 'Calisthenics',
-    'exerciseIds': ['burpees','box_jumps','mountain_climbers','push_up','jump_rope'],
-    'tags': ['calisthenics','hiit','conditioning'],
+    'exerciseIds': [
+      'burpees',
+      'box_jumps',
+      'mountain_climbers',
+      'push_up',
+      'jump_rope'
+    ],
+    'tags': ['calisthenics', 'hiit', 'conditioning'],
     'estimatedDurationMinutes': 20,
     'isDefault': true,
   },
@@ -241,8 +336,8 @@ const defaultTemplatesData = [
     'description': 'Washing machine, thrones, and basic counterbalance',
     'folderId': 'fold_acroyoga',
     'category': 'AcroYoga',
-    'exerciseIds': ['bird_pose','throne_pose','folded_leaf','star_pose'],
-    'tags': ['acroyoga','beginner','partner'],
+    'exerciseIds': ['bird_pose', 'throne_pose', 'folded_leaf', 'star_pose'],
+    'tags': ['acroyoga', 'beginner', 'partner'],
     'estimatedDurationMinutes': 45,
     'isDefault': true,
   },
@@ -252,8 +347,13 @@ const defaultTemplatesData = [
     'description': 'Counterbalance work and standing poses',
     'folderId': 'fold_acroyoga',
     'category': 'AcroYoga',
-    'exerciseIds': ['reverse_bird','shoulder_stand','free_bird','straddle_bat'],
-    'tags': ['acroyoga','balance','partner'],
+    'exerciseIds': [
+      'reverse_bird',
+      'shoulder_stand',
+      'free_bird',
+      'straddle_bat'
+    ],
+    'tags': ['acroyoga', 'balance', 'partner'],
     'estimatedDurationMinutes': 50,
     'isDefault': true,
   },
@@ -263,8 +363,13 @@ const defaultTemplatesData = [
     'description': 'Standing acro sequences',
     'folderId': 'fold_acroyoga',
     'category': 'AcroYoga',
-    'exerciseIds': ['shoulder_mount','hand_to_hand','standing_star','flag_pose'],
-    'tags': ['acroyoga','standing','advanced'],
+    'exerciseIds': [
+      'shoulder_mount',
+      'hand_to_hand',
+      'standing_star',
+      'flag_pose'
+    ],
+    'tags': ['acroyoga', 'standing', 'advanced'],
     'estimatedDurationMinutes': 40,
     'isDefault': true,
   },
@@ -274,12 +379,19 @@ const defaultTemplatesData = [
     'description': 'High flying and therapeutic sequences',
     'folderId': 'fold_acroyoga',
     'category': 'AcroYoga',
-    'exerciseIds': ['high_flying_whale','folding_leaf','therapeutic_bird','washing_machine'],
-    'tags': ['acroyoga','flying','therapeutic'],
+    'exerciseIds': [
+      'high_flying_whale',
+      'folding_leaf',
+      'therapeutic_bird',
+      'washing_machine'
+    ],
+    'tags': ['acroyoga', 'flying', 'therapeutic'],
     'estimatedDurationMinutes': 55,
     'isDefault': true,
   },
 ];
 
-List<Map<String, Object?>> getDefaultFoldersData() => List.from(defaultFoldersData);
-List<Map<String, Object?>> getDefaultTemplatesData() => List.from(defaultTemplatesData);
+List<Map<String, Object?>> getDefaultFoldersData() =>
+    List.from(defaultFoldersData);
+List<Map<String, Object?>> getDefaultTemplatesData() =>
+    List.from(defaultTemplatesData);

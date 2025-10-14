@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/template_web_provider.dart';
-import '../widgets/exercise_picker_dialog.dart';
 import '../widgets/multi_exercise_picker_dialog.dart';
 import 'template_builder_screen.dart';
 
@@ -29,7 +28,8 @@ class WebTemplatesScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.fitness_center, size: 80, color: Colors.grey),
+                  const Icon(Icons.fitness_center,
+                      size: 80, color: Colors.grey),
                   const SizedBox(height: 24),
                   const Text('No templates yet'),
                   const SizedBox(height: 16),
@@ -67,18 +67,22 @@ class WebTemplatesScreen extends ConsumerWidget {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => TemplateBuilderScreen(templateId: template['id']),
+                              builder: (context) => TemplateBuilderScreen(
+                                  templateId: template['id']),
                             ),
                           );
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.play_arrow, color: Color(0xFF6366F1)),
-                        onPressed: () => context.go('/workout/${template['id']}'),
+                        icon: const Icon(Icons.play_arrow,
+                            color: Color(0xFF6366F1)),
+                        onPressed: () =>
+                            context.go('/workout/${template['id']}'),
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _confirmDelete(context, ref, template['id']),
+                        onPressed: () =>
+                            _confirmDelete(context, ref, template['id']),
                       ),
                     ],
                   ),
@@ -99,7 +103,7 @@ class WebTemplatesScreen extends ConsumerWidget {
 
   void _showCreateDialog(BuildContext context, WidgetRef ref) {
     final nameController = TextEditingController();
-    
+
     showDialog(
       context: context,
       barrierDismissible: false, // Prevent accidental dismissal
@@ -156,7 +160,8 @@ class _CreateTemplateDialog extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<_CreateTemplateDialog> createState() => _CreateTemplateDialogState();
+  ConsumerState<_CreateTemplateDialog> createState() =>
+      _CreateTemplateDialogState();
 }
 
 class _CreateTemplateDialogState extends ConsumerState<_CreateTemplateDialog> {

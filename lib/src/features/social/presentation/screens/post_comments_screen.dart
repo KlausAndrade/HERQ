@@ -34,7 +34,8 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
     final postAsync = ref.watch(singlePostProvider(widget.postId));
     final commentsAsync = ref.watch(postCommentsProvider(widget.postId));
     final currentUser = ref.watch(currentUserProvider);
-    final currentUserProfile = ref.watch(userProfileProvider(currentUser?.id ?? ''));
+    final currentUserProfile =
+        ref.watch(userProfileProvider(currentUser?.id ?? ''));
 
     return Scaffold(
       appBar: AppBar(
@@ -46,7 +47,7 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
           postAsync.when(
             data: (post) {
               if (post == null) return const SizedBox.shrink();
-              
+
               return Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -63,7 +64,8 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                           ? NetworkImage(post.userAvatar!)
                           : null,
                       child: post.userAvatar == null
-                          ? Text((post.userName ?? post.userId)[0].toUpperCase())
+                          ? Text(
+                              (post.userName ?? post.userId)[0].toUpperCase())
                           : null,
                     ),
                     const SizedBox(width: 12),
@@ -72,7 +74,8 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            post.userName ?? 'User ${post.userId.substring(0, 8)}',
+                            post.userName ??
+                                'User ${post.userId.substring(0, 8)}',
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                           Text(
@@ -109,7 +112,8 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                   itemBuilder: (context, index) {
                     final comment = comments[index];
                     final isCurrentUser = comment.userId == currentUser?.id;
-                    final commentUserAsync = ref.watch(userProfileProvider(comment.userId));
+                    final commentUserAsync =
+                        ref.watch(userProfileProvider(comment.userId));
 
                     return commentUserAsync.when(
                       data: (user) => ListTile(
@@ -142,8 +146,12 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                             Text(comment.text),
                             const SizedBox(height: 4),
                             Text(
-                              DateFormat('MMM d, h:mm a').format(comment.createdAt),
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              DateFormat('MMM d, h:mm a')
+                                  .format(comment.createdAt),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
                                     color: Colors.grey,
                                     fontSize: 12,
                                   ),
@@ -175,8 +183,12 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                             Text(comment.text),
                             const SizedBox(height: 4),
                             Text(
-                              DateFormat('MMM d, h:mm a').format(comment.createdAt),
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              DateFormat('MMM d, h:mm a')
+                                  .format(comment.createdAt),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
                                     color: Colors.grey,
                                     fontSize: 12,
                                   ),
@@ -202,8 +214,12 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                             Text(comment.text),
                             const SizedBox(height: 4),
                             Text(
-                              DateFormat('MMM d, h:mm a').format(comment.createdAt),
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              DateFormat('MMM d, h:mm a')
+                                  .format(comment.createdAt),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
                                     color: Colors.grey,
                                     fontSize: 12,
                                   ),
@@ -240,7 +256,8 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                 children: [
                   currentUserProfile.when(
                     data: (profile) {
-                      if (profile?.avatarUrl != null && profile!.avatarUrl!.isNotEmpty) {
+                      if (profile?.avatarUrl != null &&
+                          profile!.avatarUrl!.isNotEmpty) {
                         return CircleAvatar(
                           radius: 16,
                           backgroundImage: NetworkImage(profile.avatarUrl!),
@@ -248,7 +265,9 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                       }
                       return CircleAvatar(
                         radius: 16,
-                        child: Text(profile?.displayName?[0].toUpperCase() ?? currentUser?.id[0].toUpperCase() ?? '?'),
+                        child: Text(profile?.displayName?[0].toUpperCase() ??
+                            currentUser?.id[0].toUpperCase() ??
+                            '?'),
                       );
                     },
                     loading: () => const CircleAvatar(
@@ -327,11 +346,13 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
       });
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error adding comment',
-          body: '$e',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error adding comment',
+              body: '$e',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -344,11 +365,13 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
       ref.invalidate(singlePostProvider(widget.postId));
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error deleting comment',
-          body: '$e',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error deleting comment',
+              body: '$e',
+            )
+            .catchError((_) {});
       }
     }
   }

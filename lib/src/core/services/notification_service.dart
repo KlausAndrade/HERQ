@@ -29,7 +29,7 @@ class NotificationService {
     if (_initialized) return;
 
     // Skip notification initialization on macOS/desktop to avoid compatibility issues
-    if (defaultTargetPlatform == TargetPlatform.macOS || 
+    if (defaultTargetPlatform == TargetPlatform.macOS ||
         defaultTargetPlatform == TargetPlatform.windows ||
         defaultTargetPlatform == TargetPlatform.linux) {
       _initialized = true;
@@ -39,7 +39,8 @@ class NotificationService {
     // During flutter test runs, avoid initializing the actual plugin which
     // may not be available in the headless test environment. Flutter sets
     // the FLUTTER_TEST environment variable during tests.
-    const isFlutterTest = bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);
+    const isFlutterTest =
+        bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);
     if (isFlutterTest) {
       _initialized = true;
       return;
@@ -168,7 +169,7 @@ class NotificationService {
     required String body,
   }) async {
     // Skip notifications on desktop platforms
-    if (defaultTargetPlatform == TargetPlatform.macOS || 
+    if (defaultTargetPlatform == TargetPlatform.macOS ||
         defaultTargetPlatform == TargetPlatform.windows ||
         defaultTargetPlatform == TargetPlatform.linux) {
       return;
@@ -223,7 +224,7 @@ class NotificationService {
     int? targetReps,
   }) async {
     // Skip notifications on desktop platforms
-    if (defaultTargetPlatform == TargetPlatform.macOS || 
+    if (defaultTargetPlatform == TargetPlatform.macOS ||
         defaultTargetPlatform == TargetPlatform.windows ||
         defaultTargetPlatform == TargetPlatform.linux) {
       return;
@@ -270,7 +271,8 @@ class NotificationService {
     final androidDetails = AndroidNotificationDetails(
       'timer_ongoing_channel',
       'Active Timer',
-      channelDescription: 'Shows the current rest timer countdown with controls',
+      channelDescription:
+          'Shows the current rest timer countdown with controls',
       importance: Importance.defaultImportance,
       priority: Priority.defaultPriority,
       ongoing: true,
@@ -313,7 +315,7 @@ class NotificationService {
 
   /// Cancels the ongoing timer notification
   Future<void> cancelTimerNotification() async {
-    if (defaultTargetPlatform == TargetPlatform.macOS || 
+    if (defaultTargetPlatform == TargetPlatform.macOS ||
         defaultTargetPlatform == TargetPlatform.windows ||
         defaultTargetPlatform == TargetPlatform.linux) {
       return;
@@ -335,7 +337,7 @@ class NotificationService {
   }
 
   Future<void> cancelAllNotifications() async {
-    if (defaultTargetPlatform == TargetPlatform.macOS || 
+    if (defaultTargetPlatform == TargetPlatform.macOS ||
         defaultTargetPlatform == TargetPlatform.windows ||
         defaultTargetPlatform == TargetPlatform.linux) {
       return;

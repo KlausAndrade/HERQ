@@ -8,10 +8,12 @@ class MultiExercisePickerDialog extends ConsumerStatefulWidget {
   const MultiExercisePickerDialog({super.key});
 
   @override
-  ConsumerState<MultiExercisePickerDialog> createState() => _MultiExercisePickerDialogState();
+  ConsumerState<MultiExercisePickerDialog> createState() =>
+      _MultiExercisePickerDialogState();
 }
 
-class _MultiExercisePickerDialogState extends ConsumerState<MultiExercisePickerDialog> {
+class _MultiExercisePickerDialogState
+    extends ConsumerState<MultiExercisePickerDialog> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
   String? _selectedCategory;
@@ -40,7 +42,8 @@ class _MultiExercisePickerDialogState extends ConsumerState<MultiExercisePickerD
                 color: Theme.of(context).colorScheme.surface,
                 border: Border(
                   bottom: BorderSide(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                    color:
+                        Theme.of(context).colorScheme.outline.withOpacity(0.2),
                   ),
                 ),
               ),
@@ -72,7 +75,8 @@ class _MultiExercisePickerDialogState extends ConsumerState<MultiExercisePickerD
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -98,7 +102,8 @@ class _MultiExercisePickerDialogState extends ConsumerState<MultiExercisePickerD
                               selected: isSelected,
                               onSelected: (selected) {
                                 setState(() {
-                                  _selectedCategory = selected ? category : null;
+                                  _selectedCategory =
+                                      selected ? category : null;
                                 });
                               },
                             ),
@@ -120,7 +125,9 @@ class _MultiExercisePickerDialogState extends ConsumerState<MultiExercisePickerD
                       _selectedCategory == null || _selectedCategory == 'All'
                           ? exercises
                           : exercises
-                              .where((e) => e.category.toLowerCase() == _selectedCategory!.toLowerCase())
+                              .where((e) =>
+                                  e.category.toLowerCase() ==
+                                  _selectedCategory!.toLowerCase())
                               .toList();
                   if (filteredExercises.isEmpty) {
                     return const Center(
@@ -135,7 +142,8 @@ class _MultiExercisePickerDialogState extends ConsumerState<MultiExercisePickerD
                       return CheckboxListTile(
                         value: isSelected,
                         title: Text(exercise.name),
-                        subtitle: Text('${exercise.primaryMuscleGroup.toUpperCase()} • ${exercise.category}'),
+                        subtitle: Text(
+                            '${exercise.primaryMuscleGroup.toUpperCase()} • ${exercise.category}'),
                         onChanged: (selected) {
                           setState(() {
                             if (selected == true) {

@@ -13,7 +13,7 @@ import '../providers/exercise_providers.dart';
 
 class CreateExerciseScreen extends ConsumerStatefulWidget {
   final String? exerciseId; // If provided, we're in edit mode
-  
+
   const CreateExerciseScreen({super.key, this.exerciseId});
 
   @override
@@ -35,7 +35,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
   bool _isBodyweight = false;
   final List<String> _selectedSecondaryMuscles = [];
   final List<String> _selectedTags = [];
-  
+
   // Variant fields
   bool _isVariant = false;
   String? _parentExerciseId;
@@ -88,7 +88,8 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
   ];
 
   // Get all exercise type configs
-  List<ExerciseTypeConfig> get _exerciseTypeConfigs => ExerciseTypeConfig.allConfigs;
+  List<ExerciseTypeConfig> get _exerciseTypeConfigs =>
+      ExerciseTypeConfig.allConfigs;
 
   // Common tags
   final List<String> _availableTags = [
@@ -103,7 +104,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
     'Power',
     'Hypertrophy',
   ];
-  
+
   // Variant types
   final List<String> _variantTypes = [
     'progression',
@@ -180,21 +181,25 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
   Future<void> _saveExercise() async {
     if (!_formKey.currentState!.validate()) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Validation error',
-        body: 'Please fix the errors before saving',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Validation error',
+            body: 'Please fix the errors before saving',
+          )
+          .catchError((_) {});
       return;
     }
 
     // Additional check for empty name
     if (_nameController.text.trim().isEmpty) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Missing name',
-        body: 'Exercise name is required',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Missing name',
+            body: 'Exercise name is required',
+          )
+          .catchError((_) {});
       return;
     }
 
@@ -207,7 +212,8 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
       }
 
       final isEdit = widget.exerciseId != null;
-      final exerciseId = isEdit ? widget.exerciseId! : 'custom_${const Uuid().v4()}';
+      final exerciseId =
+          isEdit ? widget.exerciseId! : 'custom_${const Uuid().v4()}';
 
       final companion = ExercisesCompanion.insert(
         id: exerciseId,
@@ -239,20 +245,27 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
       ref.invalidate(exercisesProvider);
 
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: isEdit ? 'Exercise updated' : 'Exercise created',
-          body: '"${_nameController.text}" ${isEdit ? "updated" : "created"}!',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: isEdit ? 'Exercise updated' : 'Exercise created',
+              body:
+                  '"${_nameController.text}" ${isEdit ? "updated" : "created"}!',
+            )
+            .catchError((_) {});
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: widget.exerciseId != null ? 'Error updating exercise' : 'Error creating exercise',
-          body: '$e',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: widget.exerciseId != null
+                  ? 'Error updating exercise'
+                  : 'Error creating exercise',
+              body: '$e',
+            )
+            .catchError((_) {});
       }
     } finally {
       if (mounted) {
@@ -264,7 +277,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.exerciseId != null;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(isEdit ? 'Edit Exercise' : 'Create Exercise'),
@@ -408,7 +421,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
             SwitchListTile(
               title: const Text('Auto-assign Exercise Type'),
               subtitle: Text(
-                _autoAssignType 
+                _autoAssignType
                     ? ExerciseTypeMapper.getAssignmentReason(
                         name: _nameController.text,
                         equipment: _selectedEquipment,
@@ -435,7 +448,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
               decoration: InputDecoration(
                 labelText: 'Exercise Type *',
                 border: const OutlineInputBorder(),
-                helperText: _autoAssignType 
+                helperText: _autoAssignType
                     ? ExerciseTypeMapper.getAssignmentReason(
                         name: _nameController.text,
                         equipment: _selectedEquipment,
@@ -449,20 +462,23 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
                   child: Text(config.displayName),
                 );
               }).toList(),
-              onChanged: _autoAssignType ? null : (value) {
-                if (value != null) {
-                  setState(() => _selectedExerciseType = value);
-                }
-              },
+              onChanged: _autoAssignType
+                  ? null
+                  : (value) {
+                      if (value != null) {
+                        setState(() => _selectedExerciseType = value);
+                      }
+                    },
             ),
             if (!_autoAssignType && _selectedExerciseType.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8, left: 12, right: 12),
                 child: Text(
-                  ExerciseTypeConfig.fromString(_selectedExerciseType).description,
+                  ExerciseTypeConfig.fromString(_selectedExerciseType)
+                      .description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                 ),
               ),
             const SizedBox(height: 16),
@@ -535,9 +551,10 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
                         const SizedBox(width: 8),
                         Text(
                           'Exercise Variant',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),
@@ -559,7 +576,8 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
                         });
                       },
                       title: const Text('This is a variant'),
-                      subtitle: const Text('Set parent exercise and variant type'),
+                      subtitle:
+                          const Text('Set parent exercise and variant type'),
                     ),
                     if (_isVariant) ...[
                       const SizedBox(height: 16),

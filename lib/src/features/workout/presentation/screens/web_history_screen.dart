@@ -60,7 +60,8 @@ class WebHistoryScreen extends ConsumerWidget {
                         children: [
                           _StatRow(
                             label: 'Duration',
-                            value: _formatDuration(session['total_duration_seconds'] as int? ?? 0),
+                            value: _formatDuration(
+                                session['total_duration_seconds'] as int? ?? 0),
                           ),
                           _StatRow(
                             label: 'Total Sets',
@@ -72,11 +73,13 @@ class WebHistoryScreen extends ConsumerWidget {
                           ),
                           _StatRow(
                             label: 'Volume',
-                            value: '${session['total_volume']?.toStringAsFixed(1) ?? 0} kg',
+                            value:
+                                '${session['total_volume']?.toStringAsFixed(1) ?? 0} kg',
                           ),
                           _StatRow(
                             label: 'Tonnage',
-                            value: '${session['total_tonnage']?.toStringAsFixed(1) ?? 0} kg',
+                            value:
+                                '${session['total_tonnage']?.toStringAsFixed(1) ?? 0} kg',
                           ),
                         ],
                       ),
@@ -96,8 +99,9 @@ class WebHistoryScreen extends ConsumerWidget {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    
-    if (diff.inDays == 0) return 'Today at ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+
+    if (diff.inDays == 0)
+      return 'Today at ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
     if (diff.inDays == 1) return 'Yesterday';
     return '${date.day}/${date.month}/${date.year}';
   }
@@ -106,7 +110,7 @@ class WebHistoryScreen extends ConsumerWidget {
     final duration = Duration(seconds: seconds);
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
-    
+
     if (hours > 0) {
       return '${hours}h ${minutes}m';
     }

@@ -40,7 +40,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       // Initialize workout from template
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         final existingWorkout = ref.read(activeWorkoutProvider);
-        
+
         // If there's already an active workout, show confirmation dialog
         if (existingWorkout != null && mounted) {
           final confirmed = await showDialog<bool>(
@@ -65,7 +65,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                   onPressed: () async {
                     Navigator.of(context).pop(true);
                     // Force cleanup to ensure clean state
-                    await ref.read(activeWorkoutProvider.notifier).forceCleanup();
+                    await ref
+                        .read(activeWorkoutProvider.notifier)
+                        .forceCleanup();
                   },
                   child: Text(S.of(context)!.clearAndStartNew),
                 ),
@@ -81,7 +83,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
             return;
           }
         }
-        
+
         // Start the new workout
         await ref
             .read(activeWorkoutProvider.notifier)
@@ -109,7 +111,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 
   void _handleBackButtonPressed(BuildContext context) async {
     final activeWorkout = ref.read(activeWorkoutProvider);
-    
+
     if (activeWorkout == null) {
       // No active workout, safe to navigate back
       context.go('/');
@@ -224,12 +226,16 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                 // Exercise List
                 Expanded(
                   child: ReorderableListView.builder(
-                    buildDefaultDragHandles: false, // We'll add custom drag handles
+                    buildDefaultDragHandles:
+                        false, // We'll add custom drag handles
                     onReorder: (oldIndex, newIndex) {
-                      ref.read(activeWorkoutProvider.notifier).reorderExercises(oldIndex, newIndex);
+                      ref
+                          .read(activeWorkoutProvider.notifier)
+                          .reorderExercises(oldIndex, newIndex);
                     },
                     scrollController: _scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     itemCount: activeWorkout.exercises.length,
                     itemBuilder: (context, index) {
                       final exercise = activeWorkout.exercises[index];
@@ -243,7 +249,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                           exercise: exercise,
                           exerciseIndex: index,
                           isExpanded: _expandedExercises.contains(index),
-                          showDragHandle: true, // Show drag handle during workout
+                          showDragHandle:
+                              true, // Show drag handle during workout
                           onTap: () {
                             setState(() {
                               if (_expandedExercises.contains(index)) {
@@ -254,50 +261,59 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                             });
                           },
                           onSetChanged: (setIndex, updatedSet) async {
-                          final oldSet = exercise.sets[setIndex];
-                          
-                          await ref
-                              .read(activeWorkoutProvider.notifier)
-                              .updateSet(index, setIndex, updatedSet);
-                          
-                          // Check if we just completed a set and got a PR
-                          if (updatedSet.isCompleted && !oldSet.isCompleted) {
-                            // Wait for state to update
-                            await Future.delayed(const Duration(milliseconds: 300));
-                            final updatedWorkout = ref.read(activeWorkoutProvider);
-                            if (updatedWorkout != null) {
-                              final updatedExercise = updatedWorkout.exercises[index];
-                              final newSet = updatedExercise.sets[setIndex];
-                              
-                              if (newSet.isPRWeight || newSet.isPRReps) {
-                                if (context.mounted) {
-                                  String message = '';
-                                  if (newSet.isPRWeight && newSet.isPRReps) {
-                                    message = '🏆 Double PR! New max weight AND reps!';
-                                  } else if (newSet.isPRWeight) {
-                                    message = '💪 New PR! Max weight achieved!';
-                                  } else if (newSet.isPRReps) {
-                                    message = '🔥 New PR! Max reps achieved!';
+                            final oldSet = exercise.sets[setIndex];
+
+                            await ref
+                                .read(activeWorkoutProvider.notifier)
+                                .updateSet(index, setIndex, updatedSet);
+
+                            // Check if we just completed a set and got a PR
+                            if (updatedSet.isCompleted && !oldSet.isCompleted) {
+                              // Wait for state to update
+                              await Future.delayed(
+                                  const Duration(milliseconds: 300));
+                              final updatedWorkout =
+                                  ref.read(activeWorkoutProvider);
+                              if (updatedWorkout != null) {
+                                final updatedExercise =
+                                    updatedWorkout.exercises[index];
+                                final newSet = updatedExercise.sets[setIndex];
+
+                                if (newSet.isPRWeight || newSet.isPRReps) {
+                                  if (context.mounted) {
+                                    String message = '';
+                                    if (newSet.isPRWeight && newSet.isPRReps) {
+                                      message =
+                                          '🏆 Double PR! New max weight AND reps!';
+                                    } else if (newSet.isPRWeight) {
+                                      message =
+                                          '💪 New PR! Max weight achieved!';
+                                    } else if (newSet.isPRReps) {
+                                      message = '🔥 New PR! Max reps achieved!';
+                                    }
+
+                                    NotificationService()
+                                        .showInAppNotification(
+                                          id: DateTime.now()
+                                              .millisecondsSinceEpoch
+                                              .toString(),
+                                          title: message,
+                                          body: '',
+                                          primaryActionLabel: '🎉',
+                                          onPrimaryAction: () {},
+                                        )
+                                        .catchError((_) {});
                                   }
-                                  
-                                  NotificationService().showInAppNotification(
-                                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                                    title: message,
-                                    body: '',
-                                    primaryActionLabel: '🎉',
-                                    onPrimaryAction: () {},
-                                  ).catchError((_) {});
                                 }
                               }
                             }
-                          }
-                        },
-                        onAddSet: () {
-                          ref
-                              .read(activeWorkoutProvider.notifier)
-                              .addSet(index);
-                        },
-                      ),
+                          },
+                          onAddSet: () {
+                            ref
+                                .read(activeWorkoutProvider.notifier)
+                                .addSet(index);
+                          },
+                        ),
                       );
                     },
                   ),
@@ -313,7 +329,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                           onPressed: () => _showAddExerciseDialog(context),
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size(4, 4),
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -339,7 +356,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                           onPressed: () => _showFinishWorkoutDialog(context),
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(0, 48),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
                           ),
                           child: Text(
                             S.of(context)!.finishWorkout,
@@ -560,7 +578,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 
   Future<void> _finishWorkout(BuildContext context) async {
     print('🏁 Finish workout called');
-    
+
     // Get workout state before clearing
     final workout = ref.read(activeWorkoutProvider);
     if (workout == null) {
@@ -569,22 +587,37 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       }
       return;
     }
-    
+
     print('🏁 Creating quick summary...');
-    
+
     // Create a quick summary to show immediately
     final quickSummary = WorkoutSummary(
       workoutName: workout.name,
       duration: workout.elapsedTime,
-      totalSets: workout.exercises.fold(0, (sum, e) => sum + e.sets.where((s) => s.isCompleted).length),
-      totalReps: workout.exercises.expand((e) => e.sets).where((s) => s.isCompleted).fold(0, (sum, s) => sum + s.reps),
-      totalVolume: workout.exercises.expand((e) => e.sets).where((s) => s.isCompleted && s.weight != null).fold(0.0, (sum, s) => sum + (s.weight! * s.reps)),
-      totalTonnage: workout.exercises.expand((e) => e.sets).where((s) => s.isCompleted && s.weight != null).fold(0.0, (sum, s) => sum + (s.weight! * s.reps)),
+      totalSets: workout.exercises
+          .fold(0, (sum, e) => sum + e.sets.where((s) => s.isCompleted).length),
+      totalReps: workout.exercises
+          .expand((e) => e.sets)
+          .where((s) => s.isCompleted)
+          .fold(0, (sum, s) => sum + s.reps),
+      totalVolume: workout.exercises
+          .expand((e) => e.sets)
+          .where((s) => s.isCompleted && s.weight != null)
+          .fold(0.0, (sum, s) => sum + (s.weight! * s.reps)),
+      totalTonnage: workout.exercises
+          .expand((e) => e.sets)
+          .where((s) => s.isCompleted && s.weight != null)
+          .fold(0.0, (sum, s) => sum + (s.weight! * s.reps)),
       exercises: workout.exercises.map((e) {
         final completedSets = e.sets.where((s) => s.isCompleted).toList();
-        final exerciseVolume = completedSets.where((s) => s.weight != null).fold<double>(0.0, (sum, s) => sum + (s.weight! * s.reps));
-        final maxWeight = completedSets.map((s) => s.weight).whereType<double>().fold<double?>(null, (max, w) => max == null || w > max ? w : max);
-        
+        final exerciseVolume = completedSets
+            .where((s) => s.weight != null)
+            .fold<double>(0.0, (sum, s) => sum + (s.weight! * s.reps));
+        final maxWeight = completedSets
+            .map((s) => s.weight)
+            .whereType<double>()
+            .fold<double?>(null, (max, w) => max == null || w > max ? w : max);
+
         return ExerciseSummary(
           exerciseId: e.id,
           exerciseName: e.name,
@@ -600,9 +633,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
         streak: 0,
       ),
     );
-    
+
     print('🏁 Navigating to save screen...');
-    
+
     // Navigate to save screen with quick summary
     if (context.mounted) {
       Navigator.of(context).push(
@@ -617,17 +650,17 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
             },
             onSave: (name, notes, photoPath, postToSocial) async {
               print('💾 Saving workout with name: $name');
-              
+
               // Save the workout
               try {
                 await ref.read(activeWorkoutProvider.notifier).finishWorkout();
-                
+
                 // TODO: Save notes to database
                 // TODO: Save photo to storage
                 // TODO: Create social post if requested
-                
+
                 print('✅ Workout saved successfully!');
-                
+
                 // Navigate to summary screen with confetti
                 if (context.mounted) {
                   Navigator.of(context).pop(); // Close save screen
@@ -650,7 +683,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 
   void _showConfirmFinishDialog(BuildContext context) {
     final hasModifications = ref.read(workoutModificationsProvider);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -663,8 +696,10 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                   Text('You made changes during this workout:'),
                   SizedBox(height: 8),
                   Text('• Reordered exercises', style: TextStyle(fontSize: 13)),
-                  Text('• Added or removed exercises', style: TextStyle(fontSize: 13)),
-                  Text('• Added or removed sets', style: TextStyle(fontSize: 13)),
+                  Text('• Added or removed exercises',
+                      style: TextStyle(fontSize: 13)),
+                  Text('• Added or removed sets',
+                      style: TextStyle(fontSize: 13)),
                   SizedBox(height: 12),
                   Text('These changes will be saved in your workout history.'),
                 ],
@@ -728,22 +763,25 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           keyboardType: TextInputType.number,
           textAlign: TextAlign.start,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
           decoration: InputDecoration(
             hintText: '0m 0s',
             hintStyle: TextStyle(
               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
               fontSize: 14,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+              borderSide:
+                  BorderSide(color: Theme.of(context).colorScheme.primary),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary, width: 2),
             ),
             isDense: true,
           ),
@@ -769,8 +807,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           Text(
             _formatDuration(workout.elapsedTime),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-            ),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                ),
           ),
           const SizedBox(width: 4),
           Icon(
@@ -935,7 +974,10 @@ class _ExerciseCard extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Icon(
@@ -951,7 +993,8 @@ class _ExerciseCard extends ConsumerWidget {
                         children: [
                           Text(
                             exercise.name,
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 15),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -962,27 +1005,41 @@ class _ExerciseCard extends ConsumerWidget {
                                 '${exercise.sets.length} sets',
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.6),
                                 ),
                               ),
-                              if (exercise.equipmentUsed != null || exercise.variantType != null) ...[
+                              if (exercise.equipmentUsed != null ||
+                                  exercise.variantType != null) ...[
                                 const SizedBox(width: 6),
                                 Flexible(
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6, vertical: 1),
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withOpacity(0.12),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
                                       [
-                                        if (exercise.equipmentUsed != null) _getEquipmentShortName(exercise.equipmentUsed!),
-                                        if (exercise.variantType != null && exercise.variantType != 'standard') 
-                                          _getVariantShortName(exercise.variantType!),
+                                        if (exercise.equipmentUsed != null)
+                                          _getEquipmentShortName(
+                                              exercise.equipmentUsed!),
+                                        if (exercise.variantType != null &&
+                                            exercise.variantType != 'standard')
+                                          _getVariantShortName(
+                                              exercise.variantType!),
                                       ].join(' • '),
                                       style: TextStyle(
                                         fontSize: 10,
-                                        color: Theme.of(context).colorScheme.primary,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                         fontWeight: FontWeight.w600,
                                       ),
                                       maxLines: 1,
@@ -1001,11 +1058,13 @@ class _ExerciseCard extends ConsumerWidget {
                       currentEquipment: exercise.equipmentUsed,
                       currentVariant: exercise.variantType,
                       onChanged: (equipment, variant) {
-                        ref.read(activeWorkoutProvider.notifier).updateExerciseVariant(
-                          exerciseIndex,
-                          equipmentUsed: equipment,
-                          variantType: variant,
-                        );
+                        ref
+                            .read(activeWorkoutProvider.notifier)
+                            .updateExerciseVariant(
+                              exerciseIndex,
+                              equipmentUsed: equipment,
+                              variantType: variant,
+                            );
                       },
                     ),
                     if (showDragHandle) ...[
@@ -1014,7 +1073,10 @@ class _ExerciseCard extends ConsumerWidget {
                         child: Icon(
                           Icons.drag_handle,
                           size: 20,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.4),
                         ),
                       ),
                     ],
@@ -1034,7 +1096,8 @@ class _ExerciseCard extends ConsumerWidget {
                   children: [
                     // Rest Timer Controls
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 6),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(10),
@@ -1057,13 +1120,11 @@ class _ExerciseCard extends ConsumerWidget {
                           const SizedBox(width: 10),
                           Text(
                             'Rest',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
                           ),
                           const SizedBox(width: 8),
                           // Compact minus button
@@ -1086,7 +1147,10 @@ class _ExerciseCard extends ConsumerWidget {
                                 size: 16,
                                 color: exercise.restTimerSeconds > 15
                                     ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .outline
+                                        .withOpacity(0.3),
                               ),
                             ),
                           ),
@@ -1158,45 +1222,56 @@ class _ExerciseCard extends ConsumerWidget {
                           confirmDismiss: (direction) async {
                             // Show confirmation dialog
                             return await showDialog<bool>(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('Remove Set?'),
-                                content: Text(
-                                  'Are you sure you want to remove set ${index + 1}?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(false),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  FilledButton(
-                                    onPressed: () => Navigator.of(context).pop(true),
-                                    style: FilledButton.styleFrom(
-                                      backgroundColor: Theme.of(context).colorScheme.error,
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Remove Set?'),
+                                    content: Text(
+                                      'Are you sure you want to remove set ${index + 1}?',
                                     ),
-                                    child: const Text('Remove'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      FilledButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .error,
+                                        ),
+                                        child: const Text('Remove'),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ) ?? false;
+                                ) ??
+                                false;
                           },
                           onDismissed: (direction) {
                             // Remove the set
                             ref
                                 .read(activeWorkoutProvider.notifier)
                                 .removeSet(exerciseIndex, index);
-                            
+
                             // Show in-app notification with undo option
-                            NotificationService().showInAppNotification(
-                              id: DateTime.now().millisecondsSinceEpoch.toString(),
-                              title: 'Set removed',
-                              body: 'Set ${index + 1} removed',
-                              primaryActionLabel: 'Undo',
-                              onPrimaryAction: () {
-                                // Simple undo: re-add a set at this exercise
-                                ref.read(activeWorkoutProvider.notifier).addSet(exerciseIndex);
-                              },
-                            ).catchError((_) {});
+                            NotificationService()
+                                .showInAppNotification(
+                                  id: DateTime.now()
+                                      .millisecondsSinceEpoch
+                                      .toString(),
+                                  title: 'Set removed',
+                                  body: 'Set ${index + 1} removed',
+                                  primaryActionLabel: 'Undo',
+                                  onPrimaryAction: () {
+                                    // Simple undo: re-add a set at this exercise
+                                    ref
+                                        .read(activeWorkoutProvider.notifier)
+                                        .addSet(exerciseIndex);
+                                  },
+                                )
+                                .catchError((_) {});
                           },
                           child: SetEntryWidget(
                             set: set,
@@ -1221,7 +1296,8 @@ class _ExerciseCard extends ConsumerWidget {
                       child: OutlinedButton(
                         onPressed: onAddSet,
                         style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,

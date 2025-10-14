@@ -35,7 +35,8 @@ void main() {
       final sb = StringBuffer();
       sb.writeln('Found templates with missing exercise references:');
       missingRefs.forEach((tid, ids) {
-        sb.writeln(' - $tid -> ${ids.isEmpty ? '<no exercises>' : ids.join(', ')}');
+        sb.writeln(
+            ' - $tid -> ${ids.isEmpty ? '<no exercises>' : ids.join(', ')}');
       });
       fail(sb.toString());
     }

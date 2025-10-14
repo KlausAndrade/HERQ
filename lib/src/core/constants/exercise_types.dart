@@ -174,4 +174,3 @@ extension DurationFormatter on int {
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 }
-

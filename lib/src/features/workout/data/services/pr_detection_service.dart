@@ -9,13 +9,14 @@ class PRDetectionService {
 
   /// Check if a set is a PR for weight or reps
   /// Returns a map with 'isPRWeight' and 'isPRReps' flags
-  /// 
+  ///
   /// currentWorkoutSets: Other completed sets in the current active workout (to exclude from PR check)
   Future<Map<String, bool>> checkSetForPR({
     required String exerciseId,
     required double? weight,
     required int reps,
-    List<Map<String, dynamic>>? currentWorkoutSets, // Sets from current workout to exclude
+    List<Map<String, dynamic>>?
+        currentWorkoutSets, // Sets from current workout to exclude
   }) async {
     // If no weight or reps, can't be a PR
     if (weight == null || weight <= 0 || reps <= 0) {
@@ -27,7 +28,8 @@ class PRDetectionService {
       final query = database.select(database.setEntries).join([
         innerJoin(
           database.workoutSessions,
-          database.workoutSessions.id.equalsExp(database.setEntries.workoutSessionId),
+          database.workoutSessions.id
+              .equalsExp(database.setEntries.workoutSessionId),
         ),
       ])
         ..where(database.setEntries.exerciseId.equals(exerciseId))
@@ -40,7 +42,8 @@ class PRDetectionService {
         ]);
 
       final results = await query.get();
-      final previousSets = results.map((row) => row.readTable(database.setEntries)).toList();
+      final previousSets =
+          results.map((row) => row.readTable(database.setEntries)).toList();
 
       // Also consider completed sets from current workout
       double maxWeight = 0;
@@ -69,7 +72,8 @@ class PRDetectionService {
       }
 
       // Then check against historical completed workouts
-      if (previousSets.isEmpty && (currentWorkoutSets == null || currentWorkoutSets.isEmpty)) {
+      if (previousSets.isEmpty &&
+          (currentWorkoutSets == null || currentWorkoutSets.isEmpty)) {
         // First time doing this exercise ever - it's a PR!
         return {'isPRWeight': true, 'isPRReps': true};
       }
@@ -95,7 +99,8 @@ class PRDetectionService {
 
       final isPRWeight = weight > maxWeight;
       // Only count as reps PR if we have data at this weight or heavier AND we beat it
-      final isPRReps = hasDataAtCurrentOrHigherWeight && reps > maxRepsAtCurrentWeight;
+      final isPRReps =
+          hasDataAtCurrentOrHigherWeight && reps > maxRepsAtCurrentWeight;
 
       return {
         'isPRWeight': isPRWeight,

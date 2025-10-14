@@ -7,11 +7,13 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 /// Android: Also shows persistent notification to indicate active workout
 /// iOS: Uses WakeLock + relies on Live Activities for proper background handling
 class WorkoutForegroundService {
-  static final WorkoutForegroundService _instance = WorkoutForegroundService._internal();
+  static final WorkoutForegroundService _instance =
+      WorkoutForegroundService._internal();
   factory WorkoutForegroundService() => _instance;
   WorkoutForegroundService._internal();
 
-  final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notifications =
+      FlutterLocalNotificationsPlugin();
   bool _isServiceRunning = false;
 
   static const String _channelId = 'workout_foreground_service';
@@ -21,7 +23,8 @@ class WorkoutForegroundService {
 
   Future<void> initialize() async {
     if (Platform.isAndroid) {
-      const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const androidSettings =
+          AndroidInitializationSettings('@mipmap/ic_launcher');
       const initSettings = InitializationSettings(android: androidSettings);
       await _notifications.initialize(initSettings);
     }

@@ -13,7 +13,7 @@ class LeaderboardService {
     String? currentUserId,
   }) async {
     final dateRange = _getDateRange(period);
-    
+
     List<LeaderboardEntry> entries;
 
     switch (type) {
@@ -58,26 +58,29 @@ class LeaderboardService {
   Future<List<LeaderboardEntry>> _getTotalVolumeLeaderboard(
       (DateTime?, DateTime?) dateRange) async {
     print('🏆 Getting volume leaderboard...');
-    
+
     final users = await _db.select(_db.users).get();
     final stats = await _db.select(_db.userStats).get();
-    
+
     print('  Found ${users.length} users, ${stats.length} stats entries');
-    
+
     // Debug: Print all users
     for (final u in users) {
-      print('  👤 User: id=${u.id}, email=${u.email}, displayName=${u.displayName}');
+      print(
+          '  👤 User: id=${u.id}, email=${u.email}, displayName=${u.displayName}');
     }
 
     final entries = <LeaderboardEntry>[];
     for (final s in stats) {
-      print('  📊 Processing stat: userId=${s.userId}, volume=${s.totalVolumeLifted}');
-      
+      print(
+          '  📊 Processing stat: userId=${s.userId}, volume=${s.totalVolumeLifted}');
+
       // Get user info or create friendly display name
       User? user;
       try {
         user = users.firstWhere((u) => u.id == s.userId);
-        print('    ✅ Found user: email=${user.email}, displayName=${user.displayName}');
+        print(
+            '    ✅ Found user: email=${user.email}, displayName=${user.displayName}');
       } catch (_) {
         print('    ⚠️ No user record found for ${s.userId}');
       }
@@ -95,7 +98,8 @@ class LeaderboardService {
       }
 
       if (s.totalVolumeLifted > 0) {
-        print('  ✅ Adding entry: $displayName - ${s.totalVolumeLifted.toStringAsFixed(0)} kg');
+        print(
+            '  ✅ Adding entry: $displayName - ${s.totalVolumeLifted.toStringAsFixed(0)} kg');
         entries.add(LeaderboardEntry(
           userId: s.userId,
           displayName: displayName,
@@ -106,7 +110,7 @@ class LeaderboardService {
         ));
       }
     }
-    
+
     print('  Total entries: ${entries.length}');
 
     entries.sort((a, b) => b.value.compareTo(a.value));
@@ -129,10 +133,10 @@ class LeaderboardService {
   Future<List<LeaderboardEntry>> _getWorkoutCountLeaderboard(
       (DateTime?, DateTime?) dateRange) async {
     print('🏆 Getting workout count leaderboard...');
-    
+
     final users = await _db.select(_db.users).get();
     final stats = await _db.select(_db.userStats).get();
-    
+
     print('  Found ${users.length} users, ${stats.length} stats entries');
 
     final entries = <LeaderboardEntry>[];
@@ -156,14 +160,15 @@ class LeaderboardService {
         }
 
         print('  ✅ Adding entry: $displayName - ${s.totalWorkouts} workouts');
-        
+
         entries.add(LeaderboardEntry(
           userId: s.userId,
           displayName: displayName,
           avatarUrl: user?.avatarUrl,
           value: s.totalWorkouts.toDouble(),
           rank: 0,
-          formattedValue: '${s.totalWorkouts} ${s.totalWorkouts == 1 ? "workout" : "workouts"}',
+          formattedValue:
+              '${s.totalWorkouts} ${s.totalWorkouts == 1 ? "workout" : "workouts"}',
         ));
       }
     }
@@ -186,12 +191,12 @@ class LeaderboardService {
   /// Get streak leaderboard (consecutive days with workouts)
   Future<List<LeaderboardEntry>> _getStreakLeaderboard() async {
     print('🏆 Getting streak leaderboard...');
-    
+
     final users = await _db.select(_db.users).get();
     final stats = await _db.select(_db.userStats).get();
-    
+
     print('  Found ${users.length} users, ${stats.length} stats entries');
-    
+
     final entries = <LeaderboardEntry>[];
 
     for (final s in stats) {
@@ -215,7 +220,7 @@ class LeaderboardService {
         }
 
         print('  ✅ Adding streak entry: $displayName - $streak days');
-        
+
         entries.add(LeaderboardEntry(
           userId: s.userId,
           displayName: displayName,
@@ -249,29 +254,29 @@ class LeaderboardService {
     // Count PRs from personal_records table
     final users = await _db.select(_db.users).get();
     final entries = <LeaderboardEntry>[];
-    
+
     // For local database, PRs don't have userId - they're device-local
     // So we count all PRs for the current user
     final prs = await _db.select(_db.personalRecords).get();
-    
+
     print('  Found ${users.length} users, ${prs.length} PRs');
-    
+
     if (prs.isEmpty) {
       print('  ⚠️ No PRs found, returning empty');
       return entries;
     }
-    
+
     // All PRs belong to the device's user (local-only)
     final prCount = prs.length;
     final userId = 'local_user'; // Device-local user ID
-    
+
     User? user;
     if (users.isNotEmpty) {
       user = users.first; // Use first user in local DB
     }
-    
+
     print('  ✅ Adding PR entry: ${user?.displayName ?? "You"} - $prCount PRs');
-    
+
     entries.add(LeaderboardEntry(
       userId: userId,
       displayName: user?.displayName ?? 'You',
@@ -280,7 +285,7 @@ class LeaderboardService {
       rank: 1,
       formattedValue: '$prCount PRs',
     ));
-    
+
     print('  Total PR entries: ${entries.length}');
     return entries;
   }

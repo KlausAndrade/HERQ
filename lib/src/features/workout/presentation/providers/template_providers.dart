@@ -12,7 +12,7 @@ final workoutTemplatesProvider =
     FutureProvider<Map<String, List<WorkoutTemplate>>>((ref) async {
   final database = ref.read(databaseProvider);
   final supabase = ref.read(supabaseClientProvider);
-  
+
   if (database == null) {
     return _getDefaultTemplatesByCategory();
   }
@@ -22,41 +22,43 @@ final workoutTemplatesProvider =
     final user = supabase.auth.currentUser;
     if (user != null) {
       print('☁️ Fetching templates from Supabase...');
-      
+
       final cloudTemplates = await supabase
           .from('workout_templates')
           .select()
           .eq('user_id', user.id)
           .order('sort_order')
           .order('name');
-      
+
       // Merge cloud templates into local database
       for (final template in cloudTemplates) {
         try {
           await database.into(database.workoutTemplates).insertOnConflictUpdate(
-            WorkoutTemplate(
-              id: template['id'],
-              name: template['name'],
-              description: template['description'],
-              category: template['folder_id'] ?? 'Custom',
-              sortOrder: template['sort_order'] ?? 0, // Use cloud sort order
-              exerciseIds: List<String>.from(template['exercise_ids'] ?? []),
-              tags: const [],
-              estimatedDurationMinutes: null,
-              isDefault: false,
-              createdAt: template['created_at'] != null
-                  ? DateTime.parse(template['created_at'])
-                  : DateTime.now(),
-              updatedAt: template['updated_at'] != null
-                  ? DateTime.parse(template['updated_at'])
-                  : DateTime.now(),
-            ),
-          );
+                WorkoutTemplate(
+                  id: template['id'],
+                  name: template['name'],
+                  description: template['description'],
+                  category: template['folder_id'] ?? 'Custom',
+                  sortOrder:
+                      template['sort_order'] ?? 0, // Use cloud sort order
+                  exerciseIds:
+                      List<String>.from(template['exercise_ids'] ?? []),
+                  tags: const [],
+                  estimatedDurationMinutes: null,
+                  isDefault: false,
+                  createdAt: template['created_at'] != null
+                      ? DateTime.parse(template['created_at'])
+                      : DateTime.now(),
+                  updatedAt: template['updated_at'] != null
+                      ? DateTime.parse(template['updated_at'])
+                      : DateTime.now(),
+                ),
+              );
         } catch (e) {
           print('⚠️ Error syncing template ${template['id']}: $e');
         }
       }
-      
+
       print('✅ Synced ${cloudTemplates.length} templates from cloud');
     }
   } catch (e) {
@@ -168,7 +170,7 @@ class TemplateActions {
     try {
       // Save to local database
       await _database!.into(_database!.workoutTemplates).insert(template);
-      
+
       // 🌩️ Sync to Supabase
       try {
         final user = _supabase.auth.currentUser;
@@ -188,7 +190,7 @@ class TemplateActions {
         print('⚠️ Template cloud sync failed: $syncError');
         // Don't fail the operation if sync fails
       }
-      
+
       return true;
     } catch (e) {
       return false;
@@ -201,7 +203,7 @@ class TemplateActions {
     try {
       // Update local database
       await _database!.update(_database!.workoutTemplates).replace(template);
-      
+
       // 🌩️ Sync to Supabase
       try {
         final user = _supabase.auth.currentUser;
@@ -217,7 +219,7 @@ class TemplateActions {
       } catch (syncError) {
         print('⚠️ Template update sync failed: $syncError');
       }
-      
+
       return true;
     } catch (e) {
       return false;
@@ -232,7 +234,7 @@ class TemplateActions {
       await (_database!.delete(_database!.workoutTemplates)
             ..where((tbl) => tbl.id.equals(templateId)))
           .go();
-      
+
       // 🌩️ Sync to Supabase
       try {
         await _supabase.from('workout_templates').delete().eq('id', templateId);
@@ -240,7 +242,7 @@ class TemplateActions {
       } catch (syncError) {
         print('⚠️ Template deletion sync failed: $syncError');
       }
-      
+
       return true;
     } catch (e) {
       return false;

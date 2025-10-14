@@ -47,7 +47,8 @@ class NearMissCard extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceVariant.withAlpha((0.3 * 255).round()),
+                      color: theme.colorScheme.surfaceVariant
+                          .withAlpha((0.3 * 255).round()),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(

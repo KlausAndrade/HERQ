@@ -23,7 +23,6 @@ import '../models/user_stats.dart';
 import '../models/workout_checkpoint.dart';
 import '../models/workout_session.dart';
 import '../models/workout_template.dart';
-import 'package:herq/src/features/workout/data/seed/default_template_seed.dart';
 
 part 'database_native.g.dart';
 
@@ -67,16 +66,19 @@ class AppDatabase extends _$AppDatabase {
         onUpgrade: (migrator, from, to) async {
           if (to == 13) {
             try {
-              await customStatement('ALTER TABLE exercises ADD COLUMN aliases TEXT');
+              await customStatement(
+                  'ALTER TABLE exercises ADD COLUMN aliases TEXT');
             } catch (e) {}
           }
           if (to == 12) {
-            await customStatement('UPDATE workout_templates SET exercise_ids = \'\' WHERE exercise_ids IS NULL');
+            await customStatement(
+                'UPDATE workout_templates SET exercise_ids = \'\' WHERE exercise_ids IS NULL');
           } else if (to == 11) {
             await migrator.createTable(workoutCheckpoints);
           } else if (to == 10) {
             await migrator.createTable(templateFolders);
-            await migrator.addColumn(workoutTemplates, workoutTemplates.folderId);
+            await migrator.addColumn(
+                workoutTemplates, workoutTemplates.folderId);
           } else if (to == 9) {
             await migrator.createTable(posts);
             await migrator.createTable(postLikes);

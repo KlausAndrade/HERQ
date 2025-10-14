@@ -1788,4 +1788,26 @@ class SPt extends S {
 
   @override
   String get aboutHerq => 'Sobre HERQ';
+
+  @override
+  String checkOutThisPost(String appName) {
+    return 'Confira esta publicação no $appName!';
+  }
+
+  @override
+  String postFrom(String appName) {
+    return 'Publicação de $appName';
+  }
+
+  @override
+  String get yourIntelligentWorkoutCompanion =>
+      'Seu companheiro inteligente de treino';
+
+  @override
+  String get mobileFirstWorkoutTracker => 'Rastreador de Treinos para Mobile';
+
+  @override
+  String optimizedForMobile(String appName) {
+    return '$appName é otimizado para dispositivos móveis com suporte completo offline e recursos nativos.';
+  }
 }

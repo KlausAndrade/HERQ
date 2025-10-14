@@ -90,8 +90,9 @@ class _AppButtonState extends State<AppButton>
 
   @override
   Widget build(BuildContext context) {
-    final isEnabled = !widget.isDisabled && !widget.isLoading && widget.onPressed != null;
-    
+    final isEnabled =
+        !widget.isDisabled && !widget.isLoading && widget.onPressed != null;
+
     return ScaleTransition(
       scale: _scaleAnimation,
       child: AnimatedBuilder(
@@ -166,41 +167,49 @@ class _AppButtonState extends State<AppButton>
   BoxDecoration _getDecoration(BuildContext context) {
     final isEnabled = !widget.isDisabled && !widget.isLoading;
     final theme = Theme.of(context);
-    
+
     switch (widget.variant) {
       case AppButtonVariant.primary:
         return BoxDecoration(
           gradient: widget.gradient ?? AppTheme.primaryGradient,
           borderRadius: BorderRadius.circular(_getBorderRadius()),
-            boxShadow: isEnabled ? [
-            BoxShadow(
-              color: theme.colorScheme.primary.withAlpha((0.3 * 255).round()),
-              blurRadius: _elevationAnimation.value,
-              offset: Offset(0, _elevationAnimation.value / 2),
-            ),
-          ] : null,
+          boxShadow: isEnabled
+              ? [
+                  BoxShadow(
+                    color: theme.colorScheme.primary
+                        .withAlpha((0.3 * 255).round()),
+                    blurRadius: _elevationAnimation.value,
+                    offset: Offset(0, _elevationAnimation.value / 2),
+                  ),
+                ]
+              : null,
         );
       case AppButtonVariant.secondary:
         return BoxDecoration(
           gradient: widget.gradient ?? AppTheme.successGradient,
           borderRadius: BorderRadius.circular(_getBorderRadius()),
-            boxShadow: isEnabled ? [
-            BoxShadow(
-              color: theme.colorScheme.secondary.withAlpha((0.3 * 255).round()),
-              blurRadius: _elevationAnimation.value,
-              offset: Offset(0, _elevationAnimation.value / 2),
-            ),
-          ] : null,
+          boxShadow: isEnabled
+              ? [
+                  BoxShadow(
+                    color: theme.colorScheme.secondary
+                        .withAlpha((0.3 * 255).round()),
+                    blurRadius: _elevationAnimation.value,
+                    offset: Offset(0, _elevationAnimation.value / 2),
+                  ),
+                ]
+              : null,
         );
       case AppButtonVariant.outline:
         return BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(_getBorderRadius()),
           border: Border.all(
-            color: isEnabled ? theme.colorScheme.primary : theme.colorScheme.outline,
+            color: isEnabled
+                ? theme.colorScheme.primary
+                : theme.colorScheme.outline,
             width: 1.5,
           ),
-            boxShadow: isEnabled ? AppTheme.softShadow : null,
+          boxShadow: isEnabled ? AppTheme.softShadow : null,
         );
       case AppButtonVariant.text:
         return BoxDecoration(
@@ -210,13 +219,15 @@ class _AppButtonState extends State<AppButton>
         return BoxDecoration(
           color: AppTheme.errorColor,
           borderRadius: BorderRadius.circular(_getBorderRadius()),
-            boxShadow: isEnabled ? [
-            BoxShadow(
-              color: AppTheme.errorColor.withAlpha((0.3 * 255).round()),
-              blurRadius: _elevationAnimation.value,
-              offset: Offset(0, _elevationAnimation.value / 2),
-            ),
-          ] : null,
+          boxShadow: isEnabled
+              ? [
+                  BoxShadow(
+                    color: AppTheme.errorColor.withAlpha((0.3 * 255).round()),
+                    blurRadius: _elevationAnimation.value,
+                    offset: Offset(0, _elevationAnimation.value / 2),
+                  ),
+                ]
+              : null,
         );
     }
   }
@@ -224,11 +235,11 @@ class _AppButtonState extends State<AppButton>
   Color _getTextColor(BuildContext context) {
     final theme = Theme.of(context);
     final isEnabled = !widget.isDisabled && !widget.isLoading;
-    
+
     if (!isEnabled) {
       return theme.colorScheme.onSurface.withOpacity(0.38);
     }
-    
+
     switch (widget.variant) {
       case AppButtonVariant.primary:
       case AppButtonVariant.secondary:
@@ -243,9 +254,9 @@ class _AppButtonState extends State<AppButton>
 
   Widget _buildContent(BuildContext context) {
     final textStyle = Theme.of(context).textTheme.labelLarge?.copyWith(
-      color: _getTextColor(context),
-      fontWeight: FontWeight.w600,
-    );
+          color: _getTextColor(context),
+          fontWeight: FontWeight.w600,
+        );
 
     if (widget.isLoading) {
       return Row(

@@ -14,38 +14,38 @@ void main() {
 
       // Insert workout session
       await db.into(db.workoutSessions).insert(
-        WorkoutSessionsCompanion.insert(
-          id: sessionId,
-          name: 'Test Session',
-          startedAt: now,
-          completedAt: Value(now),
-        ),
-      );
+            WorkoutSessionsCompanion.insert(
+              id: sessionId,
+              name: 'Test Session',
+              startedAt: now,
+              completedAt: Value(now),
+            ),
+          );
 
       // Insert two set entries in same week
       await db.into(db.setEntries).insert(
-        SetEntriesCompanion.insert(
-          id: const Uuid().v4(),
-          workoutSessionId: sessionId,
-          exerciseId: 'bench_press',
-          setNumber: 1,
-          reps: 5,
-          completedAt: now,
-          weight: Value(100.0),
-        ),
-      );
+            SetEntriesCompanion.insert(
+              id: const Uuid().v4(),
+              workoutSessionId: sessionId,
+              exerciseId: 'bench_press',
+              setNumber: 1,
+              reps: 5,
+              completedAt: now,
+              weight: Value(100.0),
+            ),
+          );
 
       await db.into(db.setEntries).insert(
-        SetEntriesCompanion.insert(
-          id: const Uuid().v4(),
-          workoutSessionId: sessionId,
-          exerciseId: 'bench_press',
-          setNumber: 2,
-          reps: 3,
-          completedAt: now,
-          weight: Value(120.0),
-        ),
-      );
+            SetEntriesCompanion.insert(
+              id: const Uuid().v4(),
+              workoutSessionId: sessionId,
+              exerciseId: 'bench_press',
+              setNumber: 2,
+              reps: 3,
+              completedAt: now,
+              weight: Value(120.0),
+            ),
+          );
 
       final service = AnalyticsService(db);
       final totals = await service.weeklyVolume(

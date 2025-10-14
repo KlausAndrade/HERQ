@@ -23,7 +23,7 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
@@ -45,7 +45,7 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
         restTimer.totalSeconds;
     final minutes = restTimer.remainingSeconds ~/ 60;
     final seconds = restTimer.remainingSeconds % 60;
-    
+
     // Determine if we're in the last 10 seconds for extra emphasis
     final isAlmostDone = restTimer.remainingSeconds <= 10;
 
@@ -57,12 +57,24 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
           gradient: LinearGradient(
             colors: isAlmostDone
                 ? [
-                    Theme.of(context).colorScheme.error.withAlpha((0.9 * 255).round()),
-                    Theme.of(context).colorScheme.error.withAlpha((0.7 * 255).round()),
+                    Theme.of(context)
+                        .colorScheme
+                        .error
+                        .withAlpha((0.9 * 255).round()),
+                    Theme.of(context)
+                        .colorScheme
+                        .error
+                        .withAlpha((0.7 * 255).round()),
                   ]
                 : [
-                    Theme.of(context).colorScheme.primary.withAlpha((0.9 * 255).round()),
-                    Theme.of(context).colorScheme.primary.withAlpha((0.7 * 255).round()),
+                    Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withAlpha((0.9 * 255).round()),
+                    Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withAlpha((0.7 * 255).round()),
                   ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -95,7 +107,8 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
                       CircularProgressIndicator(
                         value: progress,
                         strokeWidth: 3,
-                        backgroundColor: Colors.white.withAlpha((0.3 * 255).round()),
+                        backgroundColor:
+                            Colors.white.withAlpha((0.3 * 255).round()),
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           Colors.white,
                         ),
@@ -130,7 +143,8 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
                       Text(
                         isAlmostDone ? 'Almost!' : 'Rest',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white.withAlpha((0.8 * 255).round()),
+                              color:
+                                  Colors.white.withAlpha((0.8 * 255).round()),
                               fontWeight: FontWeight.w500,
                             ),
                       ),

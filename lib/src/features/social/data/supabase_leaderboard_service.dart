@@ -49,7 +49,7 @@ class SupabaseLeaderboardService {
       );
     } catch (e) {
       print('  ❌ Error fetching Supabase leaderboard: $e');
-      
+
       // Fallback to empty leaderboard
       return Leaderboard(
         type: type,
@@ -62,10 +62,8 @@ class SupabaseLeaderboardService {
 
   /// Get volume leaderboard from Supabase view
   Future<List<LeaderboardEntry>> _getVolumeLeaderboard() async {
-    final response = await _supabase
-        .from('leaderboard_volume')
-        .select()
-        .limit(100);
+    final response =
+        await _supabase.from('leaderboard_volume').select().limit(100);
 
     final entries = <LeaderboardEntry>[];
     int rank = 1;
@@ -86,10 +84,8 @@ class SupabaseLeaderboardService {
 
   /// Get workout count leaderboard from Supabase view
   Future<List<LeaderboardEntry>> _getWorkoutCountLeaderboard() async {
-    final response = await _supabase
-        .from('leaderboard_workouts')
-        .select()
-        .limit(100);
+    final response =
+        await _supabase.from('leaderboard_workouts').select().limit(100);
 
     final entries = <LeaderboardEntry>[];
     int rank = 1;
@@ -111,10 +107,8 @@ class SupabaseLeaderboardService {
 
   /// Get streak leaderboard from Supabase view
   Future<List<LeaderboardEntry>> _getStreakLeaderboard() async {
-    final response = await _supabase
-        .from('leaderboard_streak')
-        .select()
-        .limit(100);
+    final response =
+        await _supabase.from('leaderboard_streak').select().limit(100);
 
     final entries = <LeaderboardEntry>[];
     int rank = 1;
@@ -163,12 +157,10 @@ class SupabaseLeaderboardService {
   ) async {
     try {
       final statType = _getStatType(type);
-      final response = await _supabase
-          .rpc('get_user_rank', params: {
-            'p_user_id': userId,
-            'p_stat_type': statType,
-          })
-          .maybeSingle();
+      final response = await _supabase.rpc('get_user_rank', params: {
+        'p_user_id': userId,
+        'p_stat_type': statType,
+      }).maybeSingle();
 
       if (response == null) return null;
 
@@ -178,7 +170,8 @@ class SupabaseLeaderboardService {
         avatarUrl: response['avatar_url'] as String?,
         value: (response['value'] as num).toDouble(),
         rank: (response['rank'] as num).toInt(),
-        formattedValue: _formatValue(type, (response['value'] as num).toDouble()),
+        formattedValue:
+            _formatValue(type, (response['value'] as num).toDouble()),
       );
     } catch (e) {
       print('  ⚠️ Could not get user rank: $e');
@@ -192,7 +185,7 @@ class SupabaseLeaderboardService {
     if (displayName != null && displayName.isNotEmpty) {
       return displayName;
     }
-    
+
     // Try to get from profiles if available
     if (row.containsKey('profiles')) {
       final profiles = row['profiles'];
@@ -200,7 +193,7 @@ class SupabaseLeaderboardService {
         return profiles['display_name'] as String;
       }
     }
-    
+
     return 'Unknown Athlete';
   }
 
@@ -239,4 +232,3 @@ class SupabaseLeaderboardService {
     }
   }
 }
-

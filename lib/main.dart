@@ -7,7 +7,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'src/app.dart';
 import 'src/core/database/database.dart';
 import 'src/core/providers/database_provider.dart';
-import 'src/core/services/notification_service.dart' if (dart.library.html) 'src/core/services/notification_service_stub.dart';
+import 'src/core/services/notification_service.dart'
+    if (dart.library.html) 'src/core/services/notification_service_stub.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

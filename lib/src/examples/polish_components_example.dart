@@ -1,5 +1,5 @@
 /// Professional Polish Components - Usage Examples
-/// 
+///
 /// This file demonstrates how to use the new professional polish components
 /// created in Phase 2 and Phase 3 of the polish implementation.
 
@@ -19,7 +19,8 @@ class PolishComponentsExample extends StatefulWidget {
   const PolishComponentsExample({super.key});
 
   @override
-  State<PolishComponentsExample> createState() => _PolishComponentsExampleState();
+  State<PolishComponentsExample> createState() =>
+      _PolishComponentsExampleState();
 }
 
 class _PolishComponentsExampleState extends State<PolishComponentsExample> {
@@ -40,7 +41,7 @@ class _PolishComponentsExampleState extends State<PolishComponentsExample> {
       appBar: AppBar(
         title: const Text('Professional Components'),
       ),
-      
+
       // Pull-to-refresh wrapper
       body: CustomRefreshIndicator(
         onRefresh: _handleRefresh,
@@ -53,32 +54,35 @@ class _PolishComponentsExampleState extends State<PolishComponentsExample> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             // Primary button with icon
             AppButton(
-              onPressed: () => SnackbarService.showSuccess(context, 'Action completed!'),
+              onPressed: () =>
+                  SnackbarService.showSuccess(context, 'Action completed!'),
               variant: AppButtonVariant.primary,
               size: AppButtonSize.large,
               icon: Icons.play_arrow,
               child: const Text('Start Workout'),
             ),
             const SizedBox(height: 12),
-            
+
             // Secondary button with loading state
             AppButton(
-              onPressed: _isLoading ? null : () {
-                setState(() => _isLoading = true);
-                Future.delayed(const Duration(seconds: 2), () {
-                  setState(() => _isLoading = false);
-                  SnackbarService.showSuccess(context, 'Saved!');
-                });
-              },
+              onPressed: _isLoading
+                  ? null
+                  : () {
+                      setState(() => _isLoading = true);
+                      Future.delayed(const Duration(seconds: 2), () {
+                        setState(() => _isLoading = false);
+                        SnackbarService.showSuccess(context, 'Saved!');
+                      });
+                    },
               variant: AppButtonVariant.secondary,
               isLoading: _isLoading,
               child: const Text('Save Template'),
             ),
             const SizedBox(height: 12),
-            
+
             // Outlined button
             AppButton(
               onPressed: () {},
@@ -87,24 +91,25 @@ class _PolishComponentsExampleState extends State<PolishComponentsExample> {
               child: const Text('Edit'),
             ),
             const SizedBox(height: 12),
-            
+
             // Danger button
             AppButton(
-              onPressed: () => SnackbarService.showError(context, 'Item deleted'),
+              onPressed: () =>
+                  SnackbarService.showError(context, 'Item deleted'),
               variant: AppButtonVariant.danger,
               icon: Icons.delete_outline,
               child: const Text('Delete'),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // SECTION 2: Cards
             const Text(
               'Cards',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             // Elevated card with gradient
             AppCard(
               variant: AppCardVariant.elevated,
@@ -134,7 +139,7 @@ class _PolishComponentsExampleState extends State<PolishComponentsExample> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Glass card
             AppCard(
               variant: AppCardVariant.glass,
@@ -146,16 +151,16 @@ class _PolishComponentsExampleState extends State<PolishComponentsExample> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // SECTION 3: Loading States
             const Text(
               'Loading States',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             SkeletonLoader(
               isLoading: _isLoading,
               child: const AppCard(
@@ -166,22 +171,22 @@ class _PolishComponentsExampleState extends State<PolishComponentsExample> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             if (_isLoading) ...[
               const SkeletonWorkoutCard(),
               const SizedBox(height: 8),
               const SkeletonListTile(),
             ],
-            
+
             const SizedBox(height: 32),
-            
+
             // SECTION 4: Switches & Checkboxes
             const Text(
               'Switches & Checkboxes',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -200,7 +205,7 @@ class _PolishComponentsExampleState extends State<PolishComponentsExample> {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -213,16 +218,16 @@ class _PolishComponentsExampleState extends State<PolishComponentsExample> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // SECTION 5: Empty States
             const Text(
               'Empty States',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             const SizedBox(
               height: 300,
               child: EmptyState(
@@ -236,7 +241,7 @@ class _PolishComponentsExampleState extends State<PolishComponentsExample> {
           ],
         ),
       ),
-      
+
       // Animated FAB
       floatingActionButton: AnimatedFAB(
         icon: Icons.add,
@@ -338,7 +343,8 @@ class _WorkoutScreenExampleState extends State<WorkoutScreenExample> {
           FABChild(
             icon: Icons.save,
             label: 'Save Workout',
-            onPressed: () => SnackbarService.showSuccess(context, 'Workout saved!'),
+            onPressed: () =>
+                SnackbarService.showSuccess(context, 'Workout saved!'),
           ),
         ],
       ),

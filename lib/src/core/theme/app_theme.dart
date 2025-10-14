@@ -6,43 +6,52 @@ class AppTheme {
   static const Color primaryColor = Color(0xFF2563EB);
   static const Color primaryLight = Color(0xFF3B82F6);
   static const Color primaryDark = Color(0xFF1D4ED8);
-  
+
   // Secondary Colors - Green (Success)
   static const Color secondaryColor = Color(0xFF10B981);
   static const Color secondaryLight = Color(0xFF34D399);
   static const Color secondaryDark = Color(0xFF059669);
-  
+
   // Accent Colors - Amber (Energy/Warning)
   static const Color accentColor = Color(0xFFF59E0B);
   static const Color accentLight = Color(0xFFFBBF24);
   static const Color accentDark = Color(0xFFD97706);
-  
+
   // Additional Colors
   static const Color errorColor = Color(0xFFEF4444);
   static const Color purpleColor = Color(0xFF8B5CF6); // Premium/Progress
   static const Color pinkColor = Color(0xFFEC4899); // Goals/Achievements
 
   // Light Theme Colors - Revamped for better readability
-  static const Color backgroundLight = Color(0xFFF5F7FA); // Subtle blue-gray tint
+  static const Color backgroundLight =
+      Color(0xFFF5F7FA); // Subtle blue-gray tint
   static const Color surfaceLight = Colors.white;
-  static const Color surfaceVariantLight = Color(0xFFF8F9FA); // Slightly off-white
-  static const Color onSurfaceLight = Color(0xFF0F172A); // Deeper, more readable dark blue-gray
-  static const Color onSurfaceVariantLight = Color(0xFF475569); // Medium gray for secondary text
+  static const Color surfaceVariantLight =
+      Color(0xFFF8F9FA); // Slightly off-white
+  static const Color onSurfaceLight =
+      Color(0xFF0F172A); // Deeper, more readable dark blue-gray
+  static const Color onSurfaceVariantLight =
+      Color(0xFF475569); // Medium gray for secondary text
   static const Color outlineLight = Color(0xFFE2E8F0); // Subtle borders
-  static const Color outlineVariantLight = Color(0xFFCBD5E1); // More visible borders
-  
+  static const Color outlineVariantLight =
+      Color(0xFFCBD5E1); // More visible borders
+
   // Dark Theme Colors
   static const Color backgroundDark = Color(0xFF0F0F0F);
   static const Color surfaceDark = Color(0xFF1A1A1A);
   static const Color onSurfaceDark = Color(0xFFF9FAFB);
 
   // HERQ Brand Colors
-  static const Color herqGraphite = Color(0xFF1B1D21);      // Primary Dark - Strength, focus
-  static const Color herqTeal = Color(0xFF00BFA6);          // Primary Accent - Modern energy
-  static const Color herqLime = Color(0xFFD4FF4D);          // Secondary Accent - Vitality, contrast
-  static const Color herqCharcoal = Color(0xFF141516);      // Background - Professional contrast
-  static const Color herqWhite = Color(0xFFF8F8FA);         // Text - Clean typography
-  
+  static const Color herqGraphite =
+      Color(0xFF1B1D21); // Primary Dark - Strength, focus
+  static const Color herqTeal =
+      Color(0xFF00BFA6); // Primary Accent - Modern energy
+  static const Color herqLime =
+      Color(0xFFD4FF4D); // Secondary Accent - Vitality, contrast
+  static const Color herqCharcoal =
+      Color(0xFF141516); // Background - Professional contrast
+  static const Color herqWhite = Color(0xFFF8F8FA); // Text - Clean typography
+
   // HERQ Gradient
   static const LinearGradient herqGradient = LinearGradient(
     colors: [herqTeal, herqLime],
@@ -276,11 +285,13 @@ class AppTheme {
           fillColor: surfaceLight,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(radiusSM),
-            borderSide: const BorderSide(color: outlineVariantLight, width: 1.5),
+            borderSide:
+                const BorderSide(color: outlineVariantLight, width: 1.5),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(radiusSM),
-            borderSide: const BorderSide(color: outlineVariantLight, width: 1.5),
+            borderSide:
+                const BorderSide(color: outlineVariantLight, width: 1.5),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(radiusSM),

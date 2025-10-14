@@ -1795,4 +1795,26 @@ class SEs extends S {
 
   @override
   String get aboutHerq => 'Acerca de HERQ';
+
+  @override
+  String checkOutThisPost(String appName) {
+    return '¡Mira esta publicación en $appName!';
+  }
+
+  @override
+  String postFrom(String appName) {
+    return 'Publicación de $appName';
+  }
+
+  @override
+  String get yourIntelligentWorkoutCompanion =>
+      'Tu compañero inteligente de entrenamiento';
+
+  @override
+  String get mobileFirstWorkoutTracker => 'Rastreador de Entrenamientos Móvil';
+
+  @override
+  String optimizedForMobile(String appName) {
+    return '$appName está optimizado para dispositivos móviles con soporte completo sin conexión y funciones nativas.';
+  }
 }

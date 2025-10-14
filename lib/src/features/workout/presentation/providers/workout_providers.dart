@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
@@ -11,7 +10,7 @@ final workoutSessionsProvider =
     FutureProvider<List<WorkoutSession>>((ref) async {
   final database = ref.read(databaseProvider);
   final supabase = ref.read(supabaseClientProvider);
-  
+
   if (database == null) {
     return [];
   }
@@ -21,44 +20,44 @@ final workoutSessionsProvider =
     final user = supabase.auth.currentUser;
     if (user != null) {
       print('☁️ Fetching workouts from Supabase...');
-      
+
       final cloudData = await supabase
           .from('workout_sessions')
           .select()
           .eq('user_id', user.id)
           .order('started_at', ascending: false);
-      
+
       // Merge cloud data into local database
       for (final session in cloudData) {
         try {
           await database.into(database.workoutSessions).insertOnConflictUpdate(
-            WorkoutSession(
-              id: session['id'],
-              templateId: session['template_id'],
-              name: session['name'],
-              notes: session['notes'],
-              startedAt: DateTime.parse(session['started_at']),
-              completedAt: session['completed_at'] != null 
-                  ? DateTime.parse(session['completed_at']) 
-                  : null,
-              totalDurationSeconds: session['total_duration_seconds'],
-              totalVolume: session['total_volume']?.toDouble() ?? 0.0,
-              totalTonnage: session['total_tonnage']?.toDouble() ?? 0.0,
-              totalSets: session['total_sets'] ?? 0,
-              totalReps: session['total_reps'] ?? 0,
-              createdAt: session['created_at'] != null
-                  ? DateTime.parse(session['created_at'])
-                  : DateTime.now(),
-              updatedAt: session['updated_at'] != null
-                  ? DateTime.parse(session['updated_at'])
-                  : DateTime.now(),
-            ),
-          );
+                WorkoutSession(
+                  id: session['id'],
+                  templateId: session['template_id'],
+                  name: session['name'],
+                  notes: session['notes'],
+                  startedAt: DateTime.parse(session['started_at']),
+                  completedAt: session['completed_at'] != null
+                      ? DateTime.parse(session['completed_at'])
+                      : null,
+                  totalDurationSeconds: session['total_duration_seconds'],
+                  totalVolume: session['total_volume']?.toDouble() ?? 0.0,
+                  totalTonnage: session['total_tonnage']?.toDouble() ?? 0.0,
+                  totalSets: session['total_sets'] ?? 0,
+                  totalReps: session['total_reps'] ?? 0,
+                  createdAt: session['created_at'] != null
+                      ? DateTime.parse(session['created_at'])
+                      : DateTime.now(),
+                  updatedAt: session['updated_at'] != null
+                      ? DateTime.parse(session['updated_at'])
+                      : DateTime.now(),
+                ),
+              );
         } catch (e) {
           print('⚠️ Error syncing session ${session['id']}: $e');
         }
       }
-      
+
       print('✅ Synced ${cloudData.length} workouts from cloud');
     }
   } catch (e) {

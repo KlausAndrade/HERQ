@@ -59,7 +59,8 @@ class SettingsScreen extends ConsumerWidget {
                   return Column(
                     children: [
                       ListTile(
-                        leading: const Icon(Icons.check_circle, color: Colors.green),
+                        leading:
+                            const Icon(Icons.check_circle, color: Colors.green),
                         title: Text(S.of(context)!.loggedIn),
                         subtitle: Text(user.email ?? S.of(context)!.noEmail),
                       ),
@@ -75,15 +76,19 @@ class SettingsScreen extends ConsumerWidget {
                       ListTile(
                         leading: const Icon(Icons.logout, color: Colors.red),
                         title: Text(S.of(context)!.signOut),
-                          onTap: () async {
+                        onTap: () async {
                           final authService = ref.read(authServiceProvider);
                           await authService.signOut();
                           if (context.mounted) {
-                            NotificationService().showInAppNotification(
-                              id: DateTime.now().millisecondsSinceEpoch.toString(),
-                              title: 'Signed out',
-                              body: 'Signed out successfully',
-                            ).catchError((_) {});
+                            NotificationService()
+                                .showInAppNotification(
+                                  id: DateTime.now()
+                                      .millisecondsSinceEpoch
+                                      .toString(),
+                                  title: 'Signed out',
+                                  body: 'Signed out successfully',
+                                )
+                                .catchError((_) {});
                           }
                         },
                       ),
@@ -257,58 +262,64 @@ class SettingsScreen extends ConsumerWidget {
           Card(
             child: Column(
               children: [
-              ListTile(
-                leading: const Icon(Icons.bug_report, color: Colors.purple),
-                title: const Text('Debug Exercise Types'),
-                subtitle: const Text('Show all exercises and their types'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _showDebugExerciseTypesDialog(context, ref),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.leaderboard, color: Colors.green),
-                title: const Text('Refresh Leaderboard Stats'),
-                subtitle: const Text('Recalculate stats from all workouts'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _refreshLeaderboardStats(context, ref),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.visibility, color: Colors.blue),
-                title: const Text('Debug: Show User Stats'),
-                subtitle: const Text('View raw user_stats table data'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _showUserStatsDebug(context, ref),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.cloud_upload, color: Colors.indigo),
-                title: const Text('Sync to Supabase'),
-                subtitle: const Text('Upload stats to cloud for multi-user leaderboards'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _syncToSupabase(context, ref),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.cleaning_services, color: Colors.red),
-                title: const Text('Clean Duplicate Stats'),
-                subtitle: const Text('Remove duplicate local user_stats entries'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _cleanDuplicateStats(context, ref),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.person_remove, color: Colors.purple),
-                title: const Text('Fix Display Names'),
-                subtitle: const Text('Remove emails from display names'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _fixDisplayNames(context, ref),
-              ),
+                ListTile(
+                  leading: const Icon(Icons.bug_report, color: Colors.purple),
+                  title: const Text('Debug Exercise Types'),
+                  subtitle: const Text('Show all exercises and their types'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showDebugExerciseTypesDialog(context, ref),
+                ),
                 const Divider(height: 1),
                 ListTile(
-                  leading: const Icon(Icons.build_outlined, color: Colors.orange),
+                  leading: const Icon(Icons.leaderboard, color: Colors.green),
+                  title: const Text('Refresh Leaderboard Stats'),
+                  subtitle: const Text('Recalculate stats from all workouts'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _refreshLeaderboardStats(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.visibility, color: Colors.blue),
+                  title: const Text('Debug: Show User Stats'),
+                  subtitle: const Text('View raw user_stats table data'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showUserStatsDebug(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.cloud_upload, color: Colors.indigo),
+                  title: const Text('Sync to Supabase'),
+                  subtitle: const Text(
+                      'Upload stats to cloud for multi-user leaderboards'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _syncToSupabase(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading:
+                      const Icon(Icons.cleaning_services, color: Colors.red),
+                  title: const Text('Clean Duplicate Stats'),
+                  subtitle:
+                      const Text('Remove duplicate local user_stats entries'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _cleanDuplicateStats(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading:
+                      const Icon(Icons.person_remove, color: Colors.purple),
+                  title: const Text('Fix Display Names'),
+                  subtitle: const Text('Remove emails from display names'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _fixDisplayNames(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading:
+                      const Icon(Icons.build_outlined, color: Colors.orange),
                   title: const Text('Update Exercise Types'),
-                  subtitle: const Text('Reassign exercise types to all exercises'),
+                  subtitle:
+                      const Text('Reassign exercise types to all exercises'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showMigrateExerciseTypesDialog(context, ref),
                 ),
@@ -316,7 +327,8 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: const Icon(Icons.refresh, color: Colors.blue),
                   title: const Text('Reload Templates & Exercises'),
-                  subtitle: const Text('Load new workout templates and exercises'),
+                  subtitle:
+                      const Text('Load new workout templates and exercises'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showReloadTemplatesDialog(context, ref),
                 ),
@@ -483,7 +495,9 @@ class SettingsScreen extends ConsumerWidget {
               groupValue: ref.read(themeVariantProvider),
               onChanged: (value) {
                 if (value != null) {
-                  ref.read(themeVariantProvider.notifier).setThemeVariant(value);
+                  ref
+                      .read(themeVariantProvider.notifier)
+                      .setThemeVariant(value);
                   Navigator.of(context).pop();
                 }
               },
@@ -495,7 +509,9 @@ class SettingsScreen extends ConsumerWidget {
               groupValue: ref.read(themeVariantProvider),
               onChanged: (value) {
                 if (value != null) {
-                  ref.read(themeVariantProvider.notifier).setThemeVariant(value);
+                  ref
+                      .read(themeVariantProvider.notifier)
+                      .setThemeVariant(value);
                   Navigator.of(context).pop();
                 }
               },
@@ -726,19 +742,23 @@ class SettingsScreen extends ConsumerWidget {
       await Clipboard.setData(ClipboardData(text: jsonData));
 
       if (context.mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Exported',
-          body: 'Data exported to clipboard as JSON',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Exported',
+              body: 'Data exported to clipboard as JSON',
+            )
+            .catchError((_) {});
       }
     } catch (e) {
       if (context.mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Export failed',
-          body: '${e.toString()}',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Export failed',
+              body: '${e.toString()}',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -751,19 +771,23 @@ class SettingsScreen extends ConsumerWidget {
       await Clipboard.setData(ClipboardData(text: csvData));
 
       if (context.mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Exported',
-          body: 'Workouts exported to clipboard as CSV',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Exported',
+              body: 'Workouts exported to clipboard as CSV',
+            )
+            .catchError((_) {});
       }
     } catch (e) {
       if (context.mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Export failed',
-          body: '${e.toString()}',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Export failed',
+              body: '${e.toString()}',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -862,28 +886,34 @@ class SettingsScreen extends ConsumerWidget {
 
                   if (context.mounted) {
                     Navigator.pop(context);
-                    NotificationService().showInAppNotification(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      title: 'Deleted',
-                      body: 'Account data deleted',
-                    ).catchError((_) {});
+                    NotificationService()
+                        .showInAppNotification(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          title: 'Deleted',
+                          body: 'Account data deleted',
+                        )
+                        .catchError((_) {});
                   }
                 } catch (e) {
                   if (context.mounted) {
                     Navigator.pop(context);
-                    NotificationService().showInAppNotification(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      title: 'Error',
-                      body: '$e',
-                    ).catchError((_) {});
+                    NotificationService()
+                        .showInAppNotification(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          title: 'Error',
+                          body: '$e',
+                        )
+                        .catchError((_) {});
                   }
                 }
               } else {
-                NotificationService().showInAppNotification(
-                  id: DateTime.now().millisecondsSinceEpoch.toString(),
-                  title: 'Confirmation required',
-                  body: 'Please type DELETE to confirm',
-                ).catchError((_) {});
+                NotificationService()
+                    .showInAppNotification(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Confirmation required',
+                      body: 'Please type DELETE to confirm',
+                    )
+                    .catchError((_) {});
               }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -1017,10 +1047,10 @@ By using HERQ, you agree to these terms.''',
   void _showUserStatsDebug(BuildContext context, WidgetRef ref) async {
     final db = ref.read(databaseProvider);
     if (db == null) return;
-    
+
     print('🔍 Fetching user_stats table...');
     final stats = await db.select(db.userStats).get();
-    
+
     print('  Found ${stats.length} stats entries');
     for (final s in stats) {
       print('  - userId: ${s.userId}');
@@ -1040,7 +1070,9 @@ By using HERQ, you agree to these terms.''',
           width: double.maxFinite,
           height: 400,
           child: stats.isEmpty
-              ? const Center(child: Text('❌ No user stats found!\n\nRun "Refresh Leaderboard Stats" first.'))
+              ? const Center(
+                  child: Text(
+                      '❌ No user stats found!\n\nRun "Refresh Leaderboard Stats" first.'))
               : ListView.builder(
                   shrinkWrap: true,
                   itemCount: stats.length,
@@ -1052,13 +1084,21 @@ By using HERQ, you agree to these terms.''',
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('User: ${s.userId}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                            Text('User: ${s.userId}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 12)),
                             const SizedBox(height: 8),
-                            Text('Workouts: ${s.totalWorkouts}', style: const TextStyle(fontSize: 11)),
-                            Text('Volume: ${s.totalVolumeLifted.toStringAsFixed(1)} kg', style: const TextStyle(fontSize: 11)),
-                            Text('Sets: ${s.totalSetsCompleted}', style: const TextStyle(fontSize: 11)),
-                            Text('Streak: ${s.currentStreak} days', style: const TextStyle(fontSize: 11)),
-                            Text('Level: ${s.level}', style: const TextStyle(fontSize: 11)),
+                            Text('Workouts: ${s.totalWorkouts}',
+                                style: const TextStyle(fontSize: 11)),
+                            Text(
+                                'Volume: ${s.totalVolumeLifted.toStringAsFixed(1)} kg',
+                                style: const TextStyle(fontSize: 11)),
+                            Text('Sets: ${s.totalSetsCompleted}',
+                                style: const TextStyle(fontSize: 11)),
+                            Text('Streak: ${s.currentStreak} days',
+                                style: const TextStyle(fontSize: 11)),
+                            Text('Level: ${s.level}',
+                                style: const TextStyle(fontSize: 11)),
                           ],
                         ),
                       ),
@@ -1078,7 +1118,7 @@ By using HERQ, you agree to these terms.''',
 
   void _refreshLeaderboardStats(BuildContext context, WidgetRef ref) async {
     print('🔄 Refresh Leaderboard Stats button clicked');
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1099,21 +1139,23 @@ By using HERQ, you agree to these terms.''',
         print('❌ Gamification service is null!');
         throw StateError('Gamification service not available');
       }
-      
+
       // Get current user info to pass to recalculateUserStats
       final currentUser = ref.read(currentUserProvider);
       final userEmail = currentUser?.email;
-      final userDisplayName = currentUser?.userMetadata?['display_name'] as String?;
-      
+      final userDisplayName =
+          currentUser?.userMetadata?['display_name'] as String?;
+
       print('✅ Gamification service found, calling recalculateUserStats...');
       print('  Current user email: $userEmail');
       print('  Current user display name: $userDisplayName');
-      
+
       final stats = await gamificationService.recalculateUserStats(
         userEmail: userEmail,
         userDisplayName: userDisplayName,
       );
-      print('✅ Stats recalculated: ${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted} kg');
+      print(
+          '✅ Stats recalculated: ${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted} kg');
 
       if (!context.mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
@@ -1122,11 +1164,13 @@ By using HERQ, you agree to these terms.''',
       // This forces all leaderboard tabs to refresh with new data
       ref.invalidate(supabaseLeaderboardServiceProvider);
       ref.invalidate(localLeaderboardServiceProvider);
-      print('✅ Leaderboard service providers invalidated - all tabs will refresh');
+      print(
+          '✅ Leaderboard service providers invalidated - all tabs will refresh');
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✅ Stats refreshed!\n${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted.toStringAsFixed(1)} kg volume\n\nOpen Leaderboards to see updates!'),
+          content: Text(
+              '✅ Stats refreshed!\n${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted.toStringAsFixed(1)} kg volume\n\nOpen Leaderboards to see updates!'),
           backgroundColor: Colors.green,
           duration: const Duration(seconds: 4),
         ),
@@ -1134,7 +1178,7 @@ By using HERQ, you agree to these terms.''',
     } catch (e, stackTrace) {
       print('❌ Error refreshing stats: $e');
       print('Stack trace: $stackTrace');
-      
+
       if (!context.mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
 
@@ -1148,10 +1192,11 @@ By using HERQ, you agree to these terms.''',
     }
   }
 
-  void _showDebugExerciseTypesDialog(BuildContext context, WidgetRef ref) async {
+  void _showDebugExerciseTypesDialog(
+      BuildContext context, WidgetRef ref) async {
     final db = ref.read(databaseProvider);
     if (db == null) return;
-    
+
     final exercises = await (db.select(db.exercises)
           ..orderBy([(tbl) => OrderingTerm.asc(tbl.name)]))
         .get();
@@ -1213,7 +1258,7 @@ By using HERQ, you agree to these terms.''',
           FilledButton(
             onPressed: () async {
               Navigator.pop(context);
-              
+
               // Show loading dialog
               showDialog(
                 context: context,
@@ -1229,20 +1274,23 @@ By using HERQ, you agree to these terms.''',
                   ),
                 ),
               );
-              
+
               try {
                 final database = ref.read(databaseProvider);
                 if (database != null) {
                   await database.migrateExerciseTypes();
-                  
+
                   if (context.mounted) {
                     Navigator.pop(context); // Close loading dialog
-                    
-                    NotificationService().showInAppNotification(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      title: 'Exercise types updated',
-                      body: 'All exercises have been updated with correct types',
-                    ).catchError((_) {});
+
+                    NotificationService()
+                        .showInAppNotification(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          title: 'Exercise types updated',
+                          body:
+                              'All exercises have been updated with correct types',
+                        )
+                        .catchError((_) {});
                   }
                 } else {
                   throw Exception('Database not available');
@@ -1250,12 +1298,14 @@ By using HERQ, you agree to these terms.''',
               } catch (e) {
                 if (context.mounted) {
                   Navigator.pop(context); // Close loading dialog
-                  
-                  NotificationService().showInAppNotification(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    title: 'Error',
-                    body: 'Failed to update exercise types: $e',
-                  ).catchError((_) {});
+
+                  NotificationService()
+                      .showInAppNotification(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        title: 'Error',
+                        body: 'Failed to update exercise types: $e',
+                      )
+                      .catchError((_) {});
                 }
               }
             },
@@ -1286,7 +1336,7 @@ By using HERQ, you agree to these terms.''',
           FilledButton(
             onPressed: () async {
               Navigator.pop(context);
-              
+
               // Show loading dialog
               showDialog(
                 context: context,
@@ -1302,20 +1352,22 @@ By using HERQ, you agree to these terms.''',
                   ),
                 ),
               );
-              
+
               try {
                 final database = ref.read(databaseProvider);
                 if (database != null) {
                   await seedDatabase(database);
-                  
+
                   if (context.mounted) {
                     Navigator.pop(context); // Close loading dialog
-                    
-                    NotificationService().showInAppNotification(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      title: 'Templates reloaded',
-                      body: 'All templates and exercises have been updated',
-                    ).catchError((_) {});
+
+                    NotificationService()
+                        .showInAppNotification(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          title: 'Templates reloaded',
+                          body: 'All templates and exercises have been updated',
+                        )
+                        .catchError((_) {});
                   }
                 } else {
                   throw Exception('Database not available');
@@ -1323,12 +1375,14 @@ By using HERQ, you agree to these terms.''',
               } catch (e) {
                 if (context.mounted) {
                   Navigator.pop(context); // Close loading dialog
-                  
-                  NotificationService().showInAppNotification(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    title: 'Error',
-                    body: 'Failed to reload templates: $e',
-                  ).catchError((_) {});
+
+                  NotificationService()
+                      .showInAppNotification(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        title: 'Error',
+                        body: 'Failed to reload templates: $e',
+                      )
+                      .catchError((_) {});
                 }
               }
             },
@@ -1341,7 +1395,7 @@ By using HERQ, you agree to these terms.''',
 
   void _syncToSupabase(BuildContext context, WidgetRef ref) async {
     print('🌐 Sync to Supabase button clicked');
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1362,7 +1416,7 @@ By using HERQ, you agree to these terms.''',
       if (syncService == null) {
         throw StateError('Sync service not available');
       }
-      
+
       final currentUser = ref.read(currentUserProvider);
       if (currentUser == null) {
         throw StateError('No user logged in');
@@ -1376,18 +1430,19 @@ By using HERQ, you agree to these terms.''',
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('✅ Successfully synced to Supabase!\n\nYour stats are now on the cloud leaderboards!'),
+          content: Text(
+              '✅ Successfully synced to Supabase!\n\nYour stats are now on the cloud leaderboards!'),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 4),
         ),
       );
-      
+
       // Refresh leaderboards
       ref.invalidate(supabaseLeaderboardServiceProvider);
       ref.invalidate(localLeaderboardServiceProvider);
     } catch (e) {
       print('❌ Error syncing to Supabase: $e');
-      
+
       if (!context.mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
 
@@ -1403,7 +1458,7 @@ By using HERQ, you agree to these terms.''',
 
   void _cleanDuplicateStats(BuildContext context, WidgetRef ref) async {
     print('🧹 Clean Duplicate Stats button clicked');
-    
+
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
@@ -1450,7 +1505,7 @@ By using HERQ, you agree to these terms.''',
       if (db == null) {
         throw StateError('Database not available');
       }
-      
+
       final currentUser = ref.read(currentUserProvider);
       if (currentUser == null) {
         throw StateError('No user logged in');
@@ -1467,9 +1522,9 @@ By using HERQ, you agree to these terms.''',
       final deleted = await (db.delete(db.userStats)
             ..where((s) => s.userId.equals(userId).not()))
           .go();
-      
+
       print('  🗑️ Deleted $deleted duplicate entries');
-      
+
       // Verify
       final remainingStats = await db.select(db.userStats).get();
       print('  📊 Total stats entries after: ${remainingStats.length}');
@@ -1479,18 +1534,19 @@ By using HERQ, you agree to these terms.''',
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✅ Cleaned up $deleted duplicate entries!\n\nYou now have ${remainingStats.length} stat(s).'),
+          content: Text(
+              '✅ Cleaned up $deleted duplicate entries!\n\nYou now have ${remainingStats.length} stat(s).'),
           backgroundColor: Colors.green,
           duration: const Duration(seconds: 4),
         ),
       );
-      
+
       // Refresh leaderboards
       ref.invalidate(supabaseLeaderboardServiceProvider);
       ref.invalidate(localLeaderboardServiceProvider);
     } catch (e) {
       print('❌ Error cleaning stats: $e');
-      
+
       if (!context.mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
 
@@ -1506,7 +1562,7 @@ By using HERQ, you agree to these terms.''',
 
   void _fixDisplayNames(BuildContext context, WidgetRef ref) async {
     print('🔧 Fix Display Names button clicked');
-    
+
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
@@ -1562,18 +1618,19 @@ By using HERQ, you agree to these terms.''',
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('✅ Display names fixed!\n\nEmails removed from all user names.'),
+          content: Text(
+              '✅ Display names fixed!\n\nEmails removed from all user names.'),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 4),
         ),
       );
-      
+
       // Refresh leaderboards
       ref.invalidate(supabaseLeaderboardServiceProvider);
       ref.invalidate(localLeaderboardServiceProvider);
     } catch (e) {
       print('❌ Error fixing display names: $e');
-      
+
       if (!context.mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
 

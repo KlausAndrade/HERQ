@@ -23,8 +23,8 @@ class GroqAICoachingService {
     try {
       // Get recent workout history
       final workoutHistory = await (_database.select(_database.workoutSessions)
-        ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
-        ..limit(10))
+            ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
+            ..limit(10))
           .get();
 
       // Get user's PRs
@@ -33,11 +33,13 @@ class GroqAICoachingService {
             ..limit(20))
           .get();
 
-      final systemPrompt = '''You are an expert fitness coach and exercise physiologist. 
+      final systemPrompt =
+          '''You are an expert fitness coach and exercise physiologist. 
 You create personalized workout programs based on user data, exercise science principles, and progressive overload.
 Consider recovery, muscle balance, and individual goals.''';
 
-      final userPrompt = '''Create 2-3 workout recommendations based on this data:
+      final userPrompt =
+          '''Create 2-3 workout recommendations based on this data:
 
 Recent Workouts (last 10):
 ${_formatWorkoutHistory(workoutHistory)}
@@ -109,7 +111,8 @@ Respond with JSON array of workout recommendations:
             ..limit(5))
           .get();
 
-      final systemPrompt = '''You are a strength coach specializing in progressive overload.
+      final systemPrompt =
+          '''You are a strength coach specializing in progressive overload.
 Provide evidence-based recommendations for increasing weight, reps, or volume safely.''';
 
       final userPrompt = '''Suggest progressive overload for this exercise:
@@ -207,7 +210,8 @@ Provide recovery analysis in JSON:
       final systemPrompt = '''You are a comprehensive fitness coach.
 Provide actionable, personalized fitness suggestions based on training data.''';
 
-      final userPrompt = '''Provide 3-5 coaching suggestions based on recent training:
+      final userPrompt =
+          '''Provide 3-5 coaching suggestions based on recent training:
 
 Recent Activity:
 ${workouts.map((w) => '- ${w.name} on ${w.startedAt.toString().split(' ')[0]}').join('\n')}

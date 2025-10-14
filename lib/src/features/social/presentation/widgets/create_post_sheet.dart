@@ -39,7 +39,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserProvider);
-    final currentUserProfile = ref.watch(userProfileProvider(currentUser?.id ?? ''));
+    final currentUserProfile =
+        ref.watch(userProfileProvider(currentUser?.id ?? ''));
 
     return Padding(
       padding: EdgeInsets.only(
@@ -74,7 +75,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
             data: (profile) {
               return Row(
                 children: [
-                  if (profile?.avatarUrl != null && profile!.avatarUrl!.isNotEmpty)
+                  if (profile?.avatarUrl != null &&
+                      profile!.avatarUrl!.isNotEmpty)
                     CircleAvatar(
                       radius: 20,
                       backgroundImage: NetworkImage(profile.avatarUrl!),
@@ -92,16 +94,18 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                     children: [
                       Text(
                         DisplayNameSanitizer.sanitize(profile?.displayName),
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                       ),
                       if (profile?.bio != null && profile!.bio!.isNotEmpty)
                         Text(
                           profile.bio!,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey,
+                                  ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -256,15 +260,17 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
         // Validate image size
         final bytes = await image.readAsBytes();
         final fileSize = bytes.length;
-        
+
         if (fileSize > _maxImageSizeBytes) {
           if (mounted) {
-              NotificationService().showInAppNotification(
-                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                title: 'Image too large',
-                body: 'Maximum size is 10MB',
-              ).catchError((_) {});
-            }
+            NotificationService()
+                .showInAppNotification(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  title: 'Image too large',
+                  body: 'Maximum size is 10MB',
+                )
+                .catchError((_) {});
+          }
           return;
         }
 
@@ -272,11 +278,13 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
       }
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error picking image',
-          body: '$e',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error picking image',
+              body: '$e',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -284,30 +292,33 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
   Future<Uint8List> _compressImage(XFile file) async {
     try {
       final bytes = await file.readAsBytes();
-      
+
       final result = await FlutterImageCompress.compressWithList(
         bytes,
         quality: 85,
         minWidth: 1080,
         minHeight: 1080,
       );
-      
+
       return result;
     } catch (e) {
       debugPrint('Error compressing image: $e');
-      return await file.readAsBytes(); // Return original bytes if compression fails
+      return await file
+          .readAsBytes(); // Return original bytes if compression fails
     }
   }
 
   Future<void> _createPost() async {
     final caption = _captionController.text.trim();
-    
-      if (caption.isEmpty && _selectedImage == null) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Empty post',
-        body: 'Please add a caption or photo',
-      ).catchError((_) {});
+
+    if (caption.isEmpty && _selectedImage == null) {
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Empty post',
+            body: 'Please add a caption or photo',
+          )
+          .catchError((_) {});
       return;
     }
 
@@ -324,7 +335,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
       if (_selectedImage != null) {
         // Compress image first
         final compressedBytes = await _compressImage(_selectedImage!);
-        
+
         final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
         final path = '${currentUser.id}/$fileName';
 
@@ -351,19 +362,23 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
 
       if (mounted) {
         Navigator.pop(context);
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Post created',
-          body: '',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Post created',
+              body: '',
+            )
+            .catchError((_) {});
       }
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error creating post',
-          body: '$e',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error creating post',
+              body: '$e',
+            )
+            .catchError((_) {});
       }
     } finally {
       if (mounted) {

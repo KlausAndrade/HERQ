@@ -84,7 +84,8 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final activeColor = widget.activeColor ?? theme.colorScheme.primary;
-    final inactiveColor = widget.inactiveColor ?? theme.colorScheme.surfaceContainerHighest;
+    final inactiveColor =
+        widget.inactiveColor ?? theme.colorScheme.surfaceContainerHighest;
     final thumbColor = widget.thumbColor ?? theme.colorScheme.onPrimary;
 
     return GestureDetector(
@@ -100,7 +101,10 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
               color: Color.lerp(inactiveColor, activeColor, _controller.value),
               boxShadow: [
                 BoxShadow(
-                  color: Color.lerp(Colors.black12, activeColor.withAlpha((0.4 * 255).round()), _controller.value)!,
+                  color: Color.lerp(
+                      Colors.black12,
+                      activeColor.withAlpha((0.4 * 255).round()),
+                      _controller.value)!,
                   blurRadius: 8 * _controller.value,
                   offset: Offset(0, 2 * _controller.value),
                 ),
@@ -112,7 +116,9 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
                 AnimatedAlign(
                   duration: AppDurations.normal,
                   curve: AppCurves.bounceOut,
-                  alignment: widget.value ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: widget.value
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Transform.scale(
                     scale: _scaleAnimation.value,
                     child: Container(

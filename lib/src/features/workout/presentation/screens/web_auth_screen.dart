@@ -32,7 +32,7 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
 
     try {
       final supabase = Supabase.instance.client;
-      
+
       if (_isSignUp) {
         await supabase.auth.signUp(
           email: _emailController.text.trim(),
@@ -44,7 +44,7 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
           password: _passwordController.text,
         );
       }
-      
+
       if (mounted) {
         context.go('/');
       }

@@ -11,7 +11,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'core',
     'secondaryMuscleGroups': ['full_body'],
     'equipment': 'bodyweight',
-    'instructions': 'Base lies on back with feet on flyer\'s hips. Flyer balances in horizontal position with arms extended.',
+    'instructions':
+        'Base lies on back with feet on flyer\'s hips. Flyer balances in horizontal position with arms extended.',
     'tags': ['acroyoga', 'partner', 'balance'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -24,7 +25,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'legs',
     'secondaryMuscleGroups': ['core'],
     'equipment': 'bodyweight',
-    'instructions': 'Base lies on back with shins vertical. Flyer sits on base\'s feet in a seated position.',
+    'instructions':
+        'Base lies on back with shins vertical. Flyer sits on base\'s feet in a seated position.',
     'tags': ['acroyoga', 'partner', 'beginner'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -37,7 +39,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'core',
     'secondaryMuscleGroups': ['back'],
     'equipment': 'bodyweight',
-    'instructions': 'Flyer folds forward over base\'s feet in a therapeutic stretch position.',
+    'instructions':
+        'Flyer folds forward over base\'s feet in a therapeutic stretch position.',
     'tags': ['acroyoga', 'partner', 'therapeutic'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -50,7 +53,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'core',
     'secondaryMuscleGroups': ['shoulders', 'legs'],
     'equipment': 'bodyweight',
-    'instructions': 'Flyer balances on base\'s feet with arms and legs extended in star shape.',
+    'instructions':
+        'Flyer balances on base\'s feet with arms and legs extended in star shape.',
     'tags': ['acroyoga', 'partner', 'balance'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -76,7 +80,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'shoulders',
     'secondaryMuscleGroups': ['core', 'back'],
     'equipment': 'bodyweight',
-    'instructions': 'Flyer performs shoulder stand on base\'s feet while base provides support.',
+    'instructions':
+        'Flyer performs shoulder stand on base\'s feet while base provides support.',
     'tags': ['acroyoga', 'partner', 'inversion'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -89,7 +94,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'core',
     'secondaryMuscleGroups': ['full_body'],
     'equipment': 'bodyweight',
-    'instructions': 'Bird pose without hands touching - full balance and core engagement.',
+    'instructions':
+        'Bird pose without hands touching - full balance and core engagement.',
     'tags': ['acroyoga', 'partner', 'advanced'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -102,7 +108,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'core',
     'secondaryMuscleGroups': ['legs', 'hip_flexors'],
     'equipment': 'bodyweight',
-    'instructions': 'Inverted pose with flyer hanging upside down in straddle position.',
+    'instructions':
+        'Inverted pose with flyer hanging upside down in straddle position.',
     'tags': ['acroyoga', 'partner', 'inversion'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -115,7 +122,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'shoulders',
     'secondaryMuscleGroups': ['core', 'legs'],
     'equipment': 'bodyweight',
-    'instructions': 'Standing acro position where flyer mounts onto base\'s shoulders.',
+    'instructions':
+        'Standing acro position where flyer mounts onto base\'s shoulders.',
     'tags': ['acroyoga', 'partner', 'standing'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -128,7 +136,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'shoulders',
     'secondaryMuscleGroups': ['core', 'arms'],
     'equipment': 'bodyweight',
-    'instructions': 'Advanced standing acro where base holds flyer\'s hands in handstand position.',
+    'instructions':
+        'Advanced standing acro where base holds flyer\'s hands in handstand position.',
     'tags': ['acroyoga', 'partner', 'standing', 'handstand'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -141,7 +150,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'full_body',
     'secondaryMuscleGroups': ['core', 'legs'],
     'equipment': 'bodyweight',
-    'instructions': 'Standing acro star pose with base and flyer balancing vertically.',
+    'instructions':
+        'Standing acro star pose with base and flyer balancing vertically.',
     'tags': ['acroyoga', 'partner', 'standing'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -154,7 +164,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'core',
     'secondaryMuscleGroups': ['obliques', 'shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'Advanced pose where flyer extends horizontally from base\'s body like a flag.',
+    'instructions':
+        'Advanced pose where flyer extends horizontally from base\'s body like a flag.',
     'tags': ['acroyoga', 'partner', 'advanced'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -167,7 +178,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'back',
     'secondaryMuscleGroups': ['core', 'legs'],
     'equipment': 'bodyweight',
-    'instructions': 'Therapeutic flying sequence with deep back arch and hip opening.',
+    'instructions':
+        'Therapeutic flying sequence with deep back arch and hip opening.',
     'tags': ['acroyoga', 'flying', 'therapeutic'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -180,7 +192,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'back',
     'secondaryMuscleGroups': ['hamstrings', 'core'],
     'equipment': 'bodyweight',
-    'instructions': 'Therapeutic flying position with forward fold and spinal decompression.',
+    'instructions':
+        'Therapeutic flying position with forward fold and spinal decompression.',
     'tags': ['acroyoga', 'flying', 'therapeutic', 'stretching'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -193,7 +206,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'back',
     'secondaryMuscleGroups': ['chest', 'shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'Gentle flying bird pose focused on chest opening and relaxation.',
+    'instructions':
+        'Gentle flying bird pose focused on chest opening and relaxation.',
     'tags': ['acroyoga', 'flying', 'therapeutic'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -206,7 +220,8 @@ const acroYogaExercises = [
     'primaryMuscleGroup': 'core',
     'secondaryMuscleGroups': ['full_body'],
     'equipment': 'bodyweight',
-    'instructions': 'Dynamic therapeutic sequence rotating through various flying positions.',
+    'instructions':
+        'Dynamic therapeutic sequence rotating through various flying positions.',
     'tags': ['acroyoga', 'flying', 'therapeutic', 'dynamic'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -218,21 +233,21 @@ const acroYogaExercises = [
 Future<void> seedAcroYogaExercises(AppDatabase database) async {
   for (final exercise in acroYogaExercises) {
     await database.into(database.exercises).insertOnConflictUpdate(
-      ExercisesCompanion.insert(
-        id: exercise['id'] as String,
-        name: exercise['name'] as String,
-        primaryMuscleGroup: exercise['primaryMuscleGroup'] as String,
-        secondaryMuscleGroups: List<String>.from(exercise['secondaryMuscleGroups'] as List),
-        equipment: exercise['equipment'] as String,
-        instructions: exercise['instructions'] as String,
-        tags: List<String>.from(exercise['tags'] as List),
-        isBodyweight: Value(exercise['isBodyweight'] as bool),
-        exerciseType: Value(exercise['exerciseType'] as String),
-        category: Value(exercise['category'] as String),
-        difficulty: Value(exercise['difficulty'] as String),
-      ),
-    );
+          ExercisesCompanion.insert(
+            id: exercise['id'] as String,
+            name: exercise['name'] as String,
+            primaryMuscleGroup: exercise['primaryMuscleGroup'] as String,
+            secondaryMuscleGroups:
+                List<String>.from(exercise['secondaryMuscleGroups'] as List),
+            equipment: exercise['equipment'] as String,
+            instructions: exercise['instructions'] as String,
+            tags: List<String>.from(exercise['tags'] as List),
+            isBodyweight: Value(exercise['isBodyweight'] as bool),
+            exerciseType: Value(exercise['exerciseType'] as String),
+            category: Value(exercise['category'] as String),
+            difficulty: Value(exercise['difficulty'] as String),
+          ),
+        );
   }
   print('✓ Seeded ${acroYogaExercises.length} AcroYoga exercises');
 }
-

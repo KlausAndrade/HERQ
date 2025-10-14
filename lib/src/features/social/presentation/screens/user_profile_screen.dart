@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
@@ -21,7 +20,7 @@ class UserProfileScreen extends ConsumerWidget {
     final db = ref.watch(databaseProvider);
     final supabase = ref.watch(supabaseClientProvider);
     final currentUser = ref.watch(currentUserProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -115,7 +114,7 @@ class UserProfileScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Stats
                 if (stats != null) ...[
                   const Text(
@@ -188,9 +187,9 @@ class UserProfileScreen extends ConsumerWidget {
 
   String _getDisplayName(dynamic user) {
     if (user == null) return 'Unknown Athlete';
-    
+
     String? rawDisplayName;
-    
+
     // Handle both User object (local DB) and Map (Supabase)
     if (user is Map) {
       rawDisplayName = user['displayName'] as String?;
@@ -198,11 +197,11 @@ class UserProfileScreen extends ConsumerWidget {
       // User object from local DB
       rawDisplayName = user.displayName;
     }
-    
+
     // Use centralized sanitizer - ensures emails are NEVER shown
     return DisplayNameSanitizer.sanitize(rawDisplayName);
   }
-  
+
   String? _getAvatarUrl(dynamic user) {
     if (user == null) return null;
     if (user is Map) {
@@ -210,7 +209,7 @@ class UserProfileScreen extends ConsumerWidget {
     }
     return user.avatarUrl;
   }
-  
+
   int _getStatValue(dynamic stats, String key, int defaultValue) {
     if (stats == null) return defaultValue;
     if (stats is Map) {
@@ -228,7 +227,7 @@ class UserProfileScreen extends ConsumerWidget {
         return defaultValue;
     }
   }
-  
+
   double _getStatDoubleValue(dynamic stats, String key, double defaultValue) {
     if (stats == null) return defaultValue;
     if (stats is Map) {
@@ -241,7 +240,8 @@ class UserProfileScreen extends ConsumerWidget {
     return defaultValue;
   }
 
-  Widget _buildStatCard(BuildContext context, String emoji, String value, String label) {
+  Widget _buildStatCard(
+      BuildContext context, String emoji, String value, String label) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -279,7 +279,7 @@ class UserProfileScreen extends ConsumerWidget {
   ) async {
     print('👤 Loading user profile for userId: $userId');
     print('  Current user ID: $currentUserId');
-    
+
     // If viewing own profile or no Supabase, use local DB
     if (userId == currentUserId || db == null) {
       print('  💾 Loading from local database...');
@@ -289,7 +289,7 @@ class UserProfileScreen extends ConsumerWidget {
     // Try Supabase first for other users
     try {
       print('  🌐 Loading from Supabase...');
-      
+
       // Get user stats from Supabase
       final statsResponse = await supabase
           .from('user_stats')
@@ -305,15 +305,16 @@ class UserProfileScreen extends ConsumerWidget {
       // Try to get display name from profiles table
       String displayName = 'Unknown Athlete';
       String? email;
-      
+
       try {
         final profileResponse = await supabase
             .from('profiles')
             .select('display_name, bio, avatar_url')
             .eq('id', userId)
             .maybeSingle();
-        
-        if (profileResponse != null && profileResponse['display_name'] != null) {
+
+        if (profileResponse != null &&
+            profileResponse['display_name'] != null) {
           displayName = profileResponse['display_name'] as String;
         }
       } catch (e) {
@@ -330,7 +331,8 @@ class UserProfileScreen extends ConsumerWidget {
         },
         'stats': {
           'totalWorkouts': statsResponse['total_workouts'] ?? 0,
-          'totalVolumeLifted': (statsResponse['total_volume'] as num?)?.toDouble() ?? 0.0,
+          'totalVolumeLifted':
+              (statsResponse['total_volume'] as num?)?.toDouble() ?? 0.0,
           'currentStreak': statsResponse['current_streak'] ?? 0,
           'level': statsResponse['level'] ?? 1,
         },
@@ -341,16 +343,16 @@ class UserProfileScreen extends ConsumerWidget {
     }
   }
 
-  Future<Map<String, dynamic>> _loadFromLocalDB(AppDatabase? db, String userId) async {
+  Future<Map<String, dynamic>> _loadFromLocalDB(
+      AppDatabase? db, String userId) async {
     if (db == null) throw Exception('Database not available');
 
     try {
-      final users = await (db.select(db.users)
-            ..where((u) => u.id.equals(userId)))
-          .get();
-      
+      final users =
+          await (db.select(db.users)..where((u) => u.id.equals(userId))).get();
+
       final user = users.isNotEmpty ? users.first : null;
-      
+
       if (user != null) {
         print('  ✅ User found in local DB: ${user.displayName}');
       } else {
@@ -360,7 +362,7 @@ class UserProfileScreen extends ConsumerWidget {
       final stats = await (db.select(db.userStats)
             ..where((s) => s.userId.equals(userId)))
           .get();
-      
+
       final userStats = stats.isNotEmpty ? stats.first : null;
 
       if (user == null) {
@@ -377,4 +379,3 @@ class UserProfileScreen extends ConsumerWidget {
     }
   }
 }
-

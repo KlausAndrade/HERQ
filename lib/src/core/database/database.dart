@@ -73,39 +73,45 @@ class AppDatabase extends _$AppDatabase {
           if (to == 15) {
             try {
               // Add equipment_used and variant_type fields for exercise variants
-              await customStatement('ALTER TABLE set_entries ADD COLUMN equipment_used TEXT');
+              await customStatement(
+                  'ALTER TABLE set_entries ADD COLUMN equipment_used TEXT');
             } catch (e) {
               // Column may already exist, ignore error
             }
             try {
-              await customStatement('ALTER TABLE set_entries ADD COLUMN variant_type TEXT');
+              await customStatement(
+                  'ALTER TABLE set_entries ADD COLUMN variant_type TEXT');
             } catch (e) {
               // Column may already exist, ignore error
             }
           }
-          
+
           if (to == 14) {
             try {
               // Add distance field to set_entries for distance-based exercises
-              await customStatement('ALTER TABLE set_entries ADD COLUMN distance REAL');
+              await customStatement(
+                  'ALTER TABLE set_entries ADD COLUMN distance REAL');
             } catch (e) {
               // Column may already exist, ignore error
             }
           }
-          
+
           if (to == 13) {
             try {
-              await customStatement('ALTER TABLE exercises ADD COLUMN aliases TEXT');
+              await customStatement(
+                  'ALTER TABLE exercises ADD COLUMN aliases TEXT');
             } catch (e) {}
           }
 
           if (to == 12) {
-            await customStatement("UPDATE workout_templates SET exercise_ids = '' WHERE exercise_ids IS NULL");
+            await customStatement(
+                "UPDATE workout_templates SET exercise_ids = '' WHERE exercise_ids IS NULL");
           } else if (to == 11) {
             await migrator.createTable(workoutCheckpoints);
           } else if (to == 10) {
             await migrator.createTable(templateFolders);
-            await migrator.addColumn(workoutTemplates, workoutTemplates.folderId);
+            await migrator.addColumn(
+                workoutTemplates, workoutTemplates.folderId);
           } else if (to == 9) {
             await migrator.createTable(posts);
             await migrator.createTable(postLikes);
@@ -151,12 +157,18 @@ class AppDatabase extends _$AppDatabase {
     // UPDATE statements so we don't need to re-run code generation for the
     // ExercisesCompanion to accept an `aliases` field yet keep the seeder idempotent.
     try {
-      await customStatement("UPDATE exercises SET aliases = '[\"hspu\",\"handstand pushup\"]' WHERE id = 'handstand_push_up'");
-      await customStatement("UPDATE exercises SET aliases = '[\"dumbbell curl\",\"db curl\",\"bicep curl\"]' WHERE id = 'dumbbell_curls'");
-      await customStatement("UPDATE exercises SET aliases = '[\"preacher\",\"preacher_curl\",\"preacher curl\"]' WHERE id = 'preacher_curls'");
-      await customStatement("UPDATE exercises SET aliases = '[\"barbell preacher\",\"barbell preacher curl\"]' WHERE id = 'barbell_preacher_curl'");
-      await customStatement("UPDATE exercises SET aliases = '[\"db preacher\",\"dumbbell preacher curl\"]' WHERE id = 'db_preacher_curl'");
-      await customStatement("UPDATE exercises SET aliases = '[\"machine preacher\",\"machine preacher curl\"]' WHERE id = 'machine_preacher_curl'");
+      await customStatement(
+          "UPDATE exercises SET aliases = '[\"hspu\",\"handstand pushup\"]' WHERE id = 'handstand_push_up'");
+      await customStatement(
+          "UPDATE exercises SET aliases = '[\"dumbbell curl\",\"db curl\",\"bicep curl\"]' WHERE id = 'dumbbell_curls'");
+      await customStatement(
+          "UPDATE exercises SET aliases = '[\"preacher\",\"preacher_curl\",\"preacher curl\"]' WHERE id = 'preacher_curls'");
+      await customStatement(
+          "UPDATE exercises SET aliases = '[\"barbell preacher\",\"barbell preacher curl\"]' WHERE id = 'barbell_preacher_curl'");
+      await customStatement(
+          "UPDATE exercises SET aliases = '[\"db preacher\",\"dumbbell preacher curl\"]' WHERE id = 'db_preacher_curl'");
+      await customStatement(
+          "UPDATE exercises SET aliases = '[\"machine preacher\",\"machine preacher curl\"]' WHERE id = 'machine_preacher_curl'");
     } catch (e) {
       // Non-fatal: if the UPDATE fails (e.g., running on older DB without aliases column), ignore.
     }
@@ -183,9 +195,11 @@ class AppDatabase extends _$AppDatabase {
           name: Value(t['name'] as String),
           description: Value(t['description'] as String?),
           folderId: Value(t['folderId'] as String?),
-          exerciseIds: Value(List<String>.from(t['exerciseIds'] as List<dynamic>? ?? [])),
+          exerciseIds: Value(
+              List<String>.from(t['exerciseIds'] as List<dynamic>? ?? [])),
           tags: Value(List<String>.from(t['tags'] as List<dynamic>? ?? [])),
-          estimatedDurationMinutes: Value(t['estimatedDurationMinutes'] as int?),
+          estimatedDurationMinutes:
+              Value(t['estimatedDurationMinutes'] as int?),
           isDefault: Value(t['isDefault'] as bool? ?? false),
         );
 
@@ -210,9 +224,10 @@ class AppDatabase extends _$AppDatabase {
     try {
       // Import the mapper in the method to avoid circular dependencies
       final allExercises = await select(exercises).get();
-      
-      print('Starting exercise type migration for ${allExercises.length} exercises...');
-      
+
+      print(
+          'Starting exercise type migration for ${allExercises.length} exercises...');
+
       int updatedCount = 0;
       for (final exercise in allExercises) {
         // Use the auto-assignment logic to determine the correct type
@@ -221,20 +236,22 @@ class AppDatabase extends _$AppDatabase {
           equipment: exercise.equipment,
           category: exercise.category,
         );
-        
+
         // Only update if the type is different
         if (exercise.exerciseType != correctType) {
           await (update(exercises)..where((e) => e.id.equals(exercise.id)))
               .write(ExercisesCompanion(
             exerciseType: Value(correctType),
           ));
-          
+
           updatedCount++;
-          print('Updated "${exercise.name}" from "${exercise.exerciseType}" to "$correctType"');
+          print(
+              'Updated "${exercise.name}" from "${exercise.exerciseType}" to "$correctType"');
         }
       }
-      
-      print('Exercise type migration complete. Updated $updatedCount exercises.');
+
+      print(
+          'Exercise type migration complete. Updated $updatedCount exercises.');
     } catch (e) {
       print('Error during exercise type migration: $e');
       rethrow;
@@ -254,7 +271,7 @@ class AppDatabase extends _$AppDatabase {
       equipment: equipment,
       category: category,
     );
-    
+
     // Convert enum to string for database storage
     switch (exerciseType) {
       case ExerciseType.duration:

@@ -159,7 +159,8 @@ class AICoachingService {
 
     // Use consistent mock data based on userId hash to prevent random scores each load
     final userHash = userId.hashCode.abs();
-    final fatigueLevel = FatigueLevel.values[userHash % FatigueLevel.values.length];
+    final fatigueLevel =
+        FatigueLevel.values[userHash % FatigueLevel.values.length];
     // Consistent recovery score between 0.3-1.0 based on user
     final recoveryScore = 0.3 + ((userHash % 70) / 100.0); // 0.3 to 1.0
 

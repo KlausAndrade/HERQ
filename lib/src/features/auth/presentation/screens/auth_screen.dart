@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../core/providers/auth_provider.dart';
 import 'package:herq/src/core/services/notification_service.dart';
@@ -52,7 +53,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 const SizedBox(height: 24),
 
                 Text(
-                  'GymAI',
+                  AppLocalizations.of(context)!.appTitle,
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
@@ -62,7 +63,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 const SizedBox(height: 8),
 
                 Text(
-                  'Your intelligent workout companion',
+                  AppLocalizations.of(context)!.yourIntelligentWorkoutCompanion,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Theme.of(context)
                             .colorScheme
@@ -263,8 +264,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             icon: const Icon(Icons.facebook, size: 24),
                             label: const Text('Continue with Facebook'),
                             style: OutlinedButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 12),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               backgroundColor: const Color(0xFF1877F2),
                               foregroundColor: Colors.white,
                             ),
@@ -309,11 +309,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         );
 
         if (mounted) {
-          NotificationService().showInAppNotification(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            title: 'Account created',
-            body: 'Please check your email to verify.',
-          ).catchError((_) {});
+          NotificationService()
+              .showInAppNotification(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: 'Account created',
+                body: 'Please check your email to verify.',
+              )
+              .catchError((_) {});
         }
       } else {
         await authService.signInWithEmail(
@@ -327,11 +329,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error',
-          body: '${e.toString()}',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error',
+              body: '${e.toString()}',
+            )
+            .catchError((_) {});
       }
     } finally {
       if (mounted) {
@@ -356,11 +360,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error',
-          body: '${e.toString()}',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error',
+              body: '${e.toString()}',
+            )
+            .catchError((_) {});
       }
     } finally {
       if (mounted) {
@@ -385,11 +391,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error',
-          body: '${e.toString()}',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error',
+              body: '${e.toString()}',
+            )
+            .catchError((_) {});
       }
     } finally {
       if (mounted) {
@@ -414,11 +422,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error',
-          body: '${e.toString()}',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error',
+              body: '${e.toString()}',
+            )
+            .catchError((_) {});
       }
     } finally {
       if (mounted) {
@@ -431,11 +441,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   Future<void> _handleForgotPassword() async {
     if (_emailController.text.trim().isEmpty) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Missing email',
-        body: 'Please enter your email first',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Missing email',
+            body: 'Please enter your email first',
+          )
+          .catchError((_) {});
       return;
     }
 
@@ -444,19 +456,23 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       await authService.resetPassword(_emailController.text.trim());
 
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Password reset',
-          body: 'Password reset email sent!',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Password reset',
+              body: 'Password reset email sent!',
+            )
+            .catchError((_) {});
       }
     } catch (e) {
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error',
-          body: '${e.toString()}',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error',
+              body: '${e.toString()}',
+            )
+            .catchError((_) {});
       }
     }
   }

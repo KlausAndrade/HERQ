@@ -46,30 +46,33 @@ class SupabaseSocialService {
           .eq('id', postId)
           .single();
 
-      print('Deleting post: $postId, user: ${response['user_id']}, image: ${response['image_url']}');
+      print(
+          'Deleting post: $postId, user: ${response['user_id']}, image: ${response['image_url']}');
 
       // Delete the post from database first
       await _supabase.from('posts').delete().eq('id', postId);
       print('Post deleted from database');
 
       // Delete the image from storage if it exists
-      if (response['image_url'] != null && response['image_url'].toString().isNotEmpty) {
+      if (response['image_url'] != null &&
+          response['image_url'].toString().isNotEmpty) {
         try {
           // Extract the file path from the public URL
           final imageUrl = response['image_url'] as String;
           print('Attempting to delete image: $imageUrl');
-          
+
           // URL format: https://.../storage/v1/object/public/post-images/USER_ID/filename.jpg
           final uri = Uri.parse(imageUrl);
           final pathSegments = uri.pathSegments;
-          
+
           // Find the path after 'post-images/'
           final bucketIndex = pathSegments.indexOf('post-images');
           if (bucketIndex != -1 && bucketIndex < pathSegments.length - 1) {
             final filePath = pathSegments.sublist(bucketIndex + 1).join('/');
             print('Deleting from storage: $filePath');
-            
-            final result = await _supabase.storage.from('post-images').remove([filePath]);
+
+            final result =
+                await _supabase.storage.from('post-images').remove([filePath]);
             print('Storage deletion result: $result');
           } else {
             print('Could not find post-images bucket in URL path');

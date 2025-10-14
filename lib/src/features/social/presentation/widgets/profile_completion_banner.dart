@@ -51,7 +51,9 @@ class ProfileCompletionBanner extends ConsumerWidget {
                       'Complete your profile',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
                           ),
                     ),
                     const SizedBox(height: 4),

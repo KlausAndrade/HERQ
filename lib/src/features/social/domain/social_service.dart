@@ -11,7 +11,7 @@ class SocialService {
   final AppDatabase _db;
 
   // ===== POSTS =====
-  
+
   /// Create a new post
   Future<Post> createPost({
     required String userId,
@@ -37,7 +37,8 @@ class SocialService {
 
   /// Get a single post
   Future<Post> getPost(String postId) async {
-    return await (_db.select(_db.posts)..where((p) => p.id.equals(postId))).getSingle();
+    return await (_db.select(_db.posts)..where((p) => p.id.equals(postId)))
+        .getSingle();
   }
 
   /// Get feed posts (all posts from followed users + own posts)
@@ -137,7 +138,8 @@ class SocialService {
         _db.postLikes,
         _db.postLikes.userId.equalsExp(_db.users.id),
       ),
-    ])..where(_db.postLikes.postId.equals(postId));
+    ])
+      ..where(_db.postLikes.postId.equals(postId));
 
     final results = await query.get();
     return results.map((row) => row.readTable(_db.users)).toList();
@@ -250,7 +252,8 @@ class SocialService {
         _db.userFollows,
         _db.userFollows.followerId.equalsExp(_db.users.id),
       ),
-    ])..where(_db.userFollows.followingId.equals(userId));
+    ])
+      ..where(_db.userFollows.followingId.equals(userId));
 
     final results = await query.get();
     return results.map((row) => row.readTable(_db.users)).toList();
@@ -263,7 +266,8 @@ class SocialService {
         _db.userFollows,
         _db.userFollows.followingId.equalsExp(_db.users.id),
       ),
-    ])..where(_db.userFollows.followerId.equals(userId));
+    ])
+      ..where(_db.userFollows.followerId.equals(userId));
 
     final results = await query.get();
     return results.map((row) => row.readTable(_db.users)).toList();

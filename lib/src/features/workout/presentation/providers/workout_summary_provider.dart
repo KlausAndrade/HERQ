@@ -7,6 +7,6 @@ import '../../data/services/workout_summary_service.dart';
 final workoutSummaryServiceProvider = Provider<WorkoutSummaryService?>((ref) {
   final database = ref.watch(databaseProvider);
   if (database == null) return null;
-  
+
   return WorkoutSummaryService(database);
 });

@@ -150,8 +150,8 @@ class WorkoutDetailScreen extends ConsumerWidget {
                   Text(
                     S.of(context)!.workoutOptions,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -233,20 +233,24 @@ class WorkoutDetailScreen extends ConsumerWidget {
 
                 if (context.mounted) {
                   Navigator.pop(context);
-                  NotificationService().showInAppNotification(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    title: 'Notes updated',
-                    body: '',
-                  ).catchError((_) {});
+                  NotificationService()
+                      .showInAppNotification(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        title: 'Notes updated',
+                        body: '',
+                      )
+                      .catchError((_) {});
                 }
-                } catch (e) {
+              } catch (e) {
                 if (context.mounted) {
                   Navigator.pop(context);
-                  NotificationService().showInAppNotification(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    title: 'Error updating notes',
-                    body: '$e',
-                  ).catchError((_) {});
+                  NotificationService()
+                      .showInAppNotification(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        title: 'Error updating notes',
+                        body: '$e',
+                      )
+                      .catchError((_) {});
                 }
               }
             },
@@ -287,13 +291,17 @@ class WorkoutDetailScreen extends ConsumerWidget {
                 try {
                   // Gather distinct exercise IDs used in this workout session
                   final entries = await (database.select(database.setEntries)
-                        ..where((tbl) => tbl.workoutSessionId.equals(workoutSession.id)))
+                        ..where((tbl) =>
+                            tbl.workoutSessionId.equals(workoutSession.id)))
                       .get();
 
-                  final exerciseIds = entries.map((e) => e.exerciseId).toSet().toList();
+                  final exerciseIds =
+                      entries.map((e) => e.exerciseId).toSet().toList();
 
                   // Start workout directly from exercise IDs (no DB template)
-                  await ref.read(activeWorkoutProvider.notifier).startWorkoutFromExerciseIds(
+                  await ref
+                      .read(activeWorkoutProvider.notifier)
+                      .startWorkoutFromExerciseIds(
                         'Repeat: ${workoutSession.name}',
                         exerciseIds,
                       );
@@ -312,22 +320,26 @@ class WorkoutDetailScreen extends ConsumerWidget {
                   }
 
                   if (context.mounted) {
-                      // Provide user feedback
-                      NotificationService().showInAppNotification(
-                        id: DateTime.now().millisecondsSinceEpoch.toString(),
-                        title: 'Repeat workout started',
-                        body: '',
-                      ).catchError((_) {});
+                    // Provide user feedback
+                    NotificationService()
+                        .showInAppNotification(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          title: 'Repeat workout started',
+                          body: '',
+                        )
+                        .catchError((_) {});
 
-                      context.go('/active-workout');
-                    }
+                    context.go('/active-workout');
+                  }
                 } catch (e) {
                   if (context.mounted) {
-                    NotificationService().showInAppNotification(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      title: 'Error',
-                      body: '$e',
-                    ).catchError((_) {});
+                    NotificationService()
+                        .showInAppNotification(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          title: 'Error',
+                          body: '$e',
+                        )
+                        .catchError((_) {});
                   }
                 }
               },
@@ -413,23 +425,27 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
                     .delete(database.workoutSessions)
                     .delete(workoutSession);
 
-                  if (context.mounted) {
+                if (context.mounted) {
                   Navigator.pop(context);
                   Navigator.pop(context);
-                  NotificationService().showInAppNotification(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    title: 'Workout deleted',
-                    body: '',
-                  ).catchError((_) {});
+                  NotificationService()
+                      .showInAppNotification(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        title: 'Workout deleted',
+                        body: '',
+                      )
+                      .catchError((_) {});
                 }
               } catch (e) {
                 if (context.mounted) {
                   Navigator.pop(context);
-                  NotificationService().showInAppNotification(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    title: 'Error deleting workout: $e',
-                    body: '',
-                  ).catchError((_) {});
+                  NotificationService()
+                      .showInAppNotification(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        title: 'Error deleting workout: $e',
+                        body: '',
+                      )
+                      .catchError((_) {});
                 }
               }
             },

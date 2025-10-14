@@ -27,7 +27,9 @@ class GroqService {
   static bool _initMockMode() {
     try {
       final apiKey = dotenv.env['GROQ_API_KEY'];
-      if (apiKey == null || apiKey.isEmpty || apiKey == 'your_groq_api_key_here') {
+      if (apiKey == null ||
+          apiKey.isEmpty ||
+          apiKey == 'your_groq_api_key_here') {
         return true;
       }
       return false;
@@ -44,7 +46,8 @@ class GroqService {
   }) async {
     if (_isMock) {
       // Deterministic mock response for tests
-      return Future.value('MOCK: ${prompt.substring(0, prompt.length > 80 ? 80 : prompt.length)}');
+      return Future.value(
+          'MOCK: ${prompt.substring(0, prompt.length > 80 ? 80 : prompt.length)}');
     }
 
     try {

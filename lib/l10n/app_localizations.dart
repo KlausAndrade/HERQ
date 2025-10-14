@@ -3548,6 +3548,36 @@ abstract class S {
   /// In en, this message translates to:
   /// **'About HERQ'**
   String get aboutHerq;
+
+  /// Default share message for posts
+  ///
+  /// In en, this message translates to:
+  /// **'Check out this post on {appName}!'**
+  String checkOutThisPost(String appName);
+
+  /// Share subject line for posts
+  ///
+  /// In en, this message translates to:
+  /// **'Post from {appName}'**
+  String postFrom(String appName);
+
+  /// App tagline for auth screen
+  ///
+  /// In en, this message translates to:
+  /// **'Your intelligent workout companion'**
+  String get yourIntelligentWorkoutCompanion;
+
+  /// Subtitle for web simple version
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile-First Workout Tracker'**
+  String get mobileFirstWorkoutTracker;
+
+  /// Web message about mobile optimization
+  ///
+  /// In en, this message translates to:
+  /// **'{appName} is optimized for mobile devices with full offline support and native features.'**
+  String optimizedForMobile(String appName);
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../providers/template_web_provider.dart';
 import '../providers/workout_web_sessions_provider.dart';
@@ -15,9 +16,11 @@ class WebHomeScreen extends ConsumerWidget {
     final templates = ref.watch(workoutTemplatesWebProvider);
     final recentSessions = ref.watch(recentSessionsWebProvider);
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('GymAI'),
+        title: Text(l10n.appTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -40,7 +43,7 @@ class WebHomeScreen extends ConsumerWidget {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 32),
-            
+
             // Quick Actions
             Row(
               children: [
@@ -64,7 +67,7 @@ class WebHomeScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 32),
-            
+
             // Recent Templates
             Text(
               'Quick Start',
@@ -79,7 +82,8 @@ class WebHomeScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(32),
                       child: Column(
                         children: [
-                          const Icon(Icons.add_circle_outline, size: 48, color: Colors.grey),
+                          const Icon(Icons.add_circle_outline,
+                              size: 48, color: Colors.grey),
                           const SizedBox(height: 16),
                           const Text('No templates yet'),
                           const SizedBox(height: 8),
@@ -93,7 +97,7 @@ class WebHomeScreen extends ConsumerWidget {
                     ),
                   );
                 }
-                
+
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -120,9 +124,9 @@ class WebHomeScreen extends ConsumerWidget {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text('Error: $error'),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Recent Workouts
             Text(
               'Recent Workouts',
@@ -136,28 +140,32 @@ class WebHomeScreen extends ConsumerWidget {
                     child: Padding(
                       padding: EdgeInsets.all(24),
                       child: Center(
-                        child: Text('No workouts yet. Start your first workout!'),
+                        child:
+                            Text('No workouts yet. Start your first workout!'),
                       ),
                     ),
                   );
                 }
-                
+
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: data.length > 5 ? 5 : data.length,
                   itemBuilder: (context, index) {
                     final session = data[index];
-                    final date = DateTime.parse(session['started_at'] as String);
+                    final date =
+                        DateTime.parse(session['started_at'] as String);
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
                       child: ListTile(
-                        leading: const Icon(Icons.check_circle, color: Colors.green),
+                        leading:
+                            const Icon(Icons.check_circle, color: Colors.green),
                         title: Text(session['name'] ?? 'Workout'),
                         subtitle: Text(
                           '${session['total_sets'] ?? 0} sets • ${_formatDate(date)}',
                         ),
-                        trailing: Text('${session['total_volume']?.toStringAsFixed(0) ?? 0} kg'),
+                        trailing: Text(
+                            '${session['total_volume']?.toStringAsFixed(0) ?? 0} kg'),
                       ),
                     );
                   },
@@ -175,7 +183,7 @@ class WebHomeScreen extends ConsumerWidget {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    
+
     if (diff.inDays == 0) return 'Today';
     if (diff.inDays == 1) return 'Yesterday';
     if (diff.inDays < 7) return '${diff.inDays} days ago';

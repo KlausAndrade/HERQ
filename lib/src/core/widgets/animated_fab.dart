@@ -38,7 +38,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
   late AnimationController _scaleController;
   late AnimationController _rotationController;
   late AnimationController _pulseController;
-  
+
   late Animation<double> _scaleAnimation;
   late Animation<double> _rotationAnimation;
   late Animation<double> _pulseAnimation;
@@ -48,7 +48,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
   @override
   void initState() {
     super.initState();
-    
+
     // Scale animation for press feedback
     _scaleController = AnimationController(
       duration: AppDurations.fast,
@@ -80,7 +80,8 @@ class _AnimatedFABState extends State<AnimatedFAB>
     // fake timers that can remain pending; detect the test binding and
     // schedule start on the next frame instead.
     final bindingName = WidgetsBinding.instance.runtimeType.toString();
-    final runningInWidgetTest = bindingName.contains('AutomatedTestWidgetsFlutterBinding');
+    final runningInWidgetTest =
+        bindingName.contains('AutomatedTestWidgetsFlutterBinding');
 
     if (runningInWidgetTest) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -132,7 +133,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return ScaleTransition(
       scale: _pulseAnimation,
       child: ScaleTransition(
@@ -148,7 +149,8 @@ class _AnimatedFABState extends State<AnimatedFAB>
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: (widget.backgroundColor ?? theme.colorScheme.primary)
+                        color: (widget.backgroundColor ??
+                                theme.colorScheme.primary)
                             .withOpacity(_isPressed ? 0.5 : 0.3),
                         blurRadius: _isPressed ? 12 : 8,
                         offset: Offset(0, _isPressed ? 4 : 6),
@@ -171,8 +173,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
       backgroundColor: widget.gradient != null
           ? Colors.transparent
           : widget.backgroundColor ?? theme.colorScheme.primary,
-      foregroundColor:
-          widget.foregroundColor ?? theme.colorScheme.onPrimary,
+      foregroundColor: widget.foregroundColor ?? theme.colorScheme.onPrimary,
       elevation: widget.gradient != null ? 0 : null,
       mini: widget.mini,
       heroTag: widget.heroTag,
@@ -195,8 +196,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
       backgroundColor: widget.gradient != null
           ? Colors.transparent
           : widget.backgroundColor ?? theme.colorScheme.primary,
-      foregroundColor:
-          widget.foregroundColor ?? theme.colorScheme.onPrimary,
+      foregroundColor: widget.foregroundColor ?? theme.colorScheme.onPrimary,
       elevation: widget.gradient != null ? 0 : null,
       heroTag: widget.heroTag,
       tooltip: widget.tooltip,
@@ -237,7 +237,7 @@ class _ExpandableFABState extends State<ExpandableFAB>
   late AnimationController _controller;
   late Animation<double> _expandAnimation;
   late Animation<double> _rotationAnimation;
-  
+
   bool _isOpen = false;
 
   @override
@@ -286,14 +286,15 @@ class _ExpandableFABState extends State<ExpandableFAB>
               color: Colors.black.withOpacity(0.3),
             ),
           ),
-        
+
         // Child FABs
         ...List.generate(widget.children.length, (index) {
           final childWidget = widget.children[index];
           return AnimatedBuilder(
             animation: _expandAnimation,
             builder: (context, _) {
-              final offset = widget.distance * (index + 1) * _expandAnimation.value;
+              final offset =
+                  widget.distance * (index + 1) * _expandAnimation.value;
               return Positioned(
                 bottom: offset,
                 right: 0,

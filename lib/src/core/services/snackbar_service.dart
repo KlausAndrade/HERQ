@@ -13,7 +13,6 @@ enum SnackbarType {
 
 /// Centralized snackbar service for consistent feedback messages
 class SnackbarService {
-
   static void show(
     BuildContext context, {
     required String message,
@@ -112,7 +111,8 @@ class SnackbarService {
   /// display the SnackBar as before. By default this will publish the
   /// in-app overlay only. Pass `preserveFallback: true` to also show the
   /// original SnackBar (useful during staged rollouts).
-  static void showFromSnackBar(BuildContext context, SnackBar snackBar, {bool preserveFallback = false}) {
+  static void showFromSnackBar(BuildContext context, SnackBar snackBar,
+      {bool preserveFallback = false}) {
     if (!context.mounted) return;
 
     // Attempt to extract a simple text message from the SnackBar content.
@@ -138,12 +138,18 @@ class SnackbarService {
 
     // Map action to primaryActionLabel when possible
     final actionLabel = snackBar.action?.label;
-    final actionCallback = snackBar.action != null ? () { snackBar.action!.onPressed(); } : null;
+    final actionCallback = snackBar.action != null
+        ? () {
+            snackBar.action!.onPressed();
+          }
+        : null;
 
     try {
       NotificationService().showInAppNotification(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: contentText.length > 60 ? '${contentText.substring(0, 57)}...' : contentText,
+        title: contentText.length > 60
+            ? '${contentText.substring(0, 57)}...'
+            : contentText,
         body: '',
         primaryActionLabel: actionLabel,
         onPrimaryAction: actionCallback,
@@ -242,7 +248,7 @@ class SnackbarService {
     Color? backgroundColor,
   }) {
     if (!context.mounted) return;
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -308,13 +314,13 @@ class SnackbarService {
   static Color _getIconBackgroundColor(SnackbarType type) {
     switch (type) {
       case SnackbarType.success:
-  return Colors.white.withAlpha((0.2 * 255).round());
+        return Colors.white.withAlpha((0.2 * 255).round());
       case SnackbarType.error:
-  return Colors.white.withAlpha((0.2 * 255).round());
+        return Colors.white.withAlpha((0.2 * 255).round());
       case SnackbarType.warning:
-  return Colors.black.withAlpha((0.2 * 255).round());
+        return Colors.black.withAlpha((0.2 * 255).round());
       case SnackbarType.info:
-  return Colors.white.withAlpha((0.2 * 255).round());
+        return Colors.white.withAlpha((0.2 * 255).round());
     }
   }
 

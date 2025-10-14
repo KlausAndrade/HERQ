@@ -37,7 +37,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // Check if there's already an active workout
     final activeWorkout = ref.read(activeWorkoutProvider);
-    if (activeWorkout != null) return; // Don't show dialog if workout is already running
+    if (activeWorkout != null)
+      return; // Don't show dialog if workout is already running
 
     // Check for saved checkpoint
     final checkpointData = await checkpointService.getLatestCheckpoint();
@@ -51,9 +52,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final minutesSinceLastSave = timeSinceLastSave.inMinutes;
 
     // Auto-finalize if workout is 100% complete and >10 minutes old
-    if (checkpointData.workout.isFullyCompleted() && minutesSinceLastSave >= 10) {
+    if (checkpointData.workout.isFullyCompleted() &&
+        minutesSinceLastSave >= 10) {
       // Skip dialog - directly finalize and show celebration!
-      ref.read(activeWorkoutProvider.notifier).resumeWorkout(checkpointData.workout);
+      ref
+          .read(activeWorkoutProvider.notifier)
+          .resumeWorkout(checkpointData.workout);
       await ref.read(activeWorkoutProvider.notifier).finishWorkout();
       if (!mounted) return;
       context.go('/workout-summary');
@@ -69,13 +73,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         lastSavedAt: checkpointData.lastSavedAt,
         onResume: () {
           Navigator.of(context).pop();
-          ref.read(activeWorkoutProvider.notifier).resumeWorkout(checkpointData.workout);
+          ref
+              .read(activeWorkoutProvider.notifier)
+              .resumeWorkout(checkpointData.workout);
           context.go('/active-workout');
         },
         onFinish: () async {
           Navigator.of(context).pop();
           // Resume the workout and immediately finish it
-          ref.read(activeWorkoutProvider.notifier).resumeWorkout(checkpointData.workout);
+          ref
+              .read(activeWorkoutProvider.notifier)
+              .resumeWorkout(checkpointData.workout);
           await ref.read(activeWorkoutProvider.notifier).finishWorkout();
           if (!mounted) return;
           context.go('/workout-summary');
@@ -195,16 +203,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
               ),
               const SizedBox(height: 12),
-              IntrinsicHeight( // Ensures both cards have the same height
+              IntrinsicHeight(
+                // Ensures both cards have the same height
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
                       child: _QuickActionCard(
-                        title:
-                            hasActiveWorkout ? S.of(context)!.resumeWorkoutTitle : S.of(context)!.startWorkout,
+                        title: hasActiveWorkout
+                            ? S.of(context)!.resumeWorkoutTitle
+                            : S.of(context)!.startWorkout,
                         subtitle: hasActiveWorkout
-                            ? S.of(context)!.continueWorkoutName(activeWorkout.name)
+                            ? S
+                                .of(context)!
+                                .continueWorkoutName(activeWorkout.name)
                             : S.of(context)!.beginNewSession,
                         icon: hasActiveWorkout
                             ? Icons.play_circle_filled
@@ -684,7 +696,8 @@ class _QuickActionCardState extends State<_QuickActionCard>
               onTapCancel: _handleTapCancel,
               borderRadius: BorderRadius.circular(AppTheme.radiusMD),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 120), // Ensure consistent height
+                constraints: const BoxConstraints(
+                    minHeight: 120), // Ensure consistent height
                 child: Padding(
                   padding: const EdgeInsets.all(AppTheme.spacingMD),
                   child: Column(
@@ -695,7 +708,8 @@ class _QuickActionCardState extends State<_QuickActionCard>
                         padding: const EdgeInsets.all(AppTheme.spacingSM),
                         decoration: BoxDecoration(
                           color: widget.color.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+                          borderRadius:
+                              BorderRadius.circular(AppTheme.radiusSM),
                         ),
                         child: Icon(
                           widget.icon,

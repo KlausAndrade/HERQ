@@ -2,27 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-/// Web-specific entry point for GymAI
+/// Web-specific entry point for HERQ
 /// Simplified web version - full app requires native platform
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
     // Load environment variables
     await dotenv.load(fileName: '.env');
-    
+
     // Initialize Supabase for web
     await Supabase.initialize(
       url: dotenv.env['SUPABASE_URL'] ?? '',
       anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
     );
-    
+
     print('✅ Web platform initialized with Supabase');
   } catch (e) {
     print('⚠️ Web initialization error: $e');
   }
-  
+
   runApp(
     const ProviderScope(
       child: GymAIWebApp(),
@@ -39,7 +41,8 @@ class GymAIWebApp extends StatelessWidget {
       title: 'HERQ - Smart Strength Training',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF00BFA6)), // HERQ Teal
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF00BFA6)), // HERQ Teal
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
@@ -48,6 +51,17 @@ class GymAIWebApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
       ),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('es'),
+        Locale('pt'),
+      ],
       home: const WebComingSoonScreen(),
     );
   }
@@ -72,7 +86,7 @@ class WebComingSoonScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Text(
-                'GymAI',
+                AppLocalizations.of(context)!.appTitle,
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.blue,
@@ -80,7 +94,7 @@ class WebComingSoonScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Mobile-First Workout Tracker',
+                AppLocalizations.of(context)!.mobileFirstWorkoutTracker,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.grey[600],
                     ),
@@ -109,9 +123,10 @@ class WebComingSoonScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 24),
-                      const Text(
-                        'GymAI is optimized for mobile devices with full offline support and native features.',
-                        style: TextStyle(fontSize: 16),
+                      Text(
+                        AppLocalizations.of(context)!.optimizedForMobile(
+                            AppLocalizations.of(context)!.appTitle),
+                        style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 16),
                       const Text(
@@ -128,9 +143,10 @@ class WebComingSoonScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       Text(
                         'Available Features:',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                       ),
                       const SizedBox(height: 12),
                       _buildAvailableFeatures(),

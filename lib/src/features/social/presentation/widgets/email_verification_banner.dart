@@ -10,7 +10,7 @@ class EmailVerificationBanner extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
-    
+
     // Don't show if no user or email is already confirmed
     if (user == null || user.emailConfirmedAt != null) {
       return const SizedBox.shrink();
@@ -55,19 +55,23 @@ class EmailVerificationBanner extends ConsumerWidget {
               try {
                 await ref.read(authServiceProvider).resendEmailVerification();
                 if (context.mounted) {
-                  NotificationService().showInAppNotification(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    title: 'Verification sent',
-                    body: 'Verification email sent!',
-                  ).catchError((_) {});
+                  NotificationService()
+                      .showInAppNotification(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        title: 'Verification sent',
+                        body: 'Verification email sent!',
+                      )
+                      .catchError((_) {});
                 }
               } catch (e) {
                 if (context.mounted) {
-                  NotificationService().showInAppNotification(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    title: 'Failed to send',
-                    body: '$e',
-                  ).catchError((_) {});
+                  NotificationService()
+                      .showInAppNotification(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        title: 'Failed to send',
+                        body: '$e',
+                      )
+                      .catchError((_) {});
                 }
               }
             },

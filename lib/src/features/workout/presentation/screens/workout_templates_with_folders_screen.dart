@@ -72,7 +72,9 @@ class _WorkoutTemplatesWithFoldersScreenState
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: Text(_isEditing ? S.of(context)!.workoutTemplates : S.of(context)!.selectWorkout),
+        title: Text(_isEditing
+            ? S.of(context)!.workoutTemplates
+            : S.of(context)!.selectWorkout),
         actions: [
           IconButton(
             onPressed: () => context.push('/template-builder'),
@@ -111,7 +113,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                   itemCount: foldersList.length,
                   onReorder: (oldIndex, newIndex) async {
                     if (newIndex > oldIndex) newIndex--;
-                    final reorderedList = List<TemplateFolder>.from(foldersList);
+                    final reorderedList =
+                        List<TemplateFolder>.from(foldersList);
                     final item = reorderedList.removeAt(oldIndex);
                     reorderedList.insert(newIndex, item);
                     final actions = ref.read(templateActionsProvider);
@@ -162,7 +165,10 @@ class _WorkoutTemplatesWithFoldersScreenState
     // Only the folder header is a DragTarget for move-to-folder
     return DragTarget<_DragItemData>(
       key: key,
-      onWillAccept: (data) => data != null && data.type == _DragItemType.exercise && data.sourceFolderId != folder.id,
+      onWillAccept: (data) =>
+          data != null &&
+          data.type == _DragItemType.exercise &&
+          data.sourceFolderId != folder.id,
       onAccept: (data) {
         _moveTemplate(data.templateId, folder);
       },
@@ -258,8 +264,7 @@ class _WorkoutTemplatesWithFoldersScreenState
                             ReorderableDragStartListener(
                               index: index,
                               child: const Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 8),
+                                padding: EdgeInsets.symmetric(horizontal: 8),
                                 child: Icon(
                                   Icons.drag_handle,
                                   color: Colors.grey,
@@ -310,8 +315,10 @@ class _WorkoutTemplatesWithFoldersScreenState
                               ElevatedButton.icon(
                                 onPressed: () {
                                   // Navigate to template builder with folder preselected
-                                  final folderId = Uri.encodeComponent(folder.id);
-                                  context.push('/template-builder?folderId=$folderId');
+                                  final folderId =
+                                      Uri.encodeComponent(folder.id);
+                                  context.push(
+                                      '/template-builder?folderId=$folderId');
                                 },
                                 icon: const Icon(Icons.add),
                                 label: const Text('Create Template'),
@@ -338,7 +345,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                         itemBuilder: (context, index) => _buildTemplateCard(
                           templates[index],
                           folder.id,
-                          key: ValueKey('${folder.id}-edit-${templates[index].id}'),
+                          key: ValueKey(
+                              '${folder.id}-edit-${templates[index].id}'),
                           index: index,
                         ),
                       );
@@ -382,15 +390,15 @@ class _WorkoutTemplatesWithFoldersScreenState
       },
       builder: (context, candidateData, rejectedData) {
         final isDraggingOver = candidateData.isNotEmpty;
-        
+
         // If empty and not dragging, hide the section
         if (templates.isEmpty && !isDraggingOver) {
           return const SizedBox.shrink();
         }
-        
+
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
-          color: isDraggingOver 
+          color: isDraggingOver
               ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
               : null,
           elevation: isDraggingOver ? 4 : 1,
@@ -415,20 +423,29 @@ class _WorkoutTemplatesWithFoldersScreenState
                         Icons.folder_open_outlined,
                         color: isDraggingOver
                             ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                            : Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.7),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          isDraggingOver 
+                          isDraggingOver
                               ? 'Drop to move to Uncategorized'
                               : 'Uncategorized',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: isDraggingOver
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                                fontWeight: isDraggingOver ? FontWeight.w600 : FontWeight.w500,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: isDraggingOver
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withOpacity(0.7),
+                                    fontWeight: isDraggingOver
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
+                                  ),
                         ),
                       ),
                       if (templates.isNotEmpty)
@@ -460,7 +477,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                       itemCount: templates.length,
                       onReorder: (oldIndex, newIndex) async {
                         if (newIndex > oldIndex) newIndex--;
-                        final reorderedList = List<WorkoutTemplate>.from(templates);
+                        final reorderedList =
+                            List<WorkoutTemplate>.from(templates);
                         final item = reorderedList.removeAt(oldIndex);
                         reorderedList.insert(newIndex, item);
                         final actions = ref.read(templateActionsProvider);
@@ -474,7 +492,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                       ),
                     )
                   else
-                    ...templates.map((template) => _buildTemplateCard(template, null)),
+                    ...templates
+                        .map((template) => _buildTemplateCard(template, null)),
                 ],
               ],
             ),
@@ -497,7 +516,7 @@ class _WorkoutTemplatesWithFoldersScreenState
         child: _buildTemplateCardWithDragHandle(template, folderId, index),
       );
     }
-    
+
     // In view mode or edit mode without index, allow drag to move between containers
     return LongPressDraggable<_DragItemData>(
       key: key,
@@ -577,9 +596,10 @@ class _WorkoutTemplatesWithFoldersScreenState
                       Expanded(
                         child: Text(
                           template.name,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -651,10 +671,7 @@ class _WorkoutTemplatesWithFoldersScreenState
                   if (template.description?.isNotEmpty == true)
                     Text(
                       template.description!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
@@ -715,15 +732,13 @@ class _WorkoutTemplatesWithFoldersScreenState
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
                           template.description!,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(0.6),
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.6),
+                                  ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -927,7 +942,9 @@ class _WorkoutTemplatesWithFoldersScreenState
   void _moveTemplate(String templateId, TemplateFolder? folder) async {
     // Move a template to a new folder (null folder indicates root).
     try {
-      await ref.read(templateFolderNotifierProvider.notifier).moveTemplateToFolder(
+      await ref
+          .read(templateFolderNotifierProvider.notifier)
+          .moveTemplateToFolder(
             templateId: templateId,
             folderId: folder?.id,
           );

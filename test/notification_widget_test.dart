@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:herq/src/core/ui/notification_redesign/notification_card.dart';
 
 void main() {
-  testWidgets('NotificationCard renders and action buttons call callbacks', (WidgetTester tester) async {
+  testWidgets('NotificationCard renders and action buttons call callbacks',
+      (WidgetTester tester) async {
     var primaryPressed = false;
     var secondaryPressed = false;
 
@@ -12,7 +13,8 @@ void main() {
         body: NotificationCard(
           id: 't1',
           title: 'Test Title',
-          body: 'This is the body of the notification used during widget tests.',
+          body:
+              'This is the body of the notification used during widget tests.',
           leading: const Icon(Icons.info),
           primaryActionLabel: 'Open',
           onPrimaryAction: () => primaryPressed = true,
@@ -37,9 +39,9 @@ void main() {
     expect(primaryPressed, isTrue);
 
     // Accessibility: ensure the semantics label is present
-  final semantic = tester.getSemantics(find.byType(NotificationCard));
-  // Ensure the semantics label contains the title so screen readers announce it.
-  expect(semantic.label, isNotEmpty);
-  expect(semantic.label, contains('Test Title'));
+    final semantic = tester.getSemantics(find.byType(NotificationCard));
+    // Ensure the semantics label contains the title so screen readers announce it.
+    expect(semantic.label, isNotEmpty);
+    expect(semantic.label, contains('Test Title'));
   });
 }

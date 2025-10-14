@@ -9,7 +9,8 @@ import '../../domain/models/ai_models.dart';
 // State management for applied and dismissed suggestions
 final appliedSuggestionsProvider = StateProvider<Set<String>>((ref) => {});
 final dismissedSuggestionsProvider = StateProvider<Set<String>>((ref) => {});
-final appliedProgressSuggestionsProvider = StateProvider<Set<String>>((ref) => {});
+final appliedProgressSuggestionsProvider =
+    StateProvider<Set<String>>((ref) => {});
 
 // Mock service provider (fallback)
 final aiCoachingServiceProvider = Provider<AICoachingService>((ref) {
@@ -20,10 +21,10 @@ final aiCoachingServiceProvider = Provider<AICoachingService>((ref) {
 final groqAICoachingServiceProvider = Provider<GroqAICoachingService?>((ref) {
   final groqService = ref.watch(groqServiceProvider);
   final database = ref.watch(databaseProvider);
-  
+
   // Return null if database is not available (e.g., on web platform)
   if (database == null) return null;
-  
+
   return GroqAICoachingService(groqService, database);
 });
 
@@ -169,7 +170,7 @@ final recoveryAnalysisProvider =
     FutureProvider.family<RecoveryAnalysis, String>((ref, userId) async {
   // Keep the result alive to prevent regenerating random data
   ref.keepAlive();
-  
+
   try {
     final aiService = ref.read(groqAICoachingServiceProvider);
     if (aiService != null) {

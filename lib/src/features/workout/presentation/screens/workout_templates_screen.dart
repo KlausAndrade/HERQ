@@ -59,7 +59,7 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
   }
 
   @override
-      Widget build(BuildContext context, WidgetRef ref) => Scaffold(
+  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
         appBar: AppBar(
           title: Text(S.of(context)!.workoutTemplates),
           actions: [

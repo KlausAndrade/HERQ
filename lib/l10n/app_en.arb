@@ -628,5 +628,40 @@
   "aboutHerq": "About HERQ",
   "@aboutHerq": {
     "description": "About HERQ menu item"
+  },
+  "checkOutThisPost": "Check out this post on {appName}!",
+  "@checkOutThisPost": {
+    "description": "Default share message for posts",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "postFrom": "Post from {appName}",
+  "@postFrom": {
+    "description": "Share subject line for posts",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "yourIntelligentWorkoutCompanion": "Your intelligent workout companion",
+  "@yourIntelligentWorkoutCompanion": {
+    "description": "App tagline for auth screen"
+  },
+  "mobileFirstWorkoutTracker": "Mobile-First Workout Tracker",
+  "@mobileFirstWorkoutTracker": {
+    "description": "Subtitle for web simple version"
+  },
+  "optimizedForMobile": "{appName} is optimized for mobile devices with full offline support and native features.",
+  "@optimizedForMobile": {
+    "description": "Web message about mobile optimization",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:herq/src/core/services/notification_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../providers/social_providers.dart';
 import 'edit_post_dialog.dart';
@@ -145,14 +146,14 @@ class PostCard extends ConsumerWidget {
 
   Future<void> _toggleLike(WidgetRef ref, bool hasLiked) async {
     final social = ref.read(supabaseSocialServiceProvider);
-    
+
     try {
       if (hasLiked) {
         await social.unlikePost(post.id, currentUserId);
       } else {
         await social.likePost(post.id, currentUserId);
       }
-      
+
       // Refresh providers
       ref.invalidate(hasLikedPostProvider(post.id));
       ref.invalidate(likesCountProvider(post.id));
@@ -171,23 +172,28 @@ class PostCard extends ConsumerWidget {
   Future<void> _sharePost(BuildContext context) async {
     try {
       // Create a shareable link to the post
-      final webLink = 'https://yourapp.com/post/${post.id}'; // Update with your actual domain
-      
-      final String shareText = (post.caption != null && post.caption!.isNotEmpty)
-          ? '${post.caption}\n\n$webLink'
-          : 'Check out this post on GymAI!\n$webLink';
-      
+      final webLink =
+          'https://yourapp.com/post/${post.id}'; // Update with your actual domain
+
+      final l10n = AppLocalizations.of(context)!;
+      final String shareText =
+          (post.caption != null && post.caption!.isNotEmpty)
+              ? '${post.caption}\n\n$webLink'
+              : '${l10n.checkOutThisPost(l10n.appTitle)}\n$webLink';
+
       await Share.share(
         shareText,
-        subject: 'Post from GymAI',
+        subject: l10n.postFrom(l10n.appTitle),
       );
     } catch (e) {
       if (context.mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Failed to share',
-          body: '$e',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Failed to share',
+              body: '$e',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -207,8 +213,8 @@ class PostCard extends ConsumerWidget {
                 Text(
                   'Post Options',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -239,14 +245,16 @@ class PostCard extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.delete, color: Colors.red),
-            title: const Text('Delete Post', style: TextStyle(color: Colors.red)),
+            title:
+                const Text('Delete Post', style: TextStyle(color: Colors.red)),
             onTap: () async {
               Navigator.pop(context);
               final confirm = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('Delete Post'),
-                  content: const Text('Are you sure you want to delete this post?'),
+                  content:
+                      const Text('Are you sure you want to delete this post?'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
@@ -268,21 +276,25 @@ class PostCard extends ConsumerWidget {
                   ref.invalidate(feedPostsProvider);
                   ref.invalidate(explorePostsProvider);
                   ref.invalidate(userPostsProvider(currentUserId));
-                  
+
                   if (context.mounted) {
-                    NotificationService().showInAppNotification(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      title: 'Deleted',
-                      body: 'Post deleted successfully',
-                    ).catchError((_) {});
+                    NotificationService()
+                        .showInAppNotification(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          title: 'Deleted',
+                          body: 'Post deleted successfully',
+                        )
+                        .catchError((_) {});
                   }
-                  } catch (e) {
+                } catch (e) {
                   if (context.mounted) {
-                    NotificationService().showInAppNotification(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      title: 'Failed to delete post',
-                      body: '$e',
-                    ).catchError((_) {});
+                    NotificationService()
+                        .showInAppNotification(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          title: 'Failed to delete post',
+                          body: '$e',
+                        )
+                        .catchError((_) {});
                   }
                   print('Delete post error: $e');
                 }

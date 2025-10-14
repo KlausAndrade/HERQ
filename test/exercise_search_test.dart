@@ -25,7 +25,10 @@ void main() {
     // Expect at least preacher_curls and variants to be present
     final ids = results.map((e) => e.id).toSet();
     expect(ids.contains('preacher_curls'), isTrue);
-    expect(ids.contains('db_preacher_curl') || ids.contains('barbell_preacher_curl'), isTrue);
+    expect(
+        ids.contains('db_preacher_curl') ||
+            ids.contains('barbell_preacher_curl'),
+        isTrue);
 
     // Search by muscle group: biceps
     final qb = '%biceps%';

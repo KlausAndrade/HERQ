@@ -23,7 +23,7 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late ConfettiController _confettiController;
-  
+
   @override
   void initState() {
     super.initState();
@@ -37,7 +37,7 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
 
     // Start animations
     _animationController.forward();
-    
+
     // Always show confetti - finishing a workout is always an achievement! 🎉
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {
@@ -96,12 +96,12 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
                       children: [
                         // Celebration icon
                         _buildAnimatedIcon(),
-                        
+
                         const SizedBox(height: 16),
 
                         // Title
                         _buildTitle(),
-                        
+
                         const SizedBox(height: 8),
 
                         // Subtitle
@@ -293,9 +293,7 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
             ? color.withOpacity(0.2)
             : Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
-        border: isHighlight
-            ? Border.all(color: color, width: 2)
-            : null,
+        border: isHighlight ? Border.all(color: color, width: 2) : null,
       ),
       child: Column(
         children: [
@@ -304,10 +302,8 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
           Text(
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withOpacity(0.6),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                 ),
           ),
           const SizedBox(height: 4),
@@ -535,7 +531,8 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
               ),
         ),
         const SizedBox(height: 16),
-        ...widget.summary.exercises.map((exercise) => _buildExerciseCard(exercise)),
+        ...widget.summary.exercises
+            .map((exercise) => _buildExerciseCard(exercise)),
       ],
     );
   }
@@ -574,7 +571,8 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.emoji_events, size: 14, color: Colors.amber),
+                      const Icon(Icons.emoji_events,
+                          size: 14, color: Colors.amber),
                       const SizedBox(width: 4),
                       Text(
                         'PR',

@@ -10,7 +10,8 @@ import 'package:herq/l10n/app_localizations.dart';
 class WorkoutSaveScreen extends ConsumerStatefulWidget {
   final WorkoutSummary summary;
   final VoidCallback onDiscard;
-  final Function(String name, String? notes, String? photoPath, bool postToSocial) onSave;
+  final Function(
+      String name, String? notes, String? photoPath, bool postToSocial) onSave;
 
   const WorkoutSaveScreen({
     super.key,
@@ -104,7 +105,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context)!.saveWorkout),
@@ -135,7 +136,8 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
                         _StatItem(
                           icon: Icons.fitness_center,
                           label: S.of(context)!.volume,
-                          value: '${widget.summary.totalVolume.toStringAsFixed(0)} kg',
+                          value:
+                              '${widget.summary.totalVolume.toStringAsFixed(0)} kg',
                         ),
                         _StatItem(
                           icon: Icons.repeat,
@@ -170,9 +172,9 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Workout Name
             TextField(
               controller: _nameController,
@@ -185,9 +187,9 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
                 prefixIcon: const Icon(Icons.edit),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Notes
             TextField(
               controller: _notesController,
@@ -203,17 +205,17 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
               maxLines: 4,
               textInputAction: TextInputAction.done,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Photo Section
             if (_photoPath != null)
               _buildPhotoPreview()
             else
               _buildAddPhotoButton(),
-            
+
             const SizedBox(height: 16),
-            
+
             // Post to Social Toggle
             Card(
               child: SwitchListTile(
@@ -227,9 +229,9 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Action Buttons
             Row(
               children: [
@@ -255,7 +257,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
           ],
         ),
@@ -389,4 +391,3 @@ class _StatItem extends StatelessWidget {
     );
   }
 }
-

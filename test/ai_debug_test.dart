@@ -14,7 +14,7 @@ void main() {
       try {
         final groqService = GroqService();
         print('✅ Groq service initialized successfully');
-        
+
         final response = await groqService.chat(
           prompt: 'Hello',
           systemPrompt: 'You are helpful. Just say "Working".',
@@ -23,10 +23,11 @@ void main() {
       } catch (e) {
         print('❌ Groq initialization failed: $e');
         print('📋 This means the fallback mock service should be used');
-        
+
         // Test mock service works
         final mockService = AICoachingService();
-        final mockRecs = await mockService.getWorkoutRecommendations('test_user');
+        final mockRecs =
+            await mockService.getWorkoutRecommendations('test_user');
         print('✅ Mock service has ${mockRecs.length} recommendations');
       }
     });
@@ -34,13 +35,13 @@ void main() {
     test('should check mock recovery analysis', () async {
       final mockService = AICoachingService();
       final recovery = await mockService.getRecoveryAnalysis('current_user');
-      
+
       print('📊 Mock Recovery Analysis:');
       print('   Recovery Score: ${(recovery.recoveryScore * 100).round()}%');
       print('   Fatigue Level: ${recovery.fatigueLevel}');
       print('   Recommendations: ${recovery.recommendations.length}');
       print('   Next Workout: ${recovery.nextWorkoutSuggestion}');
-      
+
       // Check why it might be showing poor recovery
       for (final rec in recovery.recommendations) {
         print('   - ${rec.type}: ${rec.title}');

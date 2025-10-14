@@ -31,7 +31,10 @@ class WorkoutSummaryService {
         .where((s) => s.isCompleted)
         .fold(0, (sum, set) => sum + set.reps);
 
-    final totalVolume = workout.exercises.expand((e) => e.sets).where((s) => s.isCompleted && s.weight != null).fold(
+    final totalVolume = workout.exercises
+        .expand((e) => e.sets)
+        .where((s) => s.isCompleted && s.weight != null)
+        .fold(
           0.0,
           (sum, set) => sum + (set.weight! * set.reps),
         );
@@ -61,8 +64,7 @@ class WorkoutSummaryService {
       if (completedSets.isEmpty) continue;
 
       final sets = completedSets.length;
-      final totalReps =
-          completedSets.fold(0, (sum, set) => sum + set.reps);
+      final totalReps = completedSets.fold(0, (sum, set) => sum + set.reps);
       final maxWeight = completedSets
           .where((s) => s.weight != null)
           .fold<double?>(null, (max, set) {
@@ -196,8 +198,10 @@ class WorkoutSummaryService {
   ) async {
     // Check if all sets were completed
     final totalSets = workout.exercises.expand((e) => e.sets).length;
-    final completedSets =
-        workout.exercises.expand((e) => e.sets).where((s) => s.isCompleted).length;
+    final completedSets = workout.exercises
+        .expand((e) => e.sets)
+        .where((s) => s.isCompleted)
+        .length;
     final perfectCompletion = totalSets == completedSets && totalSets > 0;
 
     // Calculate total volume for this workout
@@ -219,8 +223,8 @@ class WorkoutSummaryService {
 
     // Check if most sets
     final previousMostSets = await _getPreviousMostSets();
-    final isMostSets =
-        completedSets > 0 && (previousMostSets == null || completedSets > previousMostSets);
+    final isMostSets = completedSets > 0 &&
+        (previousMostSets == null || completedSets > previousMostSets);
 
     // Calculate workout streak (placeholder - would need date-based logic)
     final streak = await _calculateWorkoutStreak();

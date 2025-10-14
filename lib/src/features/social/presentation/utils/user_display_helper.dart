@@ -2,8 +2,8 @@ import '../../../../core/database/database.dart';
 
 class UserDisplayHelper {
   static String getDisplayName(User user) {
-    return user.displayName.isNotEmpty 
-        ? user.displayName 
+    return user.displayName.isNotEmpty
+        ? user.displayName
         : 'User ${user.id.substring(0, 8)}';
   }
 

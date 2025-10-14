@@ -124,7 +124,7 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Container(
@@ -140,7 +140,7 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Equipment Selection
               Text(
                 'Equipment',
@@ -167,17 +167,21 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                         selectedEquipment = newEquipment;
                       });
                       // Apply change immediately
-                      widget.onChanged(newEquipment, selectedVariant == 'standard' ? null : selectedVariant);
+                      widget.onChanged(
+                          newEquipment,
+                          selectedVariant == 'standard'
+                              ? null
+                              : selectedVariant);
                     },
                     selectedColor: theme.colorScheme.primaryContainer,
                   );
                 }).toList(),
               ),
-              
+
               const SizedBox(height: 6),
               const Divider(),
               const SizedBox(height: 6),
-              
+
               // Variant Type Selection
               Text(
                 'Variant Type',
@@ -200,13 +204,14 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                         selectedVariant = newVariant;
                       });
                       // Apply change immediately
-                      widget.onChanged(selectedEquipment, newVariant == 'standard' ? null : newVariant);
+                      widget.onChanged(selectedEquipment,
+                          newVariant == 'standard' ? null : newVariant);
                     },
                     selectedColor: theme.colorScheme.secondaryContainer,
                   );
                 }).toList(),
               ),
-              
+
               const SizedBox(height: 16),
             ],
           ),
@@ -244,4 +249,3 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
     }
   }
 }
-

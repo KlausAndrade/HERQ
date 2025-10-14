@@ -116,7 +116,8 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         GoRoute(
           path: '/workout-history',
           name: 'workout-history',
-          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideRightTransition(
             const WorkoutHistoryScreen(),
             key: state.pageKey,
           ),
@@ -241,7 +242,8 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         GoRoute(
           path: '/leaderboards',
           name: 'leaderboards',
-          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideRightTransition(
             const LeaderboardsScreen(),
             key: state.pageKey,
           ),
@@ -249,7 +251,8 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         GoRoute(
           path: '/ai-coach',
           name: 'ai-coach',
-          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideRightTransition(
             const AICoachingScreen(),
             key: state.pageKey,
           ),
@@ -257,7 +260,8 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         GoRoute(
           path: '/settings',
           name: 'settings',
-          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideRightTransition(
             const SettingsScreen(),
             key: state.pageKey,
           ),
@@ -265,7 +269,8 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         GoRoute(
           path: '/about-herq',
           name: 'about-herq',
-          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideRightTransition(
             const AboutHerqScreen(),
             key: state.pageKey,
           ),
@@ -273,7 +278,8 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
         GoRoute(
           path: '/gamification',
           name: 'gamification',
-          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideRightTransition(
             const GamificationScreen(),
             key: state.pageKey,
           ),

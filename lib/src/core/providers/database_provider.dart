@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../database/database.dart';
-import '../database/database_helper_native.dart' if (dart.library.html) '../database/database_helper_stub.dart';
+import '../database/database_helper_native.dart'
+    if (dart.library.html) '../database/database_helper_stub.dart';
 
 final databaseProvider = Provider<AppDatabase?>((ref) {
   if (kIsWeb) {
@@ -10,6 +11,7 @@ final databaseProvider = Provider<AppDatabase?>((ref) {
   }
 
   final executor = createInMemoryExecutor();
+  // ignore: unnecessary_null_comparison
   if (executor == null) return null;
 
   final db = AppDatabase.forTesting(executor);

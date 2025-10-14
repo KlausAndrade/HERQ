@@ -56,17 +56,17 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       if (templateData == null) {
         throw Exception('Template not found: $templateId');
       }
-      
+
       // Fetch exercises
       final exerciseIds = List<String>.from(templateData['exercise_ids'] ?? []);
       List<Map<String, dynamic>> exercisesList = [];
-      
+
       if (exerciseIds.isNotEmpty) {
         final exercisesData = await supabase
             .from('exercises')
             .select()
             .inFilter('id', exerciseIds);
-        
+
         exercisesList = List<Map<String, dynamic>>.from(exercisesData);
       }
 
@@ -76,18 +76,21 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       };
 
       // Check for missing exercises and log warning
-      final missingExercises = exerciseIds.where((id) => !exerciseMap.containsKey(id)).toList();
+      final missingExercises =
+          exerciseIds.where((id) => !exerciseMap.containsKey(id)).toList();
       if (missingExercises.isNotEmpty) {
-        print('⚠️ Template "${templateData['name']}" references ${missingExercises.length} missing exercises: $missingExercises');
-        print('💡 Tip: Make sure all exercises exist in your Supabase database');
+        print(
+            '⚠️ Template "${templateData['name']}" references ${missingExercises.length} missing exercises: $missingExercises');
+        print(
+            '💡 Tip: Make sure all exercises exist in your Supabase database');
       }
 
       // Create active exercises in template order (skip missing exercises)
-      final activeExercises = exerciseIds
-          .where((id) => exerciseMap.containsKey(id))
-          .map((id) {
+      final activeExercises =
+          exerciseIds.where((id) => exerciseMap.containsKey(id)).map((id) {
         final exercise = exerciseMap[id]!;
-        final exerciseType = exercise['exercise_type'] as String? ?? 'weight_reps';
+        final exerciseType =
+            exercise['exercise_type'] as String? ?? 'weight_reps';
 
         return ActiveExercise(
           id: id,
@@ -126,11 +129,12 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
     }
   }
 
-  Future<void> updateSet(int exerciseIndex, int setIndex, ActiveSet updatedSet) async {
+  Future<void> updateSet(
+      int exerciseIndex, int setIndex, ActiveSet updatedSet) async {
     if (state != null) {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       final exercise = exercises[exerciseIndex];
-      
+
       final sets = List<ActiveSet>.from(exercise.sets);
       sets[setIndex] = updatedSet;
 
@@ -218,7 +222,7 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
     final workout = state!;
     final now = DateTime.now();
     final sessionId = const Uuid().v4();
-    
+
     print('🏁 Finishing workout: ${workout.name}');
 
     try {
@@ -283,9 +287,9 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       // Clear timer and state
       _ref.read(restTimerWebProvider.notifier).stopTimer();
       state = null;
-      
+
       print('🏁 Workout finished successfully');
-      
+
       // Web doesn't support workout summary calculation yet
       return null;
     } catch (e) {
@@ -308,7 +312,7 @@ class RestTimerWebNotifier extends StateNotifier<RestTimerWebState> {
 
   void startTimer(int durationSeconds, {String? exerciseName}) {
     _timer?.cancel();
-    
+
     state = RestTimerWebState(
       isActive: true,
       remainingSeconds: durationSeconds,
@@ -350,7 +354,8 @@ class RestTimerWebNotifier extends StateNotifier<RestTimerWebState> {
 
   void subtractTime(int seconds) {
     if (state.isActive) {
-      final newRemaining = (state.remainingSeconds - seconds).clamp(0, state.totalSeconds);
+      final newRemaining =
+          (state.remainingSeconds - seconds).clamp(0, state.totalSeconds);
       if (newRemaining == 0) {
         stopTimer();
       } else {

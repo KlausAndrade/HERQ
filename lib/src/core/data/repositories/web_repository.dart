@@ -34,14 +34,18 @@ class WebWorkoutRepository implements WorkoutRepository {
 
   @override
   Future<WorkoutSessionDto?> getWorkoutSessionById(String id) async {
-    final response =
-        await _supabase.from('workout_sessions').select().eq('id', id).maybeSingle();
+    final response = await _supabase
+        .from('workout_sessions')
+        .select()
+        .eq('id', id)
+        .maybeSingle();
 
     return response != null ? WorkoutSessionDto.fromJson(response) : null;
   }
 
   @override
-  Future<WorkoutSessionDto> createWorkoutSession(WorkoutSessionDto session) async {
+  Future<WorkoutSessionDto> createWorkoutSession(
+      WorkoutSessionDto session) async {
     final response = await _supabase
         .from('workout_sessions')
         .insert(session.toJson())
@@ -102,7 +106,10 @@ class WebWorkoutRepository implements WorkoutRepository {
 
   @override
   Future<void> updateSetEntry(SetEntryDto entry) async {
-    await _supabase.from('set_entries').update(entry.toJson()).eq('id', entry.id);
+    await _supabase
+        .from('set_entries')
+        .update(entry.toJson())
+        .eq('id', entry.id);
   }
 
   @override
@@ -132,8 +139,11 @@ class WebWorkoutRepository implements WorkoutRepository {
 
   @override
   Future<WorkoutTemplateDto?> getWorkoutTemplateById(String id) async {
-    final response =
-        await _supabase.from('workout_templates').select().eq('id', id).maybeSingle();
+    final response = await _supabase
+        .from('workout_templates')
+        .select()
+        .eq('id', id)
+        .maybeSingle();
 
     return response != null ? WorkoutTemplateDto.fromJson(response) : null;
   }

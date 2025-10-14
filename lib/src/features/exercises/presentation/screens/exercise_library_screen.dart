@@ -59,13 +59,13 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'progressions',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.trending_up),
-                      const SizedBox(width: 8),
-                      Text(S.of(context)!.viewProgressions),
-                    ],
-                  ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.trending_up),
+                    const SizedBox(width: 8),
+                    Text(S.of(context)!.viewProgressions),
+                  ],
+                ),
               ),
             ],
           ),
@@ -105,7 +105,9 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                       avatar: Icon(
                         Icons.repeat,
                         size: 16,
-                        color: _showVariants ? Colors.white : Theme.of(context).colorScheme.primary,
+                        color: _showVariants
+                            ? Colors.white
+                            : Theme.of(context).colorScheme.primary,
                       ),
                       selected: _showVariants,
                       onSelected: (selected) {
@@ -208,7 +210,8 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                       exercise: exercise,
                       onTap: () => context.go('/exercise/${exercise.id}'),
                       onEdit: exercise.id.startsWith('custom_')
-                          ? () => context.push('/exercises/create?id=${exercise.id}')
+                          ? () => context
+                              .push('/exercises/create?id=${exercise.id}')
                           : null,
                     );
                   },
@@ -363,7 +366,8 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -379,9 +383,10 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                       child: Text(
                         S.of(context)!.exerciseProgressions,
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                     ),
                     IconButton(
@@ -494,8 +499,7 @@ class _ExerciseCard extends ConsumerWidget {
             if (exercise.parentExerciseId != null) ...[
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: _getVariantColor(context, exercise.variantType),
                   borderRadius: BorderRadius.circular(4),
@@ -531,8 +535,8 @@ class _ExerciseCard extends ConsumerWidget {
                 _ExerciseTypeChip(type: exercise.exerciseType),
                 if (exercise.isBodyweight)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(4),
@@ -567,12 +571,14 @@ class _ExerciseCard extends ConsumerWidget {
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to update favorite: $e')),
+                        SnackBar(
+                            content: Text('Failed to update favorite: $e')),
                       );
                     }
                   }
                 },
-                tooltip: isFavorite ? 'Remove from favorites' : 'Add to favorites',
+                tooltip:
+                    isFavorite ? 'Remove from favorites' : 'Add to favorites',
               ),
               loading: () => const SizedBox(
                 width: 40,
@@ -833,8 +839,10 @@ class _ExerciseProgressionsView extends ConsumerWidget {
                               exercise: variant,
                               isParent: false,
                               onTap: () {
-                                Navigator.of(context).pop(); // Close bottom sheet
-                                Future.delayed(const Duration(milliseconds: 100), () {
+                                Navigator.of(context)
+                                    .pop(); // Close bottom sheet
+                                Future.delayed(
+                                    const Duration(milliseconds: 100), () {
                                   if (context.mounted) {
                                     context.go('/exercise/${variant.id}');
                                   }

@@ -4,10 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
-import 'package:herq/src/core/services/snackbar_service.dart';
 import 'package:herq/src/core/services/notification_service.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
-import '../widgets/exercise_picker_dialog.dart';
 import '../widgets/multi_exercise_picker_dialog.dart';
 import '../providers/template_providers.dart';
 
@@ -67,7 +65,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
       for (final templates in templatesByCategory.values) {
         final template =
             templates.where((t) => t.id == widget.templateId).firstOrNull;
-          if (template != null) {
+        if (template != null) {
           _nameController.text = template.name;
           _descriptionController.text = template.description ?? '';
           // Normalize category from stored template to avoid issues with
@@ -309,15 +307,20 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             exercise.name,
-                                            style: Theme.of(context).textTheme.titleMedium,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium,
                                           ),
                                           Text(
                                             exercise.primaryMuscleGroup,
-                                            style: Theme.of(context).textTheme.bodySmall,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall,
                                           ),
                                         ],
                                       ),
@@ -423,11 +426,13 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedExerciseIds.isEmpty) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Please add at least one exercise',
-        body: '',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Please add at least one exercise',
+            body: '',
+          )
+          .catchError((_) {});
       return;
     }
 
@@ -460,20 +465,24 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
     if (mounted) {
       if (success) {
         ref.invalidate(workoutTemplatesProvider);
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: widget.templateId == null
-              ? 'Template created successfully'
-              : 'Template updated successfully',
-          body: '',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: widget.templateId == null
+                  ? 'Template created successfully'
+                  : 'Template updated successfully',
+              body: '',
+            )
+            .catchError((_) {});
         context.pop();
       } else {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Failed to save template',
-          body: '',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Failed to save template',
+              body: '',
+            )
+            .catchError((_) {});
       }
     }
   }

@@ -192,7 +192,7 @@ class _WorkoutTemplatesScreenState
             itemCount: templates.length,
             onReorder: (oldIndex, newIndex) async {
               if (newIndex > oldIndex) newIndex--;
-              
+
               // Create mutable copy for reordering
               final reorderedList = List<WorkoutTemplate>.from(templates);
               final item = reorderedList.removeAt(oldIndex);
@@ -204,14 +204,16 @@ class _WorkoutTemplatesScreenState
             },
             itemBuilder: (context, index) => _buildTemplateCard(
               templates[index],
-              key: ValueKey('${category}-edit-${templates[index].id}'), // Unique key per category
+              key: ValueKey(
+                  '${category}-edit-${templates[index].id}'), // Unique key per category
               index: index,
             ),
           )
         else
           ...templates.map((template) => _buildTemplateCard(
                 template,
-                key: ValueKey('${category}-view-${template.id}'), // Unique key per category
+                key: ValueKey(
+                    '${category}-view-${template.id}'), // Unique key per category
               )),
         const SizedBox(height: 16),
       ],
@@ -256,7 +258,7 @@ class _WorkoutTemplatesScreenState
         itemCount: templates.length,
         onReorder: (oldIndex, newIndex) async {
           if (newIndex > oldIndex) newIndex--;
-          
+
           // Create mutable copy for reordering
           final reorderedList = List<WorkoutTemplate>.from(templates);
           final item = reorderedList.removeAt(oldIndex);
@@ -268,7 +270,8 @@ class _WorkoutTemplatesScreenState
         },
         itemBuilder: (context, index) => _buildTemplateCard(
           templates[index],
-          key: ValueKey('edit-${templates[index].id}'), // Unique key for edit mode
+          key: ValueKey(
+              'edit-${templates[index].id}'), // Unique key for edit mode
           index: index,
         ),
       );
@@ -279,7 +282,8 @@ class _WorkoutTemplatesScreenState
       itemCount: templates.length,
       itemBuilder: (context, index) => _buildTemplateCard(
         templates[index],
-        key: ValueKey('view-${templates[index].id}'), // Unique key for view mode
+        key:
+            ValueKey('view-${templates[index].id}'), // Unique key for view mode
       ),
     );
   }
@@ -299,157 +303,154 @@ class _WorkoutTemplatesScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color:
-                          _getCategoryColor(template.category).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      _getCategoryIcon(template.category),
-                      color: _getCategoryColor(template.category),
-                      size: 20,
-                    ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color:
+                        _getCategoryColor(template.category).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                  child: Icon(
+                    _getCategoryIcon(template.category),
+                    color: _getCategoryColor(template.category),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        template.name,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                      ),
+                      if (template.description?.isNotEmpty == true) ...[
+                        const SizedBox(height: 4),
                         Text(
-                          template.name,
+                          template.description!,
                           style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.7),
                                   ),
                         ),
-                        if (template.description?.isNotEmpty == true) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            template.description!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.7),
-                                ),
-                          ),
-                        ],
                       ],
-                    ),
+                    ],
                   ),
-                  if (_isEditing) ...[
-                    if (index != null)
-                      ReorderableDragStartListener(
-                        index: index,
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: Icon(
-                            Icons.drag_handle,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    IconButton(
-                      onPressed: () => _showTemplateMenu(context, template),
-                      icon: const Icon(Icons.more_vert),
-                      iconSize: 20,
-                    ),
-                  ] else
-                    Icon(
-                      Icons.play_arrow,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                ],
-              ),
-              if (template.tags.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: template.tags.take(3).map((tag) {
-                    return Chip(
-                      label: Text(
-                        tag,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    );
-                  }).toList(),
                 ),
-              ],
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    Icons.schedule,
-                    size: 16,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    template.estimatedDurationMinutes != null
-                        ? '${template.estimatedDurationMinutes} min'
-                        : 'No duration set',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.7),
+                if (_isEditing) ...[
+                  if (index != null)
+                    ReorderableDragStartListener(
+                      index: index,
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Icon(
+                          Icons.drag_handle,
+                          color: Colors.grey,
                         ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${template.exerciseIds.length} exercises',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.7),
-                        ),
-                  ),
-                  if (template.isDefault) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .secondary
-                            .withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'DEFAULT',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontWeight: FontWeight.w600,
-                            ),
                       ),
                     ),
-                  ],
-                ],
+                  IconButton(
+                    onPressed: () => _showTemplateMenu(context, template),
+                    icon: const Icon(Icons.more_vert),
+                    iconSize: 20,
+                  ),
+                ] else
+                  Icon(
+                    Icons.play_arrow,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+              ],
+            ),
+            if (template.tags.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: template.tags.take(3).map((tag) {
+                  return Chip(
+                    label: Text(
+                      tag,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  );
+                }).toList(),
               ),
             ],
-          ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.schedule,
+                  size: 16,
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  template.estimatedDurationMinutes != null
+                      ? '${template.estimatedDurationMinutes} min'
+                      : 'No duration set',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
+                      ),
+                ),
+                const Spacer(),
+                Text(
+                  '${template.exerciseIds.length} exercises',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
+                      ),
+                ),
+                if (template.isDefault) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .secondary
+                          .withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'DEFAULT',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
         ),
+      ),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
     return EmptyState(
       title: 'No Workout Templates',
-      subtitle: 'Create your first template to get started with structured workouts',
+      subtitle:
+          'Create your first template to get started with structured workouts',
       icon: Icons.fitness_center_outlined,
       actionText: 'Create Template',
       onAction: () => context.push('/template-builder'),
@@ -518,8 +519,8 @@ class _WorkoutTemplatesScreenState
                 Text(
                   'Template Options',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -589,8 +590,8 @@ class _WorkoutTemplatesScreenState
                 Text(
                   'Category Options',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -755,14 +756,16 @@ class _WorkoutTemplatesScreenState
     final actions = ref.read(templateActionsProvider);
     final success = await actions.renameTemplate(templateId, newName);
 
-      if (success) {
+    if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Renamed',
-          body: 'Template renamed successfully',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Renamed',
+              body: 'Template renamed successfully',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -771,14 +774,16 @@ class _WorkoutTemplatesScreenState
     final actions = ref.read(templateActionsProvider);
     final success = await actions.duplicateTemplate(templateId, newName);
 
-      if (success) {
+    if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Duplicated',
-          body: 'Template duplicated successfully',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Duplicated',
+              body: 'Template duplicated successfully',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -790,11 +795,13 @@ class _WorkoutTemplatesScreenState
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Moved',
-          body: 'Template moved successfully',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Moved',
+              body: 'Template moved successfully',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -806,15 +813,18 @@ class _WorkoutTemplatesScreenState
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Deleted',
-          body: 'Template deleted successfully',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Deleted',
+              body: 'Template deleted successfully',
+            )
+            .catchError((_) {});
       }
     }
   }
 
+  // ignore: unused_element
   void _initializeDefaultTemplates() async {
     final actions = ref.read(templateActionsProvider);
     final success = await actions.initializeDefaultTemplates();
@@ -822,11 +832,13 @@ class _WorkoutTemplatesScreenState
     if (success) {
       ref.invalidate(workoutTemplatesProvider);
       if (mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Defaults loaded',
-          body: 'Default templates loaded successfully',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Defaults loaded',
+              body: 'Default templates loaded successfully',
+            )
+            .catchError((_) {});
       }
     }
   }

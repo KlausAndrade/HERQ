@@ -18,10 +18,10 @@ class AppCurves {
   static const Curve bounceOut = Curves.bounceOut;
   static const Curve elasticOut = Curves.elasticOut;
   static const Curve decelerate = Curves.decelerate;
-  
+
   /// Custom smooth curve for most UI animations
   static const Curve smooth = Curves.easeInOutCubic;
-  
+
   /// Custom snappy curve for interactive elements
   static const Curve snappy = Curves.easeOutCubic;
 }
@@ -210,7 +210,8 @@ class _AnimatedListItemState extends State<AnimatedListItem>
     // the test binding by checking the runtimeType string and avoid creating
     // delayed timers in that case — start the animation on the next frame.
     final bindingName = WidgetsBinding.instance.runtimeType.toString();
-    final runningInWidgetTest = bindingName.contains('AutomatedTestWidgetsFlutterBinding');
+    final runningInWidgetTest =
+        bindingName.contains('AutomatedTestWidgetsFlutterBinding');
 
     if (runningInWidgetTest) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -287,8 +288,8 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = widget.baseColor ??
-        (isDark ? Colors.grey[850]! : Colors.grey[300]!);
+    final baseColor =
+        widget.baseColor ?? (isDark ? Colors.grey[850]! : Colors.grey[300]!);
     final highlightColor = widget.highlightColor ??
         (isDark ? Colors.grey[800]! : Colors.grey[100]!);
 

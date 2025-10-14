@@ -229,7 +229,7 @@ class AnalyticsService {
         final weight = row.read<double?>('weight');
         final reps = row.read<int>('reps');
         final completedAt = row.read<DateTime>('completed_at');
-        
+
         // Skip sets without weight (e.g., bodyweight exercises)
         if (weight == null) continue;
 
@@ -291,9 +291,8 @@ class AnalyticsService {
       if (prs.every((pr) => pr.weight == null || pr.weight == 0)) continue;
 
       // Calculate linear regression for weight progression
-      final dataPoints = prs
-          .where((pr) => pr.weight != null && pr.weight! > 0)
-          .map((pr) {
+      final dataPoints =
+          prs.where((pr) => pr.weight != null && pr.weight! > 0).map((pr) {
         final daysSinceFirst =
             pr.achievedAt.difference(prs.first.achievedAt).inDays;
         return {
@@ -308,10 +307,11 @@ class AnalyticsService {
       final regression = _calculateLinearRegression(dataPoints);
 
       // Skip if regression calculation failed or invalid
-      if (regression['slope'] == null || 
-          regression['slope']!.isNaN || 
+      if (regression['slope'] == null ||
+          regression['slope']!.isNaN ||
           regression['slope']!.isInfinite ||
-          regression['slope']! <= 0) continue; // Not progressing or invalid data
+          regression['slope']! <= 0)
+        continue; // Not progressing or invalid data
 
       // Predict next PR (assume in 30 days)
       final lastPR = prs.last;
@@ -325,8 +325,8 @@ class AnalyticsService {
       final currentWeight = lastPR.weight ?? 0;
 
       // Skip if prediction is invalid
-      if (predictedWeight.isNaN || 
-          predictedWeight.isInfinite || 
+      if (predictedWeight.isNaN ||
+          predictedWeight.isInfinite ||
           predictedWeight <= 0 ||
           currentWeight <= 0) continue;
 
@@ -377,7 +377,7 @@ class AnalyticsService {
         data.fold<double>(0, (sum, point) => sum + point['x']! * point['x']!);
 
     final denominator = (n * sumX2 - sumX * sumX);
-    
+
     // Prevent division by zero
     if (denominator == 0 || denominator.isNaN) {
       return {
@@ -386,12 +386,15 @@ class AnalyticsService {
         'rSquared': 0.0,
       };
     }
-    
+
     final slope = (n * sumXY - sumX * sumY) / denominator;
     final intercept = (sumY - slope * sumX) / n;
 
     // Check for invalid values
-    if (slope.isNaN || slope.isInfinite || intercept.isNaN || intercept.isInfinite) {
+    if (slope.isNaN ||
+        slope.isInfinite ||
+        intercept.isNaN ||
+        intercept.isInfinite) {
       return {
         'slope': 0.0,
         'intercept': 0.0,
@@ -403,7 +406,7 @@ class AnalyticsService {
     final yMean = sumY / n;
     final ssTotal =
         data.fold<double>(0, (sum, point) => sum + pow(point['y']! - yMean, 2));
-    
+
     // Prevent division by zero in R² calculation
     if (ssTotal == 0 || ssTotal.isNaN) {
       return {
@@ -412,7 +415,7 @@ class AnalyticsService {
         'rSquared': 0.0,
       };
     }
-    
+
     final ssResidual = data.fold<double>(0, (sum, point) {
       final predicted = slope * point['x']! + intercept;
       return sum + pow(point['y']! - predicted, 2);
@@ -541,10 +544,11 @@ class AnalyticsService {
 
       final startWeight = firstSet.read<double?>('weight');
       final currentWeight = lastSet.read<double?>('weight');
-      
+
       // Skip exercises without weight data (e.g., bodyweight exercises)
-      if (startWeight == null || currentWeight == null || startWeight == 0) continue;
-      
+      if (startWeight == null || currentWeight == null || startWeight == 0)
+        continue;
+
       final totalGain = currentWeight - startWeight;
       final percentageGain = (totalGain / startWeight) * 100;
 
@@ -570,7 +574,8 @@ class AnalyticsService {
 
           final weightMatches = (prWeight - setWeight).abs() <= weightTolerance;
           final repsMatches = prReps == setReps;
-          final timeMatches = prDate.difference(setDate).inSeconds.abs() <= timeToleranceSeconds;
+          final timeMatches = prDate.difference(setDate).inSeconds.abs() <=
+              timeToleranceSeconds;
 
           return weightMatches && repsMatches && timeMatches;
         });
@@ -587,8 +592,11 @@ class AnalyticsService {
       TrendDirection trend;
       if (sets.length >= 3) {
         final recent = sets.sublist(max(0, sets.length - 5));
-        final weights = recent.map((r) => r.read<double?>('weight') ?? 0.0).where((w) => w > 0).toList();
-        
+        final weights = recent
+            .map((r) => r.read<double?>('weight') ?? 0.0)
+            .where((w) => w > 0)
+            .toList();
+
         // Skip trend calculation if no valid weights
         if (weights.isEmpty) {
           trend = TrendDirection.stable;

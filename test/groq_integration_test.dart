@@ -34,7 +34,8 @@ void main() {
     test('should generate JSON response', () async {
       try {
         final response = await groqService.chatJson(
-          prompt: 'Create a simple workout: {"name": "Test Workout", "exercises": ["Push-ups", "Squats"]}',
+          prompt:
+              'Create a simple workout: {"name": "Test Workout", "exercises": ["Push-ups", "Squats"]}',
           systemPrompt: 'You are a fitness coach. Return only valid JSON.',
         );
 

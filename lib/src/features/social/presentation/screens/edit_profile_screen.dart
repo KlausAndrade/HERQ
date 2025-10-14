@@ -22,7 +22,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _displayNameController = TextEditingController();
   final _bioController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _isPrivate = false;
   Uint8List? _imageBytes;
@@ -66,7 +66,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     if (image != null) {
       final bytes = await image.readAsBytes();
-      
+
       // Compress image
       final compressed = await FlutterImageCompress.compressWithList(
         bytes,
@@ -95,26 +95,29 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       // Upload new avatar if selected
       if (_imageBytes != null) {
         final supabase = ref.read(supabaseProvider);
-        final fileName = '${currentUser.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-        
-        await supabase.storage.from('avatars').uploadBinary(
-          '${currentUser.id}/$fileName',
-          _imageBytes!,
-        );
+        final fileName =
+            '${currentUser.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-        avatarUrl = supabase.storage.from('avatars').getPublicUrl('${currentUser.id}/$fileName');
+        await supabase.storage.from('avatars').uploadBinary(
+              '${currentUser.id}/$fileName',
+              _imageBytes!,
+            );
+
+        avatarUrl = supabase.storage
+            .from('avatars')
+            .getPublicUrl('${currentUser.id}/$fileName');
       }
 
       // Update profile
       final socialService = ref.read(supabaseSocialServiceProvider);
       await socialService.updateProfile(
         userId: currentUser.id,
-        displayName: _displayNameController.text.trim().isEmpty 
-            ? null 
+        displayName: _displayNameController.text.trim().isEmpty
+            ? null
             : _displayNameController.text.trim(),
         avatarUrl: avatarUrl,
-        bio: _bioController.text.trim().isEmpty 
-            ? null 
+        bio: _bioController.text.trim().isEmpty
+            ? null
             : _bioController.text.trim(),
         isPrivate: _isPrivate,
       );

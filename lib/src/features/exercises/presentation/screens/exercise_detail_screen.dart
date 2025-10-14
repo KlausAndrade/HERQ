@@ -73,7 +73,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
               if (exercise.id.startsWith('custom_'))
                 IconButton(
                   icon: const Icon(Icons.edit),
-                  onPressed: () => context.push('/exercises/create?id=${exercise.id}'),
+                  onPressed: () =>
+                      context.push('/exercises/create?id=${exercise.id}'),
                   tooltip: S.of(context)!.editExercise,
                 ),
             ],
@@ -769,11 +770,13 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
       }
     } catch (e) {
       if (context.mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error starting workout',
-          body: '$e',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error starting workout',
+              body: '$e',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -783,11 +786,13 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
     final database = ref.read(databaseProvider);
     if (database == null) {
       // Web platform or no database available
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Not available',
-        body: 'Template management not available on web platform',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Not available',
+            body: 'Template management not available on web platform',
+          )
+          .catchError((_) {});
       return;
     }
 
@@ -806,79 +811,87 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
             child: templates.isEmpty
                 ? const Padding(
                     padding: EdgeInsets.all(16),
-                    child:
-                        Text('No templates available. Create a template first.'),
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: templates.length,
-                  itemBuilder: (context, index) {
-                    final template = templates[index];
-                    final alreadyAdded =
-                        template.exerciseIds.contains(exercise.id);
+                    child: Text(
+                        'No templates available. Create a template first.'),
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: templates.length,
+                    itemBuilder: (context, index) {
+                      final template = templates[index];
+                      final alreadyAdded =
+                          template.exerciseIds.contains(exercise.id);
 
-                    return ListTile(
-                      leading: Icon(
-                        alreadyAdded
-                            ? Icons.check_circle
-                            : Icons.fitness_center,
-                        color: alreadyAdded ? Colors.green : null,
-                      ),
-                      title: Text(template.name),
-                      subtitle:
-                          Text('${template.exerciseIds.length} exercises'),
-                      enabled: !alreadyAdded,
-                      onTap: alreadyAdded
-                          ? null
-                          : () async {
-                              // Add exercise to template
-                              final updatedIds = [
-                                ...template.exerciseIds,
-                                exercise.id
-                              ];
-                              await database
-                                  .update(database.workoutTemplates)
-                                  .replace(
-                                    template.copyWith(exerciseIds: updatedIds),
-                                  );
+                      return ListTile(
+                        leading: Icon(
+                          alreadyAdded
+                              ? Icons.check_circle
+                              : Icons.fitness_center,
+                          color: alreadyAdded ? Colors.green : null,
+                        ),
+                        title: Text(template.name),
+                        subtitle:
+                            Text('${template.exerciseIds.length} exercises'),
+                        enabled: !alreadyAdded,
+                        onTap: alreadyAdded
+                            ? null
+                            : () async {
+                                // Add exercise to template
+                                final updatedIds = [
+                                  ...template.exerciseIds,
+                                  exercise.id
+                                ];
+                                await database
+                                    .update(database.workoutTemplates)
+                                    .replace(
+                                      template.copyWith(
+                                          exerciseIds: updatedIds),
+                                    );
 
                                 if (context.mounted) {
-                                Navigator.of(context).pop();
-                                NotificationService().showInAppNotification(
-                                  id: DateTime.now().millisecondsSinceEpoch.toString(),
-                                  title: 'Added to template',
-                                  body: 'Added ${exercise.name} to ${template.name}',
-                                ).catchError((_) {});
-                              }
-                            },
-                    );
-                  },
-                ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+                                  Navigator.of(context).pop();
+                                  NotificationService()
+                                      .showInAppNotification(
+                                        id: DateTime.now()
+                                            .millisecondsSinceEpoch
+                                            .toString(),
+                                        title: 'Added to template',
+                                        body:
+                                            'Added ${exercise.name} to ${template.name}',
+                                      )
+                                      .catchError((_) {});
+                                }
+                              },
+                      );
+                    },
+                  ),
           ),
-          if (templates.isEmpty)
+          actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.go('/template-builder');
-              },
-              child: const Text('Create Template'),
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
             ),
-        ],
-      ),
-    );
+            if (templates.isEmpty)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.go('/template-builder');
+                },
+                child: const Text('Create Template'),
+              ),
+          ],
+        ),
+      );
     } catch (e) {
       print('❌ Error loading templates: $e');
       if (context.mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error',
-          body: 'Error loading templates. Please try again.',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error',
+              body: 'Error loading templates. Please try again.',
+            )
+            .catchError((_) {});
       }
     }
   }

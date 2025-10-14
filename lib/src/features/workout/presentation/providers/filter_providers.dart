@@ -5,9 +5,9 @@ import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 
 enum WorkoutFilter {
-  all,        // All completed workouts
-  thisWeek,   // This week's completed
-  thisMonth,  // This month's completed
+  all, // All completed workouts
+  thisWeek, // This week's completed
+  thisMonth, // This month's completed
 }
 
 class WorkoutFilterState {
@@ -67,7 +67,7 @@ final filteredWorkoutSessionsProvider =
   var filteredSessions = sessions.where((session) {
     // Always filter out incomplete workouts
     if (session.completedAt == null) return false;
-    
+
     // Apply additional filter
     switch (filterState.filter) {
       case WorkoutFilter.thisWeek:

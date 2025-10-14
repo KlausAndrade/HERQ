@@ -67,7 +67,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
               if (filterState.filter == WorkoutFilter.all) {
                 return const SizedBox.shrink();
               }
-              
+
               String filterText;
               switch (filterState.filter) {
                 case WorkoutFilter.thisWeek:
@@ -80,10 +80,11 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
                   filterText = 'All';
                   break;
               }
-              
+
               return Container(
                 margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(8),
@@ -107,7 +108,9 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
                     const SizedBox(width: 8),
                     InkWell(
                       onTap: () {
-                        ref.read(workoutFilterProvider.notifier).setFilter(WorkoutFilter.all);
+                        ref
+                            .read(workoutFilterProvider.notifier)
+                            .setFilter(WorkoutFilter.all);
                       },
                       child: Icon(
                         Icons.close,
@@ -395,8 +398,8 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
                   Text(
                     'Filter Workouts',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),

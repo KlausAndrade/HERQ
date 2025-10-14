@@ -61,13 +61,17 @@ class FollowingScreen extends ConsumerWidget {
                       : null,
                   child: user.avatarUrl == null
                       ? Text(
-                          (user.displayName?.isNotEmpty ?? false ? user.displayName! : user.id)[0]
+                          (user.displayName?.isNotEmpty ?? false
+                                  ? user.displayName!
+                                  : user.id)[0]
                               .toUpperCase(),
                         )
                       : null,
                 ),
                 title: Text(
-                  user.displayName?.isNotEmpty ?? false ? user.displayName! : 'User ${user.id.substring(0, 8)}',
+                  user.displayName?.isNotEmpty ?? false
+                      ? user.displayName!
+                      : 'User ${user.id.substring(0, 8)}',
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 subtitle: user.bio != null
@@ -82,7 +86,8 @@ class FollowingScreen extends ConsumerWidget {
                     : OutlinedButton(
                         onPressed: () => _unfollow(ref, user.id),
                         style: OutlinedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceVariant,
                         ),
                         child: const Text('Following'),
                       ),

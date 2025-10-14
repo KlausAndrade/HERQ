@@ -111,19 +111,18 @@ class WorkoutSyncService {
   /// Full sync - sync everything for a user
   Future<void> fullSync(String userId) async {
     print('🔄 Starting full sync for user: $userId');
-    
+
     // Sync stats first
     await syncUserStats(userId);
-    
+
     // Sync PRs
     await syncPersonalRecords(userId);
-    
+
     // Note: Syncing individual workout sessions is complex because
     // the local WorkoutSession doesn't store the user_id.
     // We would need to modify the sync flow to accept userId as a parameter.
     // For now, just sync stats and PRs which is sufficient for leaderboards.
-    
+
     print('✅ Full sync completed');
   }
 }
-

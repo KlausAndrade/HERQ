@@ -23,18 +23,24 @@ class AICoachingScreen extends HookConsumerWidget {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'),
-        ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/'),
+          ),
           title: Text(S.of(context)!.aiCoach),
           bottom: TabBar(
             isScrollable: true,
             tabs: [
-              Tab(text: S.of(context)!.recommendations, icon: const Icon(Icons.lightbulb_outline)),
+              Tab(
+                  text: S.of(context)!.recommendations,
+                  icon: const Icon(Icons.lightbulb_outline)),
               Tab(text: S.of(context)!.recovery, icon: const Icon(Icons.spa)),
-              Tab(text: S.of(context)!.progressAnalysis, icon: const Icon(Icons.trending_up)),
-              Tab(text: S.of(context)!.suggestions, icon: const Icon(Icons.tips_and_updates)),
+              Tab(
+                  text: S.of(context)!.progressAnalysis,
+                  icon: const Icon(Icons.trending_up)),
+              Tab(
+                  text: S.of(context)!.suggestions,
+                  icon: const Icon(Icons.tips_and_updates)),
             ],
           ),
         ),
@@ -100,8 +106,8 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildRecommendationsList(
-      BuildContext context, WidgetRef ref, List<WorkoutRecommendation> recommendations) {
+  Widget _buildRecommendationsList(BuildContext context, WidgetRef ref,
+      List<WorkoutRecommendation> recommendations) {
     if (recommendations.isEmpty) {
       return Center(
         child: Column(
@@ -136,8 +142,8 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildRecommendationCard(
-      BuildContext context, WidgetRef ref, WorkoutRecommendation recommendation) {
+  Widget _buildRecommendationCard(BuildContext context, WidgetRef ref,
+      WorkoutRecommendation recommendation) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -172,8 +178,8 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-          color: _getDifficultyColor(recommendation.difficulty)
-            .withAlpha((0.2 * 255).round()),
+                    color: _getDifficultyColor(recommendation.difficulty)
+                        .withAlpha((0.2 * 255).round()),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -264,8 +270,8 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => _startWorkoutFromRecommendation(
-                      context, 
-                      ref, 
+                      context,
+                      ref,
                       recommendation,
                     ),
                     child: Text(S.of(context)!.startWorkout),
@@ -332,14 +338,16 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
       // Import required providers and services
       final database = ref.read(databaseProvider);
       final templateActions = ref.read(templateActionsProvider);
-      
+
       if (database == null) {
         if (context.mounted) {
-          NotificationService().showInAppNotification(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            title: 'Database not available. Please try again.',
-            body: '',
-          ).catchError((_) {});
+          NotificationService()
+              .showInAppNotification(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: 'Database not available. Please try again.',
+                body: '',
+              )
+              .catchError((_) {});
         }
         return;
       }
@@ -362,36 +370,42 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
 
       // Save the template to database
       final success = await templateActions.createTemplate(template);
-      
+
       if (!success) {
         if (context.mounted) {
-          NotificationService().showInAppNotification(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            title: 'Failed to create workout template',
-            body: '',
-          ).catchError((_) {});
+          NotificationService()
+              .showInAppNotification(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: 'Failed to create workout template',
+                body: '',
+              )
+              .catchError((_) {});
         }
         return;
       }
 
       if (context.mounted) {
         // Show success message via in-app overlay
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Starting "${recommendation.name}"...',
-          body: '',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Starting "${recommendation.name}"...',
+              body: '',
+            )
+            .catchError((_) {});
 
         // Navigate to active workout with the template
         context.go('/active-workout?templateId=$templateId');
       }
     } catch (e) {
       if (context.mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error starting workout: $e',
-          body: '',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error starting workout: $e',
+              body: '',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -600,8 +614,8 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color:
-                    _getPriorityColor(recommendation.priority).withAlpha((0.2 * 255).round()),
+                color: _getPriorityColor(recommendation.priority)
+                    .withAlpha((0.2 * 255).round()),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -632,8 +646,8 @@ class RecoveryAnalysisTab extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color:
-                    _getPriorityColor(recommendation.priority).withAlpha((0.2 * 255).round()),
+                color: _getPriorityColor(recommendation.priority)
+                    .withAlpha((0.2 * 255).round()),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -729,8 +743,8 @@ class ProgressAnalysisTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildProgressAnalysis(
-      BuildContext context, WidgetRef ref, List<ProgressiveOverloadSuggestion> suggestions) {
+  Widget _buildProgressAnalysis(BuildContext context, WidgetRef ref,
+      List<ProgressiveOverloadSuggestion> suggestions) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: suggestions.length,
@@ -741,8 +755,8 @@ class ProgressAnalysisTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildProgressCard(
-      BuildContext context, WidgetRef ref, ProgressiveOverloadSuggestion suggestion) {
+  Widget _buildProgressCard(BuildContext context, WidgetRef ref,
+      ProgressiveOverloadSuggestion suggestion) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -816,15 +830,19 @@ class ProgressAnalysisTab extends HookConsumerWidget {
             const SizedBox(height: 16),
             Consumer(
               builder: (context, ref, child) {
-                final appliedSuggestions = ref.watch(appliedProgressSuggestionsProvider);
-                final isApplied = appliedSuggestions.contains(suggestion.exerciseId);
-                
+                final appliedSuggestions =
+                    ref.watch(appliedProgressSuggestionsProvider);
+                final isApplied =
+                    appliedSuggestions.contains(suggestion.exerciseId);
+
                 return ElevatedButton(
-                  onPressed: isApplied ? null : () => _applyProgressiveOverloadSuggestion(
-                    context,
-                    ref,
-                    suggestion,
-                  ),
+                  onPressed: isApplied
+                      ? null
+                      : () => _applyProgressiveOverloadSuggestion(
+                            context,
+                            ref,
+                            suggestion,
+                          ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isApplied ? Colors.green : null,
                   ),
@@ -914,7 +932,7 @@ class ProgressAnalysisTab extends HookConsumerWidget {
     try {
       // For now, let's show a detailed confirmation and save the suggestion as a preference
       // In a full implementation, this would integrate with user preferences or workout templates
-      
+
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
@@ -923,14 +941,17 @@ class ProgressAnalysisTab extends HookConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(S.of(context)!.applySuggestionQuestion(suggestion.exerciseId)),
+              Text(S
+                  .of(context)!
+                  .applySuggestionQuestion(suggestion.exerciseId)),
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.blue.withAlpha((0.1 * 255).round()),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.withAlpha((0.3 * 255).round())),
+                  border: Border.all(
+                      color: Colors.blue.withAlpha((0.3 * 255).round())),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -940,9 +961,14 @@ class ProgressAnalysisTab extends HookConsumerWidget {
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
-                    Text(S.of(context)!.suggestedWeight(suggestion.suggestedWeight.toString())),
-                    Text(S.of(context)!.suggestedReps(suggestion.suggestedReps.toString())),
-                    Text(S.of(context)!.suggestedSets(suggestion.suggestedSets.toString())),
+                    Text(S.of(context)!.suggestedWeight(
+                        suggestion.suggestedWeight.toString())),
+                    Text(S
+                        .of(context)!
+                        .suggestedReps(suggestion.suggestedReps.toString())),
+                    Text(S
+                        .of(context)!
+                        .suggestedSets(suggestion.suggestedSets.toString())),
                   ],
                 ),
               ),
@@ -972,25 +998,29 @@ class ProgressAnalysisTab extends HookConsumerWidget {
       if (confirmed == true && context.mounted) {
         // Mark suggestion as applied
         ref.read(appliedProgressSuggestionsProvider.notifier).update(
-          (state) => {...state, suggestion.exerciseId},
-        );
-        
+              (state) => {...state, suggestion.exerciseId},
+            );
+
         // Here you would normally save to user preferences or update templates
         // For this implementation, we'll show a success message
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Progressive overload applied!',
-          body: 'Next ${suggestion.exerciseId} workout: '
-              '${suggestion.suggestedWeight}kg × ${suggestion.suggestedReps} × ${suggestion.suggestedSets}',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Progressive overload applied!',
+              body: 'Next ${suggestion.exerciseId} workout: '
+                  '${suggestion.suggestedWeight}kg × ${suggestion.suggestedReps} × ${suggestion.suggestedSets}',
+            )
+            .catchError((_) {});
       }
     } catch (e) {
       if (context.mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error applying suggestion',
-          body: '$e',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error applying suggestion',
+              body: '$e',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -1024,7 +1054,8 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildSuggestionCard(BuildContext context, WidgetRef ref, AISuggestion suggestion) {
+  Widget _buildSuggestionCard(
+      BuildContext context, WidgetRef ref, AISuggestion suggestion) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -1088,10 +1119,13 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
               const SizedBox(height: 16),
               Consumer(
                 builder: (context, ref, child) {
-                  final appliedSuggestions = ref.watch(appliedSuggestionsProvider);
-                  final dismissedSuggestions = ref.watch(dismissedSuggestionsProvider);
+                  final appliedSuggestions =
+                      ref.watch(appliedSuggestionsProvider);
+                  final dismissedSuggestions =
+                      ref.watch(dismissedSuggestionsProvider);
                   final isApplied = appliedSuggestions.contains(suggestion.id);
-                  final isDismissed = dismissedSuggestions.contains(suggestion.id);
+                  final isDismissed =
+                      dismissedSuggestions.contains(suggestion.id);
 
                   if (isDismissed) {
                     return Container(
@@ -1102,7 +1136,8 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.visibility_off, color: Colors.grey[600], size: 20),
+                          Icon(Icons.visibility_off,
+                              color: Colors.grey[600], size: 20),
                           const SizedBox(width: 8),
                           Text(
                             'Dismissed',
@@ -1116,20 +1151,26 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
                   return Row(
                     children: [
                       TextButton(
-                        onPressed: isApplied ? null : () {
-                          ref.read(dismissedSuggestionsProvider.notifier).update(
-                            (state) => {...state, suggestion.id},
-                          );
-                        },
+                        onPressed: isApplied
+                            ? null
+                            : () {
+                                ref
+                                    .read(dismissedSuggestionsProvider.notifier)
+                                    .update(
+                                      (state) => {...state, suggestion.id},
+                                    );
+                              },
                         child: const Text('Dismiss'),
                       ),
                       const Spacer(),
                       ElevatedButton(
-                        onPressed: isApplied ? null : () => _applyGeneralSuggestion(
-                          context,
-                          ref,
-                          suggestion,
-                        ),
+                        onPressed: isApplied
+                            ? null
+                            : () => _applyGeneralSuggestion(
+                                  context,
+                                  ref,
+                                  suggestion,
+                                ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: isApplied ? Colors.green : null,
                         ),
@@ -1214,18 +1255,20 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
           // Generic handling for unknown suggestion types
           await _handleGenericSuggestion(context, suggestion);
       }
-      
+
       // Mark suggestion as applied after successful handling
       ref.read(appliedSuggestionsProvider.notifier).update(
-        (state) => {...state, suggestion.id},
-      );
+            (state) => {...state, suggestion.id},
+          );
     } catch (e) {
       if (context.mounted) {
-        NotificationService().showInAppNotification(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Error applying suggestion',
-          body: '$e',
-        ).catchError((_) {});
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error applying suggestion',
+              body: '$e',
+            )
+            .catchError((_) {});
       }
     }
   }
@@ -1270,11 +1313,13 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Exercise saved',
-        body: 'Exercise substitution saved to preferences!',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Exercise saved',
+            body: 'Exercise substitution saved to preferences!',
+          )
+          .catchError((_) {});
     }
   }
 
@@ -1318,11 +1363,13 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Reminder set',
-        body: 'Nutrition reminder set!',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Reminder set',
+            body: 'Nutrition reminder set!',
+          )
+          .catchError((_) {});
     }
   }
 
@@ -1366,11 +1413,13 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Saved',
-        body: 'Form tip saved!',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Saved',
+            body: 'Form tip saved!',
+          )
+          .catchError((_) {});
     }
   }
 
@@ -1379,11 +1428,13 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     AISuggestion suggestion,
   ) async {
     if (context.mounted) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Recovery advice noted',
-        body: '${suggestion.title}',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Recovery advice noted',
+            body: '${suggestion.title}',
+          )
+          .catchError((_) {});
     }
   }
 
@@ -1427,11 +1478,13 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Deload scheduled',
-        body: 'Deload week scheduled!',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Deload scheduled',
+            body: 'Deload week scheduled!',
+          )
+          .catchError((_) {});
     }
   }
 
@@ -1440,13 +1493,16 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     AISuggestion suggestion,
   ) async {
     if (context.mounted) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Workout suggestions',
-        body: 'Check the Recommendations tab for workout suggestions!',
-        primaryActionLabel: 'View',
-        onPrimaryAction: () => DefaultTabController.of(context).animateTo(0),
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Workout suggestions',
+            body: 'Check the Recommendations tab for workout suggestions!',
+            primaryActionLabel: 'View',
+            onPrimaryAction: () =>
+                DefaultTabController.of(context).animateTo(0),
+          )
+          .catchError((_) {});
     }
   }
 
@@ -1455,11 +1511,13 @@ class GeneralSuggestionsTab extends HookConsumerWidget {
     AISuggestion suggestion,
   ) async {
     if (context.mounted) {
-      NotificationService().showInAppNotification(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Applied',
-        body: '${suggestion.title}',
-      ).catchError((_) {});
+      NotificationService()
+          .showInAppNotification(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: 'Applied',
+            body: '${suggestion.title}',
+          )
+          .catchError((_) {});
     }
   }
 }

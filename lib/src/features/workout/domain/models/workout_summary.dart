@@ -79,7 +79,7 @@ class WorkoutAchievements {
   final bool isMostSets;
   final bool perfectCompletion; // All sets completed
   final int streak; // Consecutive workout days
-  
+
   const WorkoutAchievements({
     this.isPersonalBest = false,
     this.isLongestWorkout = false,

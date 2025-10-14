@@ -41,9 +41,11 @@ void main() {
     for (final entry in idsToCheck.entries) {
       final id = entry.key;
       final expectedParent = entry.value;
-      expect(map.containsKey(id), isTrue, reason: 'Expected $id to be present in seed');
+      expect(map.containsKey(id), isTrue,
+          reason: 'Expected $id to be present in seed');
       if (expectedParent != null) {
-        expect(map[id]!.parentExerciseId, expectedParent, reason: 'Expected $id to have parent $expectedParent');
+        expect(map[id]!.parentExerciseId, expectedParent,
+            reason: 'Expected $id to have parent $expectedParent');
       }
     }
 

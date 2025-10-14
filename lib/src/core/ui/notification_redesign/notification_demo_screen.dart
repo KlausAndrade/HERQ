@@ -21,12 +21,14 @@ class NotificationDemoScreen extends StatelessWidget {
         children: [
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text('Example notifications', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            child: Text('Example notifications',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
           ),
           NotificationCard(
             id: 'n1',
             title: 'Workout complete — Great job!',
-            body: 'You finished "Upper Body Strength" and set a new PR on Bench Press. Tap to view details.',
+            body:
+                'You finished "Upper Body Strength" and set a new PR on Bench Press. Tap to view details.',
             leading: const Icon(Icons.check_circle, color: Colors.green),
             primaryActionLabel: 'View',
             onPrimaryAction: _onPrimary,
@@ -36,7 +38,8 @@ class NotificationDemoScreen extends StatelessWidget {
           NotificationCard(
             id: 'n2',
             title: 'Reminder: Finish your workout',
-            body: 'You started a workout 45 minutes ago and didn\'t finish. Would you like to resume?',
+            body:
+                'You started a workout 45 minutes ago and didn\'t finish. Would you like to resume?',
             leading: const Icon(Icons.timer, color: Colors.orange),
             primaryActionLabel: 'Resume',
             onPrimaryAction: _onPrimary,
@@ -46,7 +49,8 @@ class NotificationDemoScreen extends StatelessWidget {
           NotificationCard(
             id: 'n3',
             title: 'New program available',
-            body: 'Try the 8-week hypertrophy program hand-curated by our coaches.',
+            body:
+                'Try the 8-week hypertrophy program hand-curated by our coaches.',
             leading: const Icon(Icons.fitness_center),
             primaryActionLabel: 'Explore',
             onPrimaryAction: _onPrimary,

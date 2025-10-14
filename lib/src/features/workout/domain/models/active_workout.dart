@@ -43,15 +43,15 @@ class ActiveWorkout {
   /// Check if all sets in the workout are completed
   bool isFullyCompleted() {
     if (exercises.isEmpty) return false;
-    
+
     for (final exercise in exercises) {
       if (exercise.sets.isEmpty) return false;
-      
+
       // Check if all sets in this exercise are completed
       final allSetsComplete = exercise.sets.every((set) => set.isCompleted);
       if (!allSetsComplete) return false;
     }
-    
+
     return true; // All exercises have all sets completed
   }
 
@@ -78,7 +78,8 @@ class ActiveExercise {
   final List<ActiveSet> sets;
   final int restTimerSeconds;
   final String exerciseType; // 'reps' | 'timer' | 'body_weighted' | etc.
-  final String? equipmentUsed; // 'barbell' | 'dumbbell' | 'cable' | 'machine' | etc.
+  final String?
+      equipmentUsed; // 'barbell' | 'dumbbell' | 'cable' | 'machine' | etc.
   final String? variantType; // 'standard' | 'assisted' | 'weighted' | null
 
   const ActiveExercise({
@@ -96,10 +97,10 @@ class ActiveExercise {
         'id': id,
         'name': name,
         'sets': sets.map((s) => s.toJson()).toList(),
-    'restTimerSeconds': restTimerSeconds,
-    'exerciseType': exerciseType,
-    'equipmentUsed': equipmentUsed,
-    'variantType': variantType,
+        'restTimerSeconds': restTimerSeconds,
+        'exerciseType': exerciseType,
+        'equipmentUsed': equipmentUsed,
+        'variantType': variantType,
       };
 
   factory ActiveExercise.fromJson(Map<String, dynamic> json) => ActiveExercise(
@@ -108,10 +109,10 @@ class ActiveExercise {
         sets: (json['sets'] as List)
             .map((s) => ActiveSet.fromJson(s as Map<String, dynamic>))
             .toList(),
-    restTimerSeconds: json['restTimerSeconds'] as int? ?? 90,
-    exerciseType: json['exerciseType'] as String? ?? 'reps',
-    equipmentUsed: json['equipmentUsed'] as String?,
-    variantType: json['variantType'] as String?,
+        restTimerSeconds: json['restTimerSeconds'] as int? ?? 90,
+        exerciseType: json['exerciseType'] as String? ?? 'reps',
+        equipmentUsed: json['equipmentUsed'] as String?,
+        variantType: json['variantType'] as String?,
       );
 }
 
@@ -120,13 +121,15 @@ class ActiveSet {
   final double? weight;
   final int reps;
   final int? durationSeconds; // Used for timer-based sets (e.g. handstand hold)
-  final double? distance; // Used for distance-based exercises (stored in meters)
+  final double?
+      distance; // Used for distance-based exercises (stored in meters)
   final double? assistanceWeight; // For assisted bodyweight exercises
   final double? addedWeight; // For weighted bodyweight exercises
   final int? rpe;
   final bool isCompleted;
-  final bool isPRWeight;  // True if this set beat previous max weight
-  final bool isPRReps;    // True if this set beat previous max reps (at same or higher weight)
+  final bool isPRWeight; // True if this set beat previous max weight
+  final bool
+      isPRReps; // True if this set beat previous max reps (at same or higher weight)
 
   const ActiveSet({
     required this.number,
