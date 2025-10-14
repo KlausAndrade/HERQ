@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/database/database.dart';
-import '../../../../core/widgets/animated_switch.dart';
 import '../../../../core/widgets/animated_fab.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -75,72 +74,49 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
         children: [
           // Filter Controls
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Favorites and variants toggles
-                Row(
+                // Favorites and variants toggles as chips
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
-                    // Favorites filter
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.favorite,
-                            size: 20,
-                            color: _showOnlyFavorites
-                                ? Colors.red
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(0.6),
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              'Favorites Only',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          AnimatedSwitch(
-                            value: _showOnlyFavorites,
-                            onChanged: (value) {
-                              setState(() {
-                                _showOnlyFavorites = value;
-                              });
-                            },
-                            thumbIcon: Icons.favorite,
-                          ),
-                        ],
+                    FilterChip(
+                      label: const Text('Favorites'),
+                      avatar: Icon(
+                        Icons.favorite,
+                        size: 16,
+                        color: _showOnlyFavorites ? Colors.white : Colors.red,
                       ),
+                      selected: _showOnlyFavorites,
+                      selectedColor: Colors.red.shade400,
+                      onSelected: (selected) {
+                        setState(() {
+                          _showOnlyFavorites = selected;
+                        });
+                      },
+                      showCheckmark: false,
                     ),
-                    const SizedBox(width: 8),
-                    // Show variants toggle
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              'Show Variants',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          AnimatedSwitch(
-                            value: _showVariants,
-                            onChanged: (value) {
-                              setState(() {
-                                _showVariants = value;
-                              });
-                            },
-                          ),
-                        ],
+                    FilterChip(
+                      label: const Text('Show Variants'),
+                      avatar: Icon(
+                        Icons.repeat,
+                        size: 16,
+                        color: _showVariants ? Colors.white : Theme.of(context).colorScheme.primary,
                       ),
+                      selected: _showVariants,
+                      onSelected: (selected) {
+                        setState(() {
+                          _showVariants = selected;
+                        });
+                      },
+                      showCheckmark: false,
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
 
                 // Category Filter Chips
                 categoriesAsync.when(
@@ -470,7 +446,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
       );
 }
 
-class _ExerciseCard extends StatelessWidget {
+class _ExerciseCard extends ConsumerWidget {
   const _ExerciseCard({
     required this.exercise,
     required this.onTap,
@@ -482,103 +458,149 @@ class _ExerciseCard extends StatelessWidget {
   final VoidCallback? onEdit;
 
   @override
-  Widget build(BuildContext context) => AppCard(
-        variant: AppCardVariant.elevated,
-        heroTag: 'exercise-${exercise.id}',
-        onTap: onTap,
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(12),
-          leading: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: _getCategoryColor(context, exercise.category),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              _getCategoryIcon(exercise.category),
-              color: Colors.white,
-              size: 20,
-            ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isFavoriteAsync = ref.watch(isExerciseFavorited(exercise.id));
+    final favoritesNotifier = ref.read(favoritesNotifierProvider);
+
+    return AppCard(
+      variant: AppCardVariant.elevated,
+      heroTag: 'exercise-${exercise.id}',
+      onTap: onTap,
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(12),
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: _getCategoryColor(context, exercise.category),
+            borderRadius: BorderRadius.circular(8),
           ),
-          title: Row(
-            children: [
-              Expanded(
+          child: Icon(
+            _getCategoryIcon(exercise.category),
+            color: Colors.white,
+            size: 20,
+          ),
+        ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                exercise.name,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+            if (exercise.parentExerciseId != null) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: _getVariantColor(context, exercise.variantType),
+                  borderRadius: BorderRadius.circular(4),
+                ),
                 child: Text(
-                  exercise.name,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  exercise.variantType?.toUpperCase() ?? 'VARIANT',
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
               ),
-              if (exercise.parentExerciseId != null) ...[
-                const SizedBox(width: 8),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: _getVariantColor(context, exercise.variantType),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    exercise.variantType?.toUpperCase() ?? 'VARIANT',
-                    style: const TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+            ],
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${exercise.primaryMuscleGroup[0].toUpperCase() + exercise.primaryMuscleGroup.substring(1)} • ${exercise.equipment[0].toUpperCase() + exercise.equipment.substring(1).replaceAll('_', ' ')}',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            const SizedBox(height: 4),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                _DifficultyChip(difficulty: exercise.difficulty),
+                _ExerciseTypeChip(type: exercise.exerciseType),
+                if (exercise.isBodyweight)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    child: const Text(
+                      'BODYWEIGHT',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Favorite button
+            isFavoriteAsync.when(
+              data: (isFavorite) => IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  size: 20,
+                  color: isFavorite ? Colors.red : null,
+                ),
+                onPressed: () async {
+                  try {
+                    await favoritesNotifier.toggleFavorite(exercise.id);
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to update favorite: $e')),
+                      );
+                    }
+                  }
+                },
+                tooltip: isFavorite ? 'Remove from favorites' : 'Add to favorites',
+              ),
+              loading: () => const SizedBox(
+                width: 40,
+                height: 40,
+                child: Center(
+                  child: SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 ),
-              ],
-            ],
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${exercise.primaryMuscleGroup[0].toUpperCase() + exercise.primaryMuscleGroup.substring(1)} • ${exercise.equipment[0].toUpperCase() + exercise.equipment.substring(1).replaceAll('_', ' ')}',
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
               ),
-              const SizedBox(height: 4),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  _DifficultyChip(difficulty: exercise.difficulty),
-                  _ExerciseTypeChip(type: exercise.exerciseType),
-                  if (exercise.isBodyweight)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        'BODYWEIGHT',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
-          trailing: onEdit != null
-              ? IconButton(
-                  icon: const Icon(Icons.edit, size: 20),
-                  onPressed: onEdit,
-                  tooltip: 'Edit exercise',
-                )
-              : const Icon(Icons.chevron_right),
-          onTap: onTap,
+              error: (_, __) => const SizedBox.shrink(),
+            ),
+            // Edit button (for custom exercises) or chevron
+            if (onEdit != null)
+              IconButton(
+                icon: const Icon(Icons.edit, size: 20),
+                onPressed: onEdit,
+                tooltip: 'Edit exercise',
+              )
+            else
+              const Icon(Icons.chevron_right),
+          ],
         ),
-      );
+        onTap: onTap,
+      ),
+    );
+  }
 
   IconData _getCategoryIcon(String? category) {
     switch (category?.toLowerCase()) {

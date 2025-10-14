@@ -203,26 +203,30 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
 
         // Set data row
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: isCompleted
                 ? colorScheme.primary.withAlpha((0.12 * 255).round())
                 : (widget.setNumber % 2 == 0
                     ? colorScheme.surfaceContainerHighest.withAlpha((0.3 * 255).round())
                     : Colors.transparent),
-            border: isCompleted
-                ? Border.all(
-                    color: colorScheme.primary.withAlpha((0.4 * 255).round()),
-                    width: 1.5,
-                  )
-                : null,
+            border: Border(
+              bottom: BorderSide(
+                color: colorScheme.outline.withAlpha((0.1 * 255).round()),
+                width: 0.5,
+              ),
+              left: isCompleted ? BorderSide(
+                color: colorScheme.primary.withAlpha((0.5 * 255).round()),
+                width: 3,
+              ) : BorderSide.none,
+            ),
           ),
           child: Row(
             children: [
               // Set Number / PR Badge
               SizedBox(
                 width: 40,
-                height: 40,
+                height: 36,
                 child: Center(
                   child: widget.set.isPRWeight || widget.set.isPRReps
                       ? Stack(
@@ -292,7 +296,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
               Expanded(
                 flex: 3,
                 child: Container(
-                  height: 40,
+                  height: 36,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerHighest.withAlpha((0.4 * 255).round()),
@@ -333,7 +337,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
               // Complete Button
               SizedBox(
                 width: 42,
-                height: 40,
+                height: 36,
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   onPressed: () {
@@ -405,7 +409,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
 
   Widget _buildWeightInput(ColorScheme colorScheme) {
     return SizedBox(
-      height: 40,
+      height: 36,
       child: TextField(
         controller: _weightController,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -415,6 +419,10 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         textAlign: TextAlign.center,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         decoration: _inputDecoration(colorScheme, 'kg'),
+        onTap: () => _weightController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _weightController.text.length,
+        ),
         onChanged: (value) {
           final weight = value.isEmpty ? null : double.tryParse(value);
           _updateSet(weight: weight);
@@ -425,7 +433,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
 
   Widget _buildRepsInput(ColorScheme colorScheme) {
     return SizedBox(
-      height: 40,
+      height: 36,
       child: TextField(
         controller: _repsController,
         keyboardType: TextInputType.number,
@@ -433,6 +441,10 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         textAlign: TextAlign.center,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         decoration: _inputDecoration(colorScheme, 'reps'),
+        onTap: () => _repsController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _repsController.text.length,
+        ),
         onChanged: (value) {
           final reps = value.isEmpty ? 0 : (int.tryParse(value) ?? 0);
           _updateSet(reps: reps);
@@ -443,7 +455,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
 
   Widget _buildDurationInput(ColorScheme colorScheme) {
     return SizedBox(
-      height: 40,
+      height: 36,
       child: TextField(
         controller: _durationController,
         keyboardType: TextInputType.number,
@@ -451,6 +463,10 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         textAlign: TextAlign.center,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         decoration: _inputDecoration(colorScheme, 'secs'),
+        onTap: () => _durationController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _durationController.text.length,
+        ),
         onChanged: (value) {
           final secs = value.isEmpty ? null : int.tryParse(value);
           _updateSet(durationSeconds: secs);
@@ -461,7 +477,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
 
   Widget _buildDistanceInput(ColorScheme colorScheme) {
     return SizedBox(
-      height: 40,
+      height: 36,
       child: TextField(
         controller: _distanceController,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -471,6 +487,10 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         textAlign: TextAlign.center,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         decoration: _inputDecoration(colorScheme, 'm'),
+        onTap: () => _distanceController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _distanceController.text.length,
+        ),
         onChanged: (value) {
           final distance = value.isEmpty ? null : double.tryParse(value);
           _updateSet(distance: distance);
@@ -481,7 +501,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
 
   Widget _buildAssistedWeightInput(ColorScheme colorScheme) {
     return SizedBox(
-      height: 40,
+      height: 36,
       child: TextField(
         controller: _assistanceWeightController,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -491,6 +511,10 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         textAlign: TextAlign.center,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         decoration: _inputDecoration(colorScheme, 'kg'),
+        onTap: () => _assistanceWeightController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _assistanceWeightController.text.length,
+        ),
         onChanged: (value) {
           final assistWeight = value.isEmpty ? null : double.tryParse(value);
           _updateSet(assistanceWeight: assistWeight);
@@ -501,7 +525,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
 
   Widget _buildAddedWeightInput(ColorScheme colorScheme) {
     return SizedBox(
-      height: 40,
+      height: 36,
       child: TextField(
         controller: _addedWeightController,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -511,6 +535,10 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         textAlign: TextAlign.center,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         decoration: _inputDecoration(colorScheme, 'kg'),
+        onTap: () => _addedWeightController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _addedWeightController.text.length,
+        ),
         onChanged: (value) {
           final added = value.isEmpty ? null : double.tryParse(value);
           _updateSet(addedWeight: added);

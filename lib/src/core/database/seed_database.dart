@@ -3,6 +3,7 @@
 
 import 'database.dart';
 import '../../features/workout/data/seed/acroyoga_exercises_seed.dart';
+import '../../features/workout/data/seed/additional_exercises_seed.dart';
 
 Future<void> seedDatabase(AppDatabase database) async {
   print('🌱 Starting database seeding...');
@@ -10,7 +11,11 @@ Future<void> seedDatabase(AppDatabase database) async {
   // IMPORTANT: Seed exercises BEFORE templates
   // Templates reference exercise IDs, so exercises must exist first
   
-  // Seed AcroYoga exercises first
+  // Seed additional exercises (Tricep Extension, etc.)
+  print('💪 Seeding additional exercises...');
+  await seedAdditionalExercises(database);
+  
+  // Seed AcroYoga exercises
   print('🧘 Seeding AcroYoga exercises...');
   await seedAcroYogaExercises(database);
   

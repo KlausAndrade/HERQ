@@ -8,6 +8,7 @@ import '../../domain/models/workout_summary.dart';
 import 'package:gym_ai/src/core/services/notification_service.dart';
 import '../providers/active_workout_provider.dart';
 import '../widgets/exercise_picker_dialog.dart';
+import '../widgets/exercise_variant_picker.dart';
 import '../widgets/rest_timer_widget.dart';
 import '../widgets/set_entry_widget.dart';
 
@@ -851,9 +852,30 @@ class _ExerciseCard extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            exercise.name,
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  exercise.name,
+                                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                                ),
+                              ),
+                              if (exercise.equipmentUsed != null || exercise.variantType != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 4),
+                                  child: Text(
+                                    [
+                                      if (exercise.equipmentUsed != null) exercise.equipmentUsed![0].toUpperCase() + exercise.equipmentUsed!.substring(1),
+                                      if (exercise.variantType != null) exercise.variantType![0].toUpperCase() + exercise.variantType!.substring(1),
+                                    ].join(' • '),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                           Text(
                             '${exercise.sets.length} sets',
@@ -864,6 +886,18 @@ class _ExerciseCard extends ConsumerWidget {
                           ),
                         ],
                       ),
+                    ),
+                    // Variant Picker Button
+                    ExerciseVariantPicker(
+                      currentEquipment: exercise.equipmentUsed,
+                      currentVariant: exercise.variantType,
+                      onChanged: (equipment, variant) {
+                        ref.read(activeWorkoutProvider.notifier).updateExerciseVariant(
+                          exerciseIndex,
+                          equipmentUsed: equipment,
+                          variantType: variant,
+                        );
+                      },
                     ),
                     if (showDragHandle) ...[
                       Padding(
