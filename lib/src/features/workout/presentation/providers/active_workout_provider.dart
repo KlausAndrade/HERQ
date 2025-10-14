@@ -240,6 +240,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             ActiveSet(number: 3, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
           ],
           restTimerSeconds: savedTimer,
+          equipmentUsed: exercise.equipment, // Use default equipment from exercise
+          variantType: null, // Start with standard variant
         ));
       }
 
@@ -355,6 +357,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             ActiveSet(number: 3, weight: isDuration ? null : initialWeight, reps: isDuration ? 0 : initialReps, durationSeconds: initialDuration, isCompleted: false),
           ],
           restTimerSeconds: savedTimer,
+          equipmentUsed: exercise.equipment, // Use default equipment from exercise
+          variantType: null, // Start with standard variant
         ));
       }
 
@@ -559,6 +563,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         sets: sets,
         restTimerSeconds: exercise.restTimerSeconds,
         exerciseType: exercise.exerciseType,  // 🔧 FIX: Preserve exercise type!
+        equipmentUsed: exercise.equipmentUsed,
+        variantType: exercise.variantType,
       );
 
       state = ActiveWorkout(
@@ -617,6 +623,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         sets: sets,
         restTimerSeconds: exercise.restTimerSeconds,
         exerciseType: exercise.exerciseType,  // 🔧 FIX: Preserve exercise type!
+        equipmentUsed: exercise.equipmentUsed,
+        variantType: exercise.variantType,
       );
 
       state = ActiveWorkout(
@@ -719,6 +727,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             exerciseType: exercise.exerciseType,
             sets: [initialSet],
             restTimerSeconds: restTimerSeconds,
+            equipmentUsed: exercise.equipment,
+            variantType: null,
           ));
         } else {
           // Fallback: create custom exercise
@@ -727,6 +737,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             name: exerciseId,
             sets: const [ActiveSet(number: 1, reps: 0, isCompleted: false)],
             restTimerSeconds: restTimerSeconds,
+            equipmentUsed: null,
+            variantType: null,
           ));
         }
 
@@ -750,6 +762,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           name: exerciseId,
           sets: const [ActiveSet(number: 1, reps: 0, isCompleted: false)],
           restTimerSeconds: restTimerSeconds,
+          equipmentUsed: null,
+          variantType: null,
         ));
 
         state = ActiveWorkout(
@@ -798,6 +812,46 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             exercise.id,
             newRestTimerSeconds,
           );
+    }
+  }
+
+  /// Update equipment and variant type for an exercise
+  void updateExerciseVariant(int exerciseIndex, {String? equipmentUsed, String? variantType}) {
+    if (state != null &&
+        exerciseIndex >= 0 &&
+        exerciseIndex < state!.exercises.length) {
+      final exercises = List<ActiveExercise>.from(state!.exercises);
+      final exercise = exercises[exerciseIndex];
+
+      print('🔄 Updating exercise variant:');
+      print('   Exercise: ${exercise.name}');
+      print('   Old equipment: ${exercise.equipmentUsed} → New: $equipmentUsed');
+      print('   Old variant: ${exercise.variantType} → New: $variantType');
+
+      exercises[exerciseIndex] = ActiveExercise(
+        id: exercise.id,
+        name: exercise.name,
+        sets: exercise.sets,
+        restTimerSeconds: exercise.restTimerSeconds,
+        exerciseType: exercise.exerciseType,
+        equipmentUsed: equipmentUsed, // Use new value directly (can be null)
+        variantType: variantType, // Use new value directly (can be null)
+      );
+
+      state = ActiveWorkout(
+        id: state!.id,
+        name: state!.name,
+        exercises: exercises,
+        currentExerciseIndex: state!.currentExerciseIndex,
+        elapsedTime: state!.elapsedTime,
+        totalSets: state!.totalSets,
+        totalVolume: state!.totalVolume,
+      );
+
+      // Mark as modified
+      _ref.read(workoutModificationsProvider.notifier).markAsModified();
+      
+      print('✅ Exercise variant updated successfully');
     }
   }
 
@@ -994,6 +1048,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                     assistanceWeight: Value(set.assistanceWeight),
                     addedWeight: Value(set.addedWeight),
                     rpe: Value(set.rpe),
+                    equipmentUsed: Value(exercise.equipmentUsed),
+                    variantType: Value(exercise.variantType),
                     completedAt: now,
                   ),
                 );
@@ -1049,6 +1105,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                   'assistance_weight': set.assistanceWeight,
                   'added_weight': set.addedWeight,
                   'rpe': set.rpe,
+                  'equipment_used': exercise.equipmentUsed,
+                  'variant_type': exercise.variantType,
                   'completed': true,
                 });
               }

@@ -99,7 +99,7 @@ class _AppButtonState extends State<AppButton>
         builder: (context, child) {
           return Container(
             width: widget.width,
-            height: _getHeight(),
+            constraints: BoxConstraints(minHeight: _getHeight()),
             decoration: _getDecoration(context),
             child: Material(
               color: Colors.transparent,

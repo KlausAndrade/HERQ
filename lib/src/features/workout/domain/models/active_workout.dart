@@ -78,6 +78,8 @@ class ActiveExercise {
   final List<ActiveSet> sets;
   final int restTimerSeconds;
   final String exerciseType; // 'reps' | 'timer' | 'body_weighted' | etc.
+  final String? equipmentUsed; // 'barbell' | 'dumbbell' | 'cable' | 'machine' | etc.
+  final String? variantType; // 'standard' | 'assisted' | 'weighted' | null
 
   const ActiveExercise({
     required this.id,
@@ -85,6 +87,8 @@ class ActiveExercise {
     required this.sets,
     this.restTimerSeconds = 90, // Default 90 seconds rest
     this.exerciseType = 'reps',
+    this.equipmentUsed,
+    this.variantType,
   });
 
   // JSON serialization
@@ -94,6 +98,8 @@ class ActiveExercise {
         'sets': sets.map((s) => s.toJson()).toList(),
     'restTimerSeconds': restTimerSeconds,
     'exerciseType': exerciseType,
+    'equipmentUsed': equipmentUsed,
+    'variantType': variantType,
       };
 
   factory ActiveExercise.fromJson(Map<String, dynamic> json) => ActiveExercise(
@@ -104,6 +110,8 @@ class ActiveExercise {
             .toList(),
     restTimerSeconds: json['restTimerSeconds'] as int? ?? 90,
     exerciseType: json['exerciseType'] as String? ?? 'reps',
+    equipmentUsed: json['equipmentUsed'] as String?,
+    variantType: json['variantType'] as String?,
       );
 }
 

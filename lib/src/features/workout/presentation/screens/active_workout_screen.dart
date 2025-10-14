@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:gym_ai/l10n/app_localizations.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
 import 'package:gym_ai/src/core/services/notification_service.dart';
 import '../providers/active_workout_provider.dart';
 import '../widgets/exercise_picker_dialog.dart';
+import '../widgets/exercise_variant_picker.dart';
 import '../widgets/rest_timer_widget.dart';
 import '../widgets/set_entry_widget.dart';
+import 'workout_save_screen.dart';
 
 class ActiveWorkoutScreen extends ConsumerStatefulWidget {
   const ActiveWorkoutScreen({
@@ -43,20 +46,20 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           final confirmed = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Workout in Progress'),
+              title: Text(S.of(context)!.workoutInProgress),
               content: Text(
-                'You have an active workout "${existingWorkout.name}" in progress. '
-                'Starting a new workout will end the current one.\n\n'
-                'Do you want to continue?',
+                '${S.of(context)!.haveActiveWorkout(existingWorkout.name)} '
+                '${S.of(context)!.startingNewWillEnd}\n\n'
+                '${S.of(context)!.doYouWantToContinue}',
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
+                  child: Text(S.of(context)!.cancel),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Force Start New Workout'),
+                  child: Text(S.of(context)!.forceStartNewWorkout),
                 ),
                 FilledButton(
                   onPressed: () async {
@@ -64,7 +67,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                     // Force cleanup to ensure clean state
                     await ref.read(activeWorkoutProvider.notifier).forceCleanup();
                   },
-                  child: const Text('Clear & Start New'),
+                  child: Text(S.of(context)!.clearAndStartNew),
                 ),
               ],
             ),
@@ -117,26 +120,26 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     final action = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Leave Workout?'),
+        title: Text(S.of(context)!.leaveWorkout),
         content: Text(
-          'You have an active workout "${activeWorkout.name}" in progress.\n\n'
-          'What would you like to do?',
+          '${S.of(context)!.haveActiveWorkout(activeWorkout.name)}\n\n'
+          '${S.of(context)!.whatWouldYouLikeToDo}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop('cancel'),
-            child: const Text('Cancel'),
+            child: Text(S.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop('save'),
-            child: const Text('Save & Exit'),
+            child: Text(S.of(context)!.saveAndExit),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop('discard'),
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Discard Workout'),
+            child: Text(S.of(context)!.discardWorkout),
           ),
         ],
       ),
@@ -172,16 +175,16 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => _handleBackButtonPressed(context),
         ),
-        title: Text(activeWorkout?.name ?? 'Active Workout'),
+        title: Text(activeWorkout?.name ?? S.of(context)!.activeWorkout),
         actions: [
           TextButton(
             onPressed: () => _showFinishWorkoutDialog(context),
-            child: const Text('Finish'),
+            child: Text(S.of(context)!.finish),
           ),
         ],
       ),
       body: activeWorkout == null
-          ? const Center(child: Text('No active workout'))
+          ? Center(child: Text(S.of(context)!.noActiveWorkout))
           : Column(
               children: [
                 // Workout Header
@@ -306,16 +309,45 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton.icon(
+                        child: OutlinedButton(
                           onPressed: () => _showAddExerciseDialog(context),
-                          icon: const Icon(Icons.add),
-                          label: const Text('Add Exercise'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(4, 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.add, size: 20),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  S.of(context)!.addExercise,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: () => _showFinishWorkoutDialog(context),
-                        child: const Text('Finish Workout'),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => _showFinishWorkoutDialog(context),
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(0, 48),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          ),
+                          child: Text(
+                            S.of(context)!.finishWorkout,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -417,7 +449,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'The following exercises have no completed sets:',
+              S.of(context)!.followingExercisesNoSets,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 12),
@@ -569,20 +601,51 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       ),
     );
     
-    print('🏁 Navigating to summary immediately...');
+    print('🏁 Navigating to save screen...');
     
-    // Navigate to summary immediately with quick data
+    // Navigate to save screen with quick summary
     if (context.mounted) {
-      context.go('/workout-summary', extra: quickSummary);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => WorkoutSaveScreen(
+            summary: quickSummary,
+            onDiscard: () {
+              // User chose to discard workout - just navigate home
+              // The workout wasn't saved so it will be lost
+              Navigator.of(context).pop(); // Close save screen
+              context.go('/'); // Go home
+            },
+            onSave: (name, notes, photoPath, postToSocial) async {
+              print('💾 Saving workout with name: $name');
+              
+              // Save the workout
+              try {
+                await ref.read(activeWorkoutProvider.notifier).finishWorkout();
+                
+                // TODO: Save notes to database
+                // TODO: Save photo to storage
+                // TODO: Create social post if requested
+                
+                print('✅ Workout saved successfully!');
+                
+                // Navigate to summary screen with confetti
+                if (context.mounted) {
+                  Navigator.of(context).pop(); // Close save screen
+                  context.go('/workout-summary', extra: quickSummary);
+                }
+              } catch (e) {
+                print('❌ Error saving workout: $e');
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error saving workout: $e')),
+                  );
+                }
+              }
+            },
+          ),
+        ),
+      );
     }
-    
-    // Save workout in background
-    print('🏁 Starting background save...');
-    ref.read(activeWorkoutProvider.notifier).finishWorkout().then((_) {
-      print('✅ Workout saved in background!');
-    }).catchError((e) {
-      print('❌ Background save error: $e');
-    });
   }
 
   void _showConfirmFinishDialog(BuildContext context) {
@@ -822,15 +885,51 @@ class _ExerciseCard extends ConsumerWidget {
   final VoidCallback onAddSet;
   final bool showDragHandle;
 
+  String _getEquipmentShortName(String equipment) {
+    switch (equipment.toLowerCase()) {
+      case 'barbell':
+        return 'BB';
+      case 'dumbbell':
+        return 'DB';
+      case 'cable':
+        return 'Cable';
+      case 'machine':
+        return 'Mach';
+      case 'bodyweight':
+        return 'BW';
+      case 'resistance_band':
+        return 'Band';
+      case 'kettlebell':
+        return 'KB';
+      default:
+        return equipment.substring(0, 3).toUpperCase();
+    }
+  }
+
+  String _getVariantShortName(String variant) {
+    switch (variant.toLowerCase()) {
+      case 'assisted':
+        return 'Assist';
+      case 'weighted':
+        return 'Weight';
+      case 'tempo':
+        return 'Tempo';
+      case 'pause':
+        return 'Pause';
+      default:
+        return variant.substring(0, 4).toUpperCase();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) => Card(
-        margin: const EdgeInsets.only(bottom: 6),
+        margin: const EdgeInsets.only(bottom: 4),
         child: Column(
           children: [
             InkWell(
               onTap: onTap,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
                 child: Row(
                   children: [
                     Container(
@@ -853,16 +952,61 @@ class _ExerciseCard extends ConsumerWidget {
                           Text(
                             exercise.name,
                             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          Text(
-                            '${exercise.sets.length} sets',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                            ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Text(
+                                '${exercise.sets.length} sets',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                ),
+                              ),
+                              if (exercise.equipmentUsed != null || exercise.variantType != null) ...[
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      [
+                                        if (exercise.equipmentUsed != null) _getEquipmentShortName(exercise.equipmentUsed!),
+                                        if (exercise.variantType != null && exercise.variantType != 'standard') 
+                                          _getVariantShortName(exercise.variantType!),
+                                      ].join(' • '),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Theme.of(context).colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
                         ],
                       ),
+                    ),
+                    // Variant Picker Button
+                    ExerciseVariantPicker(
+                      currentEquipment: exercise.equipmentUsed,
+                      currentVariant: exercise.variantType,
+                      onChanged: (equipment, variant) {
+                        ref.read(activeWorkoutProvider.notifier).updateExerciseVariant(
+                          exerciseIndex,
+                          equipmentUsed: equipment,
+                          variantType: variant,
+                        );
+                      },
                     ),
                     if (showDragHandle) ...[
                       Padding(
@@ -885,12 +1029,12 @@ class _ExerciseCard extends ConsumerWidget {
             if (isExpanded) ...[
               const Divider(height: 1),
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                padding: const EdgeInsets.fromLTRB(2, 18, 2, 2),
                 child: Column(
                   children: [
                     // Rest Timer Controls
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(10),
@@ -910,7 +1054,7 @@ class _ExerciseCard extends ConsumerWidget {
                             size: 16,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 10),
                           Text(
                             'Rest',
                             style: Theme.of(context)
@@ -1060,6 +1204,7 @@ class _ExerciseCard extends ConsumerWidget {
                             restTimerSeconds: exercise.restTimerSeconds,
                             exerciseName: exercise.name,
                             exerciseType: exercise.exerciseType,
+                            variantType: exercise.variantType,
                             totalSets: exercise.sets.length,
                             isFirstSet: index == 0,
                             onChanged: (updatedSet) {
@@ -1069,16 +1214,35 @@ class _ExerciseCard extends ConsumerWidget {
                         );
                       },
                     ),
-                    const SizedBox(height: 12),
                     // Add Set Button
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton.icon(
+                      height: 36, // Fixed height for consistency
+                      child: OutlinedButton(
                         onPressed: onAddSet,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Set'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.add, size: 18),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                'Add Set',
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 12), // Space after Add Set button
                   ],
                 ),
               ),
