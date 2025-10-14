@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../domain/models/workout_summary.dart';
+import 'package:gym_ai/l10n/app_localizations.dart';
 
 /// Screen shown before saving a workout, allows user to add notes, photos, and post to social
 class WorkoutSaveScreen extends ConsumerStatefulWidget {
@@ -74,7 +75,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_camera),
-              title: const Text('Take Photo'),
+              title: Text(S.of(context)!.takePhoto),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.camera);
@@ -82,7 +83,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Choose from Gallery'),
+              title: Text(S.of(context)!.chooseFromGallery),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.gallery);
@@ -106,7 +107,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Save Workout'),
+        title: Text(S.of(context)!.saveWorkout),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => _showDiscardDialog(),
@@ -128,17 +129,17 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
                       children: [
                         _StatItem(
                           icon: Icons.timer_outlined,
-                          label: 'Duration',
+                          label: S.of(context)!.duration,
                           value: _formatDuration(widget.summary.duration),
                         ),
                         _StatItem(
                           icon: Icons.fitness_center,
-                          label: 'Volume',
+                          label: S.of(context)!.volume,
                           value: '${widget.summary.totalVolume.toStringAsFixed(0)} kg',
                         ),
                         _StatItem(
                           icon: Icons.repeat,
-                          label: 'Sets',
+                          label: S.of(context)!.sets,
                           value: widget.summary.totalSets.toString(),
                         ),
                       ],
@@ -156,7 +157,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            '${widget.summary.prs.length} Personal Record${widget.summary.prs.length > 1 ? 's' : ''}!',
+                            '${widget.summary.prs.length} ${widget.summary.prs.length > 1 ? S.of(context)!.personalRecords : S.of(context)!.personalRecord}!',
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: Colors.amber.shade700,
@@ -176,8 +177,8 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
-                labelText: 'Workout Name',
-                hintText: 'Enter workout name',
+                labelText: S.of(context)!.workoutName,
+                hintText: S.of(context)!.enterWorkoutName,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -191,8 +192,8 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
             TextField(
               controller: _notesController,
               decoration: InputDecoration(
-                labelText: 'Notes (optional)',
-                hintText: 'How did it feel? Any observations?',
+                labelText: S.of(context)!.notesOptional,
+                hintText: S.of(context)!.notesPlaceholder,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -218,8 +219,8 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
               child: SwitchListTile(
                 value: _postToSocial,
                 onChanged: (value) => setState(() => _postToSocial = value),
-                title: const Text('Share to Social Feed'),
-                subtitle: const Text('Let others see your accomplishment'),
+                title: Text(S.of(context)!.shareToSocialFeed),
+                subtitle: Text(S.of(context)!.letOthersSee),
                 secondary: Icon(
                   Icons.share,
                   color: _postToSocial ? theme.colorScheme.primary : null,
@@ -238,7 +239,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: const Text('Discard'),
+                    child: Text(S.of(context)!.discard),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -249,7 +250,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: const Text('Save Workout'),
+                    child: Text(S.of(context)!.saveWorkout),
                   ),
                 ),
               ],
@@ -266,7 +267,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
     return OutlinedButton.icon(
       onPressed: _showImageSourcePicker,
       icon: const Icon(Icons.add_photo_alternate),
-      label: const Text('Add Photo'),
+      label: Text(S.of(context)!.addPhoto),
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.all(16),
         minimumSize: const Size(double.infinity, 56),
@@ -314,7 +315,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a workout name')),
+        SnackBar(content: Text(S.of(context)!.pleaseEnterWorkoutName)),
       );
       return;
     }
@@ -332,14 +333,12 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Discard Workout?'),
-        content: const Text(
-          'This workout will not be saved. All progress will be lost. Are you sure?',
-        ),
+        title: Text(S.of(context)!.discardWorkout + '?'),
+        content: Text(S.of(context)!.workoutNotSaved),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(S.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -347,7 +346,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
               widget.onDiscard();
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Discard'),
+            child: Text(S.of(context)!.discard),
           ),
         ],
       ),

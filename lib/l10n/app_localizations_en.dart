@@ -769,4 +769,80 @@ class SEn extends S {
 
   @override
   String get failedToSave => 'Failed to save';
+
+  @override
+  String get saveWorkout => 'Save Workout';
+
+  @override
+  String get workoutName => 'Workout Name';
+
+  @override
+  String get enterWorkoutName => 'Enter workout name';
+
+  @override
+  String get notesOptional => 'Notes (optional)';
+
+  @override
+  String get notesPlaceholder => 'How did it feel? Any observations?';
+
+  @override
+  String get addPhoto => 'Add Photo';
+
+  @override
+  String get shareToSocialFeed => 'Share to Social Feed';
+
+  @override
+  String get letOthersSee => 'Let others see your accomplishment';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get workoutNotSaved =>
+      'This workout will not be saved. All progress will be lost. Are you sure?';
+
+  @override
+  String get volume => 'Volume';
+
+  @override
+  String get personalRecord => 'Personal Record';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from Gallery';
+
+  @override
+  String get pleaseEnterWorkoutName => 'Please enter a workout name';
+
+  @override
+  String get exerciseVariant => 'Exercise Variant';
+
+  @override
+  String get variantType => 'Variant Type';
+
+  @override
+  String get changeEquipmentVariant => 'Change equipment/variant';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get resistanceBand => 'Resistance Band';
+
+  @override
+  String get standard => 'Standard';
+
+  @override
+  String get assisted => 'Assisted';
+
+  @override
+  String get weighted => 'Weighted';
+
+  @override
+  String get tempo => 'Tempo';
+
+  @override
+  String get pause => 'Pause';
 }

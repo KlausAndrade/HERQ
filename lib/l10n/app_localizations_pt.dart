@@ -775,4 +775,81 @@ class SPt extends S {
 
   @override
   String get failedToSave => 'Falha ao salvar';
+
+  @override
+  String get saveWorkout => 'Salvar Treino';
+
+  @override
+  String get workoutName => 'Nome do Treino';
+
+  @override
+  String get enterWorkoutName => 'Digite o nome do treino';
+
+  @override
+  String get notesOptional => 'Notas (opcional)';
+
+  @override
+  String get notesPlaceholder => 'Como você se sentiu? Alguma observação?';
+
+  @override
+  String get addPhoto => 'Adicionar Foto';
+
+  @override
+  String get shareToSocialFeed => 'Compartilhar no Feed Social';
+
+  @override
+  String get letOthersSee => 'Deixe outros verem sua conquista';
+
+  @override
+  String get discard => 'Descartar';
+
+  @override
+  String get workoutNotSaved =>
+      'Este treino não será salvo. Todo o progresso será perdido. Tem certeza?';
+
+  @override
+  String get volume => 'Volume';
+
+  @override
+  String get personalRecord => 'Recorde Pessoal';
+
+  @override
+  String get takePhoto => 'Tirar Foto';
+
+  @override
+  String get chooseFromGallery => 'Escolher da Galeria';
+
+  @override
+  String get pleaseEnterWorkoutName =>
+      'Por favor, digite um nome para o treino';
+
+  @override
+  String get exerciseVariant => 'Variante do Exercício';
+
+  @override
+  String get variantType => 'Tipo de Variante';
+
+  @override
+  String get changeEquipmentVariant => 'Mudar equipamento/variante';
+
+  @override
+  String get apply => 'Aplicar';
+
+  @override
+  String get resistanceBand => 'Faixa de Resistência';
+
+  @override
+  String get standard => 'Padrão';
+
+  @override
+  String get assisted => 'Assistido';
+
+  @override
+  String get weighted => 'Com Peso';
+
+  @override
+  String get tempo => 'Tempo';
+
+  @override
+  String get pause => 'Pausa';
 }

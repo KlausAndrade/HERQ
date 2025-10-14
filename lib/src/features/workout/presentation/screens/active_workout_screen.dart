@@ -11,6 +11,7 @@ import '../widgets/exercise_picker_dialog.dart';
 import '../widgets/exercise_variant_picker.dart';
 import '../widgets/rest_timer_widget.dart';
 import '../widgets/set_entry_widget.dart';
+import 'workout_save_screen.dart';
 
 class ActiveWorkoutScreen extends ConsumerStatefulWidget {
   const ActiveWorkoutScreen({
@@ -571,20 +572,51 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       ),
     );
     
-    print('🏁 Navigating to summary immediately...');
+    print('🏁 Navigating to save screen...');
     
-    // Navigate to summary immediately with quick data
+    // Navigate to save screen with quick summary
     if (context.mounted) {
-      context.go('/workout-summary', extra: quickSummary);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => WorkoutSaveScreen(
+            summary: quickSummary,
+            onDiscard: () {
+              // User chose to discard workout - just navigate home
+              // The workout wasn't saved so it will be lost
+              Navigator.of(context).pop(); // Close save screen
+              context.go('/'); // Go home
+            },
+            onSave: (name, notes, photoPath, postToSocial) async {
+              print('💾 Saving workout with name: $name');
+              
+              // Save the workout
+              try {
+                await ref.read(activeWorkoutProvider.notifier).finishWorkout();
+                
+                // TODO: Save notes to database
+                // TODO: Save photo to storage
+                // TODO: Create social post if requested
+                
+                print('✅ Workout saved successfully!');
+                
+                // Navigate to summary screen with confetti
+                if (context.mounted) {
+                  Navigator.of(context).pop(); // Close save screen
+                  context.go('/workout-summary', extra: quickSummary);
+                }
+              } catch (e) {
+                print('❌ Error saving workout: $e');
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error saving workout: $e')),
+                  );
+                }
+              }
+            },
+          ),
+        ),
+      );
     }
-    
-    // Save workout in background
-    print('🏁 Starting background save...');
-    ref.read(activeWorkoutProvider.notifier).finishWorkout().then((_) {
-      print('✅ Workout saved in background!');
-    }).catchError((e) {
-      print('❌ Background save error: $e');
-    });
   }
 
   void _showConfirmFinishDialog(BuildContext context) {

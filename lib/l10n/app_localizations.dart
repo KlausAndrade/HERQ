@@ -1598,6 +1598,156 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Failed to save'**
   String get failedToSave;
+
+  /// No description provided for @saveWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Workout'**
+  String get saveWorkout;
+
+  /// No description provided for @workoutName.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Name'**
+  String get workoutName;
+
+  /// No description provided for @enterWorkoutName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter workout name'**
+  String get enterWorkoutName;
+
+  /// No description provided for @notesOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get notesOptional;
+
+  /// No description provided for @notesPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'How did it feel? Any observations?'**
+  String get notesPlaceholder;
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Photo'**
+  String get addPhoto;
+
+  /// No description provided for @shareToSocialFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Share to Social Feed'**
+  String get shareToSocialFeed;
+
+  /// No description provided for @letOthersSee.
+  ///
+  /// In en, this message translates to:
+  /// **'Let others see your accomplishment'**
+  String get letOthersSee;
+
+  /// No description provided for @discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
+
+  /// No description provided for @workoutNotSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'This workout will not be saved. All progress will be lost. Are you sure?'**
+  String get workoutNotSaved;
+
+  /// No description provided for @volume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get volume;
+
+  /// No description provided for @personalRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Record'**
+  String get personalRecord;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from Gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @pleaseEnterWorkoutName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a workout name'**
+  String get pleaseEnterWorkoutName;
+
+  /// No description provided for @exerciseVariant.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Variant'**
+  String get exerciseVariant;
+
+  /// No description provided for @variantType.
+  ///
+  /// In en, this message translates to:
+  /// **'Variant Type'**
+  String get variantType;
+
+  /// No description provided for @changeEquipmentVariant.
+  ///
+  /// In en, this message translates to:
+  /// **'Change equipment/variant'**
+  String get changeEquipmentVariant;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @resistanceBand.
+  ///
+  /// In en, this message translates to:
+  /// **'Resistance Band'**
+  String get resistanceBand;
+
+  /// No description provided for @standard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get standard;
+
+  /// No description provided for @assisted.
+  ///
+  /// In en, this message translates to:
+  /// **'Assisted'**
+  String get assisted;
+
+  /// No description provided for @weighted.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighted'**
+  String get weighted;
+
+  /// No description provided for @tempo.
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo'**
+  String get tempo;
+
+  /// No description provided for @pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pause;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

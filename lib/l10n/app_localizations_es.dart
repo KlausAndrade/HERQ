@@ -777,4 +777,81 @@ class SEs extends S {
 
   @override
   String get failedToSave => 'Error al guardar';
+
+  @override
+  String get saveWorkout => 'Guardar Entrenamiento';
+
+  @override
+  String get workoutName => 'Nombre del Entrenamiento';
+
+  @override
+  String get enterWorkoutName => 'Ingrese el nombre del entrenamiento';
+
+  @override
+  String get notesOptional => 'Notas (opcional)';
+
+  @override
+  String get notesPlaceholder => '¿Cómo te sentiste? ¿Alguna observación?';
+
+  @override
+  String get addPhoto => 'Añadir Foto';
+
+  @override
+  String get shareToSocialFeed => 'Compartir en el Feed Social';
+
+  @override
+  String get letOthersSee => 'Deja que otros vean tu logro';
+
+  @override
+  String get discard => 'Descartar';
+
+  @override
+  String get workoutNotSaved =>
+      'Este entrenamiento no se guardará. Todo el progreso se perderá. ¿Estás seguro?';
+
+  @override
+  String get volume => 'Volumen';
+
+  @override
+  String get personalRecord => 'Récord Personal';
+
+  @override
+  String get takePhoto => 'Tomar Foto';
+
+  @override
+  String get chooseFromGallery => 'Elegir de la Galería';
+
+  @override
+  String get pleaseEnterWorkoutName =>
+      'Por favor, ingrese un nombre para el entrenamiento';
+
+  @override
+  String get exerciseVariant => 'Variante del Ejercicio';
+
+  @override
+  String get variantType => 'Tipo de Variante';
+
+  @override
+  String get changeEquipmentVariant => 'Cambiar equipamiento/variante';
+
+  @override
+  String get apply => 'Aplicar';
+
+  @override
+  String get resistanceBand => 'Banda de Resistencia';
+
+  @override
+  String get standard => 'Estándar';
+
+  @override
+  String get assisted => 'Asistido';
+
+  @override
+  String get weighted => 'Con Peso';
+
+  @override
+  String get tempo => 'Tempo';
+
+  @override
+  String get pause => 'Pausa';
 }
