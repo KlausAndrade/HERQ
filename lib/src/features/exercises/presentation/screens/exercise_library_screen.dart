@@ -9,6 +9,7 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/skeleton_loader.dart';
 import '../providers/exercise_providers.dart';
 import '../providers/exercise_favorites_provider.dart';
+import 'package:gym_ai/l10n/app_localizations.dart';
 
 class ExerciseLibraryScreen extends ConsumerStatefulWidget {
   const ExerciseLibraryScreen({super.key});
@@ -38,7 +39,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: const Text('Exercise Library'),
+        title: Text(S.of(context)!.exerciseLibrary),
         actions: [
           IconButton(
             onPressed: () {
@@ -56,15 +57,15 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'progressions',
-                child: Row(
-                  children: [
-                    Icon(Icons.trending_up),
-                    SizedBox(width: 8),
-                    Text('View Progressions'),
-                  ],
-                ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.trending_up),
+                      const SizedBox(width: 8),
+                      Text(S.of(context)!.viewProgressions),
+                    ],
+                  ),
               ),
             ],
           ),
@@ -84,7 +85,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                   runSpacing: 8,
                   children: [
                     FilterChip(
-                      label: const Text('Favorites'),
+                      label: Text(S.of(context)!.favorites),
                       avatar: Icon(
                         Icons.favorite,
                         size: 16,
@@ -100,7 +101,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                       showCheckmark: false,
                     ),
                     FilterChip(
-                      label: const Text('Show Variants'),
+                      label: Text(S.of(context)!.showVariants),
                       avatar: Icon(
                         Icons.repeat,
                         size: 16,
@@ -190,10 +191,10 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
               data: (exercises) {
                 if (exercises.isEmpty) {
                   return EmptyState(
-                    title: 'No Exercises Found',
-                    subtitle: 'Try adjusting your filters or create a custom exercise',
+                    title: S.of(context)!.noExercisesFound,
+                    subtitle: S.of(context)!.tryAdjustingFilters,
                     icon: Icons.fitness_center_outlined,
-                    actionText: 'Create Exercise',
+                    actionText: S.of(context)!.createExercise,
                     onAction: () => context.push('/exercises/create'),
                   );
                 }
@@ -228,7 +229,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                     const Icon(Icons.error, size: 48, color: Colors.grey),
                     const SizedBox(height: 16),
                     Text(
-                      'Error loading exercises',
+                      S.of(context)!.errorLoadingExercises,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
@@ -247,7 +248,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
       floatingActionButton: AnimatedFAB(
         icon: Icons.add,
         onPressed: () => context.push('/exercises/create'),
-        tooltip: 'Create Exercise',
+        tooltip: S.of(context)!.createExercise,
       ),
       bottomNavigationBar: _buildBottomNavigation(context),
     );
@@ -376,7 +377,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                     ),
                     Expanded(
                       child: Text(
-                        'Exercise Progressions',
+                        S.of(context)!.exerciseProgressions,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,

@@ -510,6 +510,107 @@ class SEn extends S {
   }
 
   @override
+  String get viewAchievements => 'View\nAchievements';
+
+  @override
+  String get library => 'Library';
+
+  @override
+  String get resumeWorkoutQuestion => 'Resume Workout?';
+
+  @override
+  String get workoutCompleteExclamation => 'Workout Complete!';
+
+  @override
+  String get youCompletedAllExercises =>
+      'You completed all exercises but forgot to finalize:';
+
+  @override
+  String get youHaveUnfinishedWorkout => 'You have an unfinished workout:';
+
+  @override
+  String finishedTimeAgo(String timeAgo) {
+    return 'Finished $timeAgo ago - don\'t forget to save!';
+  }
+
+  @override
+  String pausedTimeAgo(String timeAgo) {
+    return 'Paused $timeAgo ago';
+  }
+
+  @override
+  String get tapFinalizeToSave =>
+      'Tap \"Finalize\" to save your workout and see your summary!';
+
+  @override
+  String get wouldYouLikeToContinue =>
+      'Would you like to continue where you left off?';
+
+  @override
+  String get addMore => 'Add More';
+
+  @override
+  String get resume => 'Resume';
+
+  @override
+  String get finalize => 'Finalize';
+
+  @override
+  String get resumeWorkoutTitle => 'Resume Workout';
+
+  @override
+  String continueWorkoutName(String name) {
+    return 'Continue $name';
+  }
+
+  @override
+  String get beginNewSession => 'Begin a new session';
+
+  @override
+  String get checkYourStats => 'Check your stats';
+
+  @override
+  String get browseExercises => 'Browse exercises';
+
+  @override
+  String get pastWorkouts => 'Past workouts';
+
+  @override
+  String get trackYourProgress => 'Track your progress';
+
+  @override
+  String get socialFeed => 'Social Feed';
+
+  @override
+  String get friendsAndActivity => 'Friends & activity';
+
+  @override
+  String get aiCoach => 'AI Coach';
+
+  @override
+  String get smartTrainingHelp => 'Smart training help';
+
+  @override
+  String get appPreferences => 'App preferences';
+
+  @override
+  String get day => 'day';
+
+  @override
+  String get days => 'days';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String daysAgo(int count) {
+    return '$count days ago';
+  }
+
+  @override
   String get exercise => 'Exercise';
 
   @override
@@ -544,6 +645,28 @@ class SEn extends S {
 
   @override
   String get noExercisesFound => 'No exercises found';
+
+  @override
+  String get tryAdjustingFilters =>
+      'Try adjusting your filters or create a custom exercise';
+
+  @override
+  String get errorLoadingExercises => 'Error loading exercises';
+
+  @override
+  String get viewProgressions => 'View Progressions';
+
+  @override
+  String get exerciseProgressions => 'Exercise Progressions';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get showVariants => 'Show Variants';
+
+  @override
+  String get all => 'All';
 
   @override
   String get weightReps => 'Weight & Reps';
@@ -703,9 +826,6 @@ class SEn extends S {
 
   @override
   String get streak => 'Streak';
-
-  @override
-  String get days => 'days';
 
   @override
   String get totalWorkoutsCompleted => 'Total Workouts Completed';

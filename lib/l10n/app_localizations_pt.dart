@@ -516,6 +516,106 @@ class SPt extends S {
   }
 
   @override
+  String get viewAchievements => 'Ver\nConquistas';
+
+  @override
+  String get library => 'Biblioteca';
+
+  @override
+  String get resumeWorkoutQuestion => 'Retomar Treino?';
+
+  @override
+  String get workoutCompleteExclamation => 'Treino Completo!';
+
+  @override
+  String get youCompletedAllExercises =>
+      'Você completou todos os exercícios mas esqueceu de finalizar:';
+
+  @override
+  String get youHaveUnfinishedWorkout => 'Você tem um treino inacabado:';
+
+  @override
+  String finishedTimeAgo(String timeAgo) {
+    return 'Finalizado há $timeAgo - não esqueça de salvar!';
+  }
+
+  @override
+  String pausedTimeAgo(String timeAgo) {
+    return 'Pausado há $timeAgo';
+  }
+
+  @override
+  String get tapFinalizeToSave =>
+      'Toque em \"Finalizar\" para salvar seu treino e ver o resumo!';
+
+  @override
+  String get wouldYouLikeToContinue => 'Gostaria de continuar de onde parou?';
+
+  @override
+  String get addMore => 'Adicionar Mais';
+
+  @override
+  String get resume => 'Retomar';
+
+  @override
+  String get finalize => 'Finalizar';
+
+  @override
+  String get resumeWorkoutTitle => 'Retomar Treino';
+
+  @override
+  String continueWorkoutName(String name) {
+    return 'Continuar $name';
+  }
+
+  @override
+  String get beginNewSession => 'Começar uma nova sessão';
+
+  @override
+  String get checkYourStats => 'Veja suas estatísticas';
+
+  @override
+  String get browseExercises => 'Navegar exercícios';
+
+  @override
+  String get pastWorkouts => 'Treinos anteriores';
+
+  @override
+  String get trackYourProgress => 'Acompanhe seu progresso';
+
+  @override
+  String get socialFeed => 'Feed Social';
+
+  @override
+  String get friendsAndActivity => 'Amigos e atividades';
+
+  @override
+  String get aiCoach => 'Treinador IA';
+
+  @override
+  String get smartTrainingHelp => 'Ajuda inteligente de treino';
+
+  @override
+  String get appPreferences => 'Preferências do app';
+
+  @override
+  String get day => 'dia';
+
+  @override
+  String get days => 'dias';
+
+  @override
+  String get today => 'Hoje';
+
+  @override
+  String get yesterday => 'Ontem';
+
+  @override
+  String daysAgo(int count) {
+    return '$count dias atrás';
+  }
+
+  @override
   String get exercise => 'Exercício';
 
   @override
@@ -550,6 +650,28 @@ class SPt extends S {
 
   @override
   String get noExercisesFound => 'Nenhum exercício encontrado';
+
+  @override
+  String get tryAdjustingFilters =>
+      'Tente ajustar os filtros ou criar um exercício personalizado';
+
+  @override
+  String get errorLoadingExercises => 'Erro ao carregar exercícios';
+
+  @override
+  String get viewProgressions => 'Ver Progressões';
+
+  @override
+  String get exerciseProgressions => 'Progressões de Exercícios';
+
+  @override
+  String get favorites => 'Favoritos';
+
+  @override
+  String get showVariants => 'Mostrar Variantes';
+
+  @override
+  String get all => 'Todos';
 
   @override
   String get weightReps => 'Peso e Reps';
@@ -709,9 +831,6 @@ class SPt extends S {
 
   @override
   String get streak => 'Sequência';
-
-  @override
-  String get days => 'dias';
 
   @override
   String get totalWorkoutsCompleted => 'Total de Treinos Concluídos';

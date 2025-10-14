@@ -228,8 +228,75 @@
   "finish": "Finish",
   "followingExercisesNoSets": "The following exercises have no completed sets:",
   "setsCount": "{count} sets",
+  "viewAchievements": "View\nAchievements",
+  "library": "Library",
+  "resumeWorkoutQuestion": "Resume Workout?",
+  "workoutCompleteExclamation": "Workout Complete!",
+  "youCompletedAllExercises": "You completed all exercises but forgot to finalize:",
+  "youHaveUnfinishedWorkout": "You have an unfinished workout:",
+  "finishedTimeAgo": "Finished {timeAgo} ago - don't forget to save!",
+  "@finishedTimeAgo": {
+    "description": "Time since workout was finished",
+    "placeholders": {
+      "timeAgo": {
+        "type": "String"
+      }
+    }
+  },
+  "pausedTimeAgo": "Paused {timeAgo} ago",
+  "@pausedTimeAgo": {
+    "description": "Time since workout was paused",
+    "placeholders": {
+      "timeAgo": {
+        "type": "String"
+      }
+    }
+  },
+  "tapFinalizeToSave": "Tap \"Finalize\" to save your workout and see your summary!",
+  "wouldYouLikeToContinue": "Would you like to continue where you left off?",
+  "addMore": "Add More",
+  "resume": "Resume",
+  "finalize": "Finalize",
+  "resumeWorkoutTitle": "Resume Workout",
+  "continueWorkoutName": "Continue {name}",
+  "@continueWorkoutName": {
+    "description": "Continue workout with name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "beginNewSession": "Begin a new session",
+  "checkYourStats": "Check your stats",
+  "browseExercises": "Browse exercises",
+  "pastWorkouts": "Past workouts",
+  "trackYourProgress": "Track your progress",
+  "socialFeed": "Social Feed",
+  "friendsAndActivity": "Friends & activity",
+  "aiCoach": "AI Coach",
+  "smartTrainingHelp": "Smart training help",
+  "appPreferences": "App preferences",
+  "home": "Home",
+  "workouts": "Workouts",
+  "exercises": "Exercises",
+  "progress": "Progress",
+  "day": "day",
+  "days": "days",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "description": "How many days ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   
   "exercise": "Exercise",
+  "exerciseLibrary": "Exercise Library",
   "createExercise": "Create Exercise",
   "editExercise": "Edit Exercise",
   "exerciseName": "Exercise Name",
@@ -241,6 +308,13 @@
   "customExercise": "Custom Exercise",
   "searchExercises": "Search exercises...",
   "noExercisesFound": "No exercises found",
+  "tryAdjustingFilters": "Try adjusting your filters or create a custom exercise",
+  "errorLoadingExercises": "Error loading exercises",
+  "viewProgressions": "View Progressions",
+  "exerciseProgressions": "Exercise Progressions",
+  "favorites": "Favorites",
+  "showVariants": "Show Variants",
+  "all": "All",
   
   "weightReps": "Weight & Reps",
   "bodyweightReps": "Bodyweight Reps",

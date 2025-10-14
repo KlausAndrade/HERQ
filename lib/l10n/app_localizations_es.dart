@@ -518,6 +518,108 @@ class SEs extends S {
   }
 
   @override
+  String get viewAchievements => 'Ver\nLogros';
+
+  @override
+  String get library => 'Biblioteca';
+
+  @override
+  String get resumeWorkoutQuestion => '¿Reanudar Entrenamiento?';
+
+  @override
+  String get workoutCompleteExclamation => '¡Entrenamiento Completo!';
+
+  @override
+  String get youCompletedAllExercises =>
+      'Completaste todos los ejercicios pero olvidaste finalizar:';
+
+  @override
+  String get youHaveUnfinishedWorkout =>
+      'Tienes un entrenamiento sin terminar:';
+
+  @override
+  String finishedTimeAgo(String timeAgo) {
+    return 'Finalizado hace $timeAgo - ¡no olvides guardar!';
+  }
+
+  @override
+  String pausedTimeAgo(String timeAgo) {
+    return 'Pausado hace $timeAgo';
+  }
+
+  @override
+  String get tapFinalizeToSave =>
+      'Toca \"Finalizar\" para guardar tu entrenamiento y ver el resumen!';
+
+  @override
+  String get wouldYouLikeToContinue =>
+      '¿Te gustaría continuar donde lo dejaste?';
+
+  @override
+  String get addMore => 'Añadir Más';
+
+  @override
+  String get resume => 'Reanudar';
+
+  @override
+  String get finalize => 'Finalizar';
+
+  @override
+  String get resumeWorkoutTitle => 'Reanudar Entrenamiento';
+
+  @override
+  String continueWorkoutName(String name) {
+    return 'Continuar $name';
+  }
+
+  @override
+  String get beginNewSession => 'Comenzar una nueva sesión';
+
+  @override
+  String get checkYourStats => 'Revisa tus estadísticas';
+
+  @override
+  String get browseExercises => 'Explorar ejercicios';
+
+  @override
+  String get pastWorkouts => 'Entrenamientos anteriores';
+
+  @override
+  String get trackYourProgress => 'Sigue tu progreso';
+
+  @override
+  String get socialFeed => 'Feed Social';
+
+  @override
+  String get friendsAndActivity => 'Amigos y actividad';
+
+  @override
+  String get aiCoach => 'Entrenador IA';
+
+  @override
+  String get smartTrainingHelp => 'Ayuda inteligente de entrenamiento';
+
+  @override
+  String get appPreferences => 'Preferencias de la app';
+
+  @override
+  String get day => 'día';
+
+  @override
+  String get days => 'días';
+
+  @override
+  String get today => 'Hoy';
+
+  @override
+  String get yesterday => 'Ayer';
+
+  @override
+  String daysAgo(int count) {
+    return 'hace $count días';
+  }
+
+  @override
   String get exercise => 'Ejercicio';
 
   @override
@@ -552,6 +654,28 @@ class SEs extends S {
 
   @override
   String get noExercisesFound => 'No se encontraron ejercicios';
+
+  @override
+  String get tryAdjustingFilters =>
+      'Intente ajustar los filtros o crear un ejercicio personalizado';
+
+  @override
+  String get errorLoadingExercises => 'Error al cargar ejercicios';
+
+  @override
+  String get viewProgressions => 'Ver Progresiones';
+
+  @override
+  String get exerciseProgressions => 'Progresiones de Ejercicios';
+
+  @override
+  String get favorites => 'Favoritos';
+
+  @override
+  String get showVariants => 'Mostrar Variantes';
+
+  @override
+  String get all => 'Todos';
 
   @override
   String get weightReps => 'Peso y Reps';
@@ -711,9 +835,6 @@ class SEs extends S {
 
   @override
   String get streak => 'Racha';
-
-  @override
-  String get days => 'días';
 
   @override
   String get totalWorkoutsCompleted => 'Total de Entrenamientos Completados';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/gamification_provider.dart';
 import '../../domain/models/achievement.dart';
+import 'package:gym_ai/l10n/app_localizations.dart';
 
 class StreakBadge extends ConsumerWidget {
   final double size;
@@ -72,7 +73,7 @@ class StreakBadge extends ConsumerWidget {
                 if (currentStreak > 0) ...[
                   const SizedBox(width: 4),
                   Text(
-                    'day${currentStreak != 1 ? 's' : ''}',
+                    currentStreak != 1 ? S.of(context)!.days : S.of(context)!.day,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: size * 0.3,
@@ -297,7 +298,7 @@ class AchievementCard extends StatelessWidget {
                         if (unlockedAt != null) ...[
                           const SizedBox(width: 8),
                           Text(
-                            _formatDate(unlockedAt!),
+                            _formatDate(unlockedAt!, context),
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
@@ -344,16 +345,16 @@ class AchievementCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, BuildContext context) {
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays == 0) {
-      return 'Today';
+      return S.of(context)!.today;
     } else if (difference.inDays == 1) {
-      return 'Yesterday';
+      return S.of(context)!.yesterday;
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
+      return S.of(context)!.daysAgo(difference.inDays);
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }

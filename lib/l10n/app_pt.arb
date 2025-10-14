@@ -228,8 +228,75 @@
   "finish": "Finalizar",
   "followingExercisesNoSets": "Os seguintes exercícios não têm séries completas:",
   "setsCount": "{count} séries",
+  "viewAchievements": "Ver\nConquistas",
+  "library": "Biblioteca",
+  "resumeWorkoutQuestion": "Retomar Treino?",
+  "workoutCompleteExclamation": "Treino Completo!",
+  "youCompletedAllExercises": "Você completou todos os exercícios mas esqueceu de finalizar:",
+  "youHaveUnfinishedWorkout": "Você tem um treino inacabado:",
+  "finishedTimeAgo": "Finalizado há {timeAgo} - não esqueça de salvar!",
+  "@finishedTimeAgo": {
+    "description": "Tempo desde que o treino foi finalizado",
+    "placeholders": {
+      "timeAgo": {
+        "type": "String"
+      }
+    }
+  },
+  "pausedTimeAgo": "Pausado há {timeAgo}",
+  "@pausedTimeAgo": {
+    "description": "Tempo desde que o treino foi pausado",
+    "placeholders": {
+      "timeAgo": {
+        "type": "String"
+      }
+    }
+  },
+  "tapFinalizeToSave": "Toque em \"Finalizar\" para salvar seu treino e ver o resumo!",
+  "wouldYouLikeToContinue": "Gostaria de continuar de onde parou?",
+  "addMore": "Adicionar Mais",
+  "resume": "Retomar",
+  "finalize": "Finalizar",
+  "resumeWorkoutTitle": "Retomar Treino",
+  "continueWorkoutName": "Continuar {name}",
+  "@continueWorkoutName": {
+    "description": "Continuar treino com nome",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "beginNewSession": "Começar uma nova sessão",
+  "checkYourStats": "Veja suas estatísticas",
+  "browseExercises": "Navegar exercícios",
+  "pastWorkouts": "Treinos anteriores",
+  "trackYourProgress": "Acompanhe seu progresso",
+  "socialFeed": "Feed Social",
+  "friendsAndActivity": "Amigos e atividades",
+  "aiCoach": "Treinador IA",
+  "smartTrainingHelp": "Ajuda inteligente de treino",
+  "appPreferences": "Preferências do app",
+  "home": "Início",
+  "workouts": "Treinos",
+  "exercises": "Exercícios",
+  "progress": "Progresso",
+  "day": "dia",
+  "days": "dias",
+  "today": "Hoje",
+  "yesterday": "Ontem",
+  "daysAgo": "{count} dias atrás",
+  "@daysAgo": {
+    "description": "Quantos dias atrás",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   
   "exercise": "Exercício",
+  "exerciseLibrary": "Biblioteca de Exercícios",
   "createExercise": "Criar Exercício",
   "editExercise": "Editar Exercício",
   "exerciseName": "Nome do Exercício",
@@ -241,6 +308,13 @@
   "customExercise": "Exercício Personalizado",
   "searchExercises": "Buscar exercícios...",
   "noExercisesFound": "Nenhum exercício encontrado",
+  "tryAdjustingFilters": "Tente ajustar os filtros ou criar um exercício personalizado",
+  "errorLoadingExercises": "Erro ao carregar exercícios",
+  "viewProgressions": "Ver Progressões",
+  "exerciseProgressions": "Progressões de Exercícios",
+  "favorites": "Favoritos",
+  "showVariants": "Mostrar Variantes",
+  "all": "Todos",
   
   "weightReps": "Peso e Reps",
   "bodyweightReps": "Reps com Peso Corporal",

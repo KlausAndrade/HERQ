@@ -1077,6 +1077,186 @@ abstract class S {
   /// **'{count} sets'**
   String setsCount(Object count);
 
+  /// No description provided for @viewAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'View\nAchievements'**
+  String get viewAchievements;
+
+  /// No description provided for @library.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get library;
+
+  /// No description provided for @resumeWorkoutQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Workout?'**
+  String get resumeWorkoutQuestion;
+
+  /// No description provided for @workoutCompleteExclamation.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Complete!'**
+  String get workoutCompleteExclamation;
+
+  /// No description provided for @youCompletedAllExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'You completed all exercises but forgot to finalize:'**
+  String get youCompletedAllExercises;
+
+  /// No description provided for @youHaveUnfinishedWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'You have an unfinished workout:'**
+  String get youHaveUnfinishedWorkout;
+
+  /// Time since workout was finished
+  ///
+  /// In en, this message translates to:
+  /// **'Finished {timeAgo} ago - don\'t forget to save!'**
+  String finishedTimeAgo(String timeAgo);
+
+  /// Time since workout was paused
+  ///
+  /// In en, this message translates to:
+  /// **'Paused {timeAgo} ago'**
+  String pausedTimeAgo(String timeAgo);
+
+  /// No description provided for @tapFinalizeToSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \"Finalize\" to save your workout and see your summary!'**
+  String get tapFinalizeToSave;
+
+  /// No description provided for @wouldYouLikeToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to continue where you left off?'**
+  String get wouldYouLikeToContinue;
+
+  /// No description provided for @addMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Add More'**
+  String get addMore;
+
+  /// No description provided for @resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get resume;
+
+  /// No description provided for @finalize.
+  ///
+  /// In en, this message translates to:
+  /// **'Finalize'**
+  String get finalize;
+
+  /// No description provided for @resumeWorkoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Workout'**
+  String get resumeWorkoutTitle;
+
+  /// Continue workout with name
+  ///
+  /// In en, this message translates to:
+  /// **'Continue {name}'**
+  String continueWorkoutName(String name);
+
+  /// No description provided for @beginNewSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin a new session'**
+  String get beginNewSession;
+
+  /// No description provided for @checkYourStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your stats'**
+  String get checkYourStats;
+
+  /// No description provided for @browseExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse exercises'**
+  String get browseExercises;
+
+  /// No description provided for @pastWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Past workouts'**
+  String get pastWorkouts;
+
+  /// No description provided for @trackYourProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your progress'**
+  String get trackYourProgress;
+
+  /// No description provided for @socialFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Social Feed'**
+  String get socialFeed;
+
+  /// No description provided for @friendsAndActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends & activity'**
+  String get friendsAndActivity;
+
+  /// No description provided for @aiCoach.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Coach'**
+  String get aiCoach;
+
+  /// No description provided for @smartTrainingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart training help'**
+  String get smartTrainingHelp;
+
+  /// No description provided for @appPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'App preferences'**
+  String get appPreferences;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get day;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get days;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// How many days ago
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days ago'**
+  String daysAgo(int count);
+
   /// No description provided for @exercise.
   ///
   /// In en, this message translates to:
@@ -1148,6 +1328,48 @@ abstract class S {
   /// In en, this message translates to:
   /// **'No exercises found'**
   String get noExercisesFound;
+
+  /// No description provided for @tryAdjustingFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your filters or create a custom exercise'**
+  String get tryAdjustingFilters;
+
+  /// No description provided for @errorLoadingExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading exercises'**
+  String get errorLoadingExercises;
+
+  /// No description provided for @viewProgressions.
+  ///
+  /// In en, this message translates to:
+  /// **'View Progressions'**
+  String get viewProgressions;
+
+  /// No description provided for @exerciseProgressions.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Progressions'**
+  String get exerciseProgressions;
+
+  /// No description provided for @favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favorites;
+
+  /// No description provided for @showVariants.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Variants'**
+  String get showVariants;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
 
   /// No description provided for @weightReps.
   ///
@@ -1466,12 +1688,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Streak'**
   String get streak;
-
-  /// No description provided for @days.
-  ///
-  /// In en, this message translates to:
-  /// **'days'**
-  String get days;
 
   /// No description provided for @totalWorkoutsCompleted.
   ///

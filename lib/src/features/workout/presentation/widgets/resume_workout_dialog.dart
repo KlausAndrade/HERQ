@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/models/active_workout.dart';
+import 'package:gym_ai/l10n/app_localizations.dart';
 
 /// Dialog to prompt user to resume an incomplete workout
 class ResumeWorkoutDialog extends StatelessWidget {
@@ -53,10 +54,10 @@ class ResumeWorkoutDialog extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              isCompleteForgotten 
-                  ? 'Workout Complete!' 
-                  : 'Resume Workout?',
+            child:               Text(
+                isCompleteForgotten 
+                  ? S.of(context)!.workoutCompleteExclamation
+                  : S.of(context)!.resumeWorkoutQuestion,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -68,10 +69,10 @@ class ResumeWorkoutDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            isCompleteForgotten
-                ? 'You completed all exercises but forgot to finalize:'
-                : 'You have an unfinished workout:',
+              Text(
+                isCompleteForgotten
+                ? S.of(context)!.youCompletedAllExercises
+                : S.of(context)!.youHaveUnfinishedWorkout,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurface.withOpacity(0.7),
             ),
@@ -161,10 +162,10 @@ class ResumeWorkoutDialog extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Expanded(
-                          child: Text(
-                            isCompleteForgotten
-                                ? 'Finished ${_formatDuration(timeSinceLastSave)} ago - don\'t forget to save!'
-                                : 'Paused ${_formatDuration(timeSinceLastSave)} ago',
+                          child:                               Text(
+                                isCompleteForgotten
+                                ? S.of(context)!.finishedTimeAgo(_formatDuration(timeSinceLastSave))
+                                : S.of(context)!.pausedTimeAgo(_formatDuration(timeSinceLastSave)),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: isCompleteForgotten ? colorScheme.secondary : colorScheme.error,
                               fontWeight: FontWeight.w500,
@@ -205,10 +206,10 @@ class ResumeWorkoutDialog extends StatelessWidget {
           ),
           
           const SizedBox(height: 16),
-          Text(
-            isCompleteForgotten
-                ? 'Tap "Finalize" to save your workout and see your summary!'
-                : 'Would you like to continue where you left off?',
+            Text(
+              isCompleteForgotten 
+                ? S.of(context)!.tapFinalizeToSave
+                : S.of(context)!.wouldYouLikeToContinue,
             style: theme.textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurface.withOpacity(0.6),
               fontStyle: FontStyle.italic,
@@ -230,7 +231,7 @@ class ResumeWorkoutDialog extends StatelessWidget {
             TextButton(
               onPressed: onDiscard,
               child: Text(
-                'Discard',
+                S.of(context)!.discard,
                 style: TextStyle(
                   color: colorScheme.error,
                   fontWeight: FontWeight.w600,
@@ -249,16 +250,20 @@ class ResumeWorkoutDialog extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onResume,
                     icon: const Icon(Icons.add),
-                    label: const Text('Add More'),
+                    label: Text(S.of(context)!.addMore, textAlign: TextAlign.center),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: colorScheme.primary,
+                      minimumSize: const Size(0, 48), // Consistent height
                     ),
                   )
                 else if (!showFinishOption)
                   FilledButton.icon(
                     onPressed: onResume,
                     icon: const Icon(Icons.play_arrow),
-                    label: const Text('Resume'),
+                    label: Text(S.of(context)!.resume, textAlign: TextAlign.center),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 48), // Consistent height
+                    ),
                   ),
                 
                 // Spacing between buttons
@@ -269,11 +274,15 @@ class ResumeWorkoutDialog extends StatelessWidget {
                   FilledButton.icon(
                     onPressed: onFinish,
                     icon: Icon(isCompleteForgotten ? Icons.celebration : Icons.check),
-                    label: Text(isCompleteForgotten ? 'Finalize' : 'Finish'),
+                    label: Text(
+                      isCompleteForgotten ? S.of(context)!.finalize : S.of(context)!.finish,
+                      textAlign: TextAlign.center,
+                    ),
                     style: FilledButton.styleFrom(
                       backgroundColor: isCompleteForgotten 
                           ? colorScheme.primary
                           : colorScheme.secondary,
+                      minimumSize: const Size(0, 48), // Consistent height
                     ),
                   ),
                 
@@ -283,7 +292,10 @@ class ResumeWorkoutDialog extends StatelessWidget {
                   FilledButton.icon(
                     onPressed: onResume,
                     icon: const Icon(Icons.play_arrow),
-                    label: const Text('Resume'),
+                    label: Text(S.of(context)!.resume, textAlign: TextAlign.center),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 48), // Consistent height
+                    ),
                   ),
                 ],
               ],

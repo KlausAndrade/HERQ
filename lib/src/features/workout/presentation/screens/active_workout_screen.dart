@@ -309,16 +309,45 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton.icon(
+                        child: OutlinedButton(
                           onPressed: () => _showAddExerciseDialog(context),
-                          icon: const Icon(Icons.add),
-                          label: Text(S.of(context)!.addExercise),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(4, 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.add, size: 20),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  S.of(context)!.addExercise,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: () => _showFinishWorkoutDialog(context),
-                        child: Text(S.of(context)!.finishWorkout),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => _showFinishWorkoutDialog(context),
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(0, 48),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          ),
+                          child: Text(
+                            S.of(context)!.finishWorkout,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -894,13 +923,13 @@ class _ExerciseCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Card(
-        margin: const EdgeInsets.only(bottom: 6),
+        margin: const EdgeInsets.only(bottom: 4),
         child: Column(
           children: [
             InkWell(
               onTap: onTap,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
                 child: Row(
                   children: [
                     Container(
@@ -1000,12 +1029,12 @@ class _ExerciseCard extends ConsumerWidget {
             if (isExpanded) ...[
               const Divider(height: 1),
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                padding: const EdgeInsets.fromLTRB(2, 18, 2, 2),
                 child: Column(
                   children: [
                     // Rest Timer Controls
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(10),
@@ -1025,7 +1054,7 @@ class _ExerciseCard extends ConsumerWidget {
                             size: 16,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 10),
                           Text(
                             'Rest',
                             style: Theme.of(context)
@@ -1185,16 +1214,35 @@ class _ExerciseCard extends ConsumerWidget {
                         );
                       },
                     ),
-                    const SizedBox(height: 12),
                     // Add Set Button
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton.icon(
+                      height: 36, // Fixed height for consistency
+                      child: OutlinedButton(
                         onPressed: onAddSet,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Set'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.add, size: 18),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                'Add Set',
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 12), // Space after Add Set button
                   ],
                 ),
               ),
