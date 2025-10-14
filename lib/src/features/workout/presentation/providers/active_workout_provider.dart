@@ -823,14 +823,19 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       final exercise = exercises[exerciseIndex];
 
+      print('🔄 Updating exercise variant:');
+      print('   Exercise: ${exercise.name}');
+      print('   Old equipment: ${exercise.equipmentUsed} → New: $equipmentUsed');
+      print('   Old variant: ${exercise.variantType} → New: $variantType');
+
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
         name: exercise.name,
         sets: exercise.sets,
         restTimerSeconds: exercise.restTimerSeconds,
         exerciseType: exercise.exerciseType,
-        equipmentUsed: equipmentUsed ?? exercise.equipmentUsed,
-        variantType: variantType ?? exercise.variantType,
+        equipmentUsed: equipmentUsed, // Use new value directly (can be null)
+        variantType: variantType, // Use new value directly (can be null)
       );
 
       state = ActiveWorkout(
@@ -845,6 +850,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Mark as modified
       _ref.read(workoutModificationsProvider.notifier).markAsModified();
+      
+      print('✅ Exercise variant updated successfully');
     }
   }
 

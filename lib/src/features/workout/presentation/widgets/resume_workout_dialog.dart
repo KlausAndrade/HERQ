@@ -239,9 +239,11 @@ class ResumeWorkoutDialog extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             // Main action buttons in a row
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                 // Resume/Add More button
                 if (isCompleteForgotten)
                   OutlinedButton.icon(
@@ -285,6 +287,7 @@ class ResumeWorkoutDialog extends StatelessWidget {
                   ),
                 ],
               ],
+              ),
             ),
           ],
         ),

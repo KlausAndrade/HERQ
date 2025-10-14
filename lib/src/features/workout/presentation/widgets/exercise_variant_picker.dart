@@ -70,7 +70,6 @@ class ExerciseVariantPicker extends StatelessWidget {
         currentVariant: currentVariant,
         onChanged: (equipment, variant) {
           onChanged(equipment, variant);
-          Navigator.of(context).pop();
         },
       ),
     );
@@ -163,9 +162,12 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                     ),
                     selected: isSelected,
                     onSelected: (selected) {
+                      final newEquipment = selected ? equipment : null;
                       setState(() {
-                        selectedEquipment = selected ? equipment : null;
+                        selectedEquipment = newEquipment;
                       });
+                      // Apply change immediately
+                      widget.onChanged(newEquipment, selectedVariant == 'standard' ? null : selectedVariant);
                     },
                     selectedColor: theme.colorScheme.primaryContainer,
                   );
@@ -193,28 +195,19 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                     label: Text(_formatLabel(variant)),
                     selected: isSelected,
                     onSelected: (selected) {
+                      final newVariant = selected ? variant : 'standard';
                       setState(() {
-                        selectedVariant = selected ? variant : 'standard';
+                        selectedVariant = newVariant;
                       });
+                      // Apply change immediately
+                      widget.onChanged(selectedEquipment, newVariant == 'standard' ? null : newVariant);
                     },
                     selectedColor: theme.colorScheme.secondaryContainer,
                   );
                 }).toList(),
               ),
               
-              const SizedBox(height: 24),
-              
-              // Apply Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    widget.onChanged(selectedEquipment, selectedVariant == 'standard' ? null : selectedVariant);
-                  },
-                  child: const Text('Apply'),
-                ),
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
             ],
           ),
         ),
