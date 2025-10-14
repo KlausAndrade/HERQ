@@ -30,6 +30,10 @@ class SetEntries extends Table {
       real().nullable()(); // For body weighted exercises (additional weight)
   RealColumn get distance =>
       real().nullable()(); // For distance-based exercises (stored in meters)
+  TextColumn get equipmentUsed =>
+      text().nullable()(); // Equipment variant (barbell, dumbbell, cable, etc)
+  TextColumn get variantType =>
+      text().nullable()(); // Variant type (standard, assisted, weighted, etc)
 
   DateTimeColumn get completedAt => dateTime()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

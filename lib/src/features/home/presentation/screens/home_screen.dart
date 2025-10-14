@@ -7,6 +7,7 @@ import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_animations.dart';
 import '../../../../core/services/haptic_service.dart';
+import 'package:gym_ai/l10n/app_localizations.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
 import '../../../workout/presentation/providers/active_workout_provider.dart';
 import '../../../workout/presentation/providers/workout_checkpoint_provider.dart';
@@ -107,7 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Welcome back!',
+                              S.of(context)!.welcomeBack,
                               style: Theme.of(context)
                                   .textTheme
                                   .displayMedium
@@ -119,7 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Ready for your next workout?',
+                              S.of(context)!.readyForWorkout,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge
@@ -138,9 +139,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       const SizedBox(width: 8),
                       // Gamification badges
                       const StreakBadge(size: 36, showText: true),
-                      const SizedBox(width: 8),
-                      const LevelIndicator(size: 48, showProgress: false),
-                      const SizedBox(width: 8),
+                      // const SizedBox(width: 8),
+                      // const LevelIndicator(size: 48, showProgress: false),
+                      const SizedBox(width: 2),
                       IconButton(
                         onPressed: () async {
                           await HapticService.lightImpact();
@@ -188,95 +189,104 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Quick Actions',
+                S.of(context)!.quickActions,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _QuickActionCard(
-                      title:
-                          hasActiveWorkout ? 'Resume Workout' : 'Start Workout',
-                      subtitle: hasActiveWorkout
-                          ? 'Continue ${activeWorkout.name}'
-                          : 'Begin a new session',
-                      icon: hasActiveWorkout
-                          ? Icons.play_circle_filled
-                          : Icons.play_arrow,
-                      color: hasActiveWorkout
-                          ? Colors.orange
-                          : AppTheme.primaryColor,
-                      onTap: () async {
-                        if (hasActiveWorkout) {
-                          // Resume active workout
-                          context.go('/active-workout');
-                        } else {
-                          // Start new workout
-                          context.go('/workout-templates?mode=start');
-                        }
-                      },
+              IntrinsicHeight( // Ensures both cards have the same height
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: _QuickActionCard(
+                        title:
+                            hasActiveWorkout ? S.of(context)!.resumeWorkoutTitle : S.of(context)!.startWorkout,
+                        subtitle: hasActiveWorkout
+                            ? S.of(context)!.continueWorkoutName(activeWorkout.name)
+                            : S.of(context)!.beginNewSession,
+                        icon: hasActiveWorkout
+                            ? Icons.play_circle_filled
+                            : Icons.play_arrow,
+                        color: hasActiveWorkout
+                            ? Colors.orange
+                            : AppTheme.primaryColor,
+                        onTap: () async {
+                          if (hasActiveWorkout) {
+                            // Resume active workout
+                            context.go('/active-workout');
+                          } else {
+                            // Start new workout
+                            context.go('/workout-templates?mode=start');
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _QuickActionCard(
-                      title: 'Achievements',
-                      subtitle: 'Track your progress',
-                      icon: Icons.emoji_events,
-                      color: Colors.amber,
-                      onTap: () => context.go('/gamification'),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _QuickActionCard(
+                        title: S.of(context)!.achievements,
+                        subtitle: S.of(context)!.trackYourProgress,
+                        icon: Icons.emoji_events,
+                        color: Colors.amber,
+                        onTap: () => context.go('/gamification'),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: _QuickActionCard(
+                        title: S.of(context)!.viewProgress,
+                        subtitle: S.of(context)!.checkYourStats,
+                        icon: Icons.trending_up,
+                        color: AppTheme.secondaryColor,
+                        onTap: () => context.go('/progress'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: _QuickActionCard(
+                        title: S.of(context)!.exerciseLibrary,
+                        subtitle: S.of(context)!.browseExercises,
+                        icon: Icons.fitness_center,
+                        color: AppTheme.accentColor,
+                        onTap: () => context.go('/exercises'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _QuickActionCard(
+                        title: S.of(context)!.history,
+                        subtitle: S.of(context)!.pastWorkouts,
+                        icon: Icons.history,
+                        color: Colors.purple,
+                        onTap: () => context.go('/workout-history'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
                     child: _QuickActionCard(
-                      title: 'View Progress',
-                      subtitle: 'Check your stats',
-                      icon: Icons.trending_up,
-                      color: AppTheme.secondaryColor,
-                      onTap: () => context.go('/progress'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _QuickActionCard(
-                      title: 'Exercise Library',
-                      subtitle: 'Browse exercises',
-                      icon: Icons.fitness_center,
-                      color: AppTheme.accentColor,
-                      onTap: () => context.go('/exercises'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _QuickActionCard(
-                      title: 'History',
-                      subtitle: 'Past workouts',
-                      icon: Icons.history,
-                      color: Colors.purple,
-                      onTap: () => context.go('/workout-history'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _QuickActionCard(
-                      title: 'Social Feed',
-                      subtitle: 'Friends & activity',
+                      title: S.of(context)!.socialFeed,
+                      subtitle: S.of(context)!.friendsAndActivity,
                       icon: Icons.people,
                       color: Colors.blue,
                       onTap: () => context.go('/social'),
@@ -299,8 +309,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   Expanded(
                     child: _QuickActionCard(
-                      title: 'AI Coach',
-                      subtitle: 'Smart training help',
+                      title: S.of(context)!.aiCoach,
+                      subtitle: S.of(context)!.smartTrainingHelp,
                       icon: Icons.psychology,
                       color: Colors.teal,
                       onTap: () => context.go('/ai-coach'),
@@ -309,8 +319,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _QuickActionCard(
-                      title: 'Settings',
-                      subtitle: 'App preferences',
+                      title: S.of(context)!.settings,
+                      subtitle: S.of(context)!.appPreferences,
                       icon: Icons.settings,
                       color: Colors.grey,
                       onTap: () => context.go('/settings'),
@@ -333,7 +343,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'This Week',
+              S.of(context)!.thisWeek,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -344,7 +354,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   Expanded(
                     child: _StatItem(
-                      label: 'Workouts',
+                      label: S.of(context)!.workouts,
                       value: stats.workoutsCount.toString(),
                       icon: Icons.fitness_center,
                     ),
@@ -369,7 +379,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   Expanded(
                     child: _StatItem(
-                      label: 'Workouts',
+                      label: S.of(context)!.workouts,
                       value: '-',
                       icon: Icons.fitness_center,
                     ),
@@ -394,7 +404,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   Expanded(
                     child: _StatItem(
-                      label: 'Workouts',
+                      label: S.of(context)!.workouts,
                       value: '0',
                       icon: Icons.fitness_center,
                     ),
@@ -431,7 +441,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Row(
           children: [
             Text(
-              'Recent Workouts',
+              S.of(context)!.recentWorkouts,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -439,7 +449,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const Spacer(),
             TextButton(
               onPressed: () => context.go('/workout-history'),
-              child: const Text('View All'),
+              child: Text(S.of(context)!.viewAll),
             ),
           ],
         ),
@@ -459,11 +469,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'No workouts yet',
+                        S.of(context)!.noWorkoutsYet,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
-                        'Start your first workout to see your progress here',
+                        S.of(context)!.startFirstWorkout,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Theme.of(context).colorScheme.outline,
                             ),
@@ -562,26 +572,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               break;
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: S.of(context)!.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center_outlined),
-            activeIcon: Icon(Icons.fitness_center),
-            label: 'Workouts',
+            icon: const Icon(Icons.fitness_center_outlined),
+            activeIcon: const Icon(Icons.fitness_center),
+            label: S.of(context)!.workouts,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Exercises',
+            icon: const Icon(Icons.search_outlined),
+            activeIcon: const Icon(Icons.search),
+            label: S.of(context)!.exercises,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up_outlined),
-            activeIcon: Icon(Icons.trending_up),
-            label: 'Progress',
+            icon: const Icon(Icons.trending_up_outlined),
+            activeIcon: const Icon(Icons.trending_up),
+            label: S.of(context)!.progress,
           ),
         ],
       );
@@ -673,41 +683,49 @@ class _QuickActionCardState extends State<_QuickActionCard>
               onTapUp: _handleTapUp,
               onTapCancel: _handleTapCancel,
               borderRadius: BorderRadius.circular(AppTheme.radiusMD),
-              child: Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMD),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(AppTheme.spacingSM),
-                      decoration: BoxDecoration(
-                        color: widget.color.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 120), // Ensure consistent height
+                child: Padding(
+                  padding: const EdgeInsets.all(AppTheme.spacingMD),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(AppTheme.spacingSM),
+                        decoration: BoxDecoration(
+                          color: widget.color.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+                        ),
+                        child: Icon(
+                          widget.icon,
+                          color: widget.color,
+                          size: 24,
+                        ),
                       ),
-                      child: Icon(
-                        widget.icon,
-                        color: widget.color,
-                        size: 24,
+                      const SizedBox(height: AppTheme.spacingSM),
+                      Text(
+                        widget.title,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                        maxLines: 2, // Allow for two-line titles
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    const SizedBox(height: AppTheme.spacingSM),
-                    Text(
-                      widget.title,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    const SizedBox(height: AppTheme.spacingXS),
-                    Text(
-                      widget.subtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.6),
-                          ),
-                    ),
-                  ],
+                      const SizedBox(height: AppTheme.spacingXS),
+                      Text(
+                        widget.subtitle,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.6),
+                            ),
+                        maxLines: 2, // Allow for two-line subtitles
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

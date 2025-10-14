@@ -51,7 +51,7 @@ final exerciseSearchProvider =
   final q = '%${query.toLowerCase()}%';
 
   final rows = await database.customSelect(
-    'SELECT * FROM exercises WHERE LOWER(name) LIKE ? OR LOWER(primary_muscle_group) LIKE ? OR LOWER(aliases) LIKE ? OR LOWER(tags) LIKE ? COLLATE NOCASE',
+    'SELECT * FROM exercises WHERE LOWER(name) LIKE ? OR LOWER(primary_muscle_group) LIKE ? OR (aliases IS NOT NULL AND LOWER(aliases) LIKE ?) OR (tags IS NOT NULL AND LOWER(tags) LIKE ?) COLLATE NOCASE',
     variables: [
       Variable<String>(q),
       Variable<String>(q),

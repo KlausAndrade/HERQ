@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:gym_ai/l10n/app_localizations.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/sync_provider.dart';
@@ -15,6 +16,7 @@ import '../../../gamification/data/providers/gamification_provider.dart';
 import '../../../social/presentation/providers/leaderboard_providers.dart';
 import '../../providers/data_export_provider.dart';
 import '../../providers/theme_provider.dart';
+import '../../providers/locale_provider.dart';
 import '../../providers/workout_settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -23,11 +25,12 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
     final workoutSettings = ref.watch(workoutSettingsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(S.of(context)!.settings),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
@@ -38,7 +41,7 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           // Account Section
           Text(
-            'Account',
+            S.of(context)!.account,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -55,21 +58,21 @@ class SettingsScreen extends ConsumerWidget {
                     children: [
                       ListTile(
                         leading: const Icon(Icons.check_circle, color: Colors.green),
-                        title: const Text('Logged In'),
-                        subtitle: Text(user.email ?? 'No email'),
+                        title: Text(S.of(context)!.loggedIn),
+                        subtitle: Text(user.email ?? S.of(context)!.noEmail),
                       ),
                       const Divider(height: 1),
                       ListTile(
                         leading: const Icon(Icons.edit),
-                        title: const Text('Edit Profile'),
-                        subtitle: const Text('Update your display name and bio'),
+                        title: Text(S.of(context)!.editProfile),
+                        subtitle: Text(S.of(context)!.updateDisplayNameBio),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => context.push('/edit-profile'),
                       ),
                       const Divider(height: 1),
                       ListTile(
                         leading: const Icon(Icons.logout, color: Colors.red),
-                        title: const Text('Sign Out'),
+                        title: Text(S.of(context)!.signOut),
                           onTap: () async {
                           final authService = ref.read(authServiceProvider);
                           await authService.signOut();
@@ -87,8 +90,8 @@ class SettingsScreen extends ConsumerWidget {
                 } else {
                   return ListTile(
                     leading: const Icon(Icons.person_outline),
-                    title: const Text('Sign In / Sign Up'),
-                    subtitle: const Text('Sync your data across devices'),
+                    title: Text(S.of(context)!.signInSignUp),
+                    subtitle: Text(S.of(context)!.syncDataAcrossDevices),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.go('/auth'),
                   );
@@ -100,7 +103,7 @@ class SettingsScreen extends ConsumerWidget {
 
           // Appearance Section
           Text(
-            'Appearance',
+            S.of(context)!.appearance,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -111,10 +114,18 @@ class SettingsScreen extends ConsumerWidget {
               children: [
                 ListTile(
                   leading: const Icon(Icons.palette_outlined),
-                  title: const Text('Theme'),
-                  subtitle: Text(_getThemeModeText(themeMode)),
+                  title: Text(S.of(context)!.theme),
+                  subtitle: Text(_getThemeModeText(context, themeMode)),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showThemeDialog(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.language),
+                  title: Text(S.of(context)!.language),
+                  subtitle: Text(LocaleNotifier.getLocaleName(locale)),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showLanguageDialog(context, ref),
                 ),
               ],
             ),
@@ -123,7 +134,7 @@ class SettingsScreen extends ConsumerWidget {
 
           // Workout Settings Section
           Text(
-            'Workout Settings',
+            S.of(context)!.workoutSettings,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -342,14 +353,14 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  String _getThemeModeText(ThemeMode themeMode) {
+  String _getThemeModeText(BuildContext context, ThemeMode themeMode) {
     switch (themeMode) {
       case ThemeMode.light:
-        return 'Light';
+        return S.of(context)!.light;
       case ThemeMode.dark:
-        return 'Dark';
+        return S.of(context)!.dark;
       case ThemeMode.system:
-        return 'System';
+        return S.of(context)!.system;
     }
   }
 
@@ -357,12 +368,12 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Choose Theme'),
+        title: Text(S.of(context)!.chooseTheme),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile<ThemeMode>(
-              title: const Text('Light'),
+              title: Text(S.of(context)!.light),
               value: ThemeMode.light,
               groupValue: ref.read(themeModeProvider),
               onChanged: (value) {
@@ -373,7 +384,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: const Text('Dark'),
+              title: Text(S.of(context)!.dark),
               value: ThemeMode.dark,
               groupValue: ref.read(themeModeProvider),
               onChanged: (value) {
@@ -384,7 +395,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: const Text('System'),
+              title: Text(S.of(context)!.system),
               value: ThemeMode.system,
               groupValue: ref.read(themeModeProvider),
               onChanged: (value) {
@@ -395,6 +406,31 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(S.of(context)!.chooseLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: LocaleNotifier.supportedLocales.map((locale) {
+            return RadioListTile<Locale>(
+              title: Text(LocaleNotifier.getLocaleName(locale)),
+              value: locale,
+              groupValue: ref.read(localeProvider),
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(localeProvider.notifier).setLocale(value);
+                  Navigator.of(context).pop();
+                }
+              },
+            );
+          }).toList(),
         ),
       ),
     );
