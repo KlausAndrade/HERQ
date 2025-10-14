@@ -856,6 +856,42 @@ class _ExerciseCard extends ConsumerWidget {
   final VoidCallback onAddSet;
   final bool showDragHandle;
 
+  String _getEquipmentShortName(String equipment) {
+    switch (equipment.toLowerCase()) {
+      case 'barbell':
+        return 'BB';
+      case 'dumbbell':
+        return 'DB';
+      case 'cable':
+        return 'Cable';
+      case 'machine':
+        return 'Mach';
+      case 'bodyweight':
+        return 'BW';
+      case 'resistance_band':
+        return 'Band';
+      case 'kettlebell':
+        return 'KB';
+      default:
+        return equipment.substring(0, 3).toUpperCase();
+    }
+  }
+
+  String _getVariantShortName(String variant) {
+    switch (variant.toLowerCase()) {
+      case 'assisted':
+        return 'Assist';
+      case 'weighted':
+        return 'Weight';
+      case 'tempo':
+        return 'Tempo';
+      case 'pause':
+        return 'Pause';
+      default:
+        return variant.substring(0, 4).toUpperCase();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) => Card(
         margin: const EdgeInsets.only(bottom: 6),
@@ -884,37 +920,49 @@ class _ExerciseCard extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(
+                            exercise.name,
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
                           Row(
                             children: [
-                              Expanded(
-                                child: Text(
-                                  exercise.name,
-                                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                              Text(
+                                '${exercise.sets.length} sets',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                 ),
                               ),
-                              if (exercise.equipmentUsed != null || exercise.variantType != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 4),
-                                  child: Text(
-                                    [
-                                      if (exercise.equipmentUsed != null) exercise.equipmentUsed![0].toUpperCase() + exercise.equipmentUsed!.substring(1),
-                                      if (exercise.variantType != null) exercise.variantType![0].toUpperCase() + exercise.variantType!.substring(1),
-                                    ].join(' • '),
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
-                                      fontWeight: FontWeight.w500,
+                              if (exercise.equipmentUsed != null || exercise.variantType != null) ...[
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      [
+                                        if (exercise.equipmentUsed != null) _getEquipmentShortName(exercise.equipmentUsed!),
+                                        if (exercise.variantType != null && exercise.variantType != 'standard') 
+                                          _getVariantShortName(exercise.variantType!),
+                                      ].join(' • '),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Theme.of(context).colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ),
+                              ],
                             ],
-                          ),
-                          Text(
-                            '${exercise.sets.length} sets',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                            ),
                           ),
                         ],
                       ),
@@ -1127,6 +1175,7 @@ class _ExerciseCard extends ConsumerWidget {
                             restTimerSeconds: exercise.restTimerSeconds,
                             exerciseName: exercise.name,
                             exerciseType: exercise.exerciseType,
+                            variantType: exercise.variantType,
                             totalSets: exercise.sets.length,
                             isFirstSet: index == 0,
                             onChanged: (updatedSet) {

@@ -126,94 +126,98 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Exercise Variant',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          
-          // Equipment Selection
-          Text(
-            'Equipment',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: equipmentOptions.map((equipment) {
-              final isSelected = equipment == selectedEquipment;
-              return ChoiceChip(
-                label: Text(_formatLabel(equipment)),
-                avatar: Icon(
-                  _getEquipmentIconForType(equipment),
-                  size: 16,
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Exercise Variant',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    selectedEquipment = selected ? equipment : null;
-                  });
-                },
-                selectedColor: theme.colorScheme.primaryContainer,
-              );
-            }).toList(),
+              ),
+              const SizedBox(height: 16),
+              
+              // Equipment Selection
+              Text(
+                'Equipment',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: equipmentOptions.map((equipment) {
+                  final isSelected = equipment == selectedEquipment;
+                  return ChoiceChip(
+                    label: Text(_formatLabel(equipment)),
+                    avatar: Icon(
+                      _getEquipmentIconForType(equipment),
+                      size: 16,
+                    ),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        selectedEquipment = selected ? equipment : null;
+                      });
+                    },
+                    selectedColor: theme.colorScheme.primaryContainer,
+                  );
+                }).toList(),
+              ),
+              
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 16),
+              
+              // Variant Type Selection
+              Text(
+                'Variant Type',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: variantOptions.map((variant) {
+                  final isSelected = variant == selectedVariant;
+                  return ChoiceChip(
+                    label: Text(_formatLabel(variant)),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        selectedVariant = selected ? variant : 'standard';
+                      });
+                    },
+                    selectedColor: theme.colorScheme.secondaryContainer,
+                  );
+                }).toList(),
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Apply Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    widget.onChanged(selectedEquipment, selectedVariant == 'standard' ? null : selectedVariant);
+                  },
+                  child: const Text('Apply'),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
-          
-          const SizedBox(height: 16),
-          const Divider(),
-          const SizedBox(height: 16),
-          
-          // Variant Type Selection
-          Text(
-            'Variant Type',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: variantOptions.map((variant) {
-              final isSelected = variant == selectedVariant;
-              return ChoiceChip(
-                label: Text(_formatLabel(variant)),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    selectedVariant = selected ? variant : 'standard';
-                  });
-                },
-                selectedColor: theme.colorScheme.secondaryContainer,
-              );
-            }).toList(),
-          ),
-          
-          const SizedBox(height: 24),
-          
-          // Apply Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                widget.onChanged(selectedEquipment, selectedVariant == 'standard' ? null : selectedVariant);
-              },
-              child: const Text('Apply'),
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
+        ),
       ),
     );
   }

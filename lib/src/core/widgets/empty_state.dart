@@ -141,9 +141,12 @@ class _EmptyStateState extends State<EmptyState>
               // Action Button
               if (widget.actionText != null && widget.onAction != null) ...[
                 const SizedBox(height: AppTheme.spacingXL),
-                _PulsingButton(
-                  onPressed: widget.onAction!,
-                  child: Text(widget.actionText!),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: _PulsingButton(
+                    onPressed: widget.onAction!,
+                    child: Text(widget.actionText!),
+                  ),
                 ),
               ],
             ],
@@ -204,11 +207,14 @@ class _PulsingButtonState extends State<_PulsingButton>
   Widget build(BuildContext context) {
     return ScaleTransition(
       scale: _pulseAnimation,
-      child: AppButton(
-        onPressed: widget.onPressed,
-        variant: AppButtonVariant.primary,
-        size: AppButtonSize.large,
-        child: widget.child,
+      child: SizedBox(
+        width: double.infinity, // Full width to prevent clipping
+        child: AppButton(
+          onPressed: widget.onPressed,
+          variant: AppButtonVariant.primary,
+          size: AppButtonSize.large,
+          child: widget.child,
+        ),
       ),
     );
   }

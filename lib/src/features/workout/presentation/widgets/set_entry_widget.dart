@@ -19,6 +19,7 @@ class SetEntryWidget extends ConsumerStatefulWidget {
     this.previousSet,
     this.isFirstSet = false,
     this.exerciseType,
+    this.variantType,
   });
   final ActiveSet set;
   final int setNumber;
@@ -29,6 +30,7 @@ class SetEntryWidget extends ConsumerStatefulWidget {
   final ActiveSet? previousSet; // Previous workout's set data
   final bool isFirstSet; // Whether this is the first set (to show header)
   final String? exerciseType;
+  final String? variantType; // assisted, weighted, standard, etc.
 
   @override
   ConsumerState<SetEntryWidget> createState() => _SetEntryWidgetState();
@@ -69,11 +71,18 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   void didUpdateWidget(SetEntryWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     
-    // Debug: Check if exercise type changed during rebuild
-    if (widget.setNumber == 1 && oldWidget.exerciseType != widget.exerciseType) {
-      print('⚠️ SetEntryWidget EXERCISE TYPE CHANGED on rebuild!');
-      print('   Old: ${oldWidget.exerciseType} → New: ${widget.exerciseType}');
-      print('   Exercise: ${widget.exerciseName}');
+    // Debug: Check if exercise type or variant changed during rebuild
+    if (widget.setNumber == 1) {
+      if (oldWidget.exerciseType != widget.exerciseType) {
+        print('⚠️ SetEntryWidget EXERCISE TYPE CHANGED on rebuild!');
+        print('   Old: ${oldWidget.exerciseType} → New: ${widget.exerciseType}');
+        print('   Exercise: ${widget.exerciseName}');
+      }
+      if (oldWidget.variantType != widget.variantType) {
+        print('🔄 SetEntryWidget VARIANT TYPE CHANGED on rebuild!');
+        print('   Old: ${oldWidget.variantType} → New: ${widget.variantType}');
+        print('   Exercise: ${widget.exerciseName}');
+      }
     }
     
     // Update controllers only if values changed AND we're not currently editing
@@ -109,6 +118,48 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     super.dispose();
   }
 
+  /// Adjust fields based on variant type
+  List<ExerciseField> _getFieldsForVariant(List<ExerciseField> baseFields, String variantType) {
+    final variant = variantType.toLowerCase();
+    
+    // For "assisted" variant: Add or replace with assistanceWeight (-kg)
+    if (variant == 'assisted') {
+      final hasWeight = baseFields.contains(ExerciseField.weight);
+      if (hasWeight) {
+        // Replace existing weight with assistanceWeight
+        return baseFields.map((field) {
+          if (field == ExerciseField.weight) {
+            return ExerciseField.assistanceWeight;
+          }
+          return field;
+        }).toList();
+      } else {
+        // Add assistanceWeight for bodyweight exercises
+        return [ExerciseField.assistanceWeight, ...baseFields];
+      }
+    }
+    
+    // For "weighted" variant: Add or replace with addedWeight (+kg)
+    if (variant == 'weighted') {
+      final hasWeight = baseFields.contains(ExerciseField.weight);
+      if (hasWeight) {
+        // Replace existing weight with addedWeight
+        return baseFields.map((field) {
+          if (field == ExerciseField.weight) {
+            return ExerciseField.addedWeight;
+          }
+          return field;
+        }).toList();
+      } else {
+        // Add addedWeight for bodyweight exercises
+        return [ExerciseField.addedWeight, ...baseFields];
+      }
+    }
+    
+    // For other variants (standard, tempo, pause), use base fields
+    return baseFields;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -118,13 +169,21 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     // Get exercise type configuration
     final exerciseTypeString = widget.exerciseType ?? 'weight_reps';
     
-    // Debug: Log received exercise type
+    // Debug: Log received exercise type and variant
     if (widget.setNumber == 1 && widget.isFirstSet) {
-      print('🎯 SetEntryWidget for "${widget.exerciseName}": exerciseType="${widget.exerciseType}", using="${exerciseTypeString}"');
+      print('🎯 SetEntryWidget for "${widget.exerciseName}":');
+      print('   exerciseType="${widget.exerciseType}"');
+      print('   variantType="${widget.variantType}" (${widget.variantType == null ? 'NULL' : 'NOT NULL'})');
+      print('   Will ${widget.variantType != null && widget.variantType != 'standard' ? 'APPLY' : 'SKIP'} variant override');
     }
     
     final config = ExerciseTypeConfig.fromString(exerciseTypeString);
-    final fields = config.requiredFields;
+    var fields = config.requiredFields;
+    
+    // Override fields based on variant type
+    if (widget.variantType != null && widget.variantType != 'standard') {
+      fields = _getFieldsForVariant(fields, widget.variantType!);
+    }
 
     return Column(
       children: [
@@ -510,7 +569,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         ],
         textAlign: TextAlign.center,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-        decoration: _inputDecoration(colorScheme, 'kg'),
+        decoration: _inputDecoration(colorScheme, '-kg'),
         onTap: () => _assistanceWeightController.selection = TextSelection(
           baseOffset: 0,
           extentOffset: _assistanceWeightController.text.length,
@@ -534,7 +593,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         ],
         textAlign: TextAlign.center,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-        decoration: _inputDecoration(colorScheme, 'kg'),
+        decoration: _inputDecoration(colorScheme, '+kg'),
         onTap: () => _addedWeightController.selection = TextSelection(
           baseOffset: 0,
           extentOffset: _addedWeightController.text.length,
