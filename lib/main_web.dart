@@ -16,16 +16,37 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    // Load environment variables
-    await dotenv.load();
+    // Load environment variables (fallback for local dev)
+    await dotenv.load().catchError((_) {
+      print('ℹ️ No .env file found, using compile-time config');
+    });
+
+    // Get Supabase credentials from compile-time constants (--dart-define)
+    // or fall back to .env file
+    const supabaseUrl = String.fromEnvironment(
+      'SUPABASE_URL',
+      defaultValue: '',
+    );
+    const supabaseAnonKey = String.fromEnvironment(
+      'SUPABASE_ANON_KEY',
+      defaultValue: '',
+    );
+
+    final url = supabaseUrl.isNotEmpty 
+        ? supabaseUrl 
+        : (dotenv.env['SUPABASE_URL'] ?? '');
+    final anonKey = supabaseAnonKey.isNotEmpty 
+        ? supabaseAnonKey 
+        : (dotenv.env['SUPABASE_ANON_KEY'] ?? '');
 
     // Initialize Supabase for web
     await Supabase.initialize(
-      url: dotenv.env['SUPABASE_URL'] ?? '',
-      anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+      url: url,
+      anonKey: anonKey,
     );
 
     print('✅ Web platform initialized with Supabase');
+    print('   URL: ${url.isNotEmpty ? "configured" : "NOT SET"}');
   } catch (e) {
     print('⚠️ Web initialization error: $e');
     // Continue anyway - app should handle missing env gracefully
