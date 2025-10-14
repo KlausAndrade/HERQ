@@ -965,4 +965,78 @@ class SEn extends S {
 
   @override
   String get pause => 'Pause';
+
+  @override
+  String get explore => 'Explore';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get noPostsYet => 'No posts yet';
+
+  @override
+  String get createFirstPost =>
+      'Create your first post to share with the community!';
+
+  @override
+  String get searchForUsers => 'Search for users';
+
+  @override
+  String get unknownAthlete => 'Unknown Athlete';
+
+  @override
+  String get whatsOnYourMind => 'What\'s on your mind?';
+
+  @override
+  String get failedToLoadFeed => 'Failed to load feed';
+
+  @override
+  String get gamificationNotAvailable => 'Gamification not available';
+
+  @override
+  String xpToLevel(int xp, int needed, int level) {
+    return '$xp / $needed XP to Level $level';
+  }
+
+  @override
+  String get achievementProgress => 'Achievement Progress';
+
+  @override
+  String get unlocked => 'Unlocked';
+
+  @override
+  String get workoutMilestones => 'Workout Milestones';
+
+  @override
+  String get streakAchievements => 'Streak Achievements';
+
+  @override
+  String get volumeAchievements => 'Volume Achievements';
+
+  @override
+  String get consistencyAchievements => 'Consistency Achievements';
+
+  @override
+  String get specialMilestones => 'Special Milestones';
+
+  @override
+  String levelN(int level) {
+    return 'Level $level';
+  }
+
+  @override
+  String xpProgress(int current, int total) {
+    return '$current / $total XP';
+  }
+
+  @override
+  String get continueExercisesOrFinish =>
+      'Do you want to continue these exercises or finish anyway?';
+
+  @override
+  String get shareWorkout => 'Share Workout';
+
+  @override
+  String get noWorkoutHistory => 'No workout history yet!';
 }

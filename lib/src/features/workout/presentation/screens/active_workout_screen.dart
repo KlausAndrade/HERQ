@@ -436,9 +436,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
               color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(width: 8),
-            const Flexible(
+            Flexible(
               child: Text(
-                'Incomplete Exercises',
+                S.of(context)!.incompleteExercises,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -471,7 +471,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Do you want to continue these exercises or finish anyway?',
+              S.of(context)!.continueExercisesOrFinish,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],

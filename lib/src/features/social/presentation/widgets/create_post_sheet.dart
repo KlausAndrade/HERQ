@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/utils/display_name_sanitizer.dart';
@@ -137,13 +138,13 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
             ),
             error: (_, __) => Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 20,
                   child: Text('U'),
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Unknown Athlete',
+                  S.of(context)!.unknownAthlete,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -158,9 +159,9 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
             controller: _captionController,
             maxLines: 5,
             maxLength: 500,
-            decoration: const InputDecoration(
-              hintText: 'What\'s on your mind?',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: S.of(context)!.whatsOnYourMind,
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),

@@ -3,11 +3,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/widgets/animated_fab.dart';
-import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/skeleton_loader.dart';
-import '../../../../core/widgets/custom_refresh_indicator.dart';
 import '../providers/social_providers.dart';
 import '../widgets/create_post_sheet.dart';
 import '../widgets/post_card.dart';
@@ -57,12 +56,12 @@ class SocialFeedScreen extends HookConsumerWidget {
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => context.go('/'),
               ),
-              title: const Text('Social'),
+              title: Text(S.of(context)!.social),
               bottom: TabBar(
                 controller: tabController,
-                tabs: const [
-                  Tab(icon: Icon(Icons.home), text: 'Feed'),
-                  Tab(icon: Icon(Icons.explore), text: 'Explore'),
+                tabs: [
+                  Tab(icon: const Icon(Icons.home), text: S.of(context)!.feed),
+                  Tab(icon: const Icon(Icons.explore), text: S.of(context)!.explore),
                 ],
               ),
               actions: [
@@ -88,7 +87,7 @@ class SocialFeedScreen extends HookConsumerWidget {
             floatingActionButton: AnimatedFAB(
               icon: Icons.add,
               onPressed: () => _showCreatePost(context),
-              tooltip: 'Create Post',
+              tooltip: S.of(context)!.createPost,
             ),
           ),
         );
@@ -142,7 +141,7 @@ class _FeedTab extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Failed to load feed',
+              S.of(context)!.failedToLoadFeed,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
@@ -154,7 +153,7 @@ class _FeedTab extends ConsumerWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => ref.invalidate(feedPostsProvider),
-              child: const Text('Retry'),
+              child: Text(S.of(context)!.retry),
             ),
           ],
         ),
@@ -211,28 +210,28 @@ class _ExploreTab extends ConsumerWidget {
 // Shared post list builder
 Widget _buildPostList(BuildContext context, WidgetRef ref, List<dynamic> feedItems, String currentUserId) {
   if (feedItems.isEmpty) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.photo_library_outlined,
             size: 64,
             color: Colors.grey,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
-            'No posts yet',
-            style: TextStyle(
+            S.of(context)!.noPostsYet,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
               color: Colors.grey,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
-            'Create your first post to share with the community!',
-            style: TextStyle(color: Colors.grey),
+            S.of(context)!.createFirstPost,
+            style: const TextStyle(color: Colors.grey),
             textAlign: TextAlign.center,
           ),
         ],
@@ -321,19 +320,19 @@ class UserSearchSheet extends HookConsumerWidget {
               ),
               Expanded(
                 child: searchQuery.value.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.search,
                               size: 64,
                               color: Colors.grey,
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Text(
-                              'Search for users',
-                              style: TextStyle(
+                              S.of(context)!.searchForUsers,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey,
                               ),

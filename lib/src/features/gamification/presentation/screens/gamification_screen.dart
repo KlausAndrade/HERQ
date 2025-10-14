@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
 import '../../data/providers/gamification_provider.dart';
 import '../../domain/models/achievement.dart';
@@ -86,7 +87,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                             .pushNamed('/workout/${workout.id}');
                       },
                     )
-                  : const Center(child: Text('No workout history yet!'));
+                  : Center(child: Text(S.of(context)!.noWorkoutHistory));
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (_, __) =>
@@ -100,7 +101,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
   Widget _buildStatsTab(UserStat stats) {
     final gamificationService = ref.watch(gamificationServiceProvider);
     if (gamificationService == null) {
-      return const Center(child: Text('Gamification not available'));
+      return Center(child: Text(S.of(context)!.gamificationNotAvailable));
     }
 
     final level = stats.level;
@@ -130,7 +131,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '$xpIntoLevel / $xpNeeded XP to Level ${level + 1}',
+                  S.of(context)!.xpToLevel(xpIntoLevel, xpNeeded, level + 1),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -284,14 +285,14 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Achievement Progress',
+                  S.of(context)!.achievementProgress,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${userAchievements.where((a) => a.isCompleted).length} / ${Achievements.all.length} Unlocked',
+                  '${userAchievements.where((a) => a.isCompleted).length} / ${Achievements.all.length} ${S.of(context)!.unlocked}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 16),
@@ -343,15 +344,15 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
   String _getCategoryName(AchievementCategory category) {
     switch (category) {
       case AchievementCategory.workouts:
-        return 'Workout Milestones';
+        return S.of(context)!.workoutMilestones;
       case AchievementCategory.streaks:
-        return 'Streak Achievements';
+        return S.of(context)!.streakAchievements;
       case AchievementCategory.volume:
-        return 'Volume Achievements';
+        return S.of(context)!.volumeAchievements;
       case AchievementCategory.consistency:
-        return 'Consistency Achievements';
+        return S.of(context)!.consistencyAchievements;
       case AchievementCategory.milestones:
-        return 'Special Milestones';
+        return S.of(context)!.specialMilestones;
     }
   }
 

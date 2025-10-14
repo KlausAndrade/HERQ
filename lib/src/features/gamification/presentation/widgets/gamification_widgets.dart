@@ -182,14 +182,14 @@ class LevelIndicator extends ConsumerWidget {
             if (showProgress) ...[
               const SizedBox(height: 8),
               Text(
-                'Level $level',
+                S.of(context)!.levelN(level),
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(height: 4),
               Text(
-                '$xpIntoLevel / $xpNeeded XP',
+                S.of(context)!.xpProgress(xpIntoLevel, xpNeeded),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey.shade600,
                     ),

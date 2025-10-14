@@ -971,4 +971,78 @@ class SPt extends S {
 
   @override
   String get pause => 'Pausa';
+
+  @override
+  String get explore => 'Explorar';
+
+  @override
+  String get retry => 'Tentar Novamente';
+
+  @override
+  String get noPostsYet => 'Ainda sem publicações';
+
+  @override
+  String get createFirstPost =>
+      'Crie sua primeira publicação para compartilhar com a comunidade!';
+
+  @override
+  String get searchForUsers => 'Buscar usuários';
+
+  @override
+  String get unknownAthlete => 'Atleta Desconhecido';
+
+  @override
+  String get whatsOnYourMind => 'O que você está pensando?';
+
+  @override
+  String get failedToLoadFeed => 'Falha ao carregar feed';
+
+  @override
+  String get gamificationNotAvailable => 'Gamificação não disponível';
+
+  @override
+  String xpToLevel(int xp, int needed, int level) {
+    return '$xp / $needed XP para Nível $level';
+  }
+
+  @override
+  String get achievementProgress => 'Progresso de Conquistas';
+
+  @override
+  String get unlocked => 'Desbloqueado';
+
+  @override
+  String get workoutMilestones => 'Marcos de Treino';
+
+  @override
+  String get streakAchievements => 'Conquistas de Sequência';
+
+  @override
+  String get volumeAchievements => 'Conquistas de Volume';
+
+  @override
+  String get consistencyAchievements => 'Conquistas de Consistência';
+
+  @override
+  String get specialMilestones => 'Marcos Especiais';
+
+  @override
+  String levelN(int level) {
+    return 'Nível $level';
+  }
+
+  @override
+  String xpProgress(int current, int total) {
+    return '$current / $total XP';
+  }
+
+  @override
+  String get continueExercisesOrFinish =>
+      'Você quer continuar esses exercícios ou finalizar mesmo assim?';
+
+  @override
+  String get shareWorkout => 'Compartilhar Treino';
+
+  @override
+  String get noWorkoutHistory => 'Ainda sem histórico de treinos!';
 }

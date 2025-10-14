@@ -1964,6 +1964,138 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Pause'**
   String get pause;
+
+  /// No description provided for @explore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get explore;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @noPostsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No posts yet'**
+  String get noPostsYet;
+
+  /// No description provided for @createFirstPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first post to share with the community!'**
+  String get createFirstPost;
+
+  /// No description provided for @searchForUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for users'**
+  String get searchForUsers;
+
+  /// No description provided for @unknownAthlete.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Athlete'**
+  String get unknownAthlete;
+
+  /// No description provided for @whatsOnYourMind.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s on your mind?'**
+  String get whatsOnYourMind;
+
+  /// No description provided for @failedToLoadFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load feed'**
+  String get failedToLoadFeed;
+
+  /// No description provided for @gamificationNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Gamification not available'**
+  String get gamificationNotAvailable;
+
+  /// XP progress to next level
+  ///
+  /// In en, this message translates to:
+  /// **'{xp} / {needed} XP to Level {level}'**
+  String xpToLevel(int xp, int needed, int level);
+
+  /// No description provided for @achievementProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievement Progress'**
+  String get achievementProgress;
+
+  /// No description provided for @unlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get unlocked;
+
+  /// No description provided for @workoutMilestones.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Milestones'**
+  String get workoutMilestones;
+
+  /// No description provided for @streakAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak Achievements'**
+  String get streakAchievements;
+
+  /// No description provided for @volumeAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume Achievements'**
+  String get volumeAchievements;
+
+  /// No description provided for @consistencyAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency Achievements'**
+  String get consistencyAchievements;
+
+  /// No description provided for @specialMilestones.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Milestones'**
+  String get specialMilestones;
+
+  /// Level number
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level}'**
+  String levelN(int level);
+
+  /// XP progress
+  ///
+  /// In en, this message translates to:
+  /// **'{current} / {total} XP'**
+  String xpProgress(int current, int total);
+
+  /// No description provided for @continueExercisesOrFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to continue these exercises or finish anyway?'**
+  String get continueExercisesOrFinish;
+
+  /// No description provided for @shareWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Workout'**
+  String get shareWorkout;
+
+  /// No description provided for @noWorkoutHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No workout history yet!'**
+  String get noWorkoutHistory;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

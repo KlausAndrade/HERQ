@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:gym_ai/src/core/services/notification_service.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/telemetry_provider.dart';
@@ -330,7 +331,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
                   }
                 }
               },
-              child: const Text('Start Workout'),
+              child: Text(S.of(context)!.startWorkout),
             ),
           ],
         ),
@@ -357,14 +358,14 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Share Workout'),
+        title: Text(S.of(context)!.shareWorkout),
         content: SingleChildScrollView(
           child: SelectableText(shareText),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(S.of(context)!.close),
           ),
         ],
       ),

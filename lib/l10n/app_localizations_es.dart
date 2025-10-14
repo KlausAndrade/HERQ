@@ -975,4 +975,78 @@ class SEs extends S {
 
   @override
   String get pause => 'Pausa';
+
+  @override
+  String get explore => 'Explorar';
+
+  @override
+  String get retry => 'Reintentar';
+
+  @override
+  String get noPostsYet => 'Aún no hay publicaciones';
+
+  @override
+  String get createFirstPost =>
+      '¡Crea tu primera publicación para compartir con la comunidad!';
+
+  @override
+  String get searchForUsers => 'Buscar usuarios';
+
+  @override
+  String get unknownAthlete => 'Atleta Desconocido';
+
+  @override
+  String get whatsOnYourMind => '¿Qué estás pensando?';
+
+  @override
+  String get failedToLoadFeed => 'Error al cargar el feed';
+
+  @override
+  String get gamificationNotAvailable => 'Gamificación no disponible';
+
+  @override
+  String xpToLevel(int xp, int needed, int level) {
+    return '$xp / $needed XP para Nivel $level';
+  }
+
+  @override
+  String get achievementProgress => 'Progreso de Logros';
+
+  @override
+  String get unlocked => 'Desbloqueado';
+
+  @override
+  String get workoutMilestones => 'Hitos de Entrenamiento';
+
+  @override
+  String get streakAchievements => 'Logros de Racha';
+
+  @override
+  String get volumeAchievements => 'Logros de Volumen';
+
+  @override
+  String get consistencyAchievements => 'Logros de Consistencia';
+
+  @override
+  String get specialMilestones => 'Hitos Especiales';
+
+  @override
+  String levelN(int level) {
+    return 'Nivel $level';
+  }
+
+  @override
+  String xpProgress(int current, int total) {
+    return '$current / $total XP';
+  }
+
+  @override
+  String get continueExercisesOrFinish =>
+      '¿Quieres continuar estos ejercicios o finalizar de todos modos?';
+
+  @override
+  String get shareWorkout => 'Compartir Entrenamiento';
+
+  @override
+  String get noWorkoutHistory => '¡Aún no hay historial de entrenamientos!';
 }

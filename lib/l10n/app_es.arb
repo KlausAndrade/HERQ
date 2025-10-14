@@ -427,5 +427,51 @@
   "assisted": "Asistido",
   "weighted": "Con Peso",
   "tempo": "Tempo",
-  "pause": "Pausa"
+  "pause": "Pausa",
+  
+  "explore": "Explorar",
+  "retry": "Reintentar",
+  "noPostsYet": "Aún no hay publicaciones",
+  "createFirstPost": "¡Crea tu primera publicación para compartir con la comunidad!",
+  "searchForUsers": "Buscar usuarios",
+  "unknownAthlete": "Atleta Desconocido",
+  "whatsOnYourMind": "¿Qué estás pensando?",
+  "failedToLoadFeed": "Error al cargar el feed",
+  
+  "gamificationNotAvailable": "Gamificación no disponible",
+  "xpToLevel": "{xp} / {needed} XP para Nivel {level}",
+  "@xpToLevel": {
+    "description": "XP progress to next level",
+    "placeholders": {
+      "xp": {"type": "int"},
+      "needed": {"type": "int"},
+      "level": {"type": "int"}
+    }
+  },
+  "achievementProgress": "Progreso de Logros",
+  "unlocked": "Desbloqueado",
+  "workoutMilestones": "Hitos de Entrenamiento",
+  "streakAchievements": "Logros de Racha",
+  "volumeAchievements": "Logros de Volumen",
+  "consistencyAchievements": "Logros de Consistencia",
+  "specialMilestones": "Hitos Especiales",
+  "levelN": "Nivel {level}",
+  "@levelN": {
+    "description": "Level number",
+    "placeholders": {
+      "level": {"type": "int"}
+    }
+  },
+  "xpProgress": "{current} / {total} XP",
+  "@xpProgress": {
+    "description": "XP progress",
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  
+  "continueExercisesOrFinish": "¿Quieres continuar estos ejercicios o finalizar de todos modos?",
+  "shareWorkout": "Compartir Entrenamiento",
+  "noWorkoutHistory": "¡Aún no hay historial de entrenamientos!"
 }
