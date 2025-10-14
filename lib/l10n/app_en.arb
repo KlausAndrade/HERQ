@@ -603,5 +603,6 @@
   "rest": "Rest",
   "selectWorkout": "Select a Workout",
   "workoutComplete": "Workout Complete",
-  "exerciseBreakdown": "Exercise Breakdown"
+  "exerciseBreakdown": "Exercise Breakdown",
+  "appTagline": "Your personal AI fitness coach"
 }

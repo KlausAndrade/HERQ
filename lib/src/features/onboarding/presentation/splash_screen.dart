@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/app_localizations.dart';
+
 class SplashScreen extends StatefulWidget {
   final VoidCallback onFinished;
   const SplashScreen({super.key, required this.onFinished});
@@ -75,7 +77,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'GymAI',
+                        S.of(context)!.appTitle,
                         style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -88,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: Text(
-                  'Your personal AI fitness coach',
+                  S.of(context)!.appTagline,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurface.withOpacity(0.7),

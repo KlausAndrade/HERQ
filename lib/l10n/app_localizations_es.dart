@@ -1772,4 +1772,7 @@ class SEs extends S {
 
   @override
   String get exerciseBreakdown => 'Desglose de Ejercicios';
+
+  @override
+  String get appTagline => 'Tu entrenador personal de fitness con IA';
 }

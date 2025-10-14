@@ -603,5 +603,6 @@
   "rest": "Descanso",
   "selectWorkout": "Selecione um Treino",
   "workoutComplete": "Treino Completo",
-  "exerciseBreakdown": "Detalhamento de Exercícios"
+  "exerciseBreakdown": "Detalhamento de Exercícios",
+  "appTagline": "Seu treinador pessoal de fitness com IA"
 }

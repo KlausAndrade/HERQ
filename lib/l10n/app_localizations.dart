@@ -3506,6 +3506,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Exercise Breakdown'**
   String get exerciseBreakdown;
+
+  /// No description provided for @appTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Your personal AI fitness coach'**
+  String get appTagline;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

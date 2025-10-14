@@ -1757,4 +1757,7 @@ class SEn extends S {
 
   @override
   String get exerciseBreakdown => 'Exercise Breakdown';
+
+  @override
+  String get appTagline => 'Your personal AI fitness coach';
 }

@@ -1765,4 +1765,7 @@ class SPt extends S {
 
   @override
   String get exerciseBreakdown => 'Detalhamento de Exercícios';
+
+  @override
+  String get appTagline => 'Seu treinador pessoal de fitness com IA';
 }
