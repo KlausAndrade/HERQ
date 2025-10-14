@@ -465,6 +465,51 @@ class SEn extends S {
   String get inProgress => 'In Progress';
 
   @override
+  String get workoutInProgress => 'Workout in Progress';
+
+  @override
+  String haveActiveWorkout(Object name) {
+    return 'You have an active workout \"$name\" in progress.';
+  }
+
+  @override
+  String get startingNewWillEnd =>
+      'Starting a new workout will end the current one.';
+
+  @override
+  String get doYouWantToContinue => 'Do you want to continue?';
+
+  @override
+  String get forceStartNewWorkout => 'Force Start New Workout';
+
+  @override
+  String get clearAndStartNew => 'Clear & Start New';
+
+  @override
+  String get leaveWorkout => 'Leave Workout?';
+
+  @override
+  String get whatWouldYouLikeToDo => 'What would you like to do?';
+
+  @override
+  String get saveAndExit => 'Save & Exit';
+
+  @override
+  String get discardWorkout => 'Discard Workout';
+
+  @override
+  String get finish => 'Finish';
+
+  @override
+  String get followingExercisesNoSets =>
+      'The following exercises have no completed sets:';
+
+  @override
+  String setsCount(Object count) {
+    return '$count sets';
+  }
+
+  @override
   String get exercise => 'Exercise';
 
   @override

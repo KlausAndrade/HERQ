@@ -108,7 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              S.of(context).welcomeBack,
+                              S.of(context)!.welcomeBack,
                               style: Theme.of(context)
                                   .textTheme
                                   .displayMedium
@@ -120,7 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              S.of(context).readyForWorkout,
+                              S.of(context)!.readyForWorkout,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge
@@ -189,7 +189,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                S.of(context).quickActions,
+                S.of(context)!.quickActions,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -334,7 +334,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              S.of(context).thisWeek,
+              S.of(context)!.thisWeek,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -432,7 +432,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Row(
           children: [
             Text(
-              S.of(context).recentWorkouts,
+              S.of(context)!.recentWorkouts,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -440,7 +440,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const Spacer(),
             TextButton(
               onPressed: () => context.go('/workout-history'),
-              child: Text(S.of(context).viewAll),
+              child: Text(S.of(context)!.viewAll),
             ),
           ],
         ),
@@ -460,11 +460,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        S.of(context).noWorkoutsYet,
+                        S.of(context)!.noWorkoutsYet,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
-                        S.of(context).startFirstWorkout,
+                        S.of(context)!.startFirstWorkout,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Theme.of(context).colorScheme.outline,
                             ),

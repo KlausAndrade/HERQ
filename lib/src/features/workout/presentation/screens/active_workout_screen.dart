@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:gym_ai/l10n/app_localizations.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
 import 'package:gym_ai/src/core/services/notification_service.dart';
@@ -43,20 +44,20 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           final confirmed = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Workout in Progress'),
+              title: Text(S.of(context)!.workoutInProgress),
               content: Text(
-                'You have an active workout "${existingWorkout.name}" in progress. '
-                'Starting a new workout will end the current one.\n\n'
-                'Do you want to continue?',
+                '${S.of(context)!.haveActiveWorkout(existingWorkout.name)} '
+                '${S.of(context)!.startingNewWillEnd}\n\n'
+                '${S.of(context)!.doYouWantToContinue}',
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
+                  child: Text(S.of(context)!.cancel),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Force Start New Workout'),
+                  child: Text(S.of(context)!.forceStartNewWorkout),
                 ),
                 FilledButton(
                   onPressed: () async {
@@ -64,7 +65,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                     // Force cleanup to ensure clean state
                     await ref.read(activeWorkoutProvider.notifier).forceCleanup();
                   },
-                  child: const Text('Clear & Start New'),
+                  child: Text(S.of(context)!.clearAndStartNew),
                 ),
               ],
             ),
@@ -117,26 +118,26 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     final action = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Leave Workout?'),
+        title: Text(S.of(context)!.leaveWorkout),
         content: Text(
-          'You have an active workout "${activeWorkout.name}" in progress.\n\n'
-          'What would you like to do?',
+          '${S.of(context)!.haveActiveWorkout(activeWorkout.name)}\n\n'
+          '${S.of(context)!.whatWouldYouLikeToDo}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop('cancel'),
-            child: const Text('Cancel'),
+            child: Text(S.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop('save'),
-            child: const Text('Save & Exit'),
+            child: Text(S.of(context)!.saveAndExit),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop('discard'),
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Discard Workout'),
+            child: Text(S.of(context)!.discardWorkout),
           ),
         ],
       ),
@@ -172,16 +173,16 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => _handleBackButtonPressed(context),
         ),
-        title: Text(activeWorkout?.name ?? 'Active Workout'),
+        title: Text(activeWorkout?.name ?? S.of(context)!.activeWorkout),
         actions: [
           TextButton(
             onPressed: () => _showFinishWorkoutDialog(context),
-            child: const Text('Finish'),
+            child: Text(S.of(context)!.finish),
           ),
         ],
       ),
       body: activeWorkout == null
-          ? const Center(child: Text('No active workout'))
+          ? Center(child: Text(S.of(context)!.noActiveWorkout))
           : Column(
               children: [
                 // Workout Header
@@ -309,13 +310,13 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                         child: OutlinedButton.icon(
                           onPressed: () => _showAddExerciseDialog(context),
                           icon: const Icon(Icons.add),
-                          label: const Text('Add Exercise'),
+                          label: Text(S.of(context)!.addExercise),
                         ),
                       ),
                       const SizedBox(width: 12),
                       ElevatedButton(
                         onPressed: () => _showFinishWorkoutDialog(context),
-                        child: const Text('Finish Workout'),
+                        child: Text(S.of(context)!.finishWorkout),
                       ),
                     ],
                   ),
@@ -417,7 +418,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'The following exercises have no completed sets:',
+              S.of(context)!.followingExercisesNoSets,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 12),

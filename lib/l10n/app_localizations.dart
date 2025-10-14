@@ -999,6 +999,84 @@ abstract class S {
   /// **'In Progress'**
   String get inProgress;
 
+  /// No description provided for @workoutInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout in Progress'**
+  String get workoutInProgress;
+
+  /// No description provided for @haveActiveWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'You have an active workout \"{name}\" in progress.'**
+  String haveActiveWorkout(Object name);
+
+  /// No description provided for @startingNewWillEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting a new workout will end the current one.'**
+  String get startingNewWillEnd;
+
+  /// No description provided for @doYouWantToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to continue?'**
+  String get doYouWantToContinue;
+
+  /// No description provided for @forceStartNewWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Force Start New Workout'**
+  String get forceStartNewWorkout;
+
+  /// No description provided for @clearAndStartNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear & Start New'**
+  String get clearAndStartNew;
+
+  /// No description provided for @leaveWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Workout?'**
+  String get leaveWorkout;
+
+  /// No description provided for @whatWouldYouLikeToDo.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to do?'**
+  String get whatWouldYouLikeToDo;
+
+  /// No description provided for @saveAndExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & Exit'**
+  String get saveAndExit;
+
+  /// No description provided for @discardWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard Workout'**
+  String get discardWorkout;
+
+  /// No description provided for @finish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get finish;
+
+  /// No description provided for @followingExercisesNoSets.
+  ///
+  /// In en, this message translates to:
+  /// **'The following exercises have no completed sets:'**
+  String get followingExercisesNoSets;
+
+  /// No description provided for @setsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sets'**
+  String setsCount(Object count);
+
   /// No description provided for @exercise.
   ///
   /// In en, this message translates to:
