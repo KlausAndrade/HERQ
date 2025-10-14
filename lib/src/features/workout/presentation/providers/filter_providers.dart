@@ -90,8 +90,7 @@ final filteredWorkoutSessionsProvider =
     filteredSessions = filteredSessions.where(
       (session) =>
           session.name.toLowerCase().contains(query) ||
-              session.notes?.toLowerCase().contains(query) ??
-          false,
+          (session.notes?.toLowerCase().contains(query) ?? false),
     );
   }
 

@@ -174,11 +174,11 @@ class _WorkoutTemplatesWithFoldersScreenState
     // Only the folder header is a DragTarget for move-to-folder
     return DragTarget<_DragItemData>(
       key: key,
-      onWillAcceptWithDetails: (data) =>
-          data.type == _DragItemType.exercise &&
-          data.sourceFolderId != folder.id,
-      onAcceptWithDetails: (data) {
-        _moveTemplate(data.templateId, folder);
+      onWillAcceptWithDetails: (details) =>
+          details.data.type == _DragItemType.exercise &&
+          details.data.sourceFolderId != folder.id,
+      onAcceptWithDetails: (details) {
+        _moveTemplate(details.data.templateId, folder);
       },
       builder: (context, candidateData, rejectedData) {
         final isDraggingOver = candidateData.isNotEmpty;
@@ -211,7 +211,7 @@ class _WorkoutTemplatesWithFoldersScreenState
                             top: Radius.circular(12),
                           ),
                         )
-                      : null,
+                      : const BoxDecoration(),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Row(
@@ -394,10 +394,11 @@ class _WorkoutTemplatesWithFoldersScreenState
   Widget _buildUncategorizedSection(List<WorkoutTemplate> templates) {
     // Always show when dragging, even if empty
     return DragTarget<_DragItemData>(
-      onWillAcceptWithDetails: (data) =>
-          data.type == _DragItemType.exercise && data.sourceFolderId != null,
-      onAcceptWithDetails: (data) {
-        _moveTemplate(data.templateId, null);
+      onWillAcceptWithDetails: (details) =>
+          details.data.type == _DragItemType.exercise &&
+          details.data.sourceFolderId != null,
+      onAcceptWithDetails: (details) {
+        _moveTemplate(details.data.templateId, null);
       },
       builder: (context, candidateData, rejectedData) {
         final isDraggingOver = candidateData.isNotEmpty;
@@ -422,7 +423,7 @@ class _WorkoutTemplatesWithFoldersScreenState
                     ),
                     borderRadius: BorderRadius.circular(12),
                   )
-                : null,
+                : const BoxDecoration(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

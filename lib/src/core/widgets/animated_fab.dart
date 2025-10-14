@@ -175,7 +175,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
                       ),
                     ],
                   )
-                : null,
+                : const BoxDecoration(),
             child: widget.extended
                 ? _buildExtendedFAB(theme)
                 : _buildRegularFAB(theme),
