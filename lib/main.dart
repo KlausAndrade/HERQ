@@ -38,7 +38,7 @@ Future<void> main() async {
       overrides: [
         if (database != null) databaseProvider.overrideWithValue(database),
       ],
-      child: const GymAIApp(),
+      child: const HerqApp(),
     ),
   );
 }

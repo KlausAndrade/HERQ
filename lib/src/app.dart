@@ -11,14 +11,14 @@ import 'features/settings/providers/locale_provider.dart';
 import 'package:herq/l10n/app_localizations.dart';
 import 'core/ui/notification_redesign/notification_overlay.dart';
 
-class GymAIApp extends ConsumerStatefulWidget {
-  const GymAIApp({super.key});
+class HerqApp extends ConsumerStatefulWidget {
+  const HerqApp({super.key});
 
   @override
-  ConsumerState<GymAIApp> createState() => _GymAIAppState();
+  ConsumerState<HerqApp> createState() => _HerqAppState();
 }
 
-class _GymAIAppState extends ConsumerState<GymAIApp> {
+class _HerqAppState extends ConsumerState<HerqApp> {
   late final AppLifecycleObserver _lifecycleObserver;
   bool _showSplash = true;
 

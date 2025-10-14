@@ -18,12 +18,12 @@ class LiveActivityService {
   Future<void> initialize() async {
     // Initialize the plugin
     await _liveActivitiesPlugin.init(
-      appGroupId: 'group.com.klausandrade.gymai',
+      appGroupId: 'group.com.klausandrade.herq',
     );
 
     // Listen for URL scheme actions (button taps from the widget)
     _liveActivitiesPlugin.urlSchemeStream().listen((schemeData) {
-      // Extract the action from the URL scheme (e.g., gymAI://timer/add_15)
+      // Extract the action from the URL scheme (e.g., herq://timer/add_15)
       final action = schemeData.path;
       if (action != null && action.isNotEmpty) {
         // Remove leading slash if present

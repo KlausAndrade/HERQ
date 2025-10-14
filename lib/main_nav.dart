@@ -7,13 +7,13 @@ import 'src/core/theme/app_theme.dart';
 void main() {
   runApp(
     const ProviderScope(
-      child: GymAINavApp(),
+      child: HerqNavApp(),
     ),
   );
 }
 
-class GymAINavApp extends ConsumerWidget {
-  const GymAINavApp({super.key});
+class HerqNavApp extends ConsumerWidget {
+  const HerqNavApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

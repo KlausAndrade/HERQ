@@ -10,7 +10,7 @@ import 'package:drift/drift.dart';
 // Native-only database opener used on mobile/desktop platforms.
 LazyDatabase openConnection() => LazyDatabase(() async {
       final dbFolder = await getApplicationDocumentsDirectory();
-      final file = File(p.join(dbFolder.path, 'gym_ai.db'));
+      final file = File(p.join(dbFolder.path, 'herq.db'));
 
       // Setup sqlite3 temp dir
       final cachebase = (await getTemporaryDirectory()).path;

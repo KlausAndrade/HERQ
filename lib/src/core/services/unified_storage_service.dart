@@ -84,7 +84,7 @@ class MobileStorageService implements UnifiedStorageService {
   Future<Map<String, dynamic>> getUserPreferences() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final prefsJson = prefs.getString('gymai_user_preferences');
+      final prefsJson = prefs.getString('herq_user_preferences');
 
       if (prefsJson != null) {
         return Map<String, dynamic>.from(jsonDecode(prefsJson));
@@ -116,7 +116,7 @@ class MobileStorageService implements UnifiedStorageService {
       final updatedPrefs = {...currentPrefs, ...preferences};
 
       final success = await prefs.setString(
-          'gymai_user_preferences', jsonEncode(updatedPrefs));
+          'herq_user_preferences', jsonEncode(updatedPrefs));
 
       return success;
     } catch (e) {

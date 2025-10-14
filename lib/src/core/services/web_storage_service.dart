@@ -8,7 +8,7 @@ import '../config/app_config.dart';
 /// Web storage service using localStorage for persistent data storage
 /// This service provides a unified interface for storing workout data on web platforms
 class WebStorageService {
-  static const String _keyPrefix = 'gymai_';
+  static const String _keyPrefix = 'herq_';
   static const String _workoutSessionsKey = '${_keyPrefix}workout_sessions';
   static const String _exercisesKey = '${_keyPrefix}exercises';
   static const String _templatesKey = '${_keyPrefix}templates';

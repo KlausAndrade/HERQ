@@ -10,7 +10,7 @@ import 'src/features/workout/presentation/screens/web_workout_screen.dart';
 import 'src/features/workout/presentation/screens/web_history_screen.dart';
 import 'src/features/workout/presentation/screens/web_auth_screen.dart';
 
-/// Web-specific entry point for GymAI
+/// Web-specific entry point for HERQ
 /// Uses Supabase for data persistence instead of SQLite
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,13 +33,13 @@ Future<void> main() async {
 
   runApp(
     const ProviderScope(
-      child: GymAIWebApp(),
+      child: HerqWebApp(),
     ),
   );
 }
 
-class GymAIWebApp extends ConsumerWidget {
-  const GymAIWebApp({super.key});
+class HerqWebApp extends ConsumerWidget {
+  const HerqWebApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

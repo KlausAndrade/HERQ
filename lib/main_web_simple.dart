@@ -27,13 +27,13 @@ Future<void> main() async {
 
   runApp(
     const ProviderScope(
-      child: GymAIWebApp(),
+      child: HerqWebApp(),
     ),
   );
 }
 
-class GymAIWebApp extends StatelessWidget {
-  const GymAIWebApp({super.key});
+class HerqWebApp extends StatelessWidget {
+  const HerqWebApp({super.key});
 
   @override
   Widget build(BuildContext context) {
