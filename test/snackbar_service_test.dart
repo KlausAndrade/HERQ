@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:herq/src/core/services/snackbar_service.dart';
 import 'package:herq/src/core/services/notification_service.dart';
+import 'package:herq/src/core/services/snackbar_service.dart';
 
 void main() {
   testWidgets(

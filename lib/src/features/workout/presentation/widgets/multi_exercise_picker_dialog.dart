@@ -76,7 +76,9 @@ class _MultiExercisePickerDialogState
                         borderRadius: BorderRadius.circular(12),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -125,9 +127,11 @@ class _MultiExercisePickerDialogState
                       _selectedCategory == null || _selectedCategory == 'All'
                           ? exercises
                           : exercises
-                              .where((e) =>
-                                  e.category.toLowerCase() ==
-                                  _selectedCategory!.toLowerCase())
+                              .where(
+                                (e) =>
+                                    e.category.toLowerCase() ==
+                                    _selectedCategory!.toLowerCase(),
+                              )
                               .toList();
                   if (filteredExercises.isEmpty) {
                     return const Center(
@@ -143,10 +147,11 @@ class _MultiExercisePickerDialogState
                         value: isSelected,
                         title: Text(exercise.name),
                         subtitle: Text(
-                            '${exercise.primaryMuscleGroup.toUpperCase()} • ${exercise.category}'),
+                          '${exercise.primaryMuscleGroup.toUpperCase()} • ${exercise.category}',
+                        ),
                         onChanged: (selected) {
                           setState(() {
-                            if (selected == true) {
+                            if (selected ?? false) {
                               _selectedExercises.add(exercise);
                             } else {
                               _selectedExercises.remove(exercise);

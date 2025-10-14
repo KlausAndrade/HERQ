@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../../l10n/app_localizations.dart';
 import '../../data/providers/gamification_provider.dart';
 import '../../domain/models/achievement.dart';
-import 'package:herq/l10n/app_localizations.dart';
 
 class StreakBadge extends ConsumerWidget {
-  final double size;
-  final bool showText;
-
   const StreakBadge({
     super.key,
     this.size = 40,
     this.showText = true,
   });
+  final double size;
+  final bool showText;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -91,17 +91,23 @@ class StreakBadge extends ConsumerWidget {
       error: (_, __) => const SizedBox.shrink(),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty('size', size));
+    properties.add(DiagnosticsProperty<bool>('showText', showText));
+  }
 }
 
 class LevelIndicator extends ConsumerWidget {
-  final bool showProgress;
-  final double size;
-
   const LevelIndicator({
     super.key,
     this.showProgress = true,
     this.size = 60,
   });
+  final bool showProgress;
+  final double size;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -204,21 +210,27 @@ class LevelIndicator extends ConsumerWidget {
       error: (_, __) => const SizedBox.shrink(),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('showProgress', showProgress));
+    properties.add(DoubleProperty('size', size));
+  }
 }
 
 class AchievementCard extends StatelessWidget {
+  const AchievementCard({
+    required this.achievementId,
+    required this.progress,
+    required this.isCompleted,
+    super.key,
+    this.unlockedAt,
+  });
   final String achievementId;
   final int progress;
   final bool isCompleted;
   final DateTime? unlockedAt;
-
-  const AchievementCard({
-    super.key,
-    required this.achievementId,
-    required this.progress,
-    required this.isCompleted,
-    this.unlockedAt,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -360,5 +372,14 @@ class AchievementCard extends StatelessWidget {
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('achievementId', achievementId));
+    properties.add(IntProperty('progress', progress));
+    properties.add(DiagnosticsProperty<bool>('isCompleted', isCompleted));
+    properties.add(DiagnosticsProperty<DateTime?>('unlockedAt', unlockedAt));
   }
 }

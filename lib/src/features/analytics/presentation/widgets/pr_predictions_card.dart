@@ -5,12 +5,11 @@ import '../../domain/models/analytics_models.dart';
 
 /// Card displaying AI-powered PR predictions
 class PRPredictionsCard extends StatelessWidget {
-  final List<PRPrediction> predictions;
-
   const PRPredictionsCard({
     required this.predictions,
     super.key,
   });
+  final List<PRPrediction> predictions;
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +64,12 @@ class PRPredictionsCard extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Predictions list
-            ...topPredictions.map((prediction) => _buildPredictionItem(
-                  context,
-                  prediction,
-                )),
+            ...topPredictions.map(
+              (prediction) => _buildPredictionItem(
+                context,
+                prediction,
+              ),
+            ),
           ],
         ),
       ),
@@ -94,7 +95,8 @@ class PRPredictionsCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withAlpha((0.3 * 255).round()),
+        color: theme.colorScheme.surfaceContainerHighest
+            .withAlpha((0.3 * 255).round()),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: confidenceColor.withAlpha((0.3 * 255).round()),
@@ -227,7 +229,7 @@ class PRPredictionsCard extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.trending_up,
                       size: 16,
                       color: Colors.green,
@@ -280,5 +282,11 @@ class PRPredictionsCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IterableProperty<PRPrediction>('predictions', predictions));
   }
 }

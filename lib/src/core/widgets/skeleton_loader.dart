@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+
 import '../theme/app_animations.dart';
+import '../theme/app_theme.dart';
 
 class SkeletonLoader extends StatelessWidget {
   const SkeletonLoader({
-    super.key,
     required this.child,
+    super.key,
     this.isLoading = true,
     this.duration = const Duration(milliseconds: 1500),
   });
@@ -22,6 +23,13 @@ class SkeletonLoader extends StatelessWidget {
       duration: duration,
       child: child,
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('isLoading', isLoading));
+    properties.add(DiagnosticsProperty<Duration>('duration', duration));
   }
 }
 
@@ -56,6 +64,15 @@ class SkeletonCard extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty('height', height));
+    properties.add(DoubleProperty('width', width));
+    properties
+        .add(DiagnosticsProperty<BorderRadius?>('borderRadius', borderRadius));
+  }
 }
 
 class SkeletonText extends StatelessWidget {
@@ -85,6 +102,14 @@ class SkeletonText extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty('height', height));
+    properties.add(DoubleProperty('width', width));
+    properties.add(DoubleProperty('borderRadius', borderRadius));
+  }
 }
 
 class SkeletonAvatar extends StatelessWidget {
@@ -110,6 +135,12 @@ class SkeletonAvatar extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty('size', size));
+  }
 }
 
 class SkeletonListTile extends StatelessWidget {
@@ -125,37 +156,43 @@ class SkeletonListTile extends StatelessWidget {
   final bool hasTrailing;
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppTheme.spacingMD,
-        vertical: AppTheme.spacingSM,
-      ),
-      child: Row(
-        children: [
-          if (hasAvatar) ...[
-            const SkeletonAvatar(),
-            const SizedBox(width: AppTheme.spacingMD),
-          ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SkeletonText(width: 200),
-                if (hasSubtitle) ...[
-                  const SizedBox(height: AppTheme.spacingSM),
-                  const SkeletonText(width: 150, height: 12),
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppTheme.spacingMD,
+          vertical: AppTheme.spacingSM,
+        ),
+        child: Row(
+          children: [
+            if (hasAvatar) ...[
+              const SkeletonAvatar(),
+              const SizedBox(width: AppTheme.spacingMD),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SkeletonText(width: 200),
+                  if (hasSubtitle) ...[
+                    const SizedBox(height: AppTheme.spacingSM),
+                    const SkeletonText(width: 150, height: 12),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-          if (hasTrailing) ...[
-            const SizedBox(width: AppTheme.spacingMD),
-            const SkeletonText(width: 60, height: 12),
+            if (hasTrailing) ...[
+              const SizedBox(width: AppTheme.spacingMD),
+              const SkeletonText(width: 60, height: 12),
+            ],
           ],
-        ],
-      ),
-    );
+        ),
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('hasAvatar', hasAvatar));
+    properties.add(DiagnosticsProperty<bool>('hasSubtitle', hasSubtitle));
+    properties.add(DiagnosticsProperty<bool>('hasTrailing', hasTrailing));
   }
 }
 
@@ -163,34 +200,32 @@ class SkeletonWorkoutCard extends StatelessWidget {
   const SkeletonWorkoutCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 140,
-      margin: const EdgeInsets.symmetric(vertical: AppTheme.spacingSM),
-      child: SkeletonCard(
+  Widget build(BuildContext context) => Container(
         height: 140,
-        child: const Padding(
-          padding: EdgeInsets.all(AppTheme.spacingMD),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SkeletonText(width: 120, height: 18),
-              SizedBox(height: AppTheme.spacingSM),
-              SkeletonText(width: 200, height: 14),
-              SizedBox(height: AppTheme.spacingSM),
-              SkeletonText(width: 80, height: 12),
-              Spacer(),
-              Row(
-                children: [
-                  SkeletonText(width: 60, height: 12),
-                  SizedBox(width: AppTheme.spacingMD),
-                  SkeletonText(width: 40, height: 12),
-                ],
-              ),
-            ],
+        margin: const EdgeInsets.symmetric(vertical: AppTheme.spacingSM),
+        child: const SkeletonCard(
+          height: 140,
+          child: Padding(
+            padding: EdgeInsets.all(AppTheme.spacingMD),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonText(width: 120, height: 18),
+                SizedBox(height: AppTheme.spacingSM),
+                SkeletonText(width: 200, height: 14),
+                SizedBox(height: AppTheme.spacingSM),
+                SkeletonText(width: 80, height: 12),
+                Spacer(),
+                Row(
+                  children: [
+                    SkeletonText(width: 60, height: 12),
+                    SizedBox(width: AppTheme.spacingMD),
+                    SkeletonText(width: 40, height: 12),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }

@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:herq/src/core/database/database.dart';
 
 void main() {
@@ -11,7 +11,8 @@ void main() {
     final total = all.length;
     final withParent = all
         .where(
-            (e) => e.parentExerciseId != null && e.parentExerciseId!.isNotEmpty)
+          (e) => e.parentExerciseId != null && e.parentExerciseId!.isNotEmpty,
+        )
         .toList();
 
     // Print summary for debugging in CI logs
@@ -20,9 +21,12 @@ void main() {
 
     // Sanity assertion: we expect at least 10 variant relationships in the seed.
     // This prevents regressions where variants accidentally get removed from the seeder.
-    expect(withParent.length >= 10, true,
-        reason:
-            'Expected at least 10 exercises to have parentExerciseId set; found ${withParent.length}');
+    expect(
+      withParent.length >= 10,
+      true,
+      reason:
+          'Expected at least 10 exercises to have parentExerciseId set; found ${withParent.length}',
+    );
 
     // Spot-check a few known mappings
     final weightedPull = await (db.select(db.exercises)

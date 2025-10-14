@@ -1,15 +1,5 @@
 /// Model for workout completion summary with achievements and PRs
 class WorkoutSummary {
-  final String workoutName;
-  final Duration duration;
-  final int totalSets;
-  final int totalReps;
-  final double totalVolume;
-  final double totalTonnage;
-  final List<ExerciseSummary> exercises;
-  final List<PersonalRecordAchievement> prs;
-  final WorkoutAchievements achievements;
-
   const WorkoutSummary({
     required this.workoutName,
     required this.duration,
@@ -21,17 +11,18 @@ class WorkoutSummary {
     required this.prs,
     required this.achievements,
   });
+  final String workoutName;
+  final Duration duration;
+  final int totalSets;
+  final int totalReps;
+  final double totalVolume;
+  final double totalTonnage;
+  final List<ExerciseSummary> exercises;
+  final List<PersonalRecordAchievement> prs;
+  final WorkoutAchievements achievements;
 }
 
 class ExerciseSummary {
-  final String exerciseId;
-  final String exerciseName;
-  final int sets;
-  final int totalReps;
-  final double? maxWeight;
-  final double? totalVolume;
-  final bool isNewPR;
-
   const ExerciseSummary({
     required this.exerciseId,
     required this.exerciseName,
@@ -41,24 +32,30 @@ class ExerciseSummary {
     this.totalVolume,
     this.isNewPR = false,
   });
+  final String exerciseId;
+  final String exerciseName;
+  final int sets;
+  final int totalReps;
+  final double? maxWeight;
+  final double? totalVolume;
+  final bool isNewPR;
 }
 
 class PersonalRecordAchievement {
+  const PersonalRecordAchievement({
+    required this.exerciseId,
+    required this.exerciseName,
+    required this.type,
+    required this.value,
+    required this.unit,
+    this.previousValue,
+  });
   final String exerciseId;
   final String exerciseName;
   final PRType type;
   final double value;
   final double? previousValue;
   final String unit;
-
-  const PersonalRecordAchievement({
-    required this.exerciseId,
-    required this.exerciseName,
-    required this.type,
-    required this.value,
-    this.previousValue,
-    required this.unit,
-  });
 
   double get improvement {
     if (previousValue == null || previousValue == 0) return 0;
@@ -74,11 +71,7 @@ enum PRType {
 }
 
 class WorkoutAchievements {
-  final bool isPersonalBest; // Best total volume workout
-  final bool isLongestWorkout;
-  final bool isMostSets;
-  final bool perfectCompletion; // All sets completed
-  final int streak; // Consecutive workout days
+  // Consecutive workout days
 
   const WorkoutAchievements({
     this.isPersonalBest = false,
@@ -87,6 +80,11 @@ class WorkoutAchievements {
     this.perfectCompletion = false,
     this.streak = 0,
   });
+  final bool isPersonalBest; // Best total volume workout
+  final bool isLongestWorkout;
+  final bool isMostSets;
+  final bool perfectCompletion; // All sets completed
+  final int streak;
 
   bool get hasAnyAchievement =>
       isPersonalBest || isLongestWorkout || isMostSets || perfectCompletion;

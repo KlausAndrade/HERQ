@@ -1,8 +1,9 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' hide JsonKey;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/database/database.dart';
-import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/database_provider.dart';
 import '../../domain/models/achievement.dart';
 
 // Provider for user stats (wires to current authenticated user)
@@ -33,10 +34,9 @@ final gamificationServiceProvider = Provider<GamificationService?>((ref) {
 });
 
 class GamificationService {
+  GamificationService(this.database, [this.defaultUserId]);
   final AppDatabase database;
   final String? defaultUserId;
-
-  GamificationService(this.database, [this.defaultUserId]);
 
   // Calculate XP required for a given level
   int xpRequiredForLevel(int level) {
@@ -106,7 +106,8 @@ class GamificationService {
             ..where((tbl) => tbl.id.equals(uid)))
           .getSingleOrNull();
       print(
-          '  🔍 Verification: User ${verifyUser != null ? "FOUND" : "NOT FOUND"} in DB');
+        '  🔍 Verification: User ${verifyUser != null ? "FOUND" : "NOT FOUND"} in DB',
+      );
     } else {
       print('  ✅ User record already exists:');
       print('     ID: ${existingUser.id}');
@@ -144,7 +145,7 @@ class GamificationService {
               totalWorkouts: const Value(0),
               currentStreak: const Value(0),
               longestStreak: const Value(0),
-              totalVolumeLifted: const Value(0.0),
+              totalVolumeLifted: const Value(0),
               totalSetsCompleted: const Value(0),
               experiencePoints: const Value(0),
               level: const Value(1),
@@ -215,7 +216,8 @@ class GamificationService {
     }
 
     print(
-        '  📊 Final stats: ${updated.totalWorkouts} workouts, ${updated.totalVolumeLifted.toStringAsFixed(1)} kg volume');
+      '  📊 Final stats: ${updated.totalWorkouts} workouts, ${updated.totalVolumeLifted.toStringAsFixed(1)} kg volume',
+    );
     return updated;
   }
 
@@ -236,7 +238,7 @@ class GamificationService {
       longestStreak: const Value(0),
       totalWorkouts: const Value(0),
       totalSetsCompleted: const Value(0),
-      totalVolumeLifted: const Value(0.0),
+      totalVolumeLifted: const Value(0),
       totalWorkoutMinutes: const Value(0),
     );
 
@@ -488,26 +490,22 @@ class GamificationService {
 // Database extension methods
 extension GamificationQueries on AppDatabase {
   // Watch user stats
-  Stream<UserStat?> watchUserStats(String userId) {
-    return (select(userStats)..where((tbl) => tbl.userId.equals(userId)))
-        .watchSingleOrNull();
-  }
+  Stream<UserStat?> watchUserStats(String userId) =>
+      (select(userStats)..where((tbl) => tbl.userId.equals(userId)))
+          .watchSingleOrNull();
 
   // Get user stats
-  Future<UserStat?> getUserStats(String userId) {
-    return (select(userStats)..where((tbl) => tbl.userId.equals(userId)))
-        .getSingleOrNull();
-  }
+  Future<UserStat?> getUserStats(String userId) =>
+      (select(userStats)..where((tbl) => tbl.userId.equals(userId)))
+          .getSingleOrNull();
 
   // Watch user achievements
-  Stream<List<UserAchievement>> watchUserAchievements(String userId) {
-    return (select(userAchievements)..where((tbl) => tbl.userId.equals(userId)))
-        .watch();
-  }
+  Stream<List<UserAchievement>> watchUserAchievements(String userId) =>
+      (select(userAchievements)..where((tbl) => tbl.userId.equals(userId)))
+          .watch();
 
   // Get user achievements
-  Future<List<UserAchievement>> getUserAchievements(String userId) {
-    return (select(userAchievements)..where((tbl) => tbl.userId.equals(userId)))
-        .get();
-  }
+  Future<List<UserAchievement>> getUserAchievements(String userId) =>
+      (select(userAchievements)..where((tbl) => tbl.userId.equals(userId)))
+          .get();
 }

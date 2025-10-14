@@ -5,20 +5,19 @@ import 'package:flutter/material.dart';
 /// This button automatically adjusts its layout when the label is long,
 /// ensuring the icon and text remain properly aligned.
 class AdaptiveButton extends StatelessWidget {
+  const AdaptiveButton({
+    required this.onPressed,
+    required this.label,
+    super.key,
+    this.icon,
+    this.style,
+    this.type = ButtonType.outlined,
+  });
   final VoidCallback? onPressed;
   final IconData? icon;
   final String label;
   final ButtonStyle? style;
   final ButtonType type;
-
-  const AdaptiveButton({
-    super.key,
-    required this.onPressed,
-    required this.label,
-    this.icon,
-    this.style,
-    this.type = ButtonType.outlined,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +26,6 @@ class AdaptiveButton extends StatelessWidget {
     final content = Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (icon != null) ...[
           Icon(icon, size: 20),
@@ -67,13 +65,22 @@ class AdaptiveButton extends StatelessWidget {
     }
   }
 
-  ButtonStyle _defaultStyle() {
-    return ButtonStyle(
-      minimumSize: MaterialStateProperty.all(const Size(0, 48)),
-      padding: MaterialStateProperty.all(
-        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
-    );
+  ButtonStyle _defaultStyle() => ButtonStyle(
+        minimumSize: WidgetStateProperty.all(const Size(0, 48)),
+        padding: WidgetStateProperty.all(
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(ObjectFlagProperty<VoidCallback?>.has('onPressed', onPressed));
+    properties.add(DiagnosticsProperty<IconData?>('icon', icon));
+    properties.add(StringProperty('label', label));
+    properties.add(DiagnosticsProperty<ButtonStyle?>('style', style));
+    properties.add(EnumProperty<ButtonType>('type', type));
   }
 }
 

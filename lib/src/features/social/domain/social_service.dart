@@ -32,14 +32,12 @@ class SocialService {
     );
 
     await _db.into(_db.posts).insert(post);
-    return await getPost(post.id.value);
+    return getPost(post.id.value);
   }
 
   /// Get a single post
-  Future<Post> getPost(String postId) async {
-    return await (_db.select(_db.posts)..where((p) => p.id.equals(postId)))
-        .getSingle();
-  }
+  Future<Post> getPost(String postId) async =>
+      (_db.select(_db.posts)..where((p) => p.id.equals(postId))).getSingle();
 
   /// Get feed posts (all posts from followed users + own posts)
   Future<List<Post>> getFeedPosts(String userId, {int limit = 50}) async {
@@ -53,7 +51,7 @@ class SocialService {
     final userIds = [...followingIds, userId];
 
     // Get posts from followed users and self
-    return await (_db.select(_db.posts)
+    return (_db.select(_db.posts)
           ..where((p) => p.userId.isIn(userIds))
           ..orderBy([(p) => OrderingTerm.desc(p.createdAt)])
           ..limit(limit))
@@ -61,13 +59,12 @@ class SocialService {
   }
 
   /// Get posts by a specific user
-  Future<List<Post>> getUserPosts(String userId, {int limit = 50}) async {
-    return await (_db.select(_db.posts)
-          ..where((p) => p.userId.equals(userId))
-          ..orderBy([(p) => OrderingTerm.desc(p.createdAt)])
-          ..limit(limit))
-        .get();
-  }
+  Future<List<Post>> getUserPosts(String userId, {int limit = 50}) async =>
+      (_db.select(_db.posts)
+            ..where((p) => p.userId.equals(userId))
+            ..orderBy([(p) => OrderingTerm.desc(p.createdAt)])
+            ..limit(limit))
+          .get();
 
   /// Delete a post
   Future<void> deletePost(String postId) async {
@@ -86,18 +83,21 @@ class SocialService {
     if (existing != null) return; // Already liked
 
     // Create like
-    await _db.into(_db.postLikes).insert(PostLikesCompanion(
-          id: Value(_uuid.v4()),
-          postId: Value(postId),
-          userId: Value(userId),
-          createdAt: Value(DateTime.now()),
-        ));
+    await _db.into(_db.postLikes).insert(
+          PostLikesCompanion(
+            id: Value(_uuid.v4()),
+            postId: Value(postId),
+            userId: Value(userId),
+            createdAt: Value(DateTime.now()),
+          ),
+        );
 
     // Increment likes count
-    await (_db.update(_db.posts)..where((p) => p.id.equals(postId)))
-        .write(PostsCompanion(
-      likesCount: Value(await _getLikesCount(postId)),
-    ));
+    await (_db.update(_db.posts)..where((p) => p.id.equals(postId))).write(
+      PostsCompanion(
+        likesCount: Value(await _getLikesCount(postId)),
+      ),
+    );
   }
 
   /// Unlike a post
@@ -107,10 +107,11 @@ class SocialService {
         .go();
 
     // Decrement likes count
-    await (_db.update(_db.posts)..where((p) => p.id.equals(postId)))
-        .write(PostsCompanion(
-      likesCount: Value(await _getLikesCount(postId)),
-    ));
+    await (_db.update(_db.posts)..where((p) => p.id.equals(postId))).write(
+      PostsCompanion(
+        likesCount: Value(await _getLikesCount(postId)),
+      ),
+    );
   }
 
   /// Check if user liked a post
@@ -165,23 +166,23 @@ class SocialService {
     await _db.into(_db.postComments).insert(commentData);
 
     // Increment comments count
-    await (_db.update(_db.posts)..where((p) => p.id.equals(postId)))
-        .write(PostsCompanion(
-      commentsCount: Value(await _getCommentsCount(postId)),
-    ));
+    await (_db.update(_db.posts)..where((p) => p.id.equals(postId))).write(
+      PostsCompanion(
+        commentsCount: Value(await _getCommentsCount(postId)),
+      ),
+    );
 
-    return await (_db.select(_db.postComments)
+    return (_db.select(_db.postComments)
           ..where((c) => c.id.equals(commentData.id.value)))
         .getSingle();
   }
 
   /// Get comments for a post
-  Future<List<PostComment>> getPostComments(String postId) async {
-    return await (_db.select(_db.postComments)
-          ..where((c) => c.postId.equals(postId))
-          ..orderBy([(c) => OrderingTerm.asc(c.createdAt)]))
-        .get();
-  }
+  Future<List<PostComment>> getPostComments(String postId) async =>
+      (_db.select(_db.postComments)
+            ..where((c) => c.postId.equals(postId))
+            ..orderBy([(c) => OrderingTerm.asc(c.createdAt)]))
+          .get();
 
   /// Delete a comment
   Future<void> deleteComment(String commentId, String postId) async {
@@ -189,10 +190,11 @@ class SocialService {
         .go();
 
     // Decrement comments count
-    await (_db.update(_db.posts)..where((p) => p.id.equals(postId)))
-        .write(PostsCompanion(
-      commentsCount: Value(await _getCommentsCount(postId)),
-    ));
+    await (_db.update(_db.posts)..where((p) => p.id.equals(postId))).write(
+      PostsCompanion(
+        commentsCount: Value(await _getCommentsCount(postId)),
+      ),
+    );
   }
 
   /// Get comments count for a post
@@ -211,36 +213,44 @@ class SocialService {
   Future<void> followUser(String followerId, String followingId) async {
     // Check if already following
     final existing = await (_db.select(_db.userFollows)
-          ..where((f) =>
-              f.followerId.equals(followerId) &
-              f.followingId.equals(followingId)))
+          ..where(
+            (f) =>
+                f.followerId.equals(followerId) &
+                f.followingId.equals(followingId),
+          ))
         .getSingleOrNull();
 
     if (existing != null) return; // Already following
 
-    await _db.into(_db.userFollows).insert(UserFollowsCompanion(
-          id: Value(_uuid.v4()),
-          followerId: Value(followerId),
-          followingId: Value(followingId),
-          createdAt: Value(DateTime.now()),
-        ));
+    await _db.into(_db.userFollows).insert(
+          UserFollowsCompanion(
+            id: Value(_uuid.v4()),
+            followerId: Value(followerId),
+            followingId: Value(followingId),
+            createdAt: Value(DateTime.now()),
+          ),
+        );
   }
 
   /// Unfollow a user
   Future<void> unfollowUser(String followerId, String followingId) async {
     await (_db.delete(_db.userFollows)
-          ..where((f) =>
-              f.followerId.equals(followerId) &
-              f.followingId.equals(followingId)))
+          ..where(
+            (f) =>
+                f.followerId.equals(followerId) &
+                f.followingId.equals(followingId),
+          ))
         .go();
   }
 
   /// Check if user is following another user
   Future<bool> isFollowing(String followerId, String followingId) async {
     final follow = await (_db.select(_db.userFollows)
-          ..where((f) =>
-              f.followerId.equals(followerId) &
-              f.followingId.equals(followingId)))
+          ..where(
+            (f) =>
+                f.followerId.equals(followerId) &
+                f.followingId.equals(followingId),
+          ))
         .getSingleOrNull();
     return follow != null;
   }
@@ -296,10 +306,9 @@ class SocialService {
   // ===== USER SEARCH =====
 
   /// Search for users by display name
-  Future<List<User>> searchUsers(String query, {int limit = 20}) async {
-    return await (_db.select(_db.users)
-          ..where((u) => u.displayName.like('%$query%'))
-          ..limit(limit))
-        .get();
-  }
+  Future<List<User>> searchUsers(String query, {int limit = 20}) async =>
+      (_db.select(_db.users)
+            ..where((u) => u.displayName.like('%$query%'))
+            ..limit(limit))
+          .get();
 }

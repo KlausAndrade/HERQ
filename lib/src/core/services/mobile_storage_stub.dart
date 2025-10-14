@@ -35,7 +35,8 @@ class WebStorageService {
 
   /// Save workout sessions (no-op on mobile)
   static Future<bool> saveWorkoutSessions(
-          List<Map<String, dynamic>> sessions) async =>
+    List<Map<String, dynamic>> sessions,
+  ) async =>
       true;
 
   /// Get exercises (always empty on mobile)
@@ -43,7 +44,8 @@ class WebStorageService {
 
   /// Save exercises (no-op on mobile)
   static Future<bool> saveExercises(
-          List<Map<String, dynamic>> exercises) async =>
+    List<Map<String, dynamic>> exercises,
+  ) async =>
       true;
 
   /// Get templates (always empty on mobile)
@@ -51,7 +53,8 @@ class WebStorageService {
 
   /// Save templates (no-op on mobile)
   static Future<bool> saveTemplates(
-          List<Map<String, dynamic>> templates) async =>
+    List<Map<String, dynamic>> templates,
+  ) async =>
       true;
 
   /// Get user preferences (always empty on mobile)
@@ -59,7 +62,8 @@ class WebStorageService {
 
   /// Save user preferences (no-op on mobile)
   static Future<bool> saveUserPreferences(
-          Map<String, dynamic> preferences) async =>
+    Map<String, dynamic> preferences,
+  ) async =>
       true;
 
   /// Get personal records (always empty on mobile)
@@ -67,7 +71,8 @@ class WebStorageService {
 
   /// Save personal records (no-op on mobile)
   static Future<bool> savePersonalRecords(
-          List<Map<String, dynamic>> records) async =>
+    List<Map<String, dynamic>> records,
+  ) async =>
       true;
 
   /// Get app metadata (always empty on mobile)

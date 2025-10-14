@@ -53,21 +53,22 @@ Future<void> seedAdditionalExercises(AppDatabase database) async {
   for (final exercise in additionalExercises) {
     await database.into(database.exercises).insertOnConflictUpdate(
           ExercisesCompanion.insert(
-            id: exercise['id'] as String,
-            name: exercise['name'] as String,
-            primaryMuscleGroup: exercise['primaryMuscleGroup'] as String,
+            id: exercise['id']! as String,
+            name: exercise['name']! as String,
+            primaryMuscleGroup: exercise['primaryMuscleGroup']! as String,
             secondaryMuscleGroups:
-                List<String>.from(exercise['secondaryMuscleGroups'] as List),
-            equipment: exercise['equipment'] as String,
-            instructions: exercise['instructions'] as String,
-            tags: List<String>.from(exercise['tags'] as List),
-            isBodyweight: Value(exercise['isBodyweight'] as bool),
-            exerciseType: Value(exercise['exerciseType'] as String),
-            category: Value(exercise['category'] as String),
-            difficulty: Value(exercise['difficulty'] as String),
+                List<String>.from(exercise['secondaryMuscleGroups']! as List),
+            equipment: exercise['equipment']! as String,
+            instructions: exercise['instructions']! as String,
+            tags: List<String>.from(exercise['tags']! as List),
+            isBodyweight: Value(exercise['isBodyweight']! as bool),
+            exerciseType: Value(exercise['exerciseType']! as String),
+            category: Value(exercise['category']! as String),
+            difficulty: Value(exercise['difficulty']! as String),
           ),
         );
   }
   print(
-      '✓ Seeded ${additionalExercises.length} additional exercises (including Tricep Extension)');
+    '✓ Seeded ${additionalExercises.length} additional exercises (including Tricep Extension)',
+  );
 }

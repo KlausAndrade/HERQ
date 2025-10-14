@@ -1,19 +1,19 @@
 import 'dart:async';
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
+
+import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:vibration/vibration.dart';
-import 'package:flutter/semantics.dart';
+
 import '../ui/notification_redesign/in_app_notification.dart';
 
 // Global stream controller for timer actions from notifications
 final timerActionStreamController = StreamController<String>.broadcast();
 
 class NotificationService {
-  static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
+  static final NotificationService _instance = NotificationService._internal();
 
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
@@ -39,8 +39,7 @@ class NotificationService {
     // During flutter test runs, avoid initializing the actual plugin which
     // may not be available in the headless test environment. Flutter sets
     // the FLUTTER_TEST environment variable during tests.
-    const isFlutterTest =
-        bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);
+    const isFlutterTest = bool.fromEnvironment('FLUTTER_TEST');
     if (isFlutterTest) {
       _initialized = true;
       return;
@@ -49,17 +48,9 @@ class NotificationService {
     const initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const initializationSettingsIOS = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+    const initializationSettingsIOS = DarwinInitializationSettings();
 
-    const initializationSettingsMacOS = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+    const initializationSettingsMacOS = DarwinInitializationSettings();
 
     const initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
@@ -183,8 +174,6 @@ class NotificationService {
       channelDescription: 'Notifications for exercise timer completion',
       importance: Importance.high,
       priority: Priority.high,
-      playSound: true,
-      enableVibration: true,
       vibrationPattern: Int64List.fromList([0, 500, 250, 500]),
     );
 
@@ -254,17 +243,14 @@ class NotificationService {
       const AndroidNotificationAction(
         'subtract_15',
         '-15s',
-        showsUserInterface: false,
       ),
       const AndroidNotificationAction(
         'add_15',
         '+15s',
-        showsUserInterface: false,
       ),
       const AndroidNotificationAction(
         'skip',
         'Skip',
-        showsUserInterface: false,
       ),
     ];
 
@@ -273,8 +259,6 @@ class NotificationService {
       'Active Timer',
       channelDescription:
           'Shows the current rest timer countdown with controls',
-      importance: Importance.defaultImportance,
-      priority: Priority.defaultPriority,
       ongoing: true,
       autoCancel: false,
       showProgress: true,
@@ -360,8 +344,6 @@ class NotificationService {
       channelDescription: 'Reminds you to finish your incomplete workout',
       importance: Importance.high,
       priority: Priority.high,
-      playSound: true,
-      enableVibration: true,
       icon: '@mipmap/ic_launcher',
     );
 

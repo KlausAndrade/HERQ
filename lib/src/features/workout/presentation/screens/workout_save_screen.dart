@@ -1,27 +1,42 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../domain/models/workout_summary.dart';
-import 'package:herq/l10n/app_localizations.dart';
 
 /// Screen shown before saving a workout, allows user to add notes, photos, and post to social
 class WorkoutSaveScreen extends ConsumerStatefulWidget {
-  final WorkoutSummary summary;
-  final VoidCallback onDiscard;
-  final Function(
-      String name, String? notes, String? photoPath, bool postToSocial) onSave;
-
   const WorkoutSaveScreen({
-    super.key,
     required this.summary,
     required this.onDiscard,
     required this.onSave,
+    super.key,
   });
+  final WorkoutSummary summary;
+  final VoidCallback onDiscard;
+  final Function(
+    String name,
+    String? notes,
+    String? photoPath,
+    bool postToSocial,
+  ) onSave;
 
   @override
   ConsumerState<WorkoutSaveScreen> createState() => _WorkoutSaveScreenState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<WorkoutSummary>('summary', summary));
+    properties
+        .add(ObjectFlagProperty<VoidCallback>.has('onDiscard', onDiscard));
+    properties.add(ObjectFlagProperty<
+        Function(String name, String? notes, String? photoPath,
+            bool postToSocial)>.has('onSave', onSave));
+  }
 }
 
 class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
@@ -111,7 +126,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
         title: Text(S.of(context)!.saveWorkout),
         leading: IconButton(
           icon: const Icon(Icons.close),
-          onPressed: () => _showDiscardDialog(),
+          onPressed: _showDiscardDialog,
         ),
       ),
       body: SingleChildScrollView(
@@ -237,7 +252,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => _showDiscardDialog(),
+                    onPressed: _showDiscardDialog,
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -265,44 +280,40 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
     );
   }
 
-  Widget _buildAddPhotoButton() {
-    return OutlinedButton.icon(
-      onPressed: _showImageSourcePicker,
-      icon: const Icon(Icons.add_photo_alternate),
-      label: Text(S.of(context)!.addPhoto),
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.all(16),
-        minimumSize: const Size(double.infinity, 56),
-      ),
-    );
-  }
-
-  Widget _buildPhotoPreview() {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.file(
-            File(_photoPath!),
-            width: double.infinity,
-            height: 200,
-            fit: BoxFit.cover,
-          ),
+  Widget _buildAddPhotoButton() => OutlinedButton.icon(
+        onPressed: _showImageSourcePicker,
+        icon: const Icon(Icons.add_photo_alternate),
+        label: Text(S.of(context)!.addPhoto),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.all(16),
+          minimumSize: const Size(double.infinity, 56),
         ),
-        Positioned(
-          top: 8,
-          right: 8,
-          child: IconButton(
-            onPressed: _removePhoto,
-            icon: const Icon(Icons.close, color: Colors.white),
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.black54,
+      );
+
+  Widget _buildPhotoPreview() => Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.file(
+              File(_photoPath!),
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
             ),
           ),
-        ),
-      ],
-    );
-  }
+          Positioned(
+            top: 8,
+            right: 8,
+            child: IconButton(
+              onPressed: _removePhoto,
+              icon: const Icon(Icons.close, color: Colors.white),
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.black54,
+              ),
+            ),
+          ),
+        ],
+      );
 
   String _formatDuration(Duration duration) {
     final hours = duration.inHours;
@@ -335,7 +346,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(S.of(context)!.discardWorkout + '?'),
+        title: Text('${S.of(context)!.discardWorkout}?'),
         content: Text(S.of(context)!.workoutNotSaved),
         actions: [
           TextButton(
@@ -357,37 +368,42 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
 }
 
 class _StatItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
   const _StatItem({
     required this.icon,
     required this.label,
     required this.value,
   });
+  final IconData icon;
+  final String label;
+  final String value;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, size: 28, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+  Widget build(BuildContext context) => Column(
+        children: [
+          Icon(icon, size: 28, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(StringProperty('label', label));
+    properties.add(StringProperty('value', value));
   }
 }

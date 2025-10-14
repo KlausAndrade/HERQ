@@ -4,17 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
-import 'package:herq/src/core/services/notification_service.dart';
-import '../providers/exercise_providers.dart';
+import '../../../../core/services/notification_service.dart';
 import '../providers/exercise_favorites_provider.dart';
+import '../providers/exercise_providers.dart';
 
 class ExerciseDetailScreen extends ConsumerWidget {
   const ExerciseDetailScreen({
-    super.key,
     required this.exerciseId,
+    super.key,
   });
 
   final String exerciseId;
@@ -96,7 +95,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: _getCategoryColor(
-                                    context, exercise.category),
+                                  context,
+                                  exercise.category,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
@@ -268,12 +269,14 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                       ? null
                                                       : () {
                                                           context.go(
-                                                              '/exercise/${exerciseInChain.id}');
+                                                            '/exercise/${exerciseInChain.id}',
+                                                          );
                                                         },
                                                   child: Container(
                                                     padding:
                                                         const EdgeInsets.all(
-                                                            12),
+                                                      12,
+                                                    ),
                                                     decoration: BoxDecoration(
                                                       color: isCurrentExercise
                                                           ? Theme.of(context)
@@ -285,7 +288,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                               .surface,
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                              8),
+                                                        8,
+                                                      ),
                                                       border: Border.all(
                                                         color: isCurrentExercise
                                                             ? Theme.of(context)
@@ -295,7 +299,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                                 .colorScheme
                                                                 .outline
                                                                 .withOpacity(
-                                                                    0.2),
+                                                                  0.2,
+                                                                ),
                                                       ),
                                                     ),
                                                     child: Row(
@@ -319,29 +324,34 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                                 ),
                                                               ),
                                                               const SizedBox(
-                                                                  height: 4),
+                                                                height: 4,
+                                                              ),
                                                               Wrap(
                                                                 spacing: 8,
                                                                 runSpacing: 8,
                                                                 children: [
                                                                   _DifficultyChip(
-                                                                      difficulty:
-                                                                          exerciseInChain
-                                                                              .difficulty),
+                                                                    difficulty:
+                                                                        exerciseInChain
+                                                                            .difficulty,
+                                                                  ),
                                                                   if (exerciseInChain
                                                                           .variantType !=
                                                                       null)
                                                                     _VariantChip(
-                                                                        variantType:
-                                                                            exerciseInChain.variantType!),
+                                                                      variantType:
+                                                                          exerciseInChain
+                                                                              .variantType!,
+                                                                    ),
                                                                 ],
                                                               ),
                                                             ],
                                                           ),
                                                         ),
                                                         if (!isCurrentExercise)
-                                                          const Icon(Icons
-                                                              .chevron_right),
+                                                          const Icon(
+                                                            Icons.chevron_right,
+                                                          ),
                                                       ],
                                                     ),
                                                   ),
@@ -350,7 +360,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                             ],
                                           ),
                                         );
-                                      }).toList(),
+                                      }),
                                     ],
                                   ),
                                 ),
@@ -389,12 +399,16 @@ class ExerciseDetailScreen extends ConsumerWidget {
                             spacing: 8,
                             runSpacing: 4,
                             children: exercise.secondaryMuscleGroups
-                                .map((muscle) => Chip(
-                                      label: Text(muscle[0].toUpperCase() +
-                                          muscle.substring(1)),
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.surface,
-                                    ))
+                                .map(
+                                  (muscle) => Chip(
+                                    label: Text(
+                                      muscle[0].toUpperCase() +
+                                          muscle.substring(1),
+                                    ),
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.surface,
+                                  ),
+                                )
                                 .toList(),
                           ),
                         ],
@@ -452,15 +466,17 @@ class ExerciseDetailScreen extends ConsumerWidget {
                             spacing: 8,
                             runSpacing: 4,
                             children: exercise.tags
-                                .map((tag) => Chip(
-                                      label: Text(tag
-                                          .replaceAll('_', ' ')
-                                          .toUpperCase()),
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary
-                                          .withOpacity(0.1),
-                                    ))
+                                .map(
+                                  (tag) => Chip(
+                                    label: Text(
+                                      tag.replaceAll('_', ' ').toUpperCase(),
+                                    ),
+                                    backgroundColor: Theme.of(context)
+                                        .colorScheme
+                                        .secondary
+                                        .withOpacity(0.1),
+                                  ),
+                                )
                                 .toList(),
                           ),
                         ],
@@ -535,6 +551,12 @@ class ExerciseDetailScreen extends ConsumerWidget {
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('exerciseId', exerciseId));
+  }
 }
 
 class _InfoChip extends StatelessWidget {
@@ -577,6 +599,13 @@ class _InfoChip extends StatelessWidget {
           ],
         ),
       );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(StringProperty('label', label));
+  }
 }
 
 class _DifficultyChip extends StatelessWidget {
@@ -619,6 +648,12 @@ class _DifficultyChip extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('difficulty', difficulty));
   }
 }
 
@@ -675,6 +710,12 @@ class _ExerciseTypeChip extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('type', type));
   }
 }
 
@@ -741,12 +782,21 @@ class _VariantChip extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('variantType', variantType));
+  }
 }
 
 // Extension methods for the ExerciseDetailScreen
 extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
-  void _startQuickWorkout(
-      BuildContext context, WidgetRef ref, Exercise exercise) async {
+  Future<void> _startQuickWorkout(
+    BuildContext context,
+    WidgetRef ref,
+    Exercise exercise,
+  ) async {
     // Create a quick workout template with this exercise
     final database = ref.read(databaseProvider);
     if (database == null) return;
@@ -781,8 +831,11 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
     }
   }
 
-  void _showAddToTemplateDialog(
-      BuildContext context, WidgetRef ref, Exercise exercise) async {
+  Future<void> _showAddToTemplateDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Exercise exercise,
+  ) async {
     final database = ref.read(databaseProvider);
     if (database == null) {
       // Web platform or no database available
@@ -812,7 +865,8 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
                 ? const Padding(
                     padding: EdgeInsets.all(16),
                     child: Text(
-                        'No templates available. Create a template first.'),
+                      'No templates available. Create a template first.',
+                    ),
                   )
                 : ListView.builder(
                     shrinkWrap: true,
@@ -839,13 +893,14 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
                                 // Add exercise to template
                                 final updatedIds = [
                                   ...template.exerciseIds,
-                                  exercise.id
+                                  exercise.id,
                                 ];
                                 await database
                                     .update(database.workoutTemplates)
                                     .replace(
                                       template.copyWith(
-                                          exerciseIds: updatedIds),
+                                        exerciseIds: updatedIds,
+                                      ),
                                     );
 
                                 if (context.mounted) {

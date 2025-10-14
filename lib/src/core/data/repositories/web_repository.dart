@@ -6,19 +6,17 @@ import 'base_repository.dart';
 /// Web implementation of WorkoutRepository using Supabase directly
 /// No local database - all operations go straight to Supabase
 class WebWorkoutRepository implements WorkoutRepository {
+  WebWorkoutRepository(this._supabase);
   final SupabaseClient _supabase;
 
-  WebWorkoutRepository(this._supabase);
-
   @override
-  Stream<List<WorkoutSessionDto>> watchWorkoutSessions() {
-    return _supabase
-        .from('workout_sessions')
-        .stream(primaryKey: ['id'])
-        .order('started_at', ascending: false)
-        .map((data) =>
-            data.map((json) => WorkoutSessionDto.fromJson(json)).toList());
-  }
+  Stream<List<WorkoutSessionDto>> watchWorkoutSessions() => _supabase
+      .from('workout_sessions')
+      .stream(primaryKey: ['id'])
+      .order('started_at')
+      .map(
+        (data) => data.map(WorkoutSessionDto.fromJson).toList(),
+      );
 
   @override
   Future<List<WorkoutSessionDto>> getWorkoutSessions() async {
@@ -45,7 +43,8 @@ class WebWorkoutRepository implements WorkoutRepository {
 
   @override
   Future<WorkoutSessionDto> createWorkoutSession(
-      WorkoutSessionDto session) async {
+    WorkoutSessionDto session,
+  ) async {
     final response = await _supabase
         .from('workout_sessions')
         .insert(session.toJson())
@@ -83,15 +82,14 @@ class WebWorkoutRepository implements WorkoutRepository {
   }
 
   @override
-  Stream<List<SetEntryDto>> watchSetEntriesBySession(String sessionId) {
-    return _supabase
-        .from('set_entries')
-        .stream(primaryKey: ['id'])
-        .eq('workout_session_id', sessionId)
-        .order('exercise_id')
-        .order('set_number')
-        .map((data) => data.map((json) => SetEntryDto.fromJson(json)).toList());
-  }
+  Stream<List<SetEntryDto>> watchSetEntriesBySession(String sessionId) =>
+      _supabase
+          .from('set_entries')
+          .stream(primaryKey: ['id'])
+          .eq('workout_session_id', sessionId)
+          .order('exercise_id')
+          .order('set_number')
+          .map((data) => data.map(SetEntryDto.fromJson).toList());
 
   @override
   Future<SetEntryDto> createSetEntry(SetEntryDto entry) async {
@@ -128,14 +126,13 @@ class WebWorkoutRepository implements WorkoutRepository {
   }
 
   @override
-  Stream<List<WorkoutTemplateDto>> watchWorkoutTemplates() {
-    return _supabase
-        .from('workout_templates')
-        .stream(primaryKey: ['id'])
-        .order('name')
-        .map((data) =>
-            data.map((json) => WorkoutTemplateDto.fromJson(json)).toList());
-  }
+  Stream<List<WorkoutTemplateDto>> watchWorkoutTemplates() => _supabase
+      .from('workout_templates')
+      .stream(primaryKey: ['id'])
+      .order('name')
+      .map(
+        (data) => data.map(WorkoutTemplateDto.fromJson).toList(),
+      );
 
   @override
   Future<WorkoutTemplateDto?> getWorkoutTemplateById(String id) async {
@@ -150,7 +147,8 @@ class WebWorkoutRepository implements WorkoutRepository {
 
   @override
   Future<WorkoutTemplateDto> createWorkoutTemplate(
-      WorkoutTemplateDto template) async {
+    WorkoutTemplateDto template,
+  ) async {
     final response = await _supabase
         .from('workout_templates')
         .insert(template.toJson())
@@ -176,18 +174,15 @@ class WebWorkoutRepository implements WorkoutRepository {
 
 /// Web implementation of ExerciseRepository using Supabase directly
 class WebExerciseRepository implements ExerciseRepository {
+  WebExerciseRepository(this._supabase);
   final SupabaseClient _supabase;
 
-  WebExerciseRepository(this._supabase);
-
   @override
-  Stream<List<ExerciseDto>> watchExercises() {
-    return _supabase
-        .from('exercises')
-        .stream(primaryKey: ['id'])
-        .order('name')
-        .map((data) => data.map((json) => ExerciseDto.fromJson(json)).toList());
-  }
+  Stream<List<ExerciseDto>> watchExercises() => _supabase
+      .from('exercises')
+      .stream(primaryKey: ['id'])
+      .order('name')
+      .map((data) => data.map(ExerciseDto.fromJson).toList());
 
   @override
   Future<List<ExerciseDto>> getExercises() async {

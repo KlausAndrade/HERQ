@@ -1,9 +1,9 @@
 // Database seeding helper
 // Call this to reload templates and exercises
 
-import 'database.dart';
 import '../../features/workout/data/seed/acroyoga_exercises_seed.dart';
 import '../../features/workout/data/seed/additional_exercises_seed.dart';
+import 'database.dart';
 
 Future<void> seedDatabase(AppDatabase database) async {
   print('🌱 Starting database seeding...');
@@ -25,5 +25,6 @@ Future<void> seedDatabase(AppDatabase database) async {
 
   print('✅ Database seeding complete!');
   print(
-      '📊 AcroYoga folder with 4 templates and 16 exercises is now available');
+    '📊 AcroYoga folder with 4 templates and 16 exercises is now available',
+  );
 }

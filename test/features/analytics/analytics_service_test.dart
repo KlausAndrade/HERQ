@@ -1,9 +1,9 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:uuid/uuid.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:herq/src/core/database/database.dart';
 import 'package:herq/src/features/analytics/data/analytics_service.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   test('weeklyVolume aggregates set entries by ISO week', () async {
@@ -31,7 +31,7 @@ void main() {
               setNumber: 1,
               reps: 5,
               completedAt: now,
-              weight: Value(100.0),
+              weight: const Value(100),
             ),
           );
 
@@ -43,7 +43,7 @@ void main() {
               setNumber: 2,
               reps: 3,
               completedAt: now,
-              weight: Value(120.0),
+              weight: const Value(120),
             ),
           );
 
@@ -53,7 +53,7 @@ void main() {
         to: now.add(const Duration(days: 1)),
       );
 
-      final totalVolume = totals.values.fold<double>(0.0, (a, b) => a + b);
+      final totalVolume = totals.values.fold<double>(0, (a, b) => a + b);
       expect(totalVolume, closeTo(100.0 * 5 + 120.0 * 3, 0.001));
     } finally {
       await db.close();

@@ -2,8 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/database/database.dart';
-import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/database_provider.dart';
 
 /// Provider for user's favorite exercises
 final favoritesProvider = StreamProvider<List<ExerciseFavorite>>((ref) {
@@ -29,7 +29,7 @@ final isExerciseFavorited =
       favorites.any((fav) => fav.exerciseId == exerciseId),
     ),
     loading: () => const AsyncValue.loading(),
-    error: (error, stack) => AsyncValue.error(error, stack),
+    error: AsyncValue.error,
   );
 });
 
@@ -66,10 +66,9 @@ final favoritesNotifierProvider = Provider<FavoritesNotifier>((ref) {
 });
 
 class FavoritesNotifier {
+  FavoritesNotifier(this._database, this._userId);
   final AppDatabase? _database;
   final String? _userId;
-
-  FavoritesNotifier(this._database, this._userId);
 
   /// Toggle favorite status for an exercise
   Future<void> toggleFavorite(String exerciseId) async {
@@ -82,15 +81,19 @@ class FavoritesNotifier {
 
     // Check if already favorited
     final existing = await (db.select(db.exerciseFavorites)
-          ..where((tbl) =>
-              tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId)))
+          ..where(
+            (tbl) =>
+                tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
+          ))
         .getSingleOrNull();
 
     if (existing != null) {
       // Remove from favorites
       await (db.delete(db.exerciseFavorites)
-            ..where((tbl) =>
-                tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId)))
+            ..where(
+              (tbl) =>
+                  tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
+            ))
           .go();
     } else {
       // Add to favorites
@@ -131,8 +134,10 @@ class FavoritesNotifier {
     }
 
     await (db.delete(db.exerciseFavorites)
-          ..where((tbl) =>
-              tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId)))
+          ..where(
+            (tbl) =>
+                tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
+          ))
         .go();
   }
 
@@ -146,8 +151,10 @@ class FavoritesNotifier {
     }
 
     final result = await (db.select(db.exerciseFavorites)
-          ..where((tbl) =>
-              tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId)))
+          ..where(
+            (tbl) =>
+                tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
+          ))
         .getSingleOrNull();
 
     return result != null;

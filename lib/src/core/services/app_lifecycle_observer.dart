@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:async';
 
 import '../../features/workout/presentation/providers/active_workout_provider.dart';
 import '../../features/workout/presentation/providers/workout_checkpoint_provider.dart';
@@ -10,10 +11,9 @@ import 'notification_service.dart';
 /// Saves workout checkpoint when app goes to background
 /// Schedules reminder notification if workout is in progress
 class AppLifecycleObserver extends WidgetsBindingObserver {
+  AppLifecycleObserver(this.ref);
   final WidgetRef ref;
   Timer? _notificationTimer;
-
-  AppLifecycleObserver(this.ref);
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {

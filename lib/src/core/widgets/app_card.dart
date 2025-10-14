@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../theme/app_animations.dart';
+
 import '../services/haptic_service.dart';
+import '../theme/app_animations.dart';
+import '../theme/app_theme.dart';
 
 enum AppCardVariant {
   elevated,
@@ -12,8 +13,8 @@ enum AppCardVariant {
 
 class AppCard extends StatefulWidget {
   const AppCard({
-    super.key,
     required this.child,
+    super.key,
     this.variant = AppCardVariant.elevated,
     this.onTap,
     this.padding,
@@ -38,6 +39,21 @@ class AppCard extends StatefulWidget {
 
   @override
   State<AppCard> createState() => _AppCardState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(EnumProperty<AppCardVariant>('variant', variant));
+    properties.add(ObjectFlagProperty<VoidCallback?>.has('onTap', onTap));
+    properties.add(DiagnosticsProperty<EdgeInsets?>('padding', padding));
+    properties.add(DiagnosticsProperty<EdgeInsets?>('margin', margin));
+    properties.add(DiagnosticsProperty<Gradient?>('gradient', gradient));
+    properties
+        .add(DiagnosticsProperty<BorderRadius?>('borderRadius', borderRadius));
+    properties.add(StringProperty('heroTag', heroTag));
+    properties.add(DiagnosticsProperty<bool>('enableHaptics', enableHaptics));
+    properties.add(DiagnosticsProperty<bool>('animateOnTap', animateOnTap));
+  }
 }
 
 class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
@@ -52,10 +68,10 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
       duration: AppDurations.fast,
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
+    _scaleAnimation = Tween<double>(begin: 1, end: 0.98).animate(
       CurvedAnimation(parent: _controller, curve: AppCurves.snappy),
     );
-    _elevationAnimation = Tween<double>(begin: 2.0, end: 8.0).animate(
+    _elevationAnimation = Tween<double>(begin: 2, end: 8).animate(
       CurvedAnimation(parent: _controller, curve: AppCurves.smooth),
     );
   }
@@ -90,30 +106,28 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
       margin: widget.margin,
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: widget.animateOnTap ? _scaleAnimation.value : 1.0,
-            child: Container(
-              decoration: _getDecoration(context),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: widget.onTap != null ? _handleTap : null,
-                  onTapDown: _handleTapDown,
-                  onTapUp: _handleTapUp,
-                  onTapCancel: _handleTapCancel,
-                  borderRadius: widget.borderRadius ??
-                      BorderRadius.circular(AppTheme.radiusMD),
-                  child: Container(
-                    padding: widget.padding ??
-                        const EdgeInsets.all(AppTheme.spacingMD),
-                    child: widget.child,
-                  ),
+        builder: (context, child) => Transform.scale(
+          scale: widget.animateOnTap ? _scaleAnimation.value : 1.0,
+          child: DecoratedBox(
+            decoration: _getDecoration(context),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: widget.onTap != null ? _handleTap : null,
+                onTapDown: _handleTapDown,
+                onTapUp: _handleTapUp,
+                onTapCancel: _handleTapCancel,
+                borderRadius: widget.borderRadius ??
+                    BorderRadius.circular(AppTheme.radiusMD),
+                child: Container(
+                  padding: widget.padding ??
+                      const EdgeInsets.all(AppTheme.spacingMD),
+                  child: widget.child,
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
 
@@ -143,7 +157,9 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
               color: Colors.black.withAlpha((0.1 * 255).round()),
               blurRadius: widget.animateOnTap ? _elevationAnimation.value : 8,
               offset: Offset(
-                  0, widget.animateOnTap ? _elevationAnimation.value / 2 : 4),
+                0,
+                widget.animateOnTap ? _elevationAnimation.value / 2 : 4,
+              ),
             ),
           ],
         );
@@ -160,7 +176,6 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
           borderRadius: borderRadius,
           border: Border.all(
             color: theme.colorScheme.outline.withAlpha((0.2 * 255).round()),
-            width: 1,
           ),
         );
       case AppCardVariant.glass:
@@ -169,7 +184,6 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
           borderRadius: borderRadius,
           border: Border.all(
             color: theme.colorScheme.outline.withAlpha((0.1 * 255).round()),
-            width: 1,
           ),
           boxShadow: [
             BoxShadow(

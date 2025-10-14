@@ -4,9 +4,8 @@ import '../../../core/database/database.dart';
 /// Lightweight analytics service that computes weekly total volume (weight * reps)
 /// for a given time range. Designed to be small and testable.
 class AnalyticsService {
-  final AppDatabase database;
-
   AnalyticsService(this.database);
+  final AppDatabase database;
 
   /// Returns a map of ISO week (YYYY-WW) -> total volume
   Future<Map<String, double>> weeklyVolume({
@@ -16,9 +15,10 @@ class AnalyticsService {
     // Query set_entries joined with workout_sessions to get completed_at
     final query = database.select(database.setEntries).join([
       leftOuterJoin(
-          database.workoutSessions,
-          database.workoutSessions.id
-              .equalsExp(database.setEntries.workoutSessionId)),
+        database.workoutSessions,
+        database.workoutSessions.id
+            .equalsExp(database.setEntries.workoutSessionId),
+      ),
     ])
       ..where(database.setEntries.completedAt.isBiggerOrEqualValue(from))
       ..where(database.setEntries.completedAt.isSmallerOrEqualValue(to));

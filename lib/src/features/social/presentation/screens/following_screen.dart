@@ -7,8 +7,8 @@ import '../providers/social_providers.dart';
 
 class FollowingScreen extends ConsumerWidget {
   const FollowingScreen({
-    super.key,
     required this.userId,
+    super.key,
   });
 
   final String userId;
@@ -86,8 +86,9 @@ class FollowingScreen extends ConsumerWidget {
                     : OutlinedButton(
                         onPressed: () => _unfollow(ref, user.id),
                         style: OutlinedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surfaceVariant,
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
                         ),
                         child: const Text('Following'),
                       ),
@@ -130,5 +131,11 @@ class FollowingScreen extends ConsumerWidget {
     } catch (e) {
       debugPrint('Error unfollowing: $e');
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('userId', userId));
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:herq/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../../../l10n/app_localizations.dart';
 
 class AboutHerqScreen extends StatelessWidget {
   const AboutHerqScreen({super.key});
@@ -49,7 +50,7 @@ class AboutHerqScreen extends StatelessWidget {
                           color: Colors.black.withOpacity(0.08),
                           blurRadius: 12,
                           offset: const Offset(0, 6),
-                        )
+                        ),
                       ],
                     ),
                     padding: const EdgeInsets.all(28),

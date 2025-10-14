@@ -4,12 +4,6 @@ import '../../../core/providers/preferences_provider.dart';
 
 /// Workout settings model
 class WorkoutSettings {
-  final int defaultRestTimerSeconds;
-  final String weightUnit; // 'kg' or 'lb'
-  final bool hapticFeedback;
-  final bool autoStartRestTimer;
-  final bool showExerciseVideos;
-
   const WorkoutSettings({
     this.defaultRestTimerSeconds = 120, // 2 minutes
     this.weightUnit = 'kg',
@@ -18,57 +12,56 @@ class WorkoutSettings {
     this.showExerciseVideos = true,
   });
 
+  factory WorkoutSettings.fromJson(Map<String, dynamic> json) =>
+      WorkoutSettings(
+        defaultRestTimerSeconds: json['defaultRestTimerSeconds'] as int? ?? 120,
+        weightUnit: json['weightUnit'] as String? ?? 'kg',
+        hapticFeedback: json['hapticFeedback'] as bool? ?? true,
+        autoStartRestTimer: json['autoStartRestTimer'] as bool? ?? true,
+        showExerciseVideos: json['showExerciseVideos'] as bool? ?? true,
+      );
+  final int defaultRestTimerSeconds;
+  final String weightUnit; // 'kg' or 'lb'
+  final bool hapticFeedback;
+  final bool autoStartRestTimer;
+  final bool showExerciseVideos;
+
   WorkoutSettings copyWith({
     int? defaultRestTimerSeconds,
     String? weightUnit,
     bool? hapticFeedback,
     bool? autoStartRestTimer,
     bool? showExerciseVideos,
-  }) {
-    return WorkoutSettings(
-      defaultRestTimerSeconds:
-          defaultRestTimerSeconds ?? this.defaultRestTimerSeconds,
-      weightUnit: weightUnit ?? this.weightUnit,
-      hapticFeedback: hapticFeedback ?? this.hapticFeedback,
-      autoStartRestTimer: autoStartRestTimer ?? this.autoStartRestTimer,
-      showExerciseVideos: showExerciseVideos ?? this.showExerciseVideos,
-    );
-  }
+  }) =>
+      WorkoutSettings(
+        defaultRestTimerSeconds:
+            defaultRestTimerSeconds ?? this.defaultRestTimerSeconds,
+        weightUnit: weightUnit ?? this.weightUnit,
+        hapticFeedback: hapticFeedback ?? this.hapticFeedback,
+        autoStartRestTimer: autoStartRestTimer ?? this.autoStartRestTimer,
+        showExerciseVideos: showExerciseVideos ?? this.showExerciseVideos,
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'defaultRestTimerSeconds': defaultRestTimerSeconds,
-      'weightUnit': weightUnit,
-      'hapticFeedback': hapticFeedback,
-      'autoStartRestTimer': autoStartRestTimer,
-      'showExerciseVideos': showExerciseVideos,
-    };
-  }
-
-  factory WorkoutSettings.fromJson(Map<String, dynamic> json) {
-    return WorkoutSettings(
-      defaultRestTimerSeconds: json['defaultRestTimerSeconds'] as int? ?? 120,
-      weightUnit: json['weightUnit'] as String? ?? 'kg',
-      hapticFeedback: json['hapticFeedback'] as bool? ?? true,
-      autoStartRestTimer: json['autoStartRestTimer'] as bool? ?? true,
-      showExerciseVideos: json['showExerciseVideos'] as bool? ?? true,
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'defaultRestTimerSeconds': defaultRestTimerSeconds,
+        'weightUnit': weightUnit,
+        'hapticFeedback': hapticFeedback,
+        'autoStartRestTimer': autoStartRestTimer,
+        'showExerciseVideos': showExerciseVideos,
+      };
 }
 
 /// Provider for workout settings
 final workoutSettingsProvider =
-    StateNotifierProvider<WorkoutSettingsNotifier, WorkoutSettings>((ref) {
-  return WorkoutSettingsNotifier(ref);
-});
+    StateNotifierProvider<WorkoutSettingsNotifier, WorkoutSettings>(
+        WorkoutSettingsNotifier.new);
 
 /// Notifier for workout settings
 class WorkoutSettingsNotifier extends StateNotifier<WorkoutSettings> {
-  final Ref _ref;
-
   WorkoutSettingsNotifier(this._ref) : super(const WorkoutSettings()) {
     _loadSettings();
   }
+  final Ref _ref;
 
   Future<void> _loadSettings() async {
     try {
@@ -128,7 +121,6 @@ class WorkoutSettingsNotifier extends StateNotifier<WorkoutSettings> {
     }
   }
 
-  String getWeightUnitDisplay() {
-    return state.weightUnit == 'kg' ? 'Kilograms (kg)' : 'Pounds (lb)';
-  }
+  String getWeightUnitDisplay() =>
+      state.weightUnit == 'kg' ? 'Kilograms (kg)' : 'Pounds (lb)';
 }

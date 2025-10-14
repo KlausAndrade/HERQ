@@ -13,35 +13,33 @@ enum Period {
 }
 
 class LeaderboardEntry {
+  const LeaderboardEntry({
+    required this.userId,
+    required this.displayName,
+    required this.value,
+    required this.rank,
+    required this.formattedValue,
+    this.avatarUrl,
+  });
   final String userId;
   final String displayName;
   final String? avatarUrl;
   final double value;
   final int rank;
   final String formattedValue;
-
-  const LeaderboardEntry({
-    required this.userId,
-    required this.displayName,
-    this.avatarUrl,
-    required this.value,
-    required this.rank,
-    required this.formattedValue,
-  });
 }
 
 class Leaderboard {
-  final LeaderboardType type;
-  final Period period;
-  final List<LeaderboardEntry> entries;
-  final LeaderboardEntry? currentUserEntry;
-
   const Leaderboard({
     required this.type,
     required this.period,
     required this.entries,
     this.currentUserEntry,
   });
+  final LeaderboardType type;
+  final Period period;
+  final List<LeaderboardEntry> entries;
+  final LeaderboardEntry? currentUserEntry;
 
   String get title {
     switch (type) {
@@ -71,13 +69,12 @@ class Leaderboard {
 }
 
 class LeaderboardParams {
-  final LeaderboardType type;
-  final Period period;
-
   const LeaderboardParams({
     required this.type,
     required this.period,
   });
+  final LeaderboardType type;
+  final Period period;
 
   @override
   bool operator ==(Object other) =>

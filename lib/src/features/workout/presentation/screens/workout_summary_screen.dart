@@ -1,15 +1,16 @@
+import 'dart:math';
+
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:confetti/confetti.dart';
-import 'dart:math';
 
 import '../../domain/models/workout_summary.dart';
 
 class WorkoutSummaryScreen extends ConsumerStatefulWidget {
   const WorkoutSummaryScreen({
-    super.key,
     required this.summary,
+    super.key,
   });
 
   final WorkoutSummary summary;
@@ -17,6 +18,12 @@ class WorkoutSummaryScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<WorkoutSummaryScreen> createState() =>
       _WorkoutSummaryScreenState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<WorkoutSummary>('summary', summary));
+  }
 }
 
 class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
@@ -92,7 +99,6 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Celebration icon
                         _buildAnimatedIcon(),
@@ -173,39 +179,37 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
     );
   }
 
-  Widget _buildAnimatedIcon() {
-    return ScaleTransition(
-      scale: CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.elasticOut,
-      ),
-      child: Container(
-        width: 120,
-        height: 120,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).colorScheme.primary,
-              Theme.of(context).colorScheme.secondary,
+  Widget _buildAnimatedIcon() => ScaleTransition(
+        scale: CurvedAnimation(
+          parent: _animationController,
+          curve: Curves.elasticOut,
+        ),
+        child: Container(
+          width: 120,
+          height: 120,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.secondary,
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                blurRadius: 20,
+                spreadRadius: 5,
+              ),
             ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-              blurRadius: 20,
-              spreadRadius: 5,
-            ),
-          ],
+          child: const Icon(
+            Icons.emoji_events,
+            size: 64,
+            color: Colors.white,
+          ),
         ),
-        child: const Icon(
-          Icons.emoji_events,
-          size: 64,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
+      );
 
   Widget _buildTitle() {
     final hasPRs = widget.summary.prs.isNotEmpty;
@@ -234,49 +238,49 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
     );
   }
 
-  Widget _buildMainStatsCards() {
-    return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0, 0.3),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
-      )),
-      child: Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        alignment: WrapAlignment.center,
-        children: [
-          _buildStatCard(
-            icon: Icons.schedule,
-            label: 'Duration',
-            value: _formatDuration(widget.summary.duration),
-            color: Colors.blue,
+  Widget _buildMainStatsCards() => SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.3),
+          end: Offset.zero,
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.2, 1, curve: Curves.easeOut),
           ),
-          _buildStatCard(
-            icon: Icons.fitness_center,
-            label: 'Total Sets',
-            value: '${widget.summary.totalSets}',
-            color: Colors.orange,
-          ),
-          _buildStatCard(
-            icon: Icons.repeat,
-            label: 'Total Reps',
-            value: '${widget.summary.totalReps}',
-            color: Colors.green,
-          ),
-          _buildStatCard(
-            icon: Icons.monitor_weight,
-            label: 'Volume',
-            value: '${widget.summary.totalVolume.toStringAsFixed(0)} kg',
-            color: Colors.purple,
-            isHighlight: widget.summary.achievements.isPersonalBest,
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+        child: Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          alignment: WrapAlignment.center,
+          children: [
+            _buildStatCard(
+              icon: Icons.schedule,
+              label: 'Duration',
+              value: _formatDuration(widget.summary.duration),
+              color: Colors.blue,
+            ),
+            _buildStatCard(
+              icon: Icons.fitness_center,
+              label: 'Total Sets',
+              value: '${widget.summary.totalSets}',
+              color: Colors.orange,
+            ),
+            _buildStatCard(
+              icon: Icons.repeat,
+              label: 'Total Reps',
+              value: '${widget.summary.totalReps}',
+              color: Colors.green,
+            ),
+            _buildStatCard(
+              icon: Icons.monitor_weight,
+              label: 'Volume',
+              value: '${widget.summary.totalVolume.toStringAsFixed(0)} kg',
+              color: Colors.purple,
+              isHighlight: widget.summary.achievements.isPersonalBest,
+            ),
+          ],
+        ),
+      );
 
   Widget _buildStatCard({
     required IconData icon,
@@ -284,65 +288,64 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
     required String value,
     required Color color,
     bool isHighlight = false,
-  }) {
-    return Container(
-      width: 160,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isHighlight
-            ? color.withOpacity(0.2)
-            : Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(16),
-        border: isHighlight ? Border.all(color: color, width: 2) : null,
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: isHighlight ? color : null,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
+  }) =>
+      Container(
+        width: 160,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isHighlight
+              ? color.withOpacity(0.2)
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(16),
+          border: isHighlight ? Border.all(color: color, width: 2) : null,
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 32),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.6),
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isHighlight ? color : null,
+                  ),
+            ),
+          ],
+        ),
+      );
 
-  Widget _buildPRsSection() {
-    return FadeTransition(
-      opacity: _animationController,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.emoji_events, color: Colors.amber, size: 28),
-              const SizedBox(width: 8),
-              Text(
-                'Personal Records',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ...widget.summary.prs.map((pr) => _buildPRCard(pr)),
-        ],
-      ),
-    );
-  }
+  Widget _buildPRsSection() => FadeTransition(
+        opacity: _animationController,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.emoji_events, color: Colors.amber, size: 28),
+                const SizedBox(width: 8),
+                Text(
+                  'Personal Records',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...widget.summary.prs.map(_buildPRCard),
+          ],
+        ),
+      );
 
   Widget _buildPRCard(PersonalRecordAchievement pr) {
     final color = _getPRColor(pr.type);
@@ -426,39 +429,49 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
     final ach = widget.summary.achievements;
 
     if (ach.perfectCompletion) {
-      achievements.add(_buildAchievementChip(
-        icon: Icons.check_circle,
-        label: 'Perfect Completion',
-        color: Colors.green,
-      ));
+      achievements.add(
+        _buildAchievementChip(
+          icon: Icons.check_circle,
+          label: 'Perfect Completion',
+          color: Colors.green,
+        ),
+      );
     }
     if (ach.isPersonalBest) {
-      achievements.add(_buildAchievementChip(
-        icon: Icons.trending_up,
-        label: 'Highest Volume',
-        color: Colors.purple,
-      ));
+      achievements.add(
+        _buildAchievementChip(
+          icon: Icons.trending_up,
+          label: 'Highest Volume',
+          color: Colors.purple,
+        ),
+      );
     }
     if (ach.isLongestWorkout) {
-      achievements.add(_buildAchievementChip(
-        icon: Icons.timer,
-        label: 'Longest Workout',
-        color: Colors.blue,
-      ));
+      achievements.add(
+        _buildAchievementChip(
+          icon: Icons.timer,
+          label: 'Longest Workout',
+          color: Colors.blue,
+        ),
+      );
     }
     if (ach.isMostSets) {
-      achievements.add(_buildAchievementChip(
-        icon: Icons.format_list_numbered,
-        label: 'Most Sets',
-        color: Colors.orange,
-      ));
+      achievements.add(
+        _buildAchievementChip(
+          icon: Icons.format_list_numbered,
+          label: 'Most Sets',
+          color: Colors.orange,
+        ),
+      );
     }
     if (ach.streak > 1) {
-      achievements.add(_buildAchievementChip(
-        icon: Icons.local_fire_department,
-        label: '${ach.streak} Day Streak',
-        color: Colors.red,
-      ));
+      achievements.add(
+        _buildAchievementChip(
+          icon: Icons.local_fire_department,
+          label: '${ach.streak} Day Streak',
+          color: Colors.red,
+        ),
+      );
     }
 
     if (achievements.isEmpty) return const SizedBox.shrink();
@@ -495,181 +508,175 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
     required IconData icon,
     required String label,
     required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExerciseBreakdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Exercise Breakdown',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+  }) =>
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(0.3)),
         ),
-        const SizedBox(height: 16),
-        ...widget.summary.exercises
-            .map((exercise) => _buildExerciseCard(exercise)),
-      ],
-    );
-  }
-
-  Widget _buildExerciseCard(ExerciseSummary exercise) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  exercise.exerciseName,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ),
-              if (exercise.isNewPR)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.emoji_events,
-                          size: 14, color: Colors.amber),
-                      const SizedBox(width: 4),
-                      Text(
-                        'PR',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.amber,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildExerciseStat(
-                'Sets',
-                '${exercise.sets}',
-                Icons.fitness_center,
-              ),
-              const SizedBox(width: 24),
-              _buildExerciseStat(
-                'Reps',
-                '${exercise.totalReps}',
-                Icons.repeat,
-              ),
-              if (exercise.maxWeight != null) ...[
-                const SizedBox(width: 24),
-                _buildExerciseStat(
-                  'Max',
-                  '${exercise.maxWeight!.toStringAsFixed(1)} kg',
-                  Icons.trending_up,
-                ),
-              ],
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExerciseStat(String label, String value, IconData icon) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 16,
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-        ),
-        const SizedBox(width: 4),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: 8),
             Text(
               label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.6),
-                  ),
-            ),
-            Text(
-              value,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
+                    color: color,
                   ),
             ),
           ],
         ),
-      ],
-    );
-  }
+      );
 
-  Widget _buildFinishButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: FilledButton(
-        onPressed: () => context.go('/'),
-        style: FilledButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildExerciseBreakdown() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Exercise Breakdown',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 16),
+          ...widget.summary.exercises.map(_buildExerciseCard),
+        ],
+      );
+
+  Widget _buildExerciseCard(ExerciseSummary exercise) => Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    exercise.exerciseName,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+                if (exercise.isNewPR)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.emoji_events,
+                          size: 14,
+                          color: Colors.amber,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'PR',
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.amber,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _buildExerciseStat(
+                  'Sets',
+                  '${exercise.sets}',
+                  Icons.fitness_center,
+                ),
+                const SizedBox(width: 24),
+                _buildExerciseStat(
+                  'Reps',
+                  '${exercise.totalReps}',
+                  Icons.repeat,
+                ),
+                if (exercise.maxWeight != null) ...[
+                  const SizedBox(width: 24),
+                  _buildExerciseStat(
+                    'Max',
+                    '${exercise.maxWeight!.toStringAsFixed(1)} kg',
+                    Icons.trending_up,
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      );
+
+  Widget _buildExerciseStat(String label, String value, IconData icon) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 16,
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+          ),
+          const SizedBox(width: 4),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
+                    ),
+              ),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+            ],
+          ),
+        ],
+      );
+
+  Widget _buildFinishButton() => SizedBox(
+        width: double.infinity,
+        child: FilledButton(
+          onPressed: () => context.go('/'),
+          style: FilledButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: const Text(
+            'Back to Home',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-        child: const Text(
-          'Back to Home',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
+      );
 
   String _formatDuration(Duration duration) {
     final hours = duration.inHours;

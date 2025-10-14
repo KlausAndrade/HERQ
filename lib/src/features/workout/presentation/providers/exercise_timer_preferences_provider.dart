@@ -12,13 +12,12 @@ final exerciseTimerPreferencesProvider =
 });
 
 class ExerciseTimerPreferencesNotifier extends StateNotifier<Map<String, int>> {
-  final UnifiedStorageService _storage;
-  final Ref _ref;
-  static const String _keyPrefix = 'exercise_timer_';
-
   ExerciseTimerPreferencesNotifier(this._storage, this._ref) : super({}) {
     _loadPreferences();
   }
+  final UnifiedStorageService _storage;
+  final Ref _ref;
+  static const String _keyPrefix = 'exercise_timer_';
 
   Future<void> _loadPreferences() async {
     try {
@@ -43,9 +42,7 @@ class ExerciseTimerPreferencesNotifier extends StateNotifier<Map<String, int>> {
   }
 
   /// Get rest timer for a specific exercise (returns null if not set)
-  int? getTimerForExercise(String exerciseId) {
-    return state[exerciseId];
-  }
+  int? getTimerForExercise(String exerciseId) => state[exerciseId];
 
   /// Set rest timer preference for a specific exercise
   Future<void> setTimerForExercise(String exerciseId, int seconds) async {
@@ -65,7 +62,6 @@ class ExerciseTimerPreferencesNotifier extends StateNotifier<Map<String, int>> {
   }
 
   /// Get timer for exercise with fallback to default
-  int getTimerWithDefault(String exerciseId, {int defaultSeconds = 90}) {
-    return state[exerciseId] ?? defaultSeconds;
-  }
+  int getTimerWithDefault(String exerciseId, {int defaultSeconds = 90}) =>
+      state[exerciseId] ?? defaultSeconds;
 }

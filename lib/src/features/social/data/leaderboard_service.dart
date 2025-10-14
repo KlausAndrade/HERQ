@@ -2,9 +2,8 @@ import '../../../core/database/database.dart';
 import '../domain/models/leaderboard_models.dart';
 
 class LeaderboardService {
-  final AppDatabase _db;
-
   LeaderboardService(this._db);
+  final AppDatabase _db;
 
   /// Get leaderboard data based on type and period
   Future<Leaderboard> getLeaderboard({
@@ -56,7 +55,8 @@ class LeaderboardService {
 
   /// Get total volume leaderboard (sum of weight × reps)
   Future<List<LeaderboardEntry>> _getTotalVolumeLeaderboard(
-      (DateTime?, DateTime?) dateRange) async {
+    (DateTime?, DateTime?) dateRange,
+  ) async {
     print('🏆 Getting volume leaderboard...');
 
     final users = await _db.select(_db.users).get();
@@ -67,20 +67,23 @@ class LeaderboardService {
     // Debug: Print all users
     for (final u in users) {
       print(
-          '  👤 User: id=${u.id}, email=${u.email}, displayName=${u.displayName}');
+        '  👤 User: id=${u.id}, email=${u.email}, displayName=${u.displayName}',
+      );
     }
 
     final entries = <LeaderboardEntry>[];
     for (final s in stats) {
       print(
-          '  📊 Processing stat: userId=${s.userId}, volume=${s.totalVolumeLifted}');
+        '  📊 Processing stat: userId=${s.userId}, volume=${s.totalVolumeLifted}',
+      );
 
       // Get user info or create friendly display name
       User? user;
       try {
         user = users.firstWhere((u) => u.id == s.userId);
         print(
-            '    ✅ Found user: email=${user.email}, displayName=${user.displayName}');
+          '    ✅ Found user: email=${user.email}, displayName=${user.displayName}',
+        );
       } catch (_) {
         print('    ⚠️ No user record found for ${s.userId}');
       }
@@ -99,15 +102,18 @@ class LeaderboardService {
 
       if (s.totalVolumeLifted > 0) {
         print(
-            '  ✅ Adding entry: $displayName - ${s.totalVolumeLifted.toStringAsFixed(0)} kg');
-        entries.add(LeaderboardEntry(
-          userId: s.userId,
-          displayName: displayName,
-          avatarUrl: user?.avatarUrl,
-          value: s.totalVolumeLifted,
-          rank: 0,
-          formattedValue: '${s.totalVolumeLifted.toStringAsFixed(1)} kg',
-        ));
+          '  ✅ Adding entry: $displayName - ${s.totalVolumeLifted.toStringAsFixed(0)} kg',
+        );
+        entries.add(
+          LeaderboardEntry(
+            userId: s.userId,
+            displayName: displayName,
+            avatarUrl: user?.avatarUrl,
+            value: s.totalVolumeLifted,
+            rank: 0,
+            formattedValue: '${s.totalVolumeLifted.toStringAsFixed(1)} kg',
+          ),
+        );
       }
     }
 
@@ -131,7 +137,8 @@ class LeaderboardService {
 
   /// Get workout count leaderboard
   Future<List<LeaderboardEntry>> _getWorkoutCountLeaderboard(
-      (DateTime?, DateTime?) dateRange) async {
+    (DateTime?, DateTime?) dateRange,
+  ) async {
     print('🏆 Getting workout count leaderboard...');
 
     final users = await _db.select(_db.users).get();
@@ -161,15 +168,17 @@ class LeaderboardService {
 
         print('  ✅ Adding entry: $displayName - ${s.totalWorkouts} workouts');
 
-        entries.add(LeaderboardEntry(
-          userId: s.userId,
-          displayName: displayName,
-          avatarUrl: user?.avatarUrl,
-          value: s.totalWorkouts.toDouble(),
-          rank: 0,
-          formattedValue:
-              '${s.totalWorkouts} ${s.totalWorkouts == 1 ? "workout" : "workouts"}',
-        ));
+        entries.add(
+          LeaderboardEntry(
+            userId: s.userId,
+            displayName: displayName,
+            avatarUrl: user?.avatarUrl,
+            value: s.totalWorkouts.toDouble(),
+            rank: 0,
+            formattedValue:
+                '${s.totalWorkouts} ${s.totalWorkouts == 1 ? "workout" : "workouts"}',
+          ),
+        );
       }
     }
 
@@ -221,14 +230,16 @@ class LeaderboardService {
 
         print('  ✅ Adding streak entry: $displayName - $streak days');
 
-        entries.add(LeaderboardEntry(
-          userId: s.userId,
-          displayName: displayName,
-          avatarUrl: user?.avatarUrl,
-          value: streak.toDouble(),
-          rank: 0,
-          formattedValue: '$streak ${streak == 1 ? "day" : "days"} 🔥',
-        ));
+        entries.add(
+          LeaderboardEntry(
+            userId: s.userId,
+            displayName: displayName,
+            avatarUrl: user?.avatarUrl,
+            value: streak.toDouble(),
+            rank: 0,
+            formattedValue: '$streak ${streak == 1 ? "day" : "days"} 🔥',
+          ),
+        );
       }
     }
 
@@ -249,7 +260,8 @@ class LeaderboardService {
 
   /// Get PR count leaderboard
   Future<List<LeaderboardEntry>> _getPRCountLeaderboard(
-      (DateTime?, DateTime?) dateRange) async {
+    (DateTime?, DateTime?) dateRange,
+  ) async {
     print('🏆 Getting PR count leaderboard...');
     // Count PRs from personal_records table
     final users = await _db.select(_db.users).get();
@@ -268,7 +280,7 @@ class LeaderboardService {
 
     // All PRs belong to the device's user (local-only)
     final prCount = prs.length;
-    final userId = 'local_user'; // Device-local user ID
+    const userId = 'local_user'; // Device-local user ID
 
     User? user;
     if (users.isNotEmpty) {
@@ -277,14 +289,16 @@ class LeaderboardService {
 
     print('  ✅ Adding PR entry: ${user?.displayName ?? "You"} - $prCount PRs');
 
-    entries.add(LeaderboardEntry(
-      userId: userId,
-      displayName: user?.displayName ?? 'You',
-      avatarUrl: user?.avatarUrl,
-      value: prCount.toDouble(),
-      rank: 1,
-      formattedValue: '$prCount PRs',
-    ));
+    entries.add(
+      LeaderboardEntry(
+        userId: userId,
+        displayName: user?.displayName ?? 'You',
+        avatarUrl: user?.avatarUrl,
+        value: prCount.toDouble(),
+        rank: 1,
+        formattedValue: '$prCount PRs',
+      ),
+    );
 
     print('  Total PR entries: ${entries.length}');
     return entries;
@@ -311,8 +325,8 @@ class LeaderboardService {
         return (startOfWeekDay, endOfWeek);
 
       case Period.monthly:
-        final startOfMonth = DateTime(now.year, now.month, 1);
-        final endOfMonth = DateTime(now.year, now.month + 1, 1);
+        final startOfMonth = DateTime(now.year, now.month);
+        final endOfMonth = DateTime(now.year, now.month + 1);
         return (startOfMonth, endOfMonth);
 
       case Period.allTime:

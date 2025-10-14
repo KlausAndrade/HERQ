@@ -14,7 +14,5 @@ class StringListConverter extends TypeConverter<List<String>, String> {
   }
 
   @override
-  String toSql(List<String> value) {
-    return value.join(',');
-  }
+  String toSql(List<String> value) => value.join(',');
 }

@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../services/notification_service.dart';
-import 'notification_card.dart';
 import 'in_app_notification.dart';
+import 'notification_card.dart';
 
 /// A floating overlay that listens to `NotificationService.inAppStream`
 /// and shows `NotificationCard` widgets stacked at the top of the app.
@@ -15,7 +16,7 @@ import 'in_app_notification.dart';
 /// - Swipe to dismiss
 /// - Stacks multiple notifications with compact spacing
 class NotificationOverlay extends ConsumerStatefulWidget {
-  const NotificationOverlay({Key? key}) : super(key: key);
+  const NotificationOverlay({super.key});
 
   @override
   ConsumerState<NotificationOverlay> createState() =>
@@ -81,34 +82,34 @@ class _NotificationOverlayState extends ConsumerState<NotificationOverlay>
           padding: const EdgeInsets.only(top: 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: _active.map((n) {
-              return TweenAnimationBuilder<double>(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutCubic,
-                tween: Tween<double>(begin: -100, end: 0),
-                builder: (context, value, child) {
-                  return Transform.translate(
-                    offset: Offset(0, value),
-                    child: Opacity(
-                      opacity: (value + 100) / 100,
-                      child: child,
+            children: _active
+                .map(
+                  (n) => TweenAnimationBuilder<double>(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOutCubic,
+                    tween: Tween<double>(begin: -100, end: 0),
+                    builder: (context, value, child) => Transform.translate(
+                      offset: Offset(0, value),
+                      child: Opacity(
+                        opacity: (value + 100) / 100,
+                        child: child,
+                      ),
                     ),
-                  );
-                },
-                child: NotificationCard(
-                  id: n.id,
-                  title: n.title,
-                  body: n.body,
-                  leading: n.leading,
-                  backgroundColor: n.backgroundColor,
-                  primaryActionLabel: n.primaryActionLabel,
-                  onPrimaryAction: n.onPrimaryAction,
-                  secondaryActionLabel: n.secondaryActionLabel,
-                  onSecondaryAction: n.onSecondaryAction,
-                  onDismiss: () => _dismissNotification(n.id),
-                ),
-              );
-            }).toList(),
+                    child: NotificationCard(
+                      id: n.id,
+                      title: n.title,
+                      body: n.body,
+                      leading: n.leading,
+                      backgroundColor: n.backgroundColor,
+                      primaryActionLabel: n.primaryActionLabel,
+                      onPrimaryAction: n.onPrimaryAction,
+                      secondaryActionLabel: n.secondaryActionLabel,
+                      onSecondaryAction: n.onSecondaryAction,
+                      onDismiss: () => _dismissNotification(n.id),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ),
       ),

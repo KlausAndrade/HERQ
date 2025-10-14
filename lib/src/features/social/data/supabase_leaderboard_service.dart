@@ -3,9 +3,8 @@ import '../domain/models/leaderboard_models.dart';
 
 /// Supabase-based leaderboard service for real multi-user leaderboards
 class SupabaseLeaderboardService {
-  final SupabaseClient _supabase;
-
   SupabaseLeaderboardService(this._supabase);
+  final SupabaseClient _supabase;
 
   /// Get leaderboard data from Supabase
   Future<Leaderboard> getLeaderboard({
@@ -55,7 +54,6 @@ class SupabaseLeaderboardService {
         type: type,
         period: period,
         entries: const [],
-        currentUserEntry: null,
       );
     }
   }
@@ -69,14 +67,16 @@ class SupabaseLeaderboardService {
     int rank = 1;
 
     for (final row in response as List) {
-      entries.add(LeaderboardEntry(
-        userId: row['user_id'] as String,
-        displayName: _getDisplayName(row),
-        avatarUrl: row['avatar_url'] as String?,
-        value: (row['value'] as num).toDouble(),
-        rank: rank++,
-        formattedValue: '${(row['value'] as num).toStringAsFixed(0)} kg',
-      ));
+      entries.add(
+        LeaderboardEntry(
+          userId: row['user_id'] as String,
+          displayName: _getDisplayName(row),
+          avatarUrl: row['avatar_url'] as String?,
+          value: (row['value'] as num).toDouble(),
+          rank: rank++,
+          formattedValue: '${(row['value'] as num).toStringAsFixed(0)} kg',
+        ),
+      );
     }
 
     return entries;
@@ -92,14 +92,16 @@ class SupabaseLeaderboardService {
 
     for (final row in response as List) {
       final count = (row['value'] as num).toInt();
-      entries.add(LeaderboardEntry(
-        userId: row['user_id'] as String,
-        displayName: _getDisplayName(row),
-        avatarUrl: row['avatar_url'] as String?,
-        value: count.toDouble(),
-        rank: rank++,
-        formattedValue: '$count ${count == 1 ? "workout" : "workouts"} 🏋️',
-      ));
+      entries.add(
+        LeaderboardEntry(
+          userId: row['user_id'] as String,
+          displayName: _getDisplayName(row),
+          avatarUrl: row['avatar_url'] as String?,
+          value: count.toDouble(),
+          rank: rank++,
+          formattedValue: '$count ${count == 1 ? "workout" : "workouts"} 🏋️',
+        ),
+      );
     }
 
     return entries;
@@ -115,14 +117,16 @@ class SupabaseLeaderboardService {
 
     for (final row in response as List) {
       final streak = (row['value'] as num).toInt();
-      entries.add(LeaderboardEntry(
-        userId: row['user_id'] as String,
-        displayName: _getDisplayName(row),
-        avatarUrl: row['avatar_url'] as String?,
-        value: streak.toDouble(),
-        rank: rank++,
-        formattedValue: '$streak ${streak == 1 ? "day" : "days"} 🔥',
-      ));
+      entries.add(
+        LeaderboardEntry(
+          userId: row['user_id'] as String,
+          displayName: _getDisplayName(row),
+          avatarUrl: row['avatar_url'] as String?,
+          value: streak.toDouble(),
+          rank: rank++,
+          formattedValue: '$streak ${streak == 1 ? "day" : "days"} 🔥',
+        ),
+      );
     }
 
     return entries;
@@ -137,14 +141,16 @@ class SupabaseLeaderboardService {
 
     for (final row in response) {
       final prCount = (row['pr_count'] as num).toInt();
-      entries.add(LeaderboardEntry(
-        userId: row['user_id'] as String,
-        displayName: _getDisplayNameFromRPC(row),
-        avatarUrl: row['avatar_url'] as String?,
-        value: prCount.toDouble(),
-        rank: rank++,
-        formattedValue: '$prCount PRs',
-      ));
+      entries.add(
+        LeaderboardEntry(
+          userId: row['user_id'] as String,
+          displayName: _getDisplayNameFromRPC(row),
+          avatarUrl: row['avatar_url'] as String?,
+          value: prCount.toDouble(),
+          rank: rank++,
+          formattedValue: '$prCount PRs',
+        ),
+      );
     }
 
     return entries;
@@ -157,10 +163,13 @@ class SupabaseLeaderboardService {
   ) async {
     try {
       final statType = _getStatType(type);
-      final response = await _supabase.rpc('get_user_rank', params: {
-        'p_user_id': userId,
-        'p_stat_type': statType,
-      }).maybeSingle();
+      final response = await _supabase.rpc(
+        'get_user_rank',
+        params: {
+          'p_user_id': userId,
+          'p_stat_type': statType,
+        },
+      ).maybeSingle();
 
       if (response == null) return null;
 
@@ -198,9 +207,8 @@ class SupabaseLeaderboardService {
   }
 
   /// Get display name from RPC result
-  String _getDisplayNameFromRPC(Map<String, dynamic> row) {
-    return row['display_name'] as String? ?? 'Athlete';
-  }
+  String _getDisplayNameFromRPC(Map<String, dynamic> row) =>
+      row['display_name'] as String? ?? 'Athlete';
 
   /// Convert LeaderboardType to stat type string
   String _getStatType(LeaderboardType type) {

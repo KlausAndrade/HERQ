@@ -22,12 +22,11 @@ class WorkoutFilterState {
   WorkoutFilterState copyWith({
     WorkoutFilter? filter,
     String? searchQuery,
-  }) {
-    return WorkoutFilterState(
-      filter: filter ?? this.filter,
-      searchQuery: searchQuery ?? this.searchQuery,
-    );
-  }
+  }) =>
+      WorkoutFilterState(
+        filter: filter ?? this.filter,
+        searchQuery: searchQuery ?? this.searchQuery,
+      );
 }
 
 class WorkoutFilterNotifier extends StateNotifier<WorkoutFilterState> {
@@ -78,7 +77,7 @@ final filteredWorkoutSessionsProvider =
         return session.startedAt.isAfter(weekStartDate);
       case WorkoutFilter.thisMonth:
         final now = DateTime.now();
-        final monthStart = DateTime(now.year, now.month, 1);
+        final monthStart = DateTime(now.year, now.month);
         return session.startedAt.isAfter(monthStart);
       case WorkoutFilter.all:
         return true;
@@ -88,10 +87,12 @@ final filteredWorkoutSessionsProvider =
   // Apply search query
   if (filterState.searchQuery.isNotEmpty) {
     final query = filterState.searchQuery.toLowerCase();
-    filteredSessions = filteredSessions.where((session) {
-      return session.name.toLowerCase().contains(query) ||
-          session.notes?.toLowerCase().contains(query) == true;
-    });
+    filteredSessions = filteredSessions.where(
+      (session) =>
+          session.name.toLowerCase().contains(query) ||
+              session.notes?.toLowerCase().contains(query) ??
+          false,
+    );
   }
 
   return filteredSessions.toList();

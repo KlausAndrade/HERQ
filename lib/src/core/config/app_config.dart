@@ -45,7 +45,7 @@ class AppConfig {
 
   // Validation Limits
   static const double minWeight = 0.1;
-  static const double maxWeight = 1000.0;
+  static const double maxWeight = 1000;
   static const int minReps = 1;
   static const int maxReps = 100;
   static const int minSets = 1;

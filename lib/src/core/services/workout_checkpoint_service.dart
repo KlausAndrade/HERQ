@@ -3,30 +3,28 @@ import 'dart:convert';
 
 import 'package:drift/drift.dart';
 
-import '../database/database.dart';
 import '../../features/workout/domain/models/active_workout.dart';
+import '../database/database.dart';
 
 /// Wrapper class for checkpoint data with metadata
 class CheckpointData {
-  final String id;
-  final ActiveWorkout workout;
-  final DateTime lastSavedAt;
-
   CheckpointData({
     required this.id,
     required this.workout,
     required this.lastSavedAt,
   });
+  final String id;
+  final ActiveWorkout workout;
+  final DateTime lastSavedAt;
 }
 
 /// Service for automatically saving workout progress to prevent data loss
 /// Implements periodic checkpointing and resume functionality
 class WorkoutCheckpointService {
+  WorkoutCheckpointService(this.database);
   final AppDatabase database;
   Timer? _autoSaveTimer;
   String? _currentCheckpointId;
-
-  WorkoutCheckpointService(this.database);
 
   /// Start auto-save timer for active workout
   /// Saves every 2 minutes to balance between safety and performance
@@ -83,7 +81,8 @@ class WorkoutCheckpointService {
           );
 
       print(
-          '💾 Checkpoint saved: ${workout.name} (${workout.elapsedTime.inMinutes}min)');
+        '💾 Checkpoint saved: ${workout.name} (${workout.elapsedTime.inMinutes}min)',
+      );
     } catch (e) {
       print('❌ Failed to save checkpoint: $e');
     }
@@ -106,7 +105,8 @@ class WorkoutCheckpointService {
       final workout = ActiveWorkout.fromJson(workoutJson);
 
       print(
-          '📦 Found checkpoint: ${workout.name} from ${checkpoint.lastSavedAt}');
+        '📦 Found checkpoint: ${workout.name} from ${checkpoint.lastSavedAt}',
+      );
 
       return CheckpointData(
         id: checkpoint.id,

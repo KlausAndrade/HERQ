@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:html' as html;
-
 import 'package:flutter/foundation.dart';
+import 'dart:html' as html;
 
 import '../config/app_config.dart';
 
@@ -39,12 +38,12 @@ class WebStorageService {
     final keys = <String>[];
 
     // Iterate through localStorage keys
-    storage.keys.forEach((key) {
+    for (final key in storage.keys) {
       if (key.startsWith(_keyPrefix)) {
         keys.add(key);
-        totalSize += (storage[key]?.length ?? 0);
+        totalSize += storage[key]?.length ?? 0;
       }
-    });
+    }
 
     return {
       'supported': true,
@@ -57,9 +56,9 @@ class WebStorageService {
 
   /// Store workout sessions
   static Future<bool> saveWorkoutSessions(
-      List<Map<String, dynamic>> sessions) async {
-    return _saveJson(_workoutSessionsKey, sessions);
-  }
+    List<Map<String, dynamic>> sessions,
+  ) async =>
+      _saveJson(_workoutSessionsKey, sessions);
 
   /// Retrieve workout sessions
   static Future<List<Map<String, dynamic>>> getWorkoutSessions() async {
@@ -69,9 +68,9 @@ class WebStorageService {
 
   /// Store exercises
   static Future<bool> saveExercises(
-      List<Map<String, dynamic>> exercises) async {
-    return _saveJson(_exercisesKey, exercises);
-  }
+    List<Map<String, dynamic>> exercises,
+  ) async =>
+      _saveJson(_exercisesKey, exercises);
 
   /// Retrieve exercises
   static Future<List<Map<String, dynamic>>> getExercises() async {
@@ -81,9 +80,9 @@ class WebStorageService {
 
   /// Store workout templates
   static Future<bool> saveTemplates(
-      List<Map<String, dynamic>> templates) async {
-    return _saveJson(_templatesKey, templates);
-  }
+    List<Map<String, dynamic>> templates,
+  ) async =>
+      _saveJson(_templatesKey, templates);
 
   /// Retrieve workout templates
   static Future<List<Map<String, dynamic>>> getTemplates() async {
@@ -93,9 +92,9 @@ class WebStorageService {
 
   /// Store user preferences
   static Future<bool> saveUserPreferences(
-      Map<String, dynamic> preferences) async {
-    return _saveJson(_userPreferencesKey, preferences);
-  }
+    Map<String, dynamic> preferences,
+  ) async =>
+      _saveJson(_userPreferencesKey, preferences);
 
   /// Retrieve user preferences
   static Future<Map<String, dynamic>> getUserPreferences() async {
@@ -105,9 +104,9 @@ class WebStorageService {
 
   /// Store personal records
   static Future<bool> savePersonalRecords(
-      List<Map<String, dynamic>> records) async {
-    return _saveJson(_personalRecordsKey, records);
-  }
+    List<Map<String, dynamic>> records,
+  ) async =>
+      _saveJson(_personalRecordsKey, records);
 
   /// Retrieve personal records
   static Future<List<Map<String, dynamic>>> getPersonalRecords() async {
@@ -141,11 +140,11 @@ class WebStorageService {
       final keysToRemove = <String>[];
 
       // Collect keys that start with our prefix
-      storage.keys.forEach((key) {
+      for (final key in storage.keys) {
         if (key.startsWith(_keyPrefix)) {
           keysToRemove.add(key);
         }
-      });
+      }
 
       // Remove collected keys
       for (final key in keysToRemove) {
@@ -208,7 +207,8 @@ class WebStorageService {
       // Import each data type
       if (data.containsKey('workoutSessions')) {
         await saveWorkoutSessions(
-            List<Map<String, dynamic>>.from(data['workoutSessions']));
+          List<Map<String, dynamic>>.from(data['workoutSessions']),
+        );
       }
 
       if (data.containsKey('exercises')) {
@@ -221,12 +221,14 @@ class WebStorageService {
 
       if (data.containsKey('userPreferences')) {
         await saveUserPreferences(
-            Map<String, dynamic>.from(data['userPreferences']));
+          Map<String, dynamic>.from(data['userPreferences']),
+        );
       }
 
       if (data.containsKey('personalRecords')) {
         await savePersonalRecords(
-            List<Map<String, dynamic>>.from(data['personalRecords']));
+          List<Map<String, dynamic>>.from(data['personalRecords']),
+        );
       }
 
       // Update metadata with import info
@@ -332,7 +334,7 @@ class WebStorageService {
   }
 
   // Private helper methods
-  static bool _saveJson(String key, dynamic data) {
+  static bool _saveJson(String key, data) {
     if (!isSupported) return false;
 
     try {
@@ -378,7 +380,7 @@ class WebStorageService {
       'templates',
       'userPreferences',
       'personalRecords',
-      'appMetadata'
+      'appMetadata',
     ];
 
     for (final key in data.keys) {

@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:herq/src/core/database/database.dart';
 
 void main() {
@@ -36,7 +36,8 @@ void main() {
       sb.writeln('Found templates with missing exercise references:');
       missingRefs.forEach((tid, ids) {
         sb.writeln(
-            ' - $tid -> ${ids.isEmpty ? '<no exercises>' : ids.join(', ')}');
+          ' - $tid -> ${ids.isEmpty ? '<no exercises>' : ids.join(', ')}',
+        );
       });
       fail(sb.toString());
     }

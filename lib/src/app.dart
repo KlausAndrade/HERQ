@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../l10n/app_localizations.dart';
 import 'core/routing/app_router.dart';
 import 'core/services/app_lifecycle_observer.dart';
-import 'features/onboarding/presentation/splash_screen.dart';
 import 'core/theme/app_theme.dart';
-import 'features/settings/providers/theme_provider.dart';
-import 'features/settings/providers/locale_provider.dart';
-import 'package:herq/l10n/app_localizations.dart';
 import 'core/ui/notification_redesign/notification_overlay.dart';
+import 'features/onboarding/presentation/splash_screen.dart';
+import 'features/settings/providers/locale_provider.dart';
+import 'features/settings/providers/theme_provider.dart';
 
 class HerqApp extends ConsumerStatefulWidget {
   const HerqApp({super.key});

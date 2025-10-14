@@ -20,8 +20,8 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
 
   // Exercise settings
   double? _initialWeight;
-  int _restTimerSeconds = 90;
-  bool _isAssisted = false;
+  final int _restTimerSeconds = 90;
+  final bool _isAssisted = false;
 
   @override
   void dispose() {
@@ -82,7 +82,9 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -132,9 +134,11 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                       _selectedCategory == null || _selectedCategory == 'All'
                           ? exercises
                           : exercises
-                              .where((e) =>
-                                  e.category.toLowerCase() ==
-                                  _selectedCategory!.toLowerCase())
+                              .where(
+                                (e) =>
+                                    e.category.toLowerCase() ==
+                                    _selectedCategory!.toLowerCase(),
+                              )
                               .toList();
 
                   if (filteredExercises.isEmpty) {
@@ -179,7 +183,7 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                         ),
                         subtitle: Text(
                           '${exercise.primaryMuscleGroup.toUpperCase()} • ${exercise.category}',
-                          style: TextStyle(fontSize: 12),
+                          style: const TextStyle(fontSize: 12),
                         ),
                         selected: isSelected,
                         onTap: () {

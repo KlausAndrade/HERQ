@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import '../theme/app_animations.dart';
+
 import '../services/haptic_service.dart';
+import '../theme/app_animations.dart';
 
 /// Professional animated switch with smooth transitions and haptic feedback
 class AnimatedSwitch extends StatefulWidget {
   const AnimatedSwitch({
-    super.key,
     required this.value,
     required this.onChanged,
+    super.key,
     this.activeColor,
     this.inactiveColor,
     this.thumbColor,
@@ -27,6 +28,20 @@ class AnimatedSwitch extends StatefulWidget {
 
   @override
   State<AnimatedSwitch> createState() => _AnimatedSwitchState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('value', value));
+    properties.add(
+        ObjectFlagProperty<ValueChanged<bool>?>.has('onChanged', onChanged));
+    properties.add(ColorProperty('activeColor', activeColor));
+    properties.add(ColorProperty('inactiveColor', inactiveColor));
+    properties.add(ColorProperty('thumbColor', thumbColor));
+    properties.add(DiagnosticsProperty<IconData?>('thumbIcon', thumbIcon));
+    properties.add(DoubleProperty('width', width));
+    properties.add(DoubleProperty('height', height));
+  }
 }
 
 class _AnimatedSwitchState extends State<AnimatedSwitch>
@@ -43,12 +58,14 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
     );
 
     _scaleAnimation = Tween<double>(
-      begin: 1.0,
+      begin: 1,
       end: 1.1,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOut,
+      ),
+    );
 
     if (widget.value) {
       _controller.value = 1.0;
@@ -92,64 +109,62 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
       onTap: widget.onChanged != null ? _handleTap : null,
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) {
-          return Container(
-            width: widget.width,
-            height: widget.height,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(widget.height / 2),
-              color: Color.lerp(inactiveColor, activeColor, _controller.value),
-              boxShadow: [
-                BoxShadow(
-                  color: Color.lerp(
-                      Colors.black12,
-                      activeColor.withAlpha((0.4 * 255).round()),
-                      _controller.value)!,
-                  blurRadius: 8 * _controller.value,
-                  offset: Offset(0, 2 * _controller.value),
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                // Animated thumb
-                AnimatedAlign(
-                  duration: AppDurations.normal,
-                  curve: AppCurves.bounceOut,
-                  alignment: widget.value
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: Transform.scale(
-                    scale: _scaleAnimation.value,
-                    child: Container(
-                      margin: const EdgeInsets.all(4),
-                      width: widget.height - 8,
-                      height: widget.height - 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: thumbColor,
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: widget.thumbIcon != null
-                          ? Icon(
-                              widget.thumbIcon,
-                              size: 12,
-                              color: widget.value ? activeColor : inactiveColor,
-                            )
-                          : null,
+        builder: (context, child) => Container(
+          width: widget.width,
+          height: widget.height,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(widget.height / 2),
+            color: Color.lerp(inactiveColor, activeColor, _controller.value),
+            boxShadow: [
+              BoxShadow(
+                color: Color.lerp(
+                  Colors.black12,
+                  activeColor.withAlpha((0.4 * 255).round()),
+                  _controller.value,
+                )!,
+                blurRadius: 8 * _controller.value,
+                offset: Offset(0, 2 * _controller.value),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              // Animated thumb
+              AnimatedAlign(
+                duration: AppDurations.normal,
+                curve: AppCurves.bounceOut,
+                alignment:
+                    widget.value ? Alignment.centerRight : Alignment.centerLeft,
+                child: Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: Container(
+                    margin: const EdgeInsets.all(4),
+                    width: widget.height - 8,
+                    height: widget.height - 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: thumbColor,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
+                    child: widget.thumbIcon != null
+                        ? Icon(
+                            widget.thumbIcon,
+                            size: 12,
+                            color: widget.value ? activeColor : inactiveColor,
+                          )
+                        : null,
                   ),
                 ),
-              ],
-            ),
-          );
-        },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -158,9 +173,9 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
 /// Professional animated checkbox with checkmark animation and haptic feedback
 class AnimatedCheckbox extends StatefulWidget {
   const AnimatedCheckbox({
-    super.key,
     required this.value,
     required this.onChanged,
+    super.key,
     this.activeColor,
     this.checkColor,
     this.size = 24,
@@ -176,6 +191,18 @@ class AnimatedCheckbox extends StatefulWidget {
 
   @override
   State<AnimatedCheckbox> createState() => _AnimatedCheckboxState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('value', value));
+    properties.add(
+        ObjectFlagProperty<ValueChanged<bool>?>.has('onChanged', onChanged));
+    properties.add(ColorProperty('activeColor', activeColor));
+    properties.add(ColorProperty('checkColor', checkColor));
+    properties.add(DoubleProperty('size', size));
+    properties.add(DoubleProperty('borderRadius', borderRadius));
+  }
 }
 
 class _AnimatedCheckboxState extends State<AnimatedCheckbox>
@@ -193,26 +220,30 @@ class _AnimatedCheckboxState extends State<AnimatedCheckbox>
     );
 
     _checkAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: AppCurves.bounceOut,
-    ));
+      begin: 0,
+      end: 1,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: AppCurves.bounceOut,
+      ),
+    );
 
     _scaleAnimation = TweenSequence<double>([
       TweenSequenceItem(
-        tween: Tween<double>(begin: 1.0, end: 0.85),
+        tween: Tween<double>(begin: 1, end: 0.85),
         weight: 30,
       ),
       TweenSequenceItem(
-        tween: Tween<double>(begin: 0.85, end: 1.0),
+        tween: Tween<double>(begin: 0.85, end: 1),
         weight: 70,
       ),
-    ]).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
+    ]).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOut,
+      ),
+    );
 
     if (widget.value) {
       _controller.value = 1.0;
@@ -254,44 +285,42 @@ class _AnimatedCheckboxState extends State<AnimatedCheckbox>
       onTap: widget.onChanged != null ? _handleTap : null,
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Container(
-              width: widget.size,
-              height: widget.size,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(widget.borderRadius),
+        builder: (context, child) => Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Container(
+            width: widget.size,
+            height: widget.size,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              color: Color.lerp(
+                theme.colorScheme.surfaceContainerHighest,
+                activeColor,
+                _controller.value,
+              ),
+              border: Border.all(
                 color: Color.lerp(
-                  theme.colorScheme.surfaceContainerHighest,
+                  theme.colorScheme.outline,
                   activeColor,
                   _controller.value,
-                ),
-                border: Border.all(
-                  color: Color.lerp(
-                    theme.colorScheme.outline,
-                    activeColor,
-                    _controller.value,
-                  )!,
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: activeColor.withOpacity(0.4 * _controller.value),
-                    blurRadius: 8 * _controller.value,
-                    offset: Offset(0, 2 * _controller.value),
-                  ),
-                ],
+                )!,
+                width: 2,
               ),
-              child: CustomPaint(
-                painter: _CheckmarkPainter(
-                  color: checkColor,
-                  progress: _checkAnimation.value,
+              boxShadow: [
+                BoxShadow(
+                  color: activeColor.withOpacity(0.4 * _controller.value),
+                  blurRadius: 8 * _controller.value,
+                  offset: Offset(0, 2 * _controller.value),
                 ),
+              ],
+            ),
+            child: CustomPaint(
+              painter: _CheckmarkPainter(
+                color: checkColor,
+                progress: _checkAnimation.value,
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -350,7 +379,6 @@ class _CheckmarkPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_CheckmarkPainter oldDelegate) {
-    return oldDelegate.progress != progress || oldDelegate.color != color;
-  }
+  bool shouldRepaint(_CheckmarkPainter oldDelegate) =>
+      oldDelegate.progress != progress || oldDelegate.color != color;
 }

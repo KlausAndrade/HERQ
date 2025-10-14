@@ -16,7 +16,7 @@ class UserFollows extends Table {
   List<Set<Column>> get uniqueKeys => [
         {
           followerId,
-          followingId
+          followingId,
         }, // Ensure a user can only follow another user once
       ];
 }

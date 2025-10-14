@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../lib/src/features/ai/data/services/ai_coaching_service.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:herq/src/features/ai/data/services/ai_coaching_service.dart';
 
 void main() {
   group('AI User ID Fix Tests', () {
@@ -20,12 +20,15 @@ void main() {
       // Test recovery analysis
       final recovery = await mockService.getRecoveryAnalysis('default_user');
       print(
-          '✅ Mock recovery: ${(recovery.recoveryScore * 100).round()}% score');
+        '✅ Mock recovery: ${(recovery.recoveryScore * 100).round()}% score',
+      );
       expect(recovery.recoveryScore, isA<double>());
 
       // Test progressive overload
       final overload = await mockService.getProgressiveOverloadSuggestions(
-          'default_user', 'bench_press');
+        'default_user',
+        'bench_press',
+      );
       print('✅ Mock overload: ${overload.length} suggestions');
       expect(overload.length, greaterThan(0));
 

@@ -17,20 +17,22 @@ class SocialService {
       final location =
           MockDataConfig.mockLocations[i % MockDataConfig.mockLocations.length];
 
-      users.add(UserProfile(
-        id: '${i + 1}',
-        displayName: name,
-        email: '${name.toLowerCase().replaceAll(' ', '.')}@example.com',
-        avatarUrl: 'https://avatar.iran.liara.run/public/${i + 1}',
-        bio: _generateBio(random),
-        location: location,
-        joinedAt:
-            DateTime.now().subtract(Duration(days: 30 + random.nextInt(300))),
-        totalWorkouts: 20 + random.nextInt(200),
-        totalVolume: (50000 + random.nextInt(150000)).toDouble(),
-        currentStreak: random.nextInt(30),
-        maxStreak: random.nextInt(50),
-      ));
+      users.add(
+        UserProfile(
+          id: '${i + 1}',
+          displayName: name,
+          email: '${name.toLowerCase().replaceAll(' ', '.')}@example.com',
+          avatarUrl: 'https://avatar.iran.liara.run/public/${i + 1}',
+          bio: _generateBio(random),
+          location: location,
+          joinedAt:
+              DateTime.now().subtract(Duration(days: 30 + random.nextInt(300))),
+          totalWorkouts: 20 + random.nextInt(200),
+          totalVolume: (50000 + random.nextInt(150000)).toDouble(),
+          currentStreak: random.nextInt(30),
+          maxStreak: random.nextInt(50),
+        ),
+      );
     }
 
     return users;
@@ -59,26 +61,28 @@ class SocialService {
       final workoutType = MockDataConfig.mockWorkoutTypes[
           random.nextInt(MockDataConfig.mockWorkoutTypes.length)];
 
-      items.add(FeedItem(
-        id: '${i + 1}',
-        userId: userId,
-        type: FeedItemType.values[random.nextInt(FeedItemType.values.length)],
-        createdAt: DateTime.now()
-            .subtract(Duration(hours: i * 2 + random.nextInt(12))),
-        exerciseId: random.nextBool() ? 'bench_press' : 'squat',
-        workoutId: random.nextBool() ? 'workout_${i + 1}' : null,
-        achievement: random.nextBool()
-            ? Achievement(
-                id: 'achievement_${i + 1}',
-                name: '$workoutType Achievement',
-                description: 'Completed an amazing $workoutType session!',
-                type: AchievementType
-                    .values[random.nextInt(AchievementType.values.length)],
-                unlockedAt: DateTime.now().subtract(Duration(hours: i * 2)),
-                badgeColor: _getRandomBadgeColor(random),
-              )
-            : null,
-      ));
+      items.add(
+        FeedItem(
+          id: '${i + 1}',
+          userId: userId,
+          type: FeedItemType.values[random.nextInt(FeedItemType.values.length)],
+          createdAt: DateTime.now()
+              .subtract(Duration(hours: i * 2 + random.nextInt(12))),
+          exerciseId: random.nextBool() ? 'bench_press' : 'squat',
+          workoutId: random.nextBool() ? 'workout_${i + 1}' : null,
+          achievement: random.nextBool()
+              ? Achievement(
+                  id: 'achievement_${i + 1}',
+                  name: '$workoutType Achievement',
+                  description: 'Completed an amazing $workoutType session!',
+                  type: AchievementType
+                      .values[random.nextInt(AchievementType.values.length)],
+                  unlockedAt: DateTime.now().subtract(Duration(hours: i * 2)),
+                  badgeColor: _getRandomBadgeColor(random),
+                )
+              : null,
+        ),
+      );
     }
 
     return items;
@@ -91,21 +95,24 @@ class SocialService {
       '#4CAF50',
       '#FF9800',
       '#9C27B0',
-      '#2196F3'
+      '#2196F3',
     ];
     return colors[random.nextInt(colors.length)];
   }
 
   Future<List<UserProfile>> searchUsers(String query) async {
     await Future.delayed(
-        const Duration(milliseconds: 500)); // Simulate network delay
+      const Duration(milliseconds: 500),
+    ); // Simulate network delay
 
     if (query.isEmpty) return [];
 
     return _mockUsers
-        .where((user) =>
-            user.displayName.toLowerCase().contains(query.toLowerCase()) ||
-            user.email.toLowerCase().contains(query.toLowerCase()))
+        .where(
+          (user) =>
+              user.displayName.toLowerCase().contains(query.toLowerCase()) ||
+              user.email.toLowerCase().contains(query.toLowerCase()),
+        )
         .toList();
   }
 
@@ -151,7 +158,9 @@ class SocialService {
   }
 
   Future<Leaderboard> getLeaderboard(
-      LeaderboardType type, Period period) async {
+    LeaderboardType type,
+    Period period,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 600));
 
     final entries = _mockUsers.asMap().entries.map((entry) {

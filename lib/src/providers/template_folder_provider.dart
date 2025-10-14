@@ -20,9 +20,8 @@ final templateFolderNotifierProvider =
 });
 
 class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
-  final AppDatabase _database;
-
   TemplateFolderNotifier(this._database) : super(const AsyncValue.data(null));
+  final AppDatabase _database;
 
   // Create a new folder
   Future<TemplateFolder> createFolder({
@@ -91,9 +90,11 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
       // First, remove folderId from all templates in this folder
       await (_database.update(_database.workoutTemplates)
             ..where((t) => t.folderId.equals(folderId)))
-          .write(const WorkoutTemplatesCompanion(
-        folderId: Value(null),
-      ));
+          .write(
+        const WorkoutTemplatesCompanion(
+          folderId: Value(null),
+        ),
+      );
 
       // Then delete the folder
       await (_database.delete(_database.templateFolders)
@@ -116,10 +117,12 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
     try {
       await (_database.update(_database.workoutTemplates)
             ..where((t) => t.id.equals(templateId)))
-          .write(WorkoutTemplatesCompanion(
-        folderId: Value(folderId),
-        updatedAt: Value(DateTime.now()),
-      ));
+          .write(
+        WorkoutTemplatesCompanion(
+          folderId: Value(folderId),
+          updatedAt: Value(DateTime.now()),
+        ),
+      );
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -135,10 +138,12 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
         final sortValue = i * 2;
         await (_database.update(_database.templateFolders)
               ..where((t) => t.id.equals(folders[i].id)))
-            .write(TemplateFoldersCompanion(
-          sortOrder: Value(sortValue),
-          updatedAt: Value(DateTime.now()),
-        ));
+            .write(
+          TemplateFoldersCompanion(
+            sortOrder: Value(sortValue),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
       }
       state = const AsyncValue.data(null);
     } catch (e, st) {

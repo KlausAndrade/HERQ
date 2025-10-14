@@ -5,9 +5,8 @@ import '../../../../core/providers/auth_provider.dart';
 import '../../data/supabase_social_service.dart';
 
 // Supabase client provider
-final supabaseProvider = Provider<SupabaseClient>((ref) {
-  return Supabase.instance.client;
-});
+final supabaseProvider =
+    Provider<SupabaseClient>((ref) => Supabase.instance.client);
 
 // Supabase social service provider
 final supabaseSocialServiceProvider = Provider<SupabaseSocialService>((ref) {
@@ -17,6 +16,25 @@ final supabaseSocialServiceProvider = Provider<SupabaseSocialService>((ref) {
 
 // Models for Supabase data
 class SupabasePost {
+  SupabasePost({
+    required this.id,
+    required this.userId,
+    required this.createdAt,
+    this.caption,
+    this.imageUrl,
+    this.userName,
+    this.userAvatar,
+  });
+
+  factory SupabasePost.fromJson(Map<String, dynamic> json) => SupabasePost(
+        id: json['id'] as String,
+        userId: json['user_id'] as String,
+        caption: json['caption'] as String?,
+        imageUrl: json['image_url'] as String?,
+        createdAt: DateTime.parse(json['created_at'] as String),
+        userName: json['profiles']?['display_name'] as String?,
+        userAvatar: json['profiles']?['avatar_url'] as String?,
+      );
   final String id;
   final String userId;
   final String? caption;
@@ -24,38 +42,9 @@ class SupabasePost {
   final DateTime createdAt;
   final String? userName;
   final String? userAvatar;
-
-  SupabasePost({
-    required this.id,
-    required this.userId,
-    this.caption,
-    this.imageUrl,
-    required this.createdAt,
-    this.userName,
-    this.userAvatar,
-  });
-
-  factory SupabasePost.fromJson(Map<String, dynamic> json) {
-    return SupabasePost(
-      id: json['id'] as String,
-      userId: json['user_id'] as String,
-      caption: json['caption'] as String?,
-      imageUrl: json['image_url'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      userName: json['profiles']?['display_name'] as String?,
-      userAvatar: json['profiles']?['avatar_url'] as String?,
-    );
-  }
 }
 
 class SupabaseComment {
-  final String id;
-  final String postId;
-  final String userId;
-  final String text;
-  final DateTime createdAt;
-  final String? userName;
-
   SupabaseComment({
     required this.id,
     required this.postId,
@@ -65,25 +54,24 @@ class SupabaseComment {
     this.userName,
   });
 
-  factory SupabaseComment.fromJson(Map<String, dynamic> json) {
-    return SupabaseComment(
-      id: json['id'] as String,
-      postId: json['post_id'] as String,
-      userId: json['user_id'] as String,
-      text: json['text'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      userName: json['profiles']?['display_name'] as String?,
-    );
-  }
+  factory SupabaseComment.fromJson(Map<String, dynamic> json) =>
+      SupabaseComment(
+        id: json['id'] as String,
+        postId: json['post_id'] as String,
+        userId: json['user_id'] as String,
+        text: json['text'] as String,
+        createdAt: DateTime.parse(json['created_at'] as String),
+        userName: json['profiles']?['display_name'] as String?,
+      );
+  final String id;
+  final String postId;
+  final String userId;
+  final String text;
+  final DateTime createdAt;
+  final String? userName;
 }
 
 class SupabaseProfile {
-  final String id;
-  final String? displayName;
-  final String? avatarUrl;
-  final String? bio;
-  final bool isPrivate;
-
   SupabaseProfile({
     required this.id,
     this.displayName,
@@ -92,15 +80,19 @@ class SupabaseProfile {
     this.isPrivate = false,
   });
 
-  factory SupabaseProfile.fromJson(Map<String, dynamic> json) {
-    return SupabaseProfile(
-      id: json['id'] as String,
-      displayName: json['display_name'] as String?,
-      avatarUrl: json['avatar_url'] as String?,
-      bio: json['bio'] as String?,
-      isPrivate: json['is_private'] as bool? ?? false,
-    );
-  }
+  factory SupabaseProfile.fromJson(Map<String, dynamic> json) =>
+      SupabaseProfile(
+        id: json['id'] as String,
+        displayName: json['display_name'] as String?,
+        avatarUrl: json['avatar_url'] as String?,
+        bio: json['bio'] as String?,
+        isPrivate: json['is_private'] as bool? ?? false,
+      );
+  final String id;
+  final String? displayName;
+  final String? avatarUrl;
+  final String? bio;
+  final bool isPrivate;
 }
 
 // Feed posts provider (posts from followed users)
@@ -154,13 +146,12 @@ final feedPostsStreamProvider =
   return supabase
       .from('posts')
       .stream(primaryKey: ['id'])
-      .order('created_at', ascending: false)
+      .order('created_at')
       .limit(50)
-      .map((data) {
-        return (data as List)
-            .map((json) => SupabasePost.fromJson(json))
-            .toList();
-      });
+      .map(
+        (data) =>
+            (data as List).map((json) => SupabasePost.fromJson(json)).toList(),
+      );
 });
 
 // Real-time comments stream provider
@@ -173,11 +164,11 @@ final postCommentsStreamProvider = StreamProvider.autoDispose
       .stream(primaryKey: ['id'])
       .eq('post_id', postId)
       .order('created_at', ascending: true)
-      .map((data) {
-        return (data as List)
+      .map(
+        (data) => (data as List)
             .map((json) => SupabaseComment.fromJson(json))
-            .toList();
-      });
+            .toList(),
+      );
 });
 
 // Explore posts provider (all recent posts)
@@ -276,7 +267,8 @@ final followersProvider = FutureProvider.autoDispose
     final data = await supabase
         .from('follows')
         .select(
-            'profiles!follows_follower_id_fkey(id, display_name, avatar_url, bio)')
+          'profiles!follows_follower_id_fkey(id, display_name, avatar_url, bio)',
+        )
         .eq('following_id', userId);
 
     return (data as List)
@@ -297,7 +289,8 @@ final followingProvider = FutureProvider.autoDispose
     final data = await supabase
         .from('follows')
         .select(
-            'profiles!follows_following_id_fkey(id, display_name, avatar_url, bio)')
+          'profiles!follows_following_id_fkey(id, display_name, avatar_url, bio)',
+        )
         .eq('follower_id', userId);
 
     return (data as List)

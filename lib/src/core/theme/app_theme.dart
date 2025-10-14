@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
 class AppTheme {
   // Primary Colors - Blue
@@ -79,18 +78,18 @@ class AppTheme {
   );
 
   // Spacing
-  static const double spacingXS = 4.0;
-  static const double spacingSM = 8.0;
-  static const double spacingMD = 16.0;
-  static const double spacingLG = 24.0;
-  static const double spacingXL = 32.0;
-  static const double spacingXXL = 48.0;
+  static const double spacingXS = 4;
+  static const double spacingSM = 8;
+  static const double spacingMD = 16;
+  static const double spacingLG = 24;
+  static const double spacingXL = 32;
+  static const double spacingXXL = 48;
 
   // Border Radius
-  static const double radiusSM = 8.0;
-  static const double radiusMD = 12.0;
-  static const double radiusLG = 16.0;
-  static const double radiusXL = 24.0;
+  static const double radiusSM = 8;
+  static const double radiusMD = 12;
+  static const double radiusLG = 16;
+  static const double radiusXL = 24;
 
   // Shadows
   static List<BoxShadow> softShadow = [
@@ -117,14 +116,9 @@ class AppTheme {
           secondary: secondaryColor,
           tertiary: accentColor,
           error: errorColor,
-          background: backgroundLight,
-          surface: surfaceLight,
-          surfaceVariant: surfaceVariantLight,
-          onPrimary: Colors.white,
+          surfaceContainerHighest: surfaceVariantLight,
           onSecondary: Colors.white,
           onTertiary: Colors.white,
-          onError: Colors.white,
-          onBackground: onSurfaceLight,
           onSurface: onSurfaceLight,
           onSurfaceVariant: onSurfaceVariantLight,
           outline: outlineLight,
@@ -217,12 +211,12 @@ class AppTheme {
             color: onSurfaceVariantLight,
           ),
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           elevation: 0,
           backgroundColor: backgroundLight,
           foregroundColor: onSurfaceLight,
           centerTitle: true,
-          titleTextStyle: const TextStyle(
+          titleTextStyle: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: onSurfaceLight,
@@ -235,7 +229,7 @@ class AppTheme {
           shadowColor: Colors.black.withAlpha((0.05 * 255).round()),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMD),
-            side: const BorderSide(color: outlineLight, width: 1),
+            side: const BorderSide(color: outlineLight),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -323,7 +317,7 @@ class AppTheme {
             letterSpacing: 0.25,
             color: onSurfaceLight,
           ),
-          side: const BorderSide(color: outlineLight, width: 1),
+          side: const BorderSide(color: outlineLight),
           padding: const EdgeInsets.symmetric(
             horizontal: spacingSM,
             vertical: spacingXS,
@@ -389,13 +383,11 @@ class AppTheme {
           secondary: secondaryLight,
           tertiary: accentLight,
           error: errorColor,
-          background: backgroundDark,
           surface: surfaceDark,
           onPrimary: Colors.white,
           onSecondary: Colors.white,
           onTertiary: Colors.black,
           onError: Colors.white,
-          onBackground: onSurfaceDark,
           onSurface: onSurfaceDark,
         ),
         typography: Typography.material2021(),
@@ -464,12 +456,12 @@ class AppTheme {
             color: onSurfaceDark,
           ),
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           elevation: 0,
           backgroundColor: backgroundDark,
           foregroundColor: onSurfaceDark,
           centerTitle: true,
-          titleTextStyle: const TextStyle(
+          titleTextStyle: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: onSurfaceDark,
@@ -580,16 +572,16 @@ class AppTheme {
             borderRadius: BorderRadius.circular(radiusMD),
           ),
         ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           type: BottomNavigationBarType.fixed,
           backgroundColor: surfaceDark,
           selectedItemColor: primaryLight,
           unselectedItemColor: Colors.grey,
-          selectedLabelStyle: const TextStyle(
+          selectedLabelStyle: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
-          unselectedLabelStyle: const TextStyle(
+          unselectedLabelStyle: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.normal,
           ),
@@ -600,26 +592,23 @@ class AppTheme {
   static ThemeData get herqLightTheme => ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
-        colorScheme: ColorScheme.light(
+        colorScheme: const ColorScheme.light(
           primary: herqTeal,
           secondary: herqLime,
           tertiary: herqGraphite,
           error: errorColor,
-          background: herqWhite,
           surface: herqWhite,
-          surfaceVariant: const Color(0xFFF0F0F2),
+          surfaceContainerHighest: Color(0xFFF0F0F2),
           onPrimary: herqGraphite,
           onSecondary: herqGraphite,
           onTertiary: herqWhite,
-          onError: Colors.white,
-          onBackground: herqGraphite,
           onSurface: herqGraphite,
-          onSurfaceVariant: const Color(0xFF6B6D71),
-          outline: const Color(0xFFD0D2D6),
-          outlineVariant: const Color(0xFFE5E7EB),
+          onSurfaceVariant: Color(0xFF6B6D71),
+          outline: Color(0xFFD0D2D6),
+          outlineVariant: Color(0xFFE5E7EB),
         ),
         typography: Typography.material2021(),
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           displayLarge: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.w900,
@@ -684,7 +673,7 @@ class AppTheme {
             color: herqGraphite,
           ),
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           elevation: 0,
           backgroundColor: herqWhite,
           foregroundColor: herqGraphite,
@@ -742,7 +731,7 @@ class AppTheme {
           style: OutlinedButton.styleFrom(
             elevation: 0,
             foregroundColor: herqTeal,
-            side: BorderSide(color: herqTeal, width: 1.5),
+            side: const BorderSide(color: herqTeal, width: 1.5),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(radiusSM),
             ),
@@ -760,16 +749,16 @@ class AppTheme {
             borderRadius: BorderRadius.circular(radiusLG),
           ),
         ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           type: BottomNavigationBarType.fixed,
           backgroundColor: herqWhite,
           selectedItemColor: herqTeal,
-          unselectedItemColor: const Color(0xFF6B6D71),
-          selectedLabelStyle: const TextStyle(
+          unselectedItemColor: Color(0xFF6B6D71),
+          selectedLabelStyle: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
-          unselectedLabelStyle: const TextStyle(
+          unselectedLabelStyle: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.normal,
           ),
@@ -780,26 +769,24 @@ class AppTheme {
   static ThemeData get herqDarkTheme => ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        colorScheme: ColorScheme.dark(
+        colorScheme: const ColorScheme.dark(
           primary: herqTeal,
           secondary: herqLime,
           tertiary: herqTeal,
           error: errorColor,
-          background: herqCharcoal,
           surface: herqGraphite,
-          surfaceVariant: const Color(0xFF23252A),
+          surfaceContainerHighest: Color(0xFF23252A),
           onPrimary: herqGraphite,
           onSecondary: herqGraphite,
           onTertiary: herqGraphite,
           onError: Colors.white,
-          onBackground: herqWhite,
           onSurface: herqWhite,
-          onSurfaceVariant: const Color(0xFFB8BABD),
-          outline: const Color(0xFF3A3C41),
-          outlineVariant: const Color(0xFF2A2C31),
+          onSurfaceVariant: Color(0xFFB8BABD),
+          outline: Color(0xFF3A3C41),
+          outlineVariant: Color(0xFF2A2C31),
         ),
         typography: Typography.material2021(),
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           displayLarge: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.w900,
@@ -864,7 +851,7 @@ class AppTheme {
             color: herqWhite,
           ),
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           elevation: 0,
           backgroundColor: herqCharcoal,
           foregroundColor: herqWhite,
@@ -922,7 +909,7 @@ class AppTheme {
           style: OutlinedButton.styleFrom(
             elevation: 0,
             foregroundColor: herqTeal,
-            side: BorderSide(color: herqTeal, width: 1.5),
+            side: const BorderSide(color: herqTeal, width: 1.5),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(radiusSM),
             ),
@@ -940,16 +927,16 @@ class AppTheme {
             borderRadius: BorderRadius.circular(radiusLG),
           ),
         ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           type: BottomNavigationBarType.fixed,
           backgroundColor: herqGraphite,
           selectedItemColor: herqTeal,
-          unselectedItemColor: const Color(0xFF6B6D71),
-          selectedLabelStyle: const TextStyle(
+          unselectedItemColor: Color(0xFF6B6D71),
+          selectedLabelStyle: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
-          unselectedLabelStyle: const TextStyle(
+          unselectedLabelStyle: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.normal,
           ),

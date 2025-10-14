@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import '../theme/app_animations.dart';
+
 import '../services/haptic_service.dart';
+import '../theme/app_animations.dart';
 
 /// Animated Floating Action Button with advanced micro-interactions
 class AnimatedFAB extends StatefulWidget {
   const AnimatedFAB({
-    super.key,
     required this.onPressed,
     required this.icon,
+    super.key,
     this.label,
     this.backgroundColor,
     this.foregroundColor,
@@ -31,6 +32,22 @@ class AnimatedFAB extends StatefulWidget {
 
   @override
   State<AnimatedFAB> createState() => _AnimatedFABState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(StringProperty('label', label));
+    properties.add(ColorProperty('backgroundColor', backgroundColor));
+    properties.add(ColorProperty('foregroundColor', foregroundColor));
+    properties.add(DiagnosticsProperty<Object?>('heroTag', heroTag));
+    properties.add(DiagnosticsProperty<bool>('mini', mini));
+    properties.add(DiagnosticsProperty<bool>('extended', extended));
+    properties.add(StringProperty('tooltip', tooltip));
+    properties.add(DiagnosticsProperty<Gradient?>('gradient', gradient));
+  }
 }
 
 class _AnimatedFABState extends State<AnimatedFAB>
@@ -54,7 +71,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
       duration: AppDurations.fast,
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
+    _scaleAnimation = Tween<double>(begin: 1, end: 0.9).animate(
       CurvedAnimation(parent: _scaleController, curve: AppCurves.snappy),
     );
 
@@ -63,7 +80,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
       duration: AppDurations.normal,
       vsync: this,
     );
-    _rotationAnimation = Tween<double>(begin: 0.0, end: 0.1).animate(
+    _rotationAnimation = Tween<double>(begin: 0, end: 0.1).animate(
       CurvedAnimation(parent: _rotationController, curve: Curves.easeInOut),
     );
 
@@ -72,7 +89,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+    _pulseAnimation = Tween<double>(begin: 1, end: 1.1).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
@@ -140,7 +157,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
         scale: _scaleAnimation,
         child: RotationTransition(
           turns: _rotationAnimation,
-          child: Container(
+          child: DecoratedBox(
             decoration: widget.gradient != null
                 ? BoxDecoration(
                     gradient: widget.gradient,
@@ -167,56 +184,52 @@ class _AnimatedFABState extends State<AnimatedFAB>
     );
   }
 
-  Widget _buildRegularFAB(ThemeData theme) {
-    return FloatingActionButton(
-      onPressed: _handleTap,
-      backgroundColor: widget.gradient != null
-          ? Colors.transparent
-          : widget.backgroundColor ?? theme.colorScheme.primary,
-      foregroundColor: widget.foregroundColor ?? theme.colorScheme.onPrimary,
-      elevation: widget.gradient != null ? 0 : null,
-      mini: widget.mini,
-      heroTag: widget.heroTag,
-      tooltip: widget.tooltip,
-      child: GestureDetector(
-        onTapDown: _handleTapDown,
-        onTapUp: _handleTapUp,
-        onTapCancel: _handleTapCancel,
-        child: Icon(
-          widget.icon,
-          size: widget.mini ? 20 : 24,
+  Widget _buildRegularFAB(ThemeData theme) => FloatingActionButton(
+        onPressed: _handleTap,
+        backgroundColor: widget.gradient != null
+            ? Colors.transparent
+            : widget.backgroundColor ?? theme.colorScheme.primary,
+        foregroundColor: widget.foregroundColor ?? theme.colorScheme.onPrimary,
+        elevation: widget.gradient != null ? 0 : null,
+        mini: widget.mini,
+        heroTag: widget.heroTag,
+        tooltip: widget.tooltip,
+        child: GestureDetector(
+          onTapDown: _handleTapDown,
+          onTapUp: _handleTapUp,
+          onTapCancel: _handleTapCancel,
+          child: Icon(
+            widget.icon,
+            size: widget.mini ? 20 : 24,
+          ),
         ),
-      ),
-    );
-  }
+      );
 
-  Widget _buildExtendedFAB(ThemeData theme) {
-    return FloatingActionButton.extended(
-      onPressed: _handleTap,
-      backgroundColor: widget.gradient != null
-          ? Colors.transparent
-          : widget.backgroundColor ?? theme.colorScheme.primary,
-      foregroundColor: widget.foregroundColor ?? theme.colorScheme.onPrimary,
-      elevation: widget.gradient != null ? 0 : null,
-      heroTag: widget.heroTag,
-      tooltip: widget.tooltip,
-      icon: GestureDetector(
-        onTapDown: _handleTapDown,
-        onTapUp: _handleTapUp,
-        onTapCancel: _handleTapCancel,
-        child: Icon(widget.icon),
-      ),
-      label: Text(widget.label ?? ''),
-    );
-  }
+  Widget _buildExtendedFAB(ThemeData theme) => FloatingActionButton.extended(
+        onPressed: _handleTap,
+        backgroundColor: widget.gradient != null
+            ? Colors.transparent
+            : widget.backgroundColor ?? theme.colorScheme.primary,
+        foregroundColor: widget.foregroundColor ?? theme.colorScheme.onPrimary,
+        elevation: widget.gradient != null ? 0 : null,
+        heroTag: widget.heroTag,
+        tooltip: widget.tooltip,
+        icon: GestureDetector(
+          onTapDown: _handleTapDown,
+          onTapUp: _handleTapUp,
+          onTapCancel: _handleTapCancel,
+          child: Icon(widget.icon),
+        ),
+        label: Text(widget.label ?? ''),
+      );
 }
 
 /// Animated Floating Action Button with expand/collapse animation
 class ExpandableFAB extends StatefulWidget {
   const ExpandableFAB({
-    super.key,
     required this.icon,
     required this.children,
+    super.key,
     this.backgroundColor,
     this.foregroundColor,
     this.distance = 70,
@@ -230,6 +243,15 @@ class ExpandableFAB extends StatefulWidget {
 
   @override
   State<ExpandableFAB> createState() => _ExpandableFABState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(ColorProperty('backgroundColor', backgroundColor));
+    properties.add(ColorProperty('foregroundColor', foregroundColor));
+    properties.add(DoubleProperty('distance', distance));
+  }
 }
 
 class _ExpandableFABState extends State<ExpandableFAB>
@@ -251,7 +273,7 @@ class _ExpandableFABState extends State<ExpandableFAB>
       parent: _controller,
       curve: AppCurves.elasticOut,
     );
-    _rotationAnimation = Tween<double>(begin: 0.0, end: 0.125).animate(
+    _rotationAnimation = Tween<double>(begin: 0, end: 0.125).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
@@ -274,74 +296,72 @@ class _ExpandableFABState extends State<ExpandableFAB>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomRight,
-      children: [
-        // Backdrop
-        if (_isOpen)
-          GestureDetector(
-            onTap: _toggle,
-            child: Container(
-              color: Colors.black.withOpacity(0.3),
+  Widget build(BuildContext context) => Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          // Backdrop
+          if (_isOpen)
+            GestureDetector(
+              onTap: _toggle,
+              child: Container(
+                color: Colors.black.withOpacity(0.3),
+              ),
             ),
-          ),
 
-        // Child FABs
-        ...List.generate(widget.children.length, (index) {
-          final childWidget = widget.children[index];
-          return AnimatedBuilder(
-            animation: _expandAnimation,
-            builder: (context, _) {
-              final offset =
-                  widget.distance * (index + 1) * _expandAnimation.value;
-              return Positioned(
-                bottom: offset,
-                right: 0,
-                child: FadeTransition(
-                  opacity: _expandAnimation,
-                  child: ScaleTransition(
-                    scale: _expandAnimation,
-                    child: FloatingActionButton.small(
-                      onPressed: () {
-                        HapticService.lightImpact();
-                        childWidget.onPressed();
-                        _toggle();
-                      },
-                      backgroundColor: childWidget.backgroundColor,
-                      foregroundColor: childWidget.foregroundColor,
-                      heroTag: null,
-                      tooltip: childWidget.label,
-                      child: Icon(childWidget.icon),
+          // Child FABs
+          ...List.generate(widget.children.length, (index) {
+            final childWidget = widget.children[index];
+            return AnimatedBuilder(
+              animation: _expandAnimation,
+              builder: (context, _) {
+                final offset =
+                    widget.distance * (index + 1) * _expandAnimation.value;
+                return Positioned(
+                  bottom: offset,
+                  right: 0,
+                  child: FadeTransition(
+                    opacity: _expandAnimation,
+                    child: ScaleTransition(
+                      scale: _expandAnimation,
+                      child: FloatingActionButton.small(
+                        onPressed: () {
+                          HapticService.lightImpact();
+                          childWidget.onPressed();
+                          _toggle();
+                        },
+                        backgroundColor: childWidget.backgroundColor,
+                        foregroundColor: childWidget.foregroundColor,
+                        heroTag: null,
+                        tooltip: childWidget.label,
+                        child: Icon(childWidget.icon),
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-          );
-        }),
+                );
+              },
+            );
+          }),
 
-        // Main FAB
-        RotationTransition(
-          turns: _rotationAnimation,
-          child: FloatingActionButton(
-            onPressed: _toggle,
-            backgroundColor: widget.backgroundColor,
-            foregroundColor: widget.foregroundColor,
-            child: Icon(_isOpen ? Icons.close : widget.icon),
+          // Main FAB
+          RotationTransition(
+            turns: _rotationAnimation,
+            child: FloatingActionButton(
+              onPressed: _toggle,
+              backgroundColor: widget.backgroundColor,
+              foregroundColor: widget.foregroundColor,
+              child: Icon(_isOpen ? Icons.close : widget.icon),
+            ),
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      );
 }
 
 class FABChild extends StatelessWidget {
   const FABChild({
-    super.key,
     required this.icon,
     required this.label,
     required this.onPressed,
+    super.key,
     this.backgroundColor,
     this.foregroundColor,
   });
@@ -353,7 +373,16 @@ class FABChild extends StatelessWidget {
   final Color? foregroundColor;
 
   @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink();
+  Widget build(BuildContext context) => const SizedBox.shrink();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(StringProperty('label', label));
+    properties
+        .add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+    properties.add(ColorProperty('backgroundColor', backgroundColor));
+    properties.add(ColorProperty('foregroundColor', foregroundColor));
   }
 }

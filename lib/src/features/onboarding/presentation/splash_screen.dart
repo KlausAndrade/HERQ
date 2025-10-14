@@ -5,11 +5,18 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({required this.onFinished, super.key});
   final VoidCallback onFinished;
-  const SplashScreen({super.key, required this.onFinished});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(ObjectFlagProperty<VoidCallback>.has('onFinished', onFinished));
+  }
 }
 
 class _SplashScreenState extends State<SplashScreen>
@@ -62,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
                         color: Colors.black.withOpacity(0.08),
                         blurRadius: 12,
                         offset: const Offset(0, 6),
-                      )
+                      ),
                     ],
                   ),
                   padding: const EdgeInsets.all(28),

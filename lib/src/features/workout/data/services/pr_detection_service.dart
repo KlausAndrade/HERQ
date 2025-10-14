@@ -3,9 +3,8 @@ import 'package:drift/drift.dart';
 import '../../../../core/database/database.dart';
 
 class PRDetectionService {
-  final AppDatabase database;
-
   PRDetectionService(this.database);
+  final AppDatabase database;
 
   /// Check if a set is a PR for weight or reps
   /// Returns a map with 'isPRWeight' and 'isPRReps' flags

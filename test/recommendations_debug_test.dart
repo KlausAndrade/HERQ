@@ -1,7 +1,7 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../lib/src/features/ai/data/services/ai_coaching_service.dart';
-import '../lib/src/core/services/groq_service.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:herq/src/core/services/groq_service.dart';
+import 'package:herq/src/features/ai/data/services/ai_coaching_service.dart';
 
 void main() {
   group('AI Recommendations Debug', () {
@@ -70,7 +70,8 @@ void main() {
         final recommendations =
             await mockService.getWorkoutRecommendations('default_user');
         print(
-            '✅ Mock fallback working: ${recommendations.length} recommendations');
+          '✅ Mock fallback working: ${recommendations.length} recommendations',
+        );
       }
     });
   });

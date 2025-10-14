@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../theme/app_animations.dart';
+
 import '../services/haptic_service.dart';
+import '../theme/app_animations.dart';
+import '../theme/app_theme.dart';
 
 enum AppButtonVariant {
   primary,
@@ -19,9 +20,9 @@ enum AppButtonSize {
 
 class AppButton extends StatefulWidget {
   const AppButton({
-    super.key,
     required this.onPressed,
     required this.child,
+    super.key,
     this.variant = AppButtonVariant.primary,
     this.size = AppButtonSize.medium,
     this.isLoading = false,
@@ -45,6 +46,21 @@ class AppButton extends StatefulWidget {
 
   @override
   State<AppButton> createState() => _AppButtonState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(ObjectFlagProperty<VoidCallback?>.has('onPressed', onPressed));
+    properties.add(EnumProperty<AppButtonVariant>('variant', variant));
+    properties.add(EnumProperty<AppButtonSize>('size', size));
+    properties.add(DiagnosticsProperty<bool>('isLoading', isLoading));
+    properties.add(DiagnosticsProperty<bool>('isDisabled', isDisabled));
+    properties.add(DiagnosticsProperty<IconData?>('icon', icon));
+    properties.add(DoubleProperty('width', width));
+    properties.add(DiagnosticsProperty<bool>('enableHaptics', enableHaptics));
+    properties.add(DiagnosticsProperty<Gradient?>('gradient', gradient));
+  }
 }
 
 class _AppButtonState extends State<AppButton>
@@ -60,10 +76,10 @@ class _AppButtonState extends State<AppButton>
       duration: AppDurations.fast,
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+    _scaleAnimation = Tween<double>(begin: 1, end: 0.95).animate(
       CurvedAnimation(parent: _controller, curve: AppCurves.snappy),
     );
-    _elevationAnimation = Tween<double>(begin: 2.0, end: 8.0).animate(
+    _elevationAnimation = Tween<double>(begin: 2, end: 8).animate(
       CurvedAnimation(parent: _controller, curve: AppCurves.smooth),
     );
   }
@@ -97,27 +113,25 @@ class _AppButtonState extends State<AppButton>
       scale: _scaleAnimation,
       child: AnimatedBuilder(
         animation: _elevationAnimation,
-        builder: (context, child) {
-          return Container(
-            width: widget.width,
-            constraints: BoxConstraints(minHeight: _getHeight()),
-            decoration: _getDecoration(context),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: isEnabled ? _handleTap : null,
-                onTapDown: _handleTapDown,
-                onTapUp: _handleTapUp,
-                onTapCancel: _handleTapCancel,
-                borderRadius: BorderRadius.circular(_getBorderRadius()),
-                child: Container(
-                  padding: _getPadding(),
-                  child: _buildContent(context),
-                ),
+        builder: (context, child) => Container(
+          width: widget.width,
+          constraints: BoxConstraints(minHeight: _getHeight()),
+          decoration: _getDecoration(context),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: isEnabled ? _handleTap : null,
+              onTapDown: _handleTapDown,
+              onTapUp: _handleTapUp,
+              onTapCancel: _handleTapCancel,
+              borderRadius: BorderRadius.circular(_getBorderRadius()),
+              child: Container(
+                padding: _getPadding(),
+                child: _buildContent(context),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

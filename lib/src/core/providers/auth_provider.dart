@@ -2,9 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Supabase client provider
-final supabaseClientProvider = Provider<SupabaseClient>((ref) {
-  return Supabase.instance.client;
-});
+final supabaseClientProvider =
+    Provider<SupabaseClient>((ref) => Supabase.instance.client);
 
 // Authentication state provider
 final authStateProvider = StreamProvider<AuthState>((ref) {
@@ -33,42 +32,37 @@ class AuthService {
   Future<AuthResponse> signInWithEmail({
     required String email,
     required String password,
-  }) async {
-    return await _client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
-  }
+  }) async =>
+      _client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
 
   // Sign up with email and password
   Future<AuthResponse> signUpWithEmail({
     required String email,
     required String password,
     String? displayName,
-  }) async {
-    return await _client.auth.signUp(
-      email: email,
-      password: password,
-      data: {
-        if (displayName != null) 'display_name': displayName,
-      },
-    );
-  }
+  }) async =>
+      _client.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          if (displayName != null) 'display_name': displayName,
+        },
+      );
 
   // Sign in with Google
-  Future<bool> signInWithGoogle() async {
-    return await _client.auth.signInWithOAuth(OAuthProvider.google);
-  }
+  Future<bool> signInWithGoogle() async =>
+      _client.auth.signInWithOAuth(OAuthProvider.google);
 
   // Sign in with Apple
-  Future<bool> signInWithApple() async {
-    return await _client.auth.signInWithOAuth(OAuthProvider.apple);
-  }
+  Future<bool> signInWithApple() async =>
+      _client.auth.signInWithOAuth(OAuthProvider.apple);
 
   // Sign in with Facebook
-  Future<bool> signInWithFacebook() async {
-    return await _client.auth.signInWithOAuth(OAuthProvider.facebook);
-  }
+  Future<bool> signInWithFacebook() async =>
+      _client.auth.signInWithOAuth(OAuthProvider.facebook);
 
   // Sign out
   Future<void> signOut() async {
@@ -86,7 +80,7 @@ class AuthService {
     if (user?.email != null) {
       await _client.auth.resend(
         type: OtpType.signup,
-        email: user!.email!,
+        email: user!.email,
       );
     }
   }

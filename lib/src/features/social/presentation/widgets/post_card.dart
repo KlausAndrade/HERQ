@@ -4,17 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:herq/src/core/services/notification_service.dart';
-import '../../../../../l10n/app_localizations.dart';
 
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/services/notification_service.dart';
 import '../providers/social_providers.dart';
 import 'edit_post_dialog.dart';
 
 class PostCard extends ConsumerWidget {
   const PostCard({
-    super.key,
     required this.post,
     required this.currentUserId,
+    super.key,
   });
 
   final SupabasePost post;
@@ -204,7 +204,7 @@ class PostCard extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -235,7 +235,7 @@ class PostCard extends ConsumerWidget {
                 ),
               );
 
-              if (result == true && context.mounted) {
+              if (result ?? false && context.mounted) {
                 ref.invalidate(feedPostsProvider);
                 ref.invalidate(explorePostsProvider);
                 ref.invalidate(userPostsProvider(currentUserId));
@@ -268,7 +268,7 @@ class PostCard extends ConsumerWidget {
                 ),
               );
 
-              if (confirm == true && context.mounted) {
+              if (confirm ?? false && context.mounted) {
                 try {
                   final social = ref.read(supabaseSocialServiceProvider);
                   await social.deletePost(post.id);
@@ -303,5 +303,12 @@ class PostCard extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<SupabasePost>('post', post));
+    properties.add(StringProperty('currentUserId', currentUserId));
   }
 }

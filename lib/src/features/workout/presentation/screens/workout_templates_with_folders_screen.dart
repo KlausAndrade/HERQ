@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../../providers/template_folder_provider.dart';
-import '../providers/template_providers.dart';
 import '../../../workouts/widgets/create_folder_dialog.dart';
-import 'package:herq/src/core/services/notification_service.dart';
-import 'package:herq/l10n/app_localizations.dart';
+import '../providers/template_providers.dart';
 
 /// Drag item type used to indicate what kind of object is being dragged.
 enum _DragItemType { exercise }
@@ -38,6 +38,12 @@ class WorkoutTemplatesWithFoldersScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<WorkoutTemplatesWithFoldersScreen> createState() =>
       _WorkoutTemplatesWithFoldersScreenState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('isEditing', isEditing));
+  }
 }
 
 class _WorkoutTemplatesWithFoldersScreenState
@@ -72,9 +78,11 @@ class _WorkoutTemplatesWithFoldersScreenState
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: Text(_isEditing
-            ? S.of(context)!.workoutTemplates
-            : S.of(context)!.selectWorkout),
+        title: Text(
+          _isEditing
+              ? S.of(context)!.workoutTemplates
+              : S.of(context)!.selectWorkout,
+        ),
         actions: [
           IconButton(
             onPressed: () => context.push('/template-builder'),
@@ -127,15 +135,15 @@ class _WorkoutTemplatesWithFoldersScreenState
                   ),
                 )
               else
-                ...foldersList.map((folder) => _buildFolderSection(
-                      folder,
-                      key: ValueKey('folder-view-${folder.id}'),
-                    )),
+                ...foldersList.map(
+                  (folder) => _buildFolderSection(
+                    folder,
+                    key: ValueKey('folder-view-${folder.id}'),
+                  ),
+                ),
               // Unfoldered Templates - wrapped in DragTarget to allow dropping
               unfoldered.when(
-                data: (templates) {
-                  return _buildUncategorizedSection(templates);
-                },
+                data: _buildUncategorizedSection,
                 loading: () => const SizedBox.shrink(),
                 error: (_, __) => const SizedBox.shrink(),
               ),
@@ -165,11 +173,10 @@ class _WorkoutTemplatesWithFoldersScreenState
     // Only the folder header is a DragTarget for move-to-folder
     return DragTarget<_DragItemData>(
       key: key,
-      onWillAccept: (data) =>
-          data != null &&
+      onWillAcceptWithDetails: (data) =>
           data.type == _DragItemType.exercise &&
           data.sourceFolderId != folder.id,
-      onAccept: (data) {
+      onAcceptWithDetails: (data) {
         _moveTemplate(data.templateId, folder);
       },
       builder: (context, candidateData, rejectedData) {
@@ -192,7 +199,7 @@ class _WorkoutTemplatesWithFoldersScreenState
                 },
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(12)),
-                child: Container(
+                child: DecoratedBox(
                   decoration: isDraggingOver
                       ? BoxDecoration(
                           border: Border.all(
@@ -200,7 +207,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                             width: 2,
                           ),
                           borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(12)),
+                            top: Radius.circular(12),
+                          ),
                         )
                       : null,
                   child: Padding(
@@ -318,7 +326,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                                   final folderId =
                                       Uri.encodeComponent(folder.id);
                                   context.push(
-                                      '/template-builder?folderId=$folderId');
+                                    '/template-builder?folderId=$folderId',
+                                  );
                                 },
                                 icon: const Icon(Icons.add),
                                 label: const Text('Create Template'),
@@ -346,17 +355,20 @@ class _WorkoutTemplatesWithFoldersScreenState
                           templates[index],
                           folder.id,
                           key: ValueKey(
-                              '${folder.id}-edit-${templates[index].id}'),
+                            '${folder.id}-edit-${templates[index].id}',
+                          ),
                           index: index,
                         ),
                       );
                     }
                     return Column(
                       children: templates
-                          .map((template) => _buildTemplateCard(
-                                template,
-                                folder.id,
-                              ))
+                          .map(
+                            (template) => _buildTemplateCard(
+                              template,
+                              folder.id,
+                            ),
+                          )
                           .toList(),
                     );
                   },
@@ -381,11 +393,9 @@ class _WorkoutTemplatesWithFoldersScreenState
   Widget _buildUncategorizedSection(List<WorkoutTemplate> templates) {
     // Always show when dragging, even if empty
     return DragTarget<_DragItemData>(
-      onWillAccept: (data) =>
-          data != null &&
-          data.type == _DragItemType.exercise &&
-          data.sourceFolderId != null,
-      onAccept: (data) {
+      onWillAcceptWithDetails: (data) =>
+          data.type == _DragItemType.exercise && data.sourceFolderId != null,
+      onAcceptWithDetails: (data) {
         _moveTemplate(data.templateId, null);
       },
       builder: (context, candidateData, rejectedData) {
@@ -402,7 +412,7 @@ class _WorkoutTemplatesWithFoldersScreenState
               ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
               : null,
           elevation: isDraggingOver ? 4 : 1,
-          child: Container(
+          child: DecoratedBox(
             decoration: isDraggingOver
                 ? BoxDecoration(
                     border: Border.all(
@@ -634,72 +644,14 @@ class _WorkoutTemplatesWithFoldersScreenState
   Widget _buildEditModeCardContent(
     WorkoutTemplate template,
     String? folderId,
-  ) {
-    return InkWell(
-      onTap: () {
-        context.push('/template-builder?templateId=${template.id}');
-      },
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: _getCategoryColor(template.category).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                _getCategoryIcon(template.category),
-                color: _getCategoryColor(template.category),
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    template.name,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w600),
-                  ),
-                  if (template.description?.isNotEmpty == true)
-                    Text(
-                      template.description!,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.7),
-                          ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTemplateCardContent(
-    WorkoutTemplate template,
-    String? folderId,
-  ) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: InkWell(
-        onTap: _isEditing ? null : () => _startWorkout(template.id),
+  ) =>
+      InkWell(
+        onTap: () {
+          context.push('/template-builder?templateId=${template.id}');
+        },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           child: Row(
             children: [
               Container(
@@ -724,53 +676,19 @@ class _WorkoutTemplatesWithFoldersScreenState
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w500),
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
-                    if (template.description != null &&
-                        template.description!.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          template.description!,
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.6),
-                                  ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    if (template.estimatedDurationMinutes != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.access_time,
-                              size: 14,
+                    if (template.description?.isNotEmpty ?? false)
+                      Text(
+                        template.description!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Theme.of(context)
                                   .colorScheme
                                   .onSurface
-                                  .withOpacity(0.5),
+                                  .withOpacity(0.7),
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${template.estimatedDurationMinutes} min',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.5),
-                                  ),
-                            ),
-                          ],
-                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                   ],
                 ),
@@ -778,11 +696,102 @@ class _WorkoutTemplatesWithFoldersScreenState
             ],
           ),
         ),
-      ),
-    );
-  }
+      );
 
-  void _createNewFolder() async {
+  Widget _buildTemplateCardContent(
+    WorkoutTemplate template,
+    String? folderId,
+  ) =>
+      Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: InkWell(
+          onTap: _isEditing ? null : () => _startWorkout(template.id),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color:
+                        _getCategoryColor(template.category).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    _getCategoryIcon(template.category),
+                    color: _getCategoryColor(template.category),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        template.name,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w500),
+                      ),
+                      if (template.description != null &&
+                          template.description!.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            template.description!,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.6),
+                                    ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      if (template.estimatedDurationMinutes != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.access_time,
+                                size: 14,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.5),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${template.estimatedDurationMinutes} min',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.5),
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+  Future<void> _createNewFolder() async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => const CreateFolderDialog(),
@@ -834,8 +843,10 @@ class _WorkoutTemplatesWithFoldersScreenState
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Delete Folder',
-                  style: TextStyle(color: Colors.red)),
+              title: const Text(
+                'Delete Folder',
+                style: TextStyle(color: Colors.red),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _deleteFolder(folder);
@@ -847,7 +858,7 @@ class _WorkoutTemplatesWithFoldersScreenState
     );
   }
 
-  void _renameFolder(TemplateFolder folder) async {
+  Future<void> _renameFolder(TemplateFolder folder) async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => CreateFolderDialog(
@@ -887,7 +898,7 @@ class _WorkoutTemplatesWithFoldersScreenState
     }
   }
 
-  void _deleteFolder(TemplateFolder folder) async {
+  Future<void> _deleteFolder(TemplateFolder folder) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -911,7 +922,7 @@ class _WorkoutTemplatesWithFoldersScreenState
         ],
       ),
     );
-    if (confirmed == true && mounted) {
+    if (confirmed ?? false && mounted) {
       try {
         await ref
             .read(templateFolderNotifierProvider.notifier)
@@ -939,7 +950,7 @@ class _WorkoutTemplatesWithFoldersScreenState
     }
   }
 
-  void _moveTemplate(String templateId, TemplateFolder? folder) async {
+  Future<void> _moveTemplate(String templateId, TemplateFolder? folder) async {
     // Move a template to a new folder (null folder indicates root).
     try {
       await ref

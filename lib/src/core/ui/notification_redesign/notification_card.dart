@@ -11,6 +11,19 @@ import 'package:flutter/material.dart';
 /// - Smooth animations
 /// - Modern glassmorphic design
 class NotificationCard extends StatelessWidget {
+  const NotificationCard({
+    required this.id,
+    required this.title,
+    required this.body,
+    super.key,
+    this.leading,
+    this.primaryActionLabel,
+    this.onPrimaryAction,
+    this.secondaryActionLabel,
+    this.onSecondaryAction,
+    this.backgroundColor,
+    this.onDismiss,
+  });
   final String id;
   final String title;
   final String body;
@@ -21,20 +34,6 @@ class NotificationCard extends StatelessWidget {
   final VoidCallback? onSecondaryAction;
   final Color? backgroundColor;
   final VoidCallback? onDismiss;
-
-  const NotificationCard({
-    Key? key,
-    required this.id,
-    required this.title,
-    required this.body,
-    this.leading,
-    this.primaryActionLabel,
-    this.onPrimaryAction,
-    this.secondaryActionLabel,
-    this.onSecondaryAction,
-    this.backgroundColor,
-    this.onDismiss,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +47,6 @@ class NotificationCard extends StatelessWidget {
 
     return Dismissible(
       key: Key(id),
-      direction: DismissDirection.horizontal,
       onDismissed: (direction) {
         onDismiss?.call();
       },
@@ -83,7 +81,6 @@ class NotificationCard extends StatelessWidget {
           ],
           border: Border.all(
             color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
-            width: 1,
           ),
         ),
         child: Material(
@@ -94,7 +91,6 @@ class NotificationCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Leading icon (compact)
                   if (leading != null) ...[
@@ -197,19 +193,36 @@ class NotificationCard extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('id', id));
+    properties.add(StringProperty('title', title));
+    properties.add(StringProperty('body', body));
+    properties.add(StringProperty('primaryActionLabel', primaryActionLabel));
+    properties.add(ObjectFlagProperty<VoidCallback?>.has(
+        'onPrimaryAction', onPrimaryAction));
+    properties
+        .add(StringProperty('secondaryActionLabel', secondaryActionLabel));
+    properties.add(ObjectFlagProperty<VoidCallback?>.has(
+        'onSecondaryAction', onSecondaryAction));
+    properties.add(ColorProperty('backgroundColor', backgroundColor));
+    properties
+        .add(ObjectFlagProperty<VoidCallback?>.has('onDismiss', onDismiss));
+  }
 }
 
 /// Compact action button for notification cards
 class _CompactActionButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onPressed;
-  final bool isPrimary;
-
   const _CompactActionButton({
     required this.label,
     required this.onPressed,
     required this.isPrimary,
   });
+  final String label;
+  final VoidCallback onPressed;
+  final bool isPrimary;
 
   @override
   Widget build(BuildContext context) {
@@ -242,5 +255,14 @@ class _CompactActionButton extends StatelessWidget {
         child: Text(label),
       );
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('label', label));
+    properties
+        .add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+    properties.add(DiagnosticsProperty<bool>('isPrimary', isPrimary));
   }
 }

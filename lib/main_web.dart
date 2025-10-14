@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'src/features/workout/presentation/screens/web_auth_screen.dart';
+import 'src/features/workout/presentation/screens/web_history_screen.dart';
 import 'src/features/workout/presentation/screens/web_home_screen.dart';
 import 'src/features/workout/presentation/screens/web_templates_screen.dart';
 import 'src/features/workout/presentation/screens/web_workout_screen.dart';
-import 'src/features/workout/presentation/screens/web_history_screen.dart';
-import 'src/features/workout/presentation/screens/web_auth_screen.dart';
 
 /// Web-specific entry point for HERQ
 /// Uses Supabase for data persistence instead of SQLite
@@ -17,7 +17,7 @@ Future<void> main() async {
 
   try {
     // Load environment variables
-    await dotenv.load(fileName: '.env');
+    await dotenv.load();
 
     // Initialize Supabase for web
     await Supabase.initialize(
@@ -42,21 +42,19 @@ class HerqWebApp extends ConsumerWidget {
   const HerqWebApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp.router(
-      title: 'HERQ - Smart Strength Training',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF00BFA6), // HERQ Teal
-          brightness: Brightness.dark,
+  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
+        title: 'HERQ - Smart Strength Training',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF00BFA6), // HERQ Teal
+            brightness: Brightness.dark,
+          ),
+          useMaterial3: true,
+          scaffoldBackgroundColor: const Color(0xFF141516), // HERQ Charcoal
         ),
-        useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFF141516), // HERQ Charcoal
-      ),
-      routerConfig: _router,
-      debugShowCheckedModeBanner: false,
-    );
-  }
+        routerConfig: _router,
+        debugShowCheckedModeBanner: false,
+      );
 }
 
 final _router = GoRouter(

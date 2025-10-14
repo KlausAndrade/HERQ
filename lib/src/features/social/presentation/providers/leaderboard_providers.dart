@@ -24,7 +24,8 @@ final localLeaderboardServiceProvider = Provider<LeaderboardService?>((ref) {
 final leaderboardProvider = FutureProvider.autoDispose
     .family<Leaderboard, LeaderboardParams>((ref, params) async {
   print(
-      '🔄 Leaderboard provider called for type: ${params.type}, period: ${params.period}');
+    '🔄 Leaderboard provider called for type: ${params.type}, period: ${params.period}',
+  );
 
   final supabaseService = ref.watch(supabaseLeaderboardServiceProvider);
   final localService = ref.watch(localLeaderboardServiceProvider);
@@ -41,7 +42,8 @@ final leaderboardProvider = FutureProvider.autoDispose
       );
 
       print(
-          '  📊 Supabase leaderboard result: ${result.entries.length} entries');
+        '  📊 Supabase leaderboard result: ${result.entries.length} entries',
+      );
       return result;
     } catch (e) {
       print('  ⚠️ Supabase leaderboard error, falling back to local: $e');
@@ -67,6 +69,5 @@ final leaderboardProvider = FutureProvider.autoDispose
     type: params.type,
     period: params.period,
     entries: const [],
-    currentUserEntry: null,
   );
 });

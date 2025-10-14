@@ -10,7 +10,7 @@ class UserStats extends Table {
   IntColumn get totalWorkouts => integer().withDefault(const Constant(0))();
   IntColumn get totalSetsCompleted =>
       integer().withDefault(const Constant(0))();
-  RealColumn get totalVolumeLifted => real().withDefault(const Constant(0.0))();
+  RealColumn get totalVolumeLifted => real().withDefault(const Constant(0))();
   IntColumn get totalWorkoutMinutes =>
       integer().withDefault(const Constant(0))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

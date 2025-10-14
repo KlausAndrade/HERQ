@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+
 import '../theme/app_animations.dart';
+import '../theme/app_theme.dart';
 import 'app_button.dart';
 
 class EmptyState extends StatefulWidget {
   const EmptyState({
-    super.key,
     required this.title,
+    super.key,
     this.subtitle,
     this.icon,
     this.illustration,
@@ -25,6 +26,17 @@ class EmptyState extends StatefulWidget {
 
   @override
   State<EmptyState> createState() => _EmptyStateState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('title', title));
+    properties.add(StringProperty('subtitle', subtitle));
+    properties.add(DiagnosticsProperty<IconData?>('icon', icon));
+    properties.add(StringProperty('actionText', actionText));
+    properties.add(ObjectFlagProperty<VoidCallback?>.has('onAction', onAction));
+    properties.add(DiagnosticsProperty<EdgeInsets?>('padding', padding));
+  }
 }
 
 class _EmptyStateState extends State<EmptyState>
@@ -42,10 +54,10 @@ class _EmptyStateState extends State<EmptyState>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.8, curve: AppCurves.smooth),
+        curve: const Interval(0, 0.8, curve: AppCurves.smooth),
       ),
     );
 
@@ -55,14 +67,14 @@ class _EmptyStateState extends State<EmptyState>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.2, 1.0, curve: AppCurves.smooth),
+        curve: const Interval(0.2, 1, curve: AppCurves.smooth),
       ),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: AppCurves.elasticOut),
+        curve: const Interval(0, 0.6, curve: AppCurves.elasticOut),
       ),
     );
 
@@ -76,84 +88,82 @@ class _EmptyStateState extends State<EmptyState>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: SlideTransition(
-        position: _slideAnimation,
-        child: Padding(
-          padding: widget.padding ?? const EdgeInsets.all(AppTheme.spacingXL),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Icon or Illustration
-              ScaleTransition(
-                scale: _scaleAnimation,
-                child: widget.illustration ??
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withAlpha((0.1 * 255).round()),
-                        shape: BoxShape.circle,
+  Widget build(BuildContext context) => FadeTransition(
+        opacity: _fadeAnimation,
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: Padding(
+            padding: widget.padding ?? const EdgeInsets.all(AppTheme.spacingXL),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Icon or Illustration
+                ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: widget.illustration ??
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withAlpha((0.1 * 255).round()),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          widget.icon ?? Icons.inbox_outlined,
+                          size: 60,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withAlpha((0.6 * 255).round()),
+                        ),
                       ),
-                      child: Icon(
-                        widget.icon ?? Icons.inbox_outlined,
-                        size: 60,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withAlpha((0.6 * 255).round()),
-                      ),
-                    ),
-              ),
-              const SizedBox(height: AppTheme.spacingXL),
+                ),
+                const SizedBox(height: AppTheme.spacingXL),
 
-              // Title
-              Text(
-                widget.title,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                textAlign: TextAlign.center,
-              ),
-
-              // Subtitle
-              if (widget.subtitle != null) ...[
-                const SizedBox(height: AppTheme.spacingMD),
+                // Title
                 Text(
-                  widget.subtitle!,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.6),
+                  widget.title,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                   textAlign: TextAlign.center,
                 ),
-              ],
 
-              // Action Button
-              if (widget.actionText != null && widget.onAction != null) ...[
-                const SizedBox(height: AppTheme.spacingXL),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: _PulsingButton(
-                    onPressed: widget.onAction!,
-                    child: Text(widget.actionText!),
+                // Subtitle
+                if (widget.subtitle != null) ...[
+                  const SizedBox(height: AppTheme.spacingMD),
+                  Text(
+                    widget.subtitle!,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.6),
+                        ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
+                ],
+
+                // Action Button
+                if (widget.actionText != null && widget.onAction != null) ...[
+                  const SizedBox(height: AppTheme.spacingXL),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _PulsingButton(
+                      onPressed: widget.onAction!,
+                      child: Text(widget.actionText!),
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class _PulsingButton extends StatefulWidget {
@@ -167,6 +177,13 @@ class _PulsingButton extends StatefulWidget {
 
   @override
   State<_PulsingButton> createState() => _PulsingButtonState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+  }
 }
 
 class _PulsingButtonState extends State<_PulsingButton>
@@ -181,7 +198,7 @@ class _PulsingButtonState extends State<_PulsingButton>
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+    _pulseAnimation = Tween<double>(begin: 1, end: 1.05).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeInOut,
@@ -203,18 +220,15 @@ class _PulsingButtonState extends State<_PulsingButton>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: _pulseAnimation,
-      child: SizedBox(
-        width: double.infinity, // Full width to prevent clipping
-        child: AppButton(
-          onPressed: widget.onPressed,
-          variant: AppButtonVariant.primary,
-          size: AppButtonSize.large,
-          child: widget.child,
+  Widget build(BuildContext context) => ScaleTransition(
+        scale: _pulseAnimation,
+        child: SizedBox(
+          width: double.infinity, // Full width to prevent clipping
+          child: AppButton(
+            onPressed: widget.onPressed,
+            size: AppButtonSize.large,
+            child: widget.child,
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

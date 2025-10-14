@@ -16,42 +16,35 @@ enum ExerciseType {
   final String value;
 
   /// Parse exercise type from string value
-  static ExerciseType fromString(String value) {
-    return ExerciseType.values.firstWhere(
-      (type) => type.value == value,
-      orElse: () => ExerciseType.weightReps, // Default
-    );
-  }
+  static ExerciseType fromString(String value) =>
+      ExerciseType.values.firstWhere(
+        (type) => type.value == value,
+        orElse: () => ExerciseType.weightReps, // Default
+      );
 }
 
 /// Configuration for each exercise type defining required fields and labels
 class ExerciseTypeConfig {
-  final ExerciseType type;
-  final List<ExerciseField> requiredFields;
-  final String displayName;
-  final String description;
-
   const ExerciseTypeConfig({
     required this.type,
     required this.requiredFields,
     required this.displayName,
     required this.description,
   });
+  final ExerciseType type;
+  final List<ExerciseField> requiredFields;
+  final String displayName;
+  final String description;
 
   /// Get field labels for this exercise type
-  List<String> get fieldLabels {
-    return requiredFields.map((field) => field.label).toList();
-  }
+  List<String> get fieldLabels =>
+      requiredFields.map((field) => field.label).toList();
 
   /// Check if this type requires a specific field
-  bool requiresField(ExerciseField field) {
-    return requiredFields.contains(field);
-  }
+  bool requiresField(ExerciseField field) => requiredFields.contains(field);
 
   /// Get configuration for a specific exercise type
-  static ExerciseTypeConfig getConfig(ExerciseType type) {
-    return _configs[type]!;
-  }
+  static ExerciseTypeConfig getConfig(ExerciseType type) => _configs[type]!;
 
   /// Get configuration from string value
   static ExerciseTypeConfig fromString(String value) {
@@ -60,49 +53,49 @@ class ExerciseTypeConfig {
   }
 
   static final Map<ExerciseType, ExerciseTypeConfig> _configs = {
-    ExerciseType.weightReps: ExerciseTypeConfig(
+    ExerciseType.weightReps: const ExerciseTypeConfig(
       type: ExerciseType.weightReps,
       requiredFields: [ExerciseField.weight, ExerciseField.reps],
       displayName: 'Weight & Reps',
       description: 'Standard weighted exercise with repetitions',
     ),
-    ExerciseType.bodyweightReps: ExerciseTypeConfig(
+    ExerciseType.bodyweightReps: const ExerciseTypeConfig(
       type: ExerciseType.bodyweightReps,
       requiredFields: [ExerciseField.reps],
       displayName: 'Bodyweight Reps',
       description: 'Bodyweight exercise with repetitions only',
     ),
-    ExerciseType.weightedBodyweight: ExerciseTypeConfig(
+    ExerciseType.weightedBodyweight: const ExerciseTypeConfig(
       type: ExerciseType.weightedBodyweight,
       requiredFields: [ExerciseField.addedWeight, ExerciseField.reps],
       displayName: 'Weighted Bodyweight',
       description: 'Bodyweight exercise with additional weight',
     ),
-    ExerciseType.assistedBodyweight: ExerciseTypeConfig(
+    ExerciseType.assistedBodyweight: const ExerciseTypeConfig(
       type: ExerciseType.assistedBodyweight,
       requiredFields: [ExerciseField.assistanceWeight, ExerciseField.reps],
       displayName: 'Assisted Bodyweight',
       description: 'Bodyweight exercise with assistance',
     ),
-    ExerciseType.duration: ExerciseTypeConfig(
+    ExerciseType.duration: const ExerciseTypeConfig(
       type: ExerciseType.duration,
       requiredFields: [ExerciseField.duration],
       displayName: 'Duration',
       description: 'Time-based exercise (holds, planks, etc.)',
     ),
-    ExerciseType.durationWeight: ExerciseTypeConfig(
+    ExerciseType.durationWeight: const ExerciseTypeConfig(
       type: ExerciseType.durationWeight,
       requiredFields: [ExerciseField.duration, ExerciseField.weight],
       displayName: 'Duration & Weight',
       description: 'Weighted carry or hold for time',
     ),
-    ExerciseType.distanceDuration: ExerciseTypeConfig(
+    ExerciseType.distanceDuration: const ExerciseTypeConfig(
       type: ExerciseType.distanceDuration,
       requiredFields: [ExerciseField.distance, ExerciseField.duration],
       displayName: 'Distance & Duration',
       description: 'Cardio exercises with distance and time',
     ),
-    ExerciseType.weightDistance: ExerciseTypeConfig(
+    ExerciseType.weightDistance: const ExerciseTypeConfig(
       type: ExerciseType.weightDistance,
       requiredFields: [ExerciseField.weight, ExerciseField.distance],
       displayName: 'Weight & Distance',
@@ -111,9 +104,7 @@ class ExerciseTypeConfig {
   };
 
   /// Get all available exercise type configurations
-  static List<ExerciseTypeConfig> get allConfigs {
-    return _configs.values.toList();
-  }
+  static List<ExerciseTypeConfig> get allConfigs => _configs.values.toList();
 }
 
 /// Enum representing different fields that can be tracked
@@ -148,9 +139,7 @@ enum ExerciseField {
   }
 
   /// Get placeholder for empty value
-  String get placeholder {
-    return '-';
-  }
+  String get placeholder => '-';
 }
 
 /// Helper extension for formatting distance

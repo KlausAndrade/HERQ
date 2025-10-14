@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:herq/src/core/services/notification_service.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/telemetry_provider.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
-import '../providers/workout_providers.dart';
 import '../providers/active_workout_provider.dart';
+import '../providers/workout_providers.dart';
 
 class WorkoutDetailScreen extends ConsumerWidget {
   const WorkoutDetailScreen({
-    super.key,
     required this.workoutId,
+    super.key,
   });
 
   final String workoutId;
@@ -134,7 +134,10 @@ class WorkoutDetailScreen extends ConsumerWidget {
   }
 
   void _showWorkoutMenu(
-      BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
+    BuildContext context,
+    WidgetRef ref,
+    WorkoutSession workoutSession,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -142,7 +145,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -187,8 +190,10 @@ class WorkoutDetailScreen extends ConsumerWidget {
             if (workoutSession.completedAt == null)
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: Text(S.of(context)!.deleteWorkout,
-                    style: const TextStyle(color: Colors.red)),
+                title: Text(
+                  S.of(context)!.deleteWorkout,
+                  style: const TextStyle(color: Colors.red),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _showDeleteConfirmation(context, ref, workoutSession);
@@ -201,7 +206,10 @@ class WorkoutDetailScreen extends ConsumerWidget {
   }
 
   void _showEditNotesDialog(
-      BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
+    BuildContext context,
+    WidgetRef ref,
+    WorkoutSession workoutSession,
+  ) {
     final controller = TextEditingController(text: workoutSession.notes ?? '');
 
     showDialog(
@@ -262,7 +270,10 @@ class WorkoutDetailScreen extends ConsumerWidget {
   }
 
   void _startNewWorkoutWithTemplate(
-      BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
+    BuildContext context,
+    WidgetRef ref,
+    WorkoutSession workoutSession,
+  ) {
     // Navigate to active workout with the same template or exercises
     if (workoutSession.templateId != null &&
         workoutSession.templateId!.isNotEmpty) {
@@ -275,7 +286,8 @@ class WorkoutDetailScreen extends ConsumerWidget {
         builder: (context) => AlertDialog(
           title: const Text('Repeat Workout'),
           content: Text(
-              'Start a new workout with the same exercises as "${workoutSession.name}"?'),
+            'Start a new workout with the same exercises as "${workoutSession.name}"?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -291,8 +303,10 @@ class WorkoutDetailScreen extends ConsumerWidget {
                 try {
                   // Gather distinct exercise IDs used in this workout session
                   final entries = await (database.select(database.setEntries)
-                        ..where((tbl) =>
-                            tbl.workoutSessionId.equals(workoutSession.id)))
+                        ..where(
+                          (tbl) =>
+                              tbl.workoutSessionId.equals(workoutSession.id),
+                        ))
                       .get();
 
                   final exerciseIds =
@@ -396,13 +410,17 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
   }
 
   void _showDeleteConfirmation(
-      BuildContext context, WidgetRef ref, WorkoutSession workoutSession) {
+    BuildContext context,
+    WidgetRef ref,
+    WorkoutSession workoutSession,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Workout'),
         content: const Text(
-            'Are you sure you want to delete this workout? This action cannot be undone.'),
+          'Are you sure you want to delete this workout? This action cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -416,8 +434,9 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
               try {
                 // Delete associated set entries first
                 await (database.delete(database.setEntries)
-                      ..where((tbl) =>
-                          tbl.workoutSessionId.equals(workoutSession.id)))
+                      ..where(
+                        (tbl) => tbl.workoutSessionId.equals(workoutSession.id),
+                      ))
                     .go();
 
                 // Delete the workout session
@@ -455,6 +474,12 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('workoutId', workoutId));
   }
 }
 
@@ -639,9 +664,8 @@ class _WorkoutHeader extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(bool isCompleted) {
-    return isCompleted ? Colors.green : Colors.orange;
-  }
+  Color _getStatusColor(bool isCompleted) =>
+      isCompleted ? Colors.green : Colors.orange;
 
   String _formatDuration(int? seconds) {
     if (seconds == null) return '--';
@@ -652,6 +676,13 @@ class _WorkoutHeader extends StatelessWidget {
     } else {
       return '${duration.inMinutes}m';
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(
+        DiagnosticsProperty<WorkoutSession>('workoutSession', workoutSession));
   }
 }
 
@@ -667,38 +698,44 @@ class _StatItem extends StatelessWidget {
   final String value;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 16,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        const SizedBox(width: 4),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.6),
-                  ),
-            ),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ],
-        ),
-      ],
-    );
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 16,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(width: 4),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
+                    ),
+              ),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+            ],
+          ),
+        ],
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(StringProperty('label', label));
+    properties.add(StringProperty('value', value));
   }
 }
 
@@ -773,10 +810,18 @@ class _ExerciseSetsSection extends ConsumerWidget {
               exerciseId: exerciseId,
               sets: exerciseSets,
             );
-          }).toList(),
+          }),
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IterableProperty<SetEntry>('setEntries', setEntries));
+    properties.add(
+        DiagnosticsProperty<WorkoutSession>('workoutSession', workoutSession));
   }
 }
 
@@ -841,26 +886,35 @@ class _ExerciseCard extends ConsumerWidget {
                   children: [
                     const SizedBox(width: 30),
                     Expanded(
-                        flex: 2,
-                        child: Text('Weight',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(fontWeight: FontWeight.w600))),
+                      flex: 2,
+                      child: Text(
+                        'Weight',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                    ),
                     Expanded(
-                        flex: 2,
-                        child: Text('Reps',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(fontWeight: FontWeight.w600))),
+                      flex: 2,
+                      child: Text(
+                        'Reps',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                    ),
                     Expanded(
-                        flex: 2,
-                        child: Text('RPE',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(fontWeight: FontWeight.w600))),
+                      flex: 2,
+                      child: Text(
+                        'RPE',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                    ),
                   ],
                 ),
 
@@ -920,17 +974,17 @@ class _ExerciseCard extends ConsumerWidget {
                       ],
                     ),
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),
         );
       },
-      loading: () => Card(
-        margin: const EdgeInsets.only(bottom: 12),
-        child: Container(
+      loading: () => const Card(
+        margin: EdgeInsets.only(bottom: 12),
+        child: SizedBox(
           height: 80,
-          child: const Center(child: CircularProgressIndicator()),
+          child: Center(child: CircularProgressIndicator()),
         ),
       ),
       error: (error, stack) => Card(
@@ -957,6 +1011,13 @@ class _ExerciseCard extends ConsumerWidget {
         return Colors.grey;
     }
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('exerciseId', exerciseId));
+    properties.add(IterableProperty<SetEntry>('sets', sets));
+  }
 }
 
 class _WorkoutNotes extends StatelessWidget {
@@ -965,39 +1026,43 @@ class _WorkoutNotes extends StatelessWidget {
   final String notes;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.note,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Notes',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                notes,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.all(16),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.note,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Notes',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  notes,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('notes', notes));
   }
 }

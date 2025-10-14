@@ -8,10 +8,9 @@ import '../../domain/models/ai_models.dart';
 
 /// AI coaching service powered by Groq LLM
 class GroqAICoachingService {
+  GroqAICoachingService(this._groqService, this._database);
   final GroqService _groqService;
   final AppDatabase _database;
-
-  GroqAICoachingService(this._groqService, this._database);
 
   /// Generate workout recommendations based on user history
   Future<List<WorkoutRecommendation>> getWorkoutRecommendations(
@@ -33,8 +32,8 @@ class GroqAICoachingService {
             ..limit(20))
           .get();
 
-      final systemPrompt =
-          '''You are an expert fitness coach and exercise physiologist. 
+      const systemPrompt = '''
+You are an expert fitness coach and exercise physiologist. 
 You create personalized workout programs based on user data, exercise science principles, and progressive overload.
 Consider recovery, muscle balance, and individual goals.''';
 
@@ -111,8 +110,8 @@ Respond with JSON array of workout recommendations:
             ..limit(5))
           .get();
 
-      final systemPrompt =
-          '''You are a strength coach specializing in progressive overload.
+      const systemPrompt = '''
+You are a strength coach specializing in progressive overload.
 Provide evidence-based recommendations for increasing weight, reps, or volume safely.''';
 
       final userPrompt = '''Suggest progressive overload for this exercise:
@@ -159,7 +158,8 @@ Provide 2-3 progressive overload options in JSON:
             ..limit(7))
           .get();
 
-      final systemPrompt = '''You are a sports recovery specialist.
+      const systemPrompt = '''
+You are a sports recovery specialist.
 Analyze workout patterns and provide evidence-based recovery recommendations.''';
 
       final userPrompt = '''Analyze recovery needs based on recent training:
@@ -207,7 +207,8 @@ Provide recovery analysis in JSON:
             ..limit(5))
           .get();
 
-      final systemPrompt = '''You are a comprehensive fitness coach.
+      const systemPrompt = '''
+You are a comprehensive fitness coach.
 Provide actionable, personalized fitness suggestions based on training data.''';
 
       final userPrompt =
@@ -254,7 +255,8 @@ Generate suggestions in JSON array:
         return ['No substitutions available'];
       }
 
-      final systemPrompt = '''You are an exercise science expert.
+      const systemPrompt = '''
+You are an exercise science expert.
 Suggest equivalent exercises that target the same muscle groups.''';
 
       final userPrompt = '''Find substitutions for: ${exercise.name}
@@ -283,16 +285,20 @@ List 3-5 substitute exercises (just names, one per line).''';
   String _formatWorkoutHistory(List<WorkoutSession> workouts) {
     if (workouts.isEmpty) return 'No recent workouts';
     return workouts
-        .map((w) =>
-            '- ${w.name} (${(w.totalDurationSeconds ?? 0) ~/ 60} min) on ${w.startedAt.toString().split(' ')[0]}')
+        .map(
+          (w) =>
+              '- ${w.name} (${(w.totalDurationSeconds ?? 0) ~/ 60} min) on ${w.startedAt.toString().split(' ')[0]}',
+        )
         .join('\n');
   }
 
   String _formatPRs(List<PersonalRecord> prs) {
     if (prs.isEmpty) return 'No personal records yet';
     return prs
-        .map((pr) =>
-            '- ${pr.exerciseId}: ${pr.weight}kg x ${pr.reps} (${pr.achievedAt.toString().split(' ')[0]})')
+        .map(
+          (pr) =>
+              '- ${pr.exerciseId}: ${pr.weight}kg x ${pr.reps} (${pr.achievedAt.toString().split(' ')[0]})',
+        )
         .join('\n');
   }
 }

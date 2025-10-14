@@ -4,21 +4,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/constants/exercise_types.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
-import '../../../../core/constants/exercise_types.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../../core/utils/exercise_type_mapper.dart';
-import 'package:herq/src/core/services/notification_service.dart';
 import '../providers/exercise_providers.dart';
 
 class CreateExerciseScreen extends ConsumerStatefulWidget {
-  final String? exerciseId; // If provided, we're in edit mode
+  // If provided, we're in edit mode
 
   const CreateExerciseScreen({super.key, this.exerciseId});
+  final String? exerciseId;
 
   @override
   ConsumerState<CreateExerciseScreen> createState() =>
       _CreateExerciseScreenState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('exerciseId', exerciseId));
+  }
 }
 
 class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
@@ -285,7 +292,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
           if (_isLoading)
             const Center(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16),
                 child: SizedBox(
                   width: 20,
                   height: 20,
@@ -330,17 +337,19 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
             // Primary Muscle Group
             DropdownButtonFormField<String>(
-              value: _selectedMuscleGroup,
+              initialValue: _selectedMuscleGroup,
               decoration: const InputDecoration(
                 labelText: 'Primary Muscle Group *',
                 border: OutlineInputBorder(),
               ),
-              items: _muscleGroups.map((muscle) {
-                return DropdownMenuItem(
-                  value: muscle,
-                  child: Text(muscle),
-                );
-              }).toList(),
+              items: _muscleGroups
+                  .map(
+                    (muscle) => DropdownMenuItem(
+                      value: muscle,
+                      child: Text(muscle),
+                    ),
+                  )
+                  .toList(),
               onChanged: (value) {
                 if (value != null) {
                   setState(() => _selectedMuscleGroup = value);
@@ -370,17 +379,19 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
             // Equipment
             DropdownButtonFormField<String>(
-              value: _selectedEquipment,
+              initialValue: _selectedEquipment,
               decoration: const InputDecoration(
                 labelText: 'Equipment *',
                 border: OutlineInputBorder(),
               ),
-              items: _equipmentOptions.map((equipment) {
-                return DropdownMenuItem(
-                  value: equipment,
-                  child: Text(equipment),
-                );
-              }).toList(),
+              items: _equipmentOptions
+                  .map(
+                    (equipment) => DropdownMenuItem(
+                      value: equipment,
+                      child: Text(equipment),
+                    ),
+                  )
+                  .toList(),
               onChanged: (value) {
                 if (value != null) {
                   setState(() {
@@ -395,19 +406,21 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
             // Category
             DropdownButtonFormField<String>(
-              value: _selectedCategory,
+              initialValue: _selectedCategory,
               decoration: const InputDecoration(
                 labelText: 'Category *',
                 border: OutlineInputBorder(),
               ),
-              items: _categories.map((category) {
-                return DropdownMenuItem(
-                  value: category,
-                  child: Text(
-                    category[0].toUpperCase() + category.substring(1),
-                  ),
-                );
-              }).toList(),
+              items: _categories
+                  .map(
+                    (category) => DropdownMenuItem(
+                      value: category,
+                      child: Text(
+                        category[0].toUpperCase() + category.substring(1),
+                      ),
+                    ),
+                  )
+                  .toList(),
               onChanged: (value) {
                 if (value != null) {
                   setState(() => _selectedCategory = value);
@@ -444,7 +457,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
             // Exercise Type
             DropdownButtonFormField<String>(
-              value: _selectedExerciseType,
+              initialValue: _selectedExerciseType,
               decoration: InputDecoration(
                 labelText: 'Exercise Type *',
                 border: const OutlineInputBorder(),
@@ -456,12 +469,14 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
                       )
                     : null,
               ),
-              items: _exerciseTypeConfigs.map((config) {
-                return DropdownMenuItem(
-                  value: config.type.value,
-                  child: Text(config.displayName),
-                );
-              }).toList(),
+              items: _exerciseTypeConfigs
+                  .map(
+                    (config) => DropdownMenuItem(
+                      value: config.type.value,
+                      child: Text(config.displayName),
+                    ),
+                  )
+                  .toList(),
               onChanged: _autoAssignType
                   ? null
                   : (value) {
@@ -485,19 +500,21 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
             // Difficulty
             DropdownButtonFormField<String>(
-              value: _selectedDifficulty,
+              initialValue: _selectedDifficulty,
               decoration: const InputDecoration(
                 labelText: 'Difficulty *',
                 border: OutlineInputBorder(),
               ),
-              items: _difficulties.map((difficulty) {
-                return DropdownMenuItem(
-                  value: difficulty,
-                  child: Text(
-                    difficulty[0].toUpperCase() + difficulty.substring(1),
-                  ),
-                );
-              }).toList(),
+              items: _difficulties
+                  .map(
+                    (difficulty) => DropdownMenuItem(
+                      value: difficulty,
+                      child: Text(
+                        difficulty[0].toUpperCase() + difficulty.substring(1),
+                      ),
+                    ),
+                  )
+                  .toList(),
               onChanged: (value) {
                 if (value != null) {
                   setState(() => _selectedDifficulty = value);
@@ -586,33 +603,35 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
                       const SizedBox(height: 16),
                       // Variant Type
                       DropdownButtonFormField<String>(
-                        value: _variantType,
+                        initialValue: _variantType,
                         decoration: const InputDecoration(
                           labelText: 'Variant Type *',
                           border: OutlineInputBorder(),
                           helperText: 'How does this variant differ?',
                         ),
-                        items: _variantTypes.map((type) {
-                          return DropdownMenuItem(
-                            value: type,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 12,
-                                  height: 12,
-                                  decoration: BoxDecoration(
-                                    color: _getVariantColorPreview(type),
-                                    shape: BoxShape.circle,
-                                  ),
+                        items: _variantTypes
+                            .map(
+                              (type) => DropdownMenuItem(
+                                value: type,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 12,
+                                      height: 12,
+                                      decoration: BoxDecoration(
+                                        color: _getVariantColorPreview(type),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      type[0].toUpperCase() + type.substring(1),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  type[0].toUpperCase() + type.substring(1),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                              ),
+                            )
+                            .toList(),
                         onChanged: (value) {
                           setState(() => _variantType = value);
                         },
@@ -656,62 +675,61 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
     required List<String> options,
     required List<String> selectedValues,
     required Function(String) onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: options.map((option) {
-            final isSelected = selectedValues.contains(option);
-            return FilterChip(
-              label: Text(option),
-              selected: isSelected,
-              onSelected: (_) => onChanged(option),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
+  }) =>
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: options.map((option) {
+              final isSelected = selectedValues.contains(option);
+              return FilterChip(
+                label: Text(option),
+                selected: isSelected,
+                onSelected: (_) => onChanged(option),
+              );
+            }).toList(),
+          ),
+        ],
+      );
 
   Widget _buildParentExerciseSelector() {
     final parentExercisesAsync = ref.watch(parentExercisesProvider);
 
     return parentExercisesAsync.when(
-      data: (exercises) {
-        return DropdownButtonFormField<String>(
-          value: _parentExerciseId,
-          decoration: const InputDecoration(
-            labelText: 'Parent Exercise *',
-            border: OutlineInputBorder(),
-            helperText: 'Which exercise is this a variant of?',
-          ),
-          items: exercises.map((exercise) {
-            return DropdownMenuItem(
-              value: exercise.id,
-              child: Text(exercise.name),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() => _parentExerciseId = value);
-          },
-          validator: _isVariant
-              ? (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a parent exercise';
-                  }
-                  return null;
+      data: (exercises) => DropdownButtonFormField<String>(
+        initialValue: _parentExerciseId,
+        decoration: const InputDecoration(
+          labelText: 'Parent Exercise *',
+          border: OutlineInputBorder(),
+          helperText: 'Which exercise is this a variant of?',
+        ),
+        items: exercises
+            .map(
+              (exercise) => DropdownMenuItem(
+                value: exercise.id,
+                child: Text(exercise.name),
+              ),
+            )
+            .toList(),
+        onChanged: (value) {
+          setState(() => _parentExerciseId = value);
+        },
+        validator: _isVariant
+            ? (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select a parent exercise';
                 }
-              : null,
-        );
-      },
+                return null;
+              }
+            : null,
+      ),
       loading: () => const LinearProgressIndicator(),
       error: (error, stack) => Text(
         'Error loading exercises: $error',

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/providers/auth_provider.dart';
@@ -9,9 +9,9 @@ import '../../../../core/widgets/animated_fab.dart';
 import '../../../../core/widgets/skeleton_loader.dart';
 import '../providers/social_providers.dart';
 import '../widgets/create_post_sheet.dart';
+import '../widgets/email_verification_banner.dart';
 import '../widgets/post_card.dart';
 import '../widgets/profile_completion_banner.dart';
-import '../widgets/email_verification_banner.dart';
 
 class SocialFeedScreen extends HookConsumerWidget {
   const SocialFeedScreen({super.key});
@@ -62,8 +62,9 @@ class SocialFeedScreen extends HookConsumerWidget {
             tabs: [
               Tab(icon: const Icon(Icons.home), text: S.of(context)!.feed),
               Tab(
-                  icon: const Icon(Icons.explore),
-                  text: S.of(context)!.explore),
+                icon: const Icon(Icons.explore),
+                text: S.of(context)!.explore,
+              ),
             ],
           ),
           actions: [
@@ -163,6 +164,12 @@ class _FeedTab extends ConsumerWidget {
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('currentUserId', currentUserId));
+  }
 }
 
 // Explore Tab Widget
@@ -208,11 +215,21 @@ class _ExploreTab extends ConsumerWidget {
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('currentUserId', currentUserId));
+  }
 }
 
 // Shared post list builder
-Widget _buildPostList(BuildContext context, WidgetRef ref,
-    List<dynamic> feedItems, String currentUserId) {
+Widget _buildPostList(
+  BuildContext context,
+  WidgetRef ref,
+  List<dynamic> feedItems,
+  String currentUserId,
+) {
   if (feedItems.isEmpty) {
     return Center(
       child: Column(
@@ -274,180 +291,184 @@ class UserSearchSheet extends HookConsumerWidget {
       initialChildSize: 0.7,
       minChildSize: 0.5,
       maxChildSize: 0.9,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.pop(context),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search users...',
-                        prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+      builder: (context, scrollController) => DecoratedBox(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-                      onChanged: (query) {
-                        searchQuery.value = query.trim();
-                      },
-                      autofocus: true,
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search users...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  ],
-                ),
+                    onChanged: (query) {
+                      searchQuery.value = query.trim();
+                    },
+                    autofocus: true,
+                  ),
+                ],
               ),
-              Expanded(
-                child: searchQuery.value.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.search,
-                              size: 64,
+            ),
+            Expanded(
+              child: searchQuery.value.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.search,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            S.of(context)!.searchForUsers,
+                            style: const TextStyle(
+                              fontSize: 16,
                               color: Colors.grey,
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              S.of(context)!.searchForUsers,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
+                          ),
+                        ],
+                      ),
+                    )
+                  : searchResults.when(
+                      data: (users) {
+                        if (users.isEmpty) {
+                          return const Center(
+                            child: Text('No users found'),
+                          );
+                        }
+
+                        return ListView.builder(
+                          controller: scrollController,
+                          itemCount: users.length,
+                          itemBuilder: (context, index) {
+                            final user = users[index];
+                            final currentUser = ref.watch(currentUserProvider);
+                            final isCurrentUser = user.id == currentUser?.id;
+                            final isFollowingAsync =
+                                ref.watch(isFollowingProvider(user.id));
+
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage: user.avatarUrl != null
+                                    ? NetworkImage(user.avatarUrl!)
+                                    : null,
+                                child: user.avatarUrl == null
+                                    ? Text(
+                                        ((user.displayName?.isNotEmpty ?? false)
+                                                ? user.displayName!
+                                                : user.id)[0]
+                                            .toUpperCase(),
+                                      )
+                                    : null,
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : searchResults.when(
-                        data: (users) {
-                          if (users.isEmpty) {
-                            return const Center(
-                              child: Text('No users found'),
-                            );
-                          }
+                              title: Text(
+                                (user.displayName?.isNotEmpty ?? false)
+                                    ? user.displayName!
+                                    : 'User ${user.id.substring(0, 8)}',
+                              ),
+                              subtitle:
+                                  user.bio != null ? Text(user.bio!) : null,
+                              trailing: isCurrentUser
+                                  ? null
+                                  : isFollowingAsync.when(
+                                      data: (isFollowing) => OutlinedButton(
+                                        onPressed: () async {
+                                          final social = ref.read(
+                                            supabaseSocialServiceProvider,
+                                          );
+                                          if (currentUser == null) return;
 
-                          return ListView.builder(
-                            controller: scrollController,
-                            itemCount: users.length,
-                            itemBuilder: (context, index) {
-                              final user = users[index];
-                              final currentUser =
-                                  ref.watch(currentUserProvider);
-                              final isCurrentUser = user.id == currentUser?.id;
-                              final isFollowingAsync =
-                                  ref.watch(isFollowingProvider(user.id));
+                                          if (isFollowing) {
+                                            await social.unfollowUser(
+                                              currentUser.id,
+                                              user.id,
+                                            );
+                                          } else {
+                                            await social.followUser(
+                                              currentUser.id,
+                                              user.id,
+                                            );
+                                          }
 
-                              return ListTile(
-                                leading: CircleAvatar(
-                                  backgroundImage: user.avatarUrl != null
-                                      ? NetworkImage(user.avatarUrl!)
-                                      : null,
-                                  child: user.avatarUrl == null
-                                      ? Text(((user.displayName?.isNotEmpty ??
-                                                  false)
-                                              ? user.displayName!
-                                              : user.id)[0]
-                                          .toUpperCase())
-                                      : null,
-                                ),
-                                title: Text(
-                                  (user.displayName?.isNotEmpty ?? false)
-                                      ? user.displayName!
-                                      : 'User ${user.id.substring(0, 8)}',
-                                ),
-                                subtitle:
-                                    user.bio != null ? Text(user.bio!) : null,
-                                trailing: isCurrentUser
-                                    ? null
-                                    : isFollowingAsync.when(
-                                        data: (isFollowing) => OutlinedButton(
-                                          onPressed: () async {
-                                            final social = ref.read(
-                                                supabaseSocialServiceProvider);
-                                            if (currentUser == null) return;
-
-                                            if (isFollowing) {
-                                              await social.unfollowUser(
-                                                  currentUser.id, user.id);
-                                            } else {
-                                              await social.followUser(
-                                                  currentUser.id, user.id);
-                                            }
-
-                                            ref.invalidate(
-                                                isFollowingProvider(user.id));
-                                            ref.invalidate(feedPostsProvider);
-                                          },
-                                          style: OutlinedButton.styleFrom(
-                                            backgroundColor: isFollowing
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .surfaceVariant
-                                                : null,
-                                          ),
-                                          child: Text(isFollowing
-                                              ? 'Following'
-                                              : 'Follow'),
+                                          ref.invalidate(
+                                            isFollowingProvider(user.id),
+                                          );
+                                          ref.invalidate(feedPostsProvider);
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                          backgroundColor: isFollowing
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .surfaceContainerHighest
+                                              : null,
                                         ),
-                                        loading: () => const SizedBox(
-                                          width: 80,
-                                          child: Center(
-                                            child: SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child: CircularProgressIndicator(
-                                                  strokeWidth: 2),
+                                        child: Text(
+                                          isFollowing ? 'Following' : 'Follow',
+                                        ),
+                                      ),
+                                      loading: () => const SizedBox(
+                                        width: 80,
+                                        child: Center(
+                                          child: SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
                                             ),
                                           ),
                                         ),
-                                        error: (_, __) =>
-                                            const SizedBox.shrink(),
                                       ),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  context.push('/user/${user.id}');
-                                },
-                              );
-                            },
-                          );
-                        },
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
-                        error: (error, stack) => Center(
-                          child: Text('Error: $error'),
-                        ),
+                                      error: (_, __) => const SizedBox.shrink(),
+                                    ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                context.push('/user/${user.id}');
+                              },
+                            );
+                          },
+                        );
+                      },
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (error, stack) => Center(
+                        child: Text('Error: $error'),
                       ),
-              ),
-            ],
-          ),
-        );
-      },
+                    ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,7 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/providers/auth_provider.dart';
 import '../../domain/models/active_workout.dart';
@@ -16,10 +17,9 @@ final activeWorkoutWebProvider =
 });
 
 class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
+  ActiveWorkoutWebNotifier(this.supabase, this._ref) : super(null);
   final SupabaseClient supabase;
   final Ref _ref;
-
-  ActiveWorkoutWebNotifier(this.supabase, this._ref) : super(null);
 
   @override
   void dispose() {
@@ -72,7 +72,7 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Create exercise map for ordering
       final exerciseMap = {
-        for (final ex in exercisesList) ex['id'] as String: ex
+        for (final ex in exercisesList) ex['id'] as String: ex,
       };
 
       // Check for missing exercises and log warning
@@ -80,14 +80,16 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
           exerciseIds.where((id) => !exerciseMap.containsKey(id)).toList();
       if (missingExercises.isNotEmpty) {
         print(
-            '⚠️ Template "${templateData['name']}" references ${missingExercises.length} missing exercises: $missingExercises');
+          '⚠️ Template "${templateData['name']}" references ${missingExercises.length} missing exercises: $missingExercises',
+        );
         print(
-            '💡 Tip: Make sure all exercises exist in your Supabase database');
+          '💡 Tip: Make sure all exercises exist in your Supabase database',
+        );
       }
 
       // Create active exercises in template order (skip missing exercises)
       final activeExercises =
-          exerciseIds.where((id) => exerciseMap.containsKey(id)).map((id) {
+          exerciseIds.where(exerciseMap.containsKey).map((id) {
         final exercise = exerciseMap[id]!;
         final exerciseType =
             exercise['exercise_type'] as String? ?? 'weight_reps';
@@ -97,11 +99,10 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
           name: exercise['name'] as String,
           exerciseType: exerciseType,
           sets: const [
-            ActiveSet(number: 1, reps: 0, isCompleted: false),
-            ActiveSet(number: 2, reps: 0, isCompleted: false),
-            ActiveSet(number: 3, reps: 0, isCompleted: false),
+            ActiveSet(number: 1, reps: 0),
+            ActiveSet(number: 2, reps: 0),
+            ActiveSet(number: 3, reps: 0),
           ],
-          restTimerSeconds: 90, // Default rest timer for web
         );
       }).toList();
 
@@ -109,9 +110,7 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
         id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
         name: templateData['name'] as String,
         exercises: activeExercises,
-        elapsedTime: const Duration(),
         totalSets: activeExercises.length * 3,
-        totalVolume: 0,
       );
 
       print('🏁 New workout created: ${templateData['name']}');
@@ -121,16 +120,16 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
         id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
         name: 'Quick Start Workout',
         exercises: const [],
-        elapsedTime: const Duration(),
-        totalSets: 0,
-        totalVolume: 0,
       );
       print('🏁 Fallback workout created: Quick Start Workout');
     }
   }
 
   Future<void> updateSet(
-      int exerciseIndex, int setIndex, ActiveSet updatedSet) async {
+    int exerciseIndex,
+    int setIndex,
+    ActiveSet updatedSet,
+  ) async {
     if (state != null) {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       final exercise = exercises[exerciseIndex];
@@ -165,16 +164,17 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       final sets = List<ActiveSet>.from(exercise.sets);
 
       final lastSet = sets.isNotEmpty ? sets.last : null;
-      sets.add(ActiveSet(
-        number: sets.length + 1,
-        weight: lastSet?.weight,
-        reps: lastSet?.reps ?? 0,
-        durationSeconds: lastSet?.durationSeconds,
-        distance: lastSet?.distance,
-        assistanceWeight: lastSet?.assistanceWeight,
-        addedWeight: lastSet?.addedWeight,
-        isCompleted: false,
-      ));
+      sets.add(
+        ActiveSet(
+          number: sets.length + 1,
+          weight: lastSet?.weight,
+          reps: lastSet?.reps ?? 0,
+          durationSeconds: lastSet?.durationSeconds,
+          distance: lastSet?.distance,
+          assistanceWeight: lastSet?.assistanceWeight,
+          addedWeight: lastSet?.addedWeight,
+        ),
+      );
 
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
@@ -196,21 +196,21 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
     }
   }
 
-  int _calculateTotalSets(List<ActiveExercise> exercises) {
-    return exercises.fold(0, (total, exercise) => total + exercise.sets.length);
-  }
+  int _calculateTotalSets(List<ActiveExercise> exercises) =>
+      exercises.fold(0, (total, exercise) => total + exercise.sets.length);
 
-  double _calculateTotalVolume(List<ActiveExercise> exercises) {
-    return exercises.fold(0.0, (total, exercise) {
-      return total +
-          exercise.sets.fold(0.0, (exerciseTotal, set) {
-            if (set.isCompleted && set.weight != null) {
-              return exerciseTotal + (set.weight! * set.reps);
-            }
-            return exerciseTotal;
-          });
-    });
-  }
+  double _calculateTotalVolume(List<ActiveExercise> exercises) =>
+      exercises.fold(
+        0,
+        (total, exercise) =>
+            total +
+            exercise.sets.fold(0.0, (exerciseTotal, set) {
+              if (set.isCompleted && set.weight != null) {
+                return exerciseTotal + (set.weight! * set.reps);
+              }
+              return exerciseTotal;
+            }),
+      );
 
   Future<WorkoutSummary?> finishWorkout() async {
     print('🏁 Starting finishWorkout...');
@@ -235,7 +235,7 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       final totalTonnage = workout.exercises
           .expand((e) => e.sets)
           .where((s) => s.isCompleted && s.weight != null)
-          .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
+          .fold(0, (sum, set) => sum + (set.weight! * set.reps));
 
       // Web: Save to Supabase
       final user = supabase.auth.currentUser;
@@ -303,7 +303,8 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
 // Simple rest timer provider for web
 final restTimerWebProvider =
     StateNotifierProvider<RestTimerWebNotifier, RestTimerWebState>(
-        (ref) => RestTimerWebNotifier());
+  (ref) => RestTimerWebNotifier(),
+);
 
 class RestTimerWebNotifier extends StateNotifier<RestTimerWebState> {
   RestTimerWebNotifier() : super(const RestTimerWebState());
@@ -377,15 +378,14 @@ class RestTimerWebNotifier extends StateNotifier<RestTimerWebState> {
 }
 
 class RestTimerWebState {
-  final bool isActive;
-  final int remainingSeconds;
-  final int totalSeconds;
-  final String? exerciseName;
-
   const RestTimerWebState({
     this.isActive = false,
     this.remainingSeconds = 0,
     this.totalSeconds = 0,
     this.exerciseName,
   });
+  final bool isActive;
+  final int remainingSeconds;
+  final int totalSeconds;
+  final String? exerciseName;
 }

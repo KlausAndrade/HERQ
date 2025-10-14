@@ -1,7 +1,7 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../lib/src/features/ai/data/services/ai_coaching_service.dart';
-import '../lib/src/features/ai/presentation/providers/ai_providers.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:herq/src/features/ai/data/services/ai_coaching_service.dart';
+import 'package:herq/src/features/ai/presentation/providers/ai_providers.dart';
 
 void main() {
   group('Provider Fix Test', () {

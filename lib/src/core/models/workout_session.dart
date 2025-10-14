@@ -8,8 +8,8 @@ class WorkoutSessions extends Table {
   DateTimeColumn get startedAt => dateTime()();
   DateTimeColumn get completedAt => dateTime().nullable()();
   IntColumn get totalDurationSeconds => integer().nullable()();
-  RealColumn get totalVolume => real().withDefault(const Constant(0.0))();
-  RealColumn get totalTonnage => real().withDefault(const Constant(0.0))();
+  RealColumn get totalVolume => real().withDefault(const Constant(0))();
+  RealColumn get totalTonnage => real().withDefault(const Constant(0))();
   IntColumn get totalSets => integer().withDefault(const Constant(0))();
   IntColumn get totalReps => integer().withDefault(const Constant(0))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

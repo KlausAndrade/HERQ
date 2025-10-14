@@ -3,17 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Provider for managing app locale
-final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
-  return LocaleNotifier();
-});
+final localeProvider =
+    StateNotifierProvider<LocaleNotifier, Locale>((ref) => LocaleNotifier());
 
 /// Notifier for managing locale state with persistence
 class LocaleNotifier extends StateNotifier<Locale> {
-  static const String _localeKey = 'app_locale';
-
   LocaleNotifier() : super(const Locale('en')) {
     _loadLocale();
   }
+  static const String _localeKey = 'app_locale';
 
   /// Load saved locale from SharedPreferences or auto-detect from system
   Future<void> _loadLocale() async {
@@ -37,7 +35,8 @@ class LocaleNotifier extends StateNotifier<Locale> {
           // Default to English if system locale is not supported
           state = const Locale('en');
           print(
-              '📱 Using default locale: en (system locale ${systemLocale.languageCode} not supported)');
+            '📱 Using default locale: en (system locale ${systemLocale.languageCode} not supported)',
+          );
         }
       }
     } catch (e) {

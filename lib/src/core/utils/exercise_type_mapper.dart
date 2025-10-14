@@ -224,7 +224,10 @@ class ExerciseTypeMapper {
 
   /// Check if exercise is bodyweight reps (no weight, just reps)
   static bool _isBodyweightRepsExercise(
-      String name, String equipment, String category) {
+    String name,
+    String equipment,
+    String category,
+  ) {
     // Check if it's a calisthenics category
     final isCalisthenics =
         category.contains('calisthenics') || category.contains('bodyweight');
@@ -308,7 +311,10 @@ class ExerciseTypeMapper {
     String? category,
   }) {
     final type = assignExerciseType(
-        name: name, equipment: equipment, category: category);
+      name: name,
+      equipment: equipment,
+      category: category,
+    );
 
     switch (type) {
       case ExerciseType.duration:

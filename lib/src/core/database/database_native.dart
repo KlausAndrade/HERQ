@@ -49,7 +49,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   // Test constructor for in-memory database
-  AppDatabase.forTesting(QueryExecutor e) : super(e);
+  AppDatabase.forTesting(super.e);
 
   @override
   int get schemaVersion => 13;
@@ -67,18 +67,22 @@ class AppDatabase extends _$AppDatabase {
           if (to == 13) {
             try {
               await customStatement(
-                  'ALTER TABLE exercises ADD COLUMN aliases TEXT');
+                'ALTER TABLE exercises ADD COLUMN aliases TEXT',
+              );
             } catch (e) {}
           }
           if (to == 12) {
             await customStatement(
-                'UPDATE workout_templates SET exercise_ids = \'\' WHERE exercise_ids IS NULL');
+              'UPDATE workout_templates SET exercise_ids = \'\' WHERE exercise_ids IS NULL',
+            );
           } else if (to == 11) {
             await migrator.createTable(workoutCheckpoints);
           } else if (to == 10) {
             await migrator.createTable(templateFolders);
             await migrator.addColumn(
-                workoutTemplates, workoutTemplates.folderId);
+              workoutTemplates,
+              workoutTemplates.folderId,
+            );
           } else if (to == 9) {
             await migrator.createTable(posts);
             await migrator.createTable(postLikes);

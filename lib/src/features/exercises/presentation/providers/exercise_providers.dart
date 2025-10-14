@@ -25,12 +25,13 @@ final exercisesByMuscleGroupProvider =
   }
 
   if (muscleGroup == null || muscleGroup.isEmpty || muscleGroup == 'All') {
-    return await database.select(database.exercises).get();
+    return database.select(database.exercises).get();
   }
 
-  return await (database.select(database.exercises)
+  return (database.select(database.exercises)
         ..where(
-            (tbl) => tbl.primaryMuscleGroup.equals(muscleGroup.toLowerCase())))
+          (tbl) => tbl.primaryMuscleGroup.equals(muscleGroup.toLowerCase()),
+        ))
       .get();
 });
 
@@ -43,7 +44,7 @@ final exerciseSearchProvider =
   }
 
   if (query.isEmpty) {
-    return await database.select(database.exercises).get();
+    return database.select(database.exercises).get();
   }
 
   // Use SQL LIKE operator across name, aliases, tags and primary muscle group.
@@ -126,7 +127,7 @@ final exerciseVariantsProvider =
     return [];
   }
 
-  return await (database.select(database.exercises)
+  return (database.select(database.exercises)
         ..where((tbl) => tbl.parentExerciseId.equals(parentId))
         ..orderBy([(tbl) => OrderingTerm(expression: tbl.difficulty)]))
       .get();
@@ -175,10 +176,10 @@ final exercisesByCategoryProvider =
   }
 
   if (category == null || category.isEmpty || category == 'All') {
-    return await database.select(database.exercises).get();
+    return database.select(database.exercises).get();
   }
 
-  return await (database.select(database.exercises)
+  return (database.select(database.exercises)
         ..where((tbl) => tbl.category.equals(category.toLowerCase())))
       .get();
 });
@@ -190,7 +191,7 @@ final parentExercisesProvider = FutureProvider<List<Exercise>>((ref) async {
     return [];
   }
 
-  return await (database.select(database.exercises)
+  return (database.select(database.exercises)
         ..where((tbl) => tbl.parentExerciseId.isNull()))
       .get();
 });

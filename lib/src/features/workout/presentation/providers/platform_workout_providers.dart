@@ -1,6 +1,6 @@
+import 'package:drift/drift.dart' hide JsonKey;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drift/drift.dart' hide JsonKey;
 
 import '../../../../core/data/dto/workout_dto.dart';
 import '../../../../core/providers/database_provider.dart';
@@ -29,8 +29,10 @@ final workoutSessionsProviderNew =
     return (database.select(database.workoutSessions)
           ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)]))
         .watch()
-        .map((sessions) => sessions
-            .map((session) => WorkoutSessionDto(
+        .map(
+          (sessions) => sessions
+              .map(
+                (session) => WorkoutSessionDto(
                   id: session.id,
                   templateId: session.templateId,
                   name: session.name,
@@ -44,8 +46,10 @@ final workoutSessionsProviderNew =
                   totalReps: session.totalReps,
                   createdAt: session.createdAt,
                   updatedAt: session.updatedAt,
-                ))
-            .toList());
+                ),
+              )
+              .toList(),
+        );
   }
 });
 
@@ -69,23 +73,25 @@ final workoutSessionByIdProviderNew =
     return (database.select(database.workoutSessions)
           ..where((tbl) => tbl.id.equals(id)))
         .watchSingleOrNull()
-        .map((session) => session != null
-            ? WorkoutSessionDto(
-                id: session.id,
-                templateId: session.templateId,
-                name: session.name,
-                notes: session.notes,
-                startedAt: session.startedAt,
-                completedAt: session.completedAt,
-                totalDurationSeconds: session.totalDurationSeconds,
-                totalVolume: session.totalVolume,
-                totalTonnage: session.totalTonnage,
-                totalSets: session.totalSets,
-                totalReps: session.totalReps,
-                createdAt: session.createdAt,
-                updatedAt: session.updatedAt,
-              )
-            : null);
+        .map(
+          (session) => session != null
+              ? WorkoutSessionDto(
+                  id: session.id,
+                  templateId: session.templateId,
+                  name: session.name,
+                  notes: session.notes,
+                  startedAt: session.startedAt,
+                  completedAt: session.completedAt,
+                  totalDurationSeconds: session.totalDurationSeconds,
+                  totalVolume: session.totalVolume,
+                  totalTonnage: session.totalTonnage,
+                  totalSets: session.totalSets,
+                  totalReps: session.totalReps,
+                  createdAt: session.createdAt,
+                  updatedAt: session.updatedAt,
+                )
+              : null,
+        );
   }
 });
 
@@ -113,8 +119,10 @@ final setEntriesBySessionProviderNew =
             (tbl) => OrderingTerm.asc(tbl.setNumber),
           ]))
         .watch()
-        .map((entries) => entries
-            .map((entry) => SetEntryDto(
+        .map(
+          (entries) => entries
+              .map(
+                (entry) => SetEntryDto(
                   id: entry.id,
                   workoutSessionId: entry.workoutSessionId,
                   exerciseId: entry.exerciseId,
@@ -127,8 +135,10 @@ final setEntriesBySessionProviderNew =
                   notes: entry.notes,
                   completed: true, // All entries in DB are completed
                   createdAt: entry.createdAt,
-                ))
-            .toList());
+                ),
+              )
+              .toList(),
+        );
   }
 });
 
@@ -152,8 +162,10 @@ final workoutTemplatesProviderNew =
     return (database.select(database.workoutTemplates)
           ..orderBy([(tbl) => OrderingTerm.asc(tbl.name)]))
         .watch()
-        .map((templates) => templates
-            .map((template) => WorkoutTemplateDto(
+        .map(
+          (templates) => templates
+              .map(
+                (template) => WorkoutTemplateDto(
                   id: template.id,
                   name: template.name,
                   description: template.description,
@@ -164,8 +176,10 @@ final workoutTemplatesProviderNew =
                       [],
                   createdAt: template.createdAt,
                   updatedAt: template.updatedAt,
-                ))
-            .toList());
+                ),
+              )
+              .toList(),
+        );
   }
 });
 
@@ -188,8 +202,10 @@ final exercisesProviderNew = StreamProvider<List<ExerciseDto>>((ref) {
     return (database.select(database.exercises)
           ..orderBy([(tbl) => OrderingTerm.asc(tbl.name)]))
         .watch()
-        .map((exercises) => exercises
-            .map((exercise) => ExerciseDto(
+        .map(
+          (exercises) => exercises
+              .map(
+                (exercise) => ExerciseDto(
                   id: exercise.id,
                   name: exercise.name,
                   description:
@@ -204,8 +220,11 @@ final exercisesProviderNew = StreamProvider<List<ExerciseDto>>((ref) {
                   category: exercise.category,
                   difficulty: exercise.difficulty,
                   isCustom: exercise.id.startsWith(
-                      'custom_'), // Custom exercises have IDs starting with 'custom_'
-                ))
-            .toList());
+                    'custom_',
+                  ), // Custom exercises have IDs starting with 'custom_'
+                ),
+              )
+              .toList(),
+        );
   }
 });

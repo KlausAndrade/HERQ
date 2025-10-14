@@ -3,16 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/config/app_config.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../../../core/theme/app_animations.dart';
 import '../../../../core/services/haptic_service.dart';
-import 'package:herq/l10n/app_localizations.dart';
-import '../../../workout/presentation/providers/workout_providers.dart';
+import '../../../../core/theme/app_animations.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../gamification/presentation/widgets/gamification_widgets.dart';
 import '../../../workout/presentation/providers/active_workout_provider.dart';
 import '../../../workout/presentation/providers/workout_checkpoint_provider.dart';
+import '../../../workout/presentation/providers/workout_providers.dart';
 import '../../../workout/presentation/widgets/resume_workout_dialog.dart';
-import '../../../gamification/presentation/widgets/gamification_widgets.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -37,8 +37,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // Check if there's already an active workout
     final activeWorkout = ref.read(activeWorkoutProvider);
-    if (activeWorkout != null)
+    if (activeWorkout != null) {
       return; // Don't show dialog if workout is already running
+    }
 
     // Check for saved checkpoint
     final checkpointData = await checkpointService.getLatestCheckpoint();
@@ -98,7 +99,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -107,8 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 // Header
                 AnimatedListItem(
-                  index: 0,
-                  delay: const Duration(milliseconds: 0),
+                  delay: const Duration(),
                   child: Row(
                     children: [
                       Expanded(
@@ -146,7 +146,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       const SizedBox(width: 8),
                       // Gamification badges
-                      const StreakBadge(size: 36, showText: true),
+                      const StreakBadge(size: 36),
                       // const SizedBox(width: 8),
                       // const LevelIndicator(size: 48, showProgress: false),
                       const SizedBox(width: 2),
@@ -396,14 +396,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       icon: Icons.fitness_center,
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                     child: _StatItem(
                       label: 'Total Volume',
                       value: '-',
                       icon: Icons.scale,
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                     child: _StatItem(
                       label: 'PRs Set',
                       value: '-',
@@ -421,14 +421,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       icon: Icons.fitness_center,
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                     child: _StatItem(
                       label: 'Total Volume',
                       value: '0 kg',
                       icon: Icons.scale,
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                     child: _StatItem(
                       label: 'PRs Set',
                       value: '0',
@@ -564,7 +564,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildBottomNavigation(BuildContext context) => BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        currentIndex: 0,
         onTap: (index) async {
           await HapticService.selectionClick();
           if (!context.mounted) return;
@@ -625,6 +624,16 @@ class _QuickActionCard extends StatefulWidget {
 
   @override
   State<_QuickActionCard> createState() => _QuickActionCardState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('title', title));
+    properties.add(StringProperty('subtitle', subtitle));
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(ColorProperty('color', color));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
+  }
 }
 
 class _QuickActionCardState extends State<_QuickActionCard>
@@ -639,7 +648,7 @@ class _QuickActionCardState extends State<_QuickActionCard>
       duration: AppDurations.fast,
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+    _scaleAnimation = Tween<double>(begin: 1, end: 0.95).animate(
       CurvedAnimation(parent: _controller, curve: AppCurves.snappy),
     );
   }
@@ -670,7 +679,7 @@ class _QuickActionCardState extends State<_QuickActionCard>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppTheme.radiusMD),
           ),
-          child: Container(
+          child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -683,7 +692,6 @@ class _QuickActionCardState extends State<_QuickActionCard>
               borderRadius: BorderRadius.circular(AppTheme.radiusMD),
               border: Border.all(
                 color: widget.color.withOpacity(0.2),
-                width: 1,
               ),
             ),
             child: InkWell(
@@ -697,7 +705,8 @@ class _QuickActionCardState extends State<_QuickActionCard>
               borderRadius: BorderRadius.circular(AppTheme.radiusMD),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(
-                    minHeight: 120), // Ensure consistent height
+                  minHeight: 120,
+                ), // Ensure consistent height
                 child: Padding(
                   padding: const EdgeInsets.all(AppTheme.spacingMD),
                   child: Column(
@@ -788,6 +797,14 @@ class _StatItem extends StatelessWidget {
           ),
         ],
       );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('label', label));
+    properties.add(StringProperty('value', value));
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+  }
 }
 
 class _RecentWorkoutCard extends ConsumerWidget {
@@ -815,7 +832,7 @@ class _RecentWorkoutCard extends ConsumerWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMD),
       ),
-      child: Container(
+      child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -894,5 +911,15 @@ class _RecentWorkoutCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('workoutId', workoutId));
+    properties.add(StringProperty('name', name));
+    properties.add(StringProperty('date', date));
+    properties.add(StringProperty('duration', duration));
+    properties.add(ObjectFlagProperty<VoidCallback?>.has('onTap', onTap));
   }
 }

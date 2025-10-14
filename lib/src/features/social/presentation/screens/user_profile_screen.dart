@@ -8,12 +8,11 @@ import '../../../../core/providers/database_provider.dart';
 import '../../../../core/utils/display_name_sanitizer.dart';
 
 class UserProfileScreen extends ConsumerWidget {
-  final String userId;
-
   const UserProfileScreen({
-    super.key,
     required this.userId,
+    super.key,
   });
+  final String userId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -78,7 +77,7 @@ class UserProfileScreen extends ConsumerWidget {
             );
           }
 
-          final data = snapshot.data as Map<String, dynamic>;
+          final data = snapshot.data!;
           final user = data['user'];
           final stats = data['stats'];
 
@@ -185,7 +184,7 @@ class UserProfileScreen extends ConsumerWidget {
     );
   }
 
-  String _getDisplayName(dynamic user) {
+  String _getDisplayName(user) {
     if (user == null) return 'Unknown Athlete';
 
     String? rawDisplayName;
@@ -202,7 +201,7 @@ class UserProfileScreen extends ConsumerWidget {
     return DisplayNameSanitizer.sanitize(rawDisplayName);
   }
 
-  String? _getAvatarUrl(dynamic user) {
+  String? _getAvatarUrl(user) {
     if (user == null) return null;
     if (user is Map) {
       return user['avatarUrl'] as String?;
@@ -210,7 +209,7 @@ class UserProfileScreen extends ConsumerWidget {
     return user.avatarUrl;
   }
 
-  int _getStatValue(dynamic stats, String key, int defaultValue) {
+  int _getStatValue(stats, String key, int defaultValue) {
     if (stats == null) return defaultValue;
     if (stats is Map) {
       return stats[key] as int? ?? defaultValue;
@@ -228,7 +227,7 @@ class UserProfileScreen extends ConsumerWidget {
     }
   }
 
-  double _getStatDoubleValue(dynamic stats, String key, double defaultValue) {
+  double _getStatDoubleValue(stats, String key, double defaultValue) {
     if (stats == null) return defaultValue;
     if (stats is Map) {
       return stats[key] as double? ?? defaultValue;
@@ -241,39 +240,42 @@ class UserProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildStatCard(
-      BuildContext context, String emoji, String value, String label) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 32)),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+    BuildContext context,
+    String emoji,
+    String value,
+    String label,
+  ) =>
+      Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 32)),
+              const SizedBox(height: 8),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 
   Future<Map<String, dynamic>> _loadUserData(
     AppDatabase? db,
-    dynamic supabase,
+    supabase,
     String userId,
     String? currentUserId,
   ) async {
@@ -344,7 +346,9 @@ class UserProfileScreen extends ConsumerWidget {
   }
 
   Future<Map<String, dynamic>> _loadFromLocalDB(
-      AppDatabase? db, String userId) async {
+    AppDatabase? db,
+    String userId,
+  ) async {
     if (db == null) throw Exception('Database not available');
 
     try {
@@ -377,5 +381,11 @@ class UserProfileScreen extends ConsumerWidget {
       print('❌ Error loading from local DB: $e');
       rethrow;
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('userId', userId));
   }
 }

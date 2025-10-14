@@ -61,7 +61,8 @@ class WebHistoryScreen extends ConsumerWidget {
                           _StatRow(
                             label: 'Duration',
                             value: _formatDuration(
-                                session['total_duration_seconds'] as int? ?? 0),
+                              session['total_duration_seconds'] as int? ?? 0,
+                            ),
                           ),
                           _StatRow(
                             label: 'Total Sets',
@@ -100,8 +101,9 @@ class WebHistoryScreen extends ConsumerWidget {
     final now = DateTime.now();
     final diff = now.difference(date);
 
-    if (diff.inDays == 0)
+    if (diff.inDays == 0) {
       return 'Today at ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    }
     if (diff.inDays == 1) return 'Yesterday';
     return '${date.day}/${date.month}/${date.year}';
   }
@@ -119,22 +121,26 @@ class WebHistoryScreen extends ConsumerWidget {
 }
 
 class _StatRow extends StatelessWidget {
+  const _StatRow({required this.label, required this.value});
   final String label;
   final String value;
 
-  const _StatRow({required this.label, required this.value});
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: const TextStyle(color: Colors.grey)),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+      );
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: const TextStyle(color: Colors.grey)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('label', label));
+    properties.add(StringProperty('value', value));
   }
 }

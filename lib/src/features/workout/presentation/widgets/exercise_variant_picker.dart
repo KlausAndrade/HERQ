@@ -2,28 +2,25 @@ import 'package:flutter/material.dart';
 
 /// A compact picker for selecting equipment and variant type for an exercise
 class ExerciseVariantPicker extends StatelessWidget {
+  const ExerciseVariantPicker({
+    required this.onChanged,
+    super.key,
+    this.currentEquipment,
+    this.currentVariant,
+  });
   final String? currentEquipment;
   final String? currentVariant;
   final Function(String? equipment, String? variant) onChanged;
 
-  const ExerciseVariantPicker({
-    super.key,
-    this.currentEquipment,
-    this.currentVariant,
-    required this.onChanged,
-  });
-
   @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(
-        _getEquipmentIcon(currentEquipment),
-        size: 20,
-      ),
-      tooltip: _getTooltip(),
-      onPressed: () => _showPicker(context),
-    );
-  }
+  Widget build(BuildContext context) => IconButton(
+        icon: Icon(
+          _getEquipmentIcon(currentEquipment),
+          size: 20,
+        ),
+        tooltip: _getTooltip(),
+        onPressed: () => _showPicker(context),
+      );
 
   IconData _getEquipmentIcon(String? equipment) {
     switch (equipment?.toLowerCase()) {
@@ -54,13 +51,11 @@ class ExerciseVariantPicker extends StatelessWidget {
     return parts.isEmpty ? 'Change equipment/variant' : parts.join(' • ');
   }
 
-  String _formatEquipment(String equipment) {
-    return equipment[0].toUpperCase() + equipment.substring(1);
-  }
+  String _formatEquipment(String equipment) =>
+      equipment[0].toUpperCase() + equipment.substring(1);
 
-  String _formatVariant(String variant) {
-    return variant[0].toUpperCase() + variant.substring(1);
-  }
+  String _formatVariant(String variant) =>
+      variant[0].toUpperCase() + variant.substring(1);
 
   void _showPicker(BuildContext context) {
     showModalBottomSheet(
@@ -68,27 +63,44 @@ class ExerciseVariantPicker extends StatelessWidget {
       builder: (context) => _VariantPickerSheet(
         currentEquipment: currentEquipment,
         currentVariant: currentVariant,
-        onChanged: (equipment, variant) {
-          onChanged(equipment, variant);
-        },
+        onChanged: onChanged,
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('currentEquipment', currentEquipment));
+    properties.add(StringProperty('currentVariant', currentVariant));
+    properties.add(
+        ObjectFlagProperty<Function(String? equipment, String? variant)>.has(
+            'onChanged', onChanged));
   }
 }
 
 class _VariantPickerSheet extends StatefulWidget {
+  const _VariantPickerSheet({
+    required this.onChanged,
+    this.currentEquipment,
+    this.currentVariant,
+  });
   final String? currentEquipment;
   final String? currentVariant;
   final Function(String? equipment, String? variant) onChanged;
 
-  const _VariantPickerSheet({
-    this.currentEquipment,
-    this.currentVariant,
-    required this.onChanged,
-  });
-
   @override
   State<_VariantPickerSheet> createState() => _VariantPickerSheetState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('currentEquipment', currentEquipment));
+    properties.add(StringProperty('currentVariant', currentVariant));
+    properties.add(
+        ObjectFlagProperty<Function(String? equipment, String? variant)>.has(
+            'onChanged', onChanged));
+  }
 }
 
 class _VariantPickerSheetState extends State<_VariantPickerSheet> {
@@ -168,10 +180,9 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                       });
                       // Apply change immediately
                       widget.onChanged(
-                          newEquipment,
-                          selectedVariant == 'standard'
-                              ? null
-                              : selectedVariant);
+                        newEquipment,
+                        selectedVariant == 'standard' ? null : selectedVariant,
+                      );
                     },
                     selectedColor: theme.colorScheme.primaryContainer,
                   );
@@ -204,8 +215,10 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                         selectedVariant = newVariant;
                       });
                       // Apply change immediately
-                      widget.onChanged(selectedEquipment,
-                          newVariant == 'standard' ? null : newVariant);
+                      widget.onChanged(
+                        selectedEquipment,
+                        newVariant == 'standard' ? null : newVariant,
+                      );
                     },
                     selectedColor: theme.colorScheme.secondaryContainer,
                   );
@@ -220,11 +233,10 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
     );
   }
 
-  String _formatLabel(String label) {
-    return label.split('_').map((word) {
-      return word[0].toUpperCase() + word.substring(1);
-    }).join(' ');
-  }
+  String _formatLabel(String label) => label
+      .split('_')
+      .map((word) => word[0].toUpperCase() + word.substring(1))
+      .join(' ');
 
   IconData _getEquipmentIconForType(String equipment) {
     switch (equipment.toLowerCase()) {
@@ -247,5 +259,12 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
       default:
         return Icons.more_horiz;
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('selectedEquipment', selectedEquipment));
+    properties.add(StringProperty('selectedVariant', selectedVariant));
   }
 }

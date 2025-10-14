@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../providers/analytics_provider.dart';
+import '../widgets/near_miss_card.dart';
+import '../widgets/plateau_warnings_card.dart';
 import '../widgets/power_score_card.dart';
 import '../widgets/pr_predictions_card.dart';
 import '../widgets/pr_streaks_card.dart';
-import '../widgets/near_miss_card.dart';
-import '../widgets/volume_chart_card.dart';
-import '../widgets/plateau_warnings_card.dart';
 import '../widgets/strength_balance_card.dart';
+import '../widgets/volume_chart_card.dart';
 
 /// Advanced Analytics Screen showing PR predictions, power score, and insights
 class AnalyticsScreen extends ConsumerWidget {

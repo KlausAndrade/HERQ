@@ -3,10 +3,9 @@ import '../database/database.dart';
 
 /// Service to sync workout stats to Supabase for multi-user leaderboards
 class WorkoutSyncService {
+  WorkoutSyncService(this._supabase, this._db);
   final SupabaseClient _supabase;
   final AppDatabase _db;
-
-  WorkoutSyncService(this._supabase, this._db);
 
   /// Sync user stats to Supabase after workout completion
   Future<void> syncUserStats(String userId) async {

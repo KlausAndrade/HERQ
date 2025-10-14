@@ -12,9 +12,8 @@ final telemetryProvider = Provider<TelemetryService>((ref) {
 });
 
 class TelemetryService {
-  final SupabaseClient? supabase;
-
   TelemetryService({this.supabase});
+  final SupabaseClient? supabase;
 
   void log(String message) {
     // Local console log

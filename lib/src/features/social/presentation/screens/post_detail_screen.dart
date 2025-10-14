@@ -7,8 +7,8 @@ import '../widgets/post_card.dart';
 
 class PostDetailScreen extends ConsumerWidget {
   const PostDetailScreen({
-    super.key,
     required this.postId,
+    super.key,
   });
 
   final String postId;
@@ -43,5 +43,11 @@ class PostDetailScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('postId', postId));
   }
 }

@@ -10,9 +10,7 @@ final liveActivityServiceProvider = Provider<LiveActivityService>((ref) {
   service.initialize();
 
   // Clean up when provider is disposed
-  ref.onDispose(() {
-    service.dispose();
-  });
+  ref.onDispose(service.dispose);
 
   return service;
 });

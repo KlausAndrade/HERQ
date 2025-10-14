@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/display_name_sanitizer.dart';
@@ -12,43 +12,41 @@ class LeaderboardsScreen extends HookConsumerWidget {
   const LeaderboardsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/'),
+  Widget build(BuildContext context, WidgetRef ref) => DefaultTabController(
+        length: 4,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.go('/'),
+            ),
+            title: Text(S.of(context)!.leaderboards),
+            bottom: TabBar(
+              isScrollable: true,
+              tabs: [
+                Tab(text: S.of(context)!.totalVolumeLeaderboardTitle),
+                Tab(text: S.of(context)!.workoutCountLeaderboardTitle),
+                Tab(text: S.of(context)!.streakLeaderboardTitle),
+                Tab(text: S.of(context)!.prCountLeaderboardTitle),
+              ],
+            ),
           ),
-          title: Text(S.of(context)!.leaderboards),
-          bottom: TabBar(
-            isScrollable: true,
-            tabs: [
-              Tab(text: S.of(context)!.totalVolumeLeaderboardTitle),
-              Tab(text: S.of(context)!.workoutCountLeaderboardTitle),
-              Tab(text: S.of(context)!.streakLeaderboardTitle),
-              Tab(text: S.of(context)!.prCountLeaderboardTitle),
+          body: const TabBarView(
+            children: [
+              LeaderboardTab(type: LeaderboardType.totalVolume),
+              LeaderboardTab(type: LeaderboardType.workoutCount),
+              LeaderboardTab(type: LeaderboardType.streak),
+              LeaderboardTab(type: LeaderboardType.prCount),
             ],
           ),
         ),
-        body: const TabBarView(
-          children: [
-            LeaderboardTab(type: LeaderboardType.totalVolume),
-            LeaderboardTab(type: LeaderboardType.workoutCount),
-            LeaderboardTab(type: LeaderboardType.streak),
-            LeaderboardTab(type: LeaderboardType.prCount),
-          ],
-        ),
-      ),
-    );
-  }
+      );
 }
 
 class LeaderboardTab extends HookConsumerWidget {
   const LeaderboardTab({
-    super.key,
     required this.type,
+    super.key,
   });
 
   final LeaderboardType type;
@@ -58,15 +56,18 @@ class LeaderboardTab extends HookConsumerWidget {
     final selectedPeriod = useState<Period>(Period.monthly);
 
     // Force refresh on first build
-    useEffect(() {
-      print('🎯 LeaderboardTab mounted for type: $type');
-      Future.microtask(() {
-        final params =
-            LeaderboardParams(type: type, period: selectedPeriod.value);
-        ref.invalidate(leaderboardProvider(params));
-      });
-      return null;
-    }, [type]);
+    useEffect(
+      () {
+        print('🎯 LeaderboardTab mounted for type: $type');
+        Future.microtask(() {
+          final params =
+              LeaderboardParams(type: type, period: selectedPeriod.value);
+          ref.invalidate(leaderboardProvider(params));
+        });
+        return null;
+      },
+      [type],
+    );
 
     final params = LeaderboardParams(type: type, period: selectedPeriod.value);
     final leaderboardAsync = ref.watch(leaderboardProvider(params));
@@ -78,15 +79,16 @@ class LeaderboardTab extends HookConsumerWidget {
           child: leaderboardAsync.when(
             data: (leaderboard) {
               print(
-                  '📊 UI building with ${leaderboard.entries.length} entries for ${type}');
+                '📊 UI building with ${leaderboard.entries.length} entries for $type',
+              );
               return _buildLeaderboard(context, ref, leaderboard, params);
             },
             loading: () {
-              print('⏳ Loading leaderboard for ${type}');
+              print('⏳ Loading leaderboard for $type');
               return const Center(child: CircularProgressIndicator());
             },
             error: (error, stack) {
-              print('❌ Error loading leaderboard for ${type}: $error');
+              print('❌ Error loading leaderboard for $type: $error');
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -122,55 +124,60 @@ class LeaderboardTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildPeriodSelector(ValueNotifier<Period> selectedPeriod) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: Period.values.map((period) {
-          final isSelected = selectedPeriod.value == period;
-          return GestureDetector(
-            onTap: () => selectedPeriod.value = period,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.blue : Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isSelected ? Colors.blue : Colors.grey,
+  Widget _buildPeriodSelector(ValueNotifier<Period> selectedPeriod) =>
+      Container(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: Period.values.map((period) {
+            final isSelected = selectedPeriod.value == period;
+            return GestureDetector(
+              onTap: () => selectedPeriod.value = period,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.blue : Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isSelected ? Colors.blue : Colors.grey,
+                  ),
+                ),
+                child: Text(
+                  _formatPeriod(period),
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.grey[700],
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
                 ),
               ),
-              child: Text(
-                _formatPeriod(period),
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.grey[700],
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
+            );
+          }).toList(),
+        ),
+      );
 
-  Widget _buildLeaderboard(BuildContext context, WidgetRef ref,
-      Leaderboard leaderboard, LeaderboardParams params) {
+  Widget _buildLeaderboard(
+    BuildContext context,
+    WidgetRef ref,
+    Leaderboard leaderboard,
+    LeaderboardParams params,
+  ) {
     final entries = leaderboard.entries;
 
     // Empty state: show a scrollable area so RefreshIndicator works
     if (entries.isEmpty) {
       return RefreshIndicator(
         onRefresh: () async => await ref.refresh(leaderboardProvider(params)),
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+        child: const CustomScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverFillRemaining(
               hasScrollBody: false,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.emoji_events,
                       size: 64,
@@ -203,8 +210,9 @@ class LeaderboardTab extends HookConsumerWidget {
           padding: const EdgeInsets.all(16),
           itemCount: listCount,
           itemBuilder: (context, index) {
-            if (index == 0)
+            if (index == 0) {
               return _buildPodium(context, entries.take(3).toList());
+            }
             final realIndex = index - 1 + 3; // map list index to entries
             final entry = entries[realIndex];
             return _buildLeaderboardEntry(context, entry, false);
@@ -223,7 +231,8 @@ class LeaderboardTab extends HookConsumerWidget {
         itemBuilder: (context, index) {
           final entry = entries[index];
           print(
-              '  🎨 Building entry $index: ${entry.displayName} - ${entry.formattedValue}');
+            '  🎨 Building entry $index: ${entry.displayName} - ${entry.formattedValue}',
+          );
           // Don't hide any entries when there's no podium! (< 3 entries)
           return _buildLeaderboardEntry(context, entry, false);
         },
@@ -231,40 +240,43 @@ class LeaderboardTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildPodium(BuildContext context, List<LeaderboardEntry> topThree) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // 2nd place - Equal width
-          Expanded(
-            child: topThree.length > 1
-                ? _buildPodiumPlace(context, topThree[1], 2, 80)
-                : const SizedBox.shrink(),
-          ),
-          const SizedBox(width: 12),
-          // 1st place - Equal width, centered, tallest
-          Expanded(
-            child: topThree.isNotEmpty
-                ? _buildPodiumPlace(context, topThree[0], 1, 110)
-                : const SizedBox.shrink(),
-          ),
-          const SizedBox(width: 12),
-          // 3rd place - Equal width
-          Expanded(
-            child: topThree.length > 2
-                ? _buildPodiumPlace(context, topThree[2], 3, 65)
-                : const SizedBox.shrink(),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildPodium(BuildContext context, List<LeaderboardEntry> topThree) =>
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // 2nd place - Equal width
+            Expanded(
+              child: topThree.length > 1
+                  ? _buildPodiumPlace(context, topThree[1], 2, 80)
+                  : const SizedBox.shrink(),
+            ),
+            const SizedBox(width: 12),
+            // 1st place - Equal width, centered, tallest
+            Expanded(
+              child: topThree.isNotEmpty
+                  ? _buildPodiumPlace(context, topThree[0], 1, 110)
+                  : const SizedBox.shrink(),
+            ),
+            const SizedBox(width: 12),
+            // 3rd place - Equal width
+            Expanded(
+              child: topThree.length > 2
+                  ? _buildPodiumPlace(context, topThree[2], 3, 65)
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      );
 
   Widget _buildPodiumPlace(
-      BuildContext context, LeaderboardEntry entry, int place, double height) {
+    BuildContext context,
+    LeaderboardEntry entry,
+    int place,
+    double height,
+  ) {
     final isCurrentUser =
         DisplayNameSanitizer.sanitize(entry.displayName) == 'You' ||
             entry.userId.contains('default');
@@ -303,7 +315,6 @@ class LeaderboardTab extends HookConsumerWidget {
       borderRadius: BorderRadius.circular(12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Avatar with medal
           Stack(
@@ -419,9 +430,13 @@ class LeaderboardTab extends HookConsumerWidget {
   }
 
   Widget _buildLeaderboardEntry(
-      BuildContext context, LeaderboardEntry entry, bool isTopThree) {
-    if (isTopThree)
+    BuildContext context,
+    LeaderboardEntry entry,
+    bool isTopThree,
+  ) {
+    if (isTopThree) {
       return const SizedBox.shrink(); // Skip top 3 as they're shown in podium
+    }
 
     final isCurrentUser =
         DisplayNameSanitizer.sanitize(entry.displayName) == 'You' ||
@@ -544,14 +559,16 @@ class LeaderboardTab extends HookConsumerWidget {
                         const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: theme.colorScheme.primary,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             S.of(context)!.you,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
@@ -592,5 +609,11 @@ class LeaderboardTab extends HookConsumerWidget {
       case Period.allTime:
         return 'All Time';
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(EnumProperty<LeaderboardType>('type', type));
   }
 }

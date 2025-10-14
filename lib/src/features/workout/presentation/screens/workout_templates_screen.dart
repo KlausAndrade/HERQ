@@ -302,15 +302,18 @@ class _WorkoutTemplateCard extends StatelessWidget {
                 Wrap(
                   spacing: 8,
                   runSpacing: 4,
-                  children: exercises.map((exercise) {
-                    return Chip(
-                      label: Text(
-                        exercise,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    );
-                  }).toList(),
+                  children: exercises
+                      .map(
+                        (exercise) => Chip(
+                          label: Text(
+                            exercise,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      )
+                      .toList(),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -350,4 +353,14 @@ class _WorkoutTemplateCard extends StatelessWidget {
           ),
         ),
       );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('name', name));
+    properties.add(StringProperty('description', description));
+    properties.add(IterableProperty<String>('exercises', exercises));
+    properties.add(StringProperty('duration', duration));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
+  }
 }

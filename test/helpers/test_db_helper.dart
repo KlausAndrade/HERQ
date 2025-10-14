@@ -1,8 +1,8 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:herq/src/core/database/database.dart';
-import 'package:herq/src/core/providers/database_provider.dart' as db_provider;
 import 'package:herq/src/core/providers/auth_provider.dart' as auth_provider;
+import 'package:herq/src/core/providers/database_provider.dart' as db_provider;
 
 /// Simple test helper that creates an in-memory AppDatabase and returns a
 /// ProviderOverride that replaces the `databaseProvider` with the in-memory

@@ -9,7 +9,8 @@ final workoutTemplatesWebProvider =
     StreamProvider<List<Map<String, dynamic>>>((ref) {
   if (!kIsWeb) {
     throw UnimplementedError(
-        'Use mobile template provider for non-web platforms');
+      'Use mobile template provider for non-web platforms',
+    );
   }
 
   final supabase = ref.watch(supabaseClientProvider);
@@ -24,7 +25,7 @@ final workoutTemplatesWebProvider =
       .stream(primaryKey: ['id'])
       .eq('user_id', user.id)
       .order('name')
-      .map((data) => List<Map<String, dynamic>>.from(data));
+      .map(List<Map<String, dynamic>>.from);
 });
 
 /// Get single template by ID
@@ -32,7 +33,8 @@ final templateByIdWebProvider =
     FutureProvider.family<Map<String, dynamic>?, String>((ref, id) async {
   if (!kIsWeb) {
     throw UnimplementedError(
-        'Use mobile template provider for non-web platforms');
+      'Use mobile template provider for non-web platforms',
+    );
   }
 
   final supabase = ref.watch(supabaseClientProvider);
@@ -49,15 +51,16 @@ final templateByIdWebProvider =
 final createTemplateWebProvider = Provider((ref) {
   if (!kIsWeb) {
     throw UnimplementedError(
-        'Use mobile template provider for non-web platforms');
+      'Use mobile template provider for non-web platforms',
+    );
   }
 
   final supabase = ref.watch(supabaseClientProvider);
 
   return ({
     required String name,
-    String? description,
     required List<String> exerciseIds,
+    String? description,
   }) async {
     final user = supabase.auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
@@ -79,7 +82,8 @@ final createTemplateWebProvider = Provider((ref) {
 final deleteTemplateWebProvider = Provider((ref) {
   if (!kIsWeb) {
     throw UnimplementedError(
-        'Use mobile template provider for non-web platforms');
+      'Use mobile template provider for non-web platforms',
+    );
   }
 
   final supabase = ref.watch(supabaseClientProvider);

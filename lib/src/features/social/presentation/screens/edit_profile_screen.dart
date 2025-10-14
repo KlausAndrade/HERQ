@@ -1,10 +1,10 @@
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/providers/auth_provider.dart';
@@ -161,7 +161,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           if (_isLoading)
             const Center(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16),
                 child: SizedBox(
                   width: 20,
                   height: 20,

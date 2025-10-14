@@ -13,9 +13,8 @@ final appliedProgressSuggestionsProvider =
     StateProvider<Set<String>>((ref) => {});
 
 // Mock service provider (fallback)
-final aiCoachingServiceProvider = Provider<AICoachingService>((ref) {
-  return AICoachingService();
-});
+final aiCoachingServiceProvider =
+    Provider<AICoachingService>((ref) => AICoachingService());
 
 // Groq AI service provider (real AI)
 final groqAICoachingServiceProvider = Provider<GroqAICoachingService?>((ref) {
@@ -60,10 +59,14 @@ final groqProgressiveOverloadProvider = FutureProvider.family<
     // Fallback to mock if Groq service unavailable
     final mockService = ref.read(aiCoachingServiceProvider);
     return mockService.getProgressiveOverloadSuggestions(
-        params.userId, params.exerciseId);
+      params.userId,
+      params.exerciseId,
+    );
   }
   return aiService.getProgressiveOverloadSuggestions(
-      params.userId, params.exerciseId);
+    params.userId,
+    params.exerciseId,
+  );
 });
 
 // Groq-powered recovery analysis provider
@@ -153,14 +156,18 @@ final progressiveOverloadProvider = FutureProvider.family<
     final aiService = ref.read(groqAICoachingServiceProvider);
     if (aiService != null) {
       return await aiService.getProgressiveOverloadSuggestions(
-          params.userId, params.exerciseId);
+        params.userId,
+        params.exerciseId,
+      );
     }
     throw Exception('Groq service unavailable');
   } catch (e) {
     // Fallback to mock service if Groq fails
     final mockService = ref.read(aiCoachingServiceProvider);
     return mockService.getProgressiveOverloadSuggestions(
-        params.userId, params.exerciseId);
+      params.userId,
+      params.exerciseId,
+    );
   }
 });
 
@@ -233,12 +240,12 @@ final workoutPatternAnalysisProvider =
 });
 
 // AI actions provider for user interactions (with Groq fallback)
-final aiActionsProvider = Provider<AIActions>((ref) {
-  return AIActions(
+final aiActionsProvider = Provider<AIActions>(
+  (ref) => AIActions(
     ref.read(groqAICoachingServiceProvider),
     ref.read(aiCoachingServiceProvider),
-  );
-});
+  ),
+);
 
 class AIActions {
   AIActions(this._groqService, this._mockService);
@@ -325,15 +332,14 @@ class WorkoutRecommendationParams {
     List<String>? preferredMuscleGroups,
     List<String>? availableEquipment,
     int? maxDuration,
-  }) {
-    return WorkoutRecommendationParams(
-      userId: userId,
-      preferredMuscleGroups:
-          preferredMuscleGroups ?? this.preferredMuscleGroups,
-      availableEquipment: availableEquipment ?? this.availableEquipment,
-      maxDuration: maxDuration ?? this.maxDuration,
-    );
-  }
+  }) =>
+      WorkoutRecommendationParams(
+        userId: userId,
+        preferredMuscleGroups:
+            preferredMuscleGroups ?? this.preferredMuscleGroups,
+        availableEquipment: availableEquipment ?? this.availableEquipment,
+        maxDuration: maxDuration ?? this.maxDuration,
+      );
 
   @override
   bool operator ==(Object other) =>

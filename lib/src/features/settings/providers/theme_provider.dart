@@ -3,18 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/preferences_provider.dart';
 
 final themeModeProvider =
-    StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
-  return ThemeModeNotifier(ref);
-});
+    StateNotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
 
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
-  final Ref _ref;
-
   ThemeModeNotifier(this._ref) : super(ThemeMode.dark) {
     _loadThemeFromPreferences();
   }
+  final Ref _ref;
 
-  void _loadThemeFromPreferences() async {
+  Future<void> _loadThemeFromPreferences() async {
     try {
       final preferences = await _ref.read(userPreferencesProvider.future);
       final themeString = preferences['theme'] as String? ?? 'dark';
@@ -50,7 +47,7 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
     }
   }
 
-  void setThemeMode(ThemeMode mode) async {
+  Future<void> setThemeMode(ThemeMode mode) async {
     state = mode;
 
     // Persist the theme choice
@@ -71,18 +68,16 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 
 /// Provider for theme variant selection (Default vs HERQ)
 final themeVariantProvider =
-    StateNotifierProvider<ThemeVariantNotifier, String>((ref) {
-  return ThemeVariantNotifier(ref);
-});
+    StateNotifierProvider<ThemeVariantNotifier, String>(
+        ThemeVariantNotifier.new);
 
 class ThemeVariantNotifier extends StateNotifier<String> {
-  final Ref _ref;
-
   ThemeVariantNotifier(this._ref) : super('herq') {
     _loadThemeVariantFromPreferences();
   }
+  final Ref _ref;
 
-  void _loadThemeVariantFromPreferences() async {
+  Future<void> _loadThemeVariantFromPreferences() async {
     try {
       final preferences = await _ref.read(userPreferencesProvider.future);
       final variant = preferences['themeVariant'] as String? ?? 'herq';
@@ -93,7 +88,7 @@ class ThemeVariantNotifier extends StateNotifier<String> {
     }
   }
 
-  void setThemeVariant(String variant) async {
+  Future<void> setThemeVariant(String variant) async {
     state = variant;
 
     // Persist the theme variant choice

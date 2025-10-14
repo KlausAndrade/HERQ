@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/services/notification_service.dart';
 import '../providers/social_providers.dart';
-import 'package:herq/src/core/services/notification_service.dart';
 
 class EditPostDialog extends ConsumerStatefulWidget {
   const EditPostDialog({
-    super.key,
     required this.postId,
     required this.initialCaption,
+    super.key,
   });
 
   final String postId;
@@ -16,6 +16,13 @@ class EditPostDialog extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<EditPostDialog> createState() => _EditPostDialogState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('postId', postId));
+    properties.add(StringProperty('initialCaption', initialCaption));
+  }
 }
 
 class _EditPostDialogState extends ConsumerState<EditPostDialog> {
@@ -52,7 +59,8 @@ class _EditPostDialogState extends ConsumerState<EditPostDialog> {
 
     try {
       await ref.read(
-          editPostProvider((postId: widget.postId, caption: caption)).future);
+        editPostProvider((postId: widget.postId, caption: caption)).future,
+      );
 
       if (mounted) {
         Navigator.pop(context, true);
@@ -82,35 +90,33 @@ class _EditPostDialogState extends ConsumerState<EditPostDialog> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Edit Post'),
-      content: TextField(
-        controller: _captionController,
-        maxLines: 5,
-        maxLength: 500,
-        decoration: const InputDecoration(
-          hintText: 'What\'s on your mind?',
-          border: OutlineInputBorder(),
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('Edit Post'),
+        content: TextField(
+          controller: _captionController,
+          maxLines: 5,
+          maxLength: 500,
+          decoration: const InputDecoration(
+            hintText: 'What\'s on your mind?',
+            border: OutlineInputBorder(),
+          ),
+          enabled: !_isUpdating,
         ),
-        enabled: !_isUpdating,
-      ),
-      actions: [
-        TextButton(
-          onPressed: _isUpdating ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          onPressed: _isUpdating ? null : _updatePost,
-          child: _isUpdating
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Update'),
-        ),
-      ],
-    );
-  }
+        actions: [
+          TextButton(
+            onPressed: _isUpdating ? null : () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: _isUpdating ? null : _updatePost,
+            child: _isUpdating
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Update'),
+          ),
+        ],
+      );
 }

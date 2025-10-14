@@ -6,9 +6,8 @@ import '../../domain/models/analytics_models.dart';
 
 /// Service for calculating advanced analytics and PR predictions
 class AnalyticsService {
-  final AppDatabase database;
-
   AnalyticsService(this.database);
+  final AppDatabase database;
 
   /// Get comprehensive analytics for user
   Future<AnalyticsData> getAnalytics() async {
@@ -137,7 +136,7 @@ class AnalyticsService {
       int longestStreak = 0;
       int tempStreak = 0;
 
-      DateTime? lastPRDate = prs.isNotEmpty ? prs.first.achievedAt : null;
+      final DateTime? lastPRDate = prs.isNotEmpty ? prs.first.achievedAt : null;
 
       // PRs are in descending order (newest first)
       for (var i = 0; i < prs.length; i++) {
@@ -154,8 +153,9 @@ class AnalyticsService {
           // If PRs are within 14 days of each other, streak continues
           if (daysBetween <= 14) {
             tempStreak++;
-            if (i < 3)
+            if (i < 3) {
               currentStreak++; // Only count recent ones for current streak
+            }
           } else {
             longestStreak = max(longestStreak, tempStreak);
             tempStreak = 1;
@@ -174,14 +174,16 @@ class AnalyticsService {
       }
 
       if (longestStreak > 0) {
-        streaks.add(PRStreak(
-          exerciseId: exercise.id,
-          exerciseName: exercise.name,
-          currentStreak: currentStreak,
-          longestStreak: longestStreak,
-          lastPRDate: lastPRDate,
-          nextPossiblePR: lastPRDate?.add(const Duration(days: 7)),
-        ));
+        streaks.add(
+          PRStreak(
+            exerciseId: exercise.id,
+            exerciseName: exercise.name,
+            currentStreak: currentStreak,
+            longestStreak: longestStreak,
+            lastPRDate: lastPRDate,
+            nextPossiblePR: lastPRDate?.add(const Duration(days: 7)),
+          ),
+        );
       }
     }
 
@@ -209,7 +211,7 @@ class AnalyticsService {
       // Get recent attempts (last 30 days)
       final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
 
-      final recentSets = await (database.customSelect(
+      final recentSets = await database.customSelect(
         '''
         SELECT se.*, ws.completed_at
         FROM set_entries se
@@ -223,7 +225,7 @@ class AnalyticsService {
           Variable.withDateTime(thirtyDaysAgo),
         ],
         readsFrom: {database.setEntries, database.workoutSessions},
-      )).get();
+      ).get();
 
       for (final row in recentSets) {
         final weight = row.read<double?>('weight');
@@ -252,16 +254,18 @@ class AnalyticsService {
             message = '📈 Great progress! Keep pushing, PR incoming!';
           }
 
-          nearMisses.add(NearMissPR(
-            exerciseId: exercise.id,
-            exerciseName: exercise.name,
-            currentBest: currentPR.weight ?? 0,
-            attemptedWeight: weight,
-            attemptedReps: reps,
-            percentageClose: percentage,
-            attemptDate: completedAt,
-            motivationalMessage: message,
-          ));
+          nearMisses.add(
+            NearMissPR(
+              exerciseId: exercise.id,
+              exerciseName: exercise.name,
+              currentBest: currentPR.weight ?? 0,
+              attemptedWeight: weight,
+              attemptedReps: reps,
+              percentageClose: percentage,
+              attemptDate: completedAt,
+              motivationalMessage: message,
+            ),
+          );
           break; // Only one near miss per exercise
         }
       }
@@ -310,14 +314,15 @@ class AnalyticsService {
       if (regression['slope'] == null ||
           regression['slope']!.isNaN ||
           regression['slope']!.isInfinite ||
-          regression['slope']! <= 0)
+          regression['slope']! <= 0) {
         continue; // Not progressing or invalid data
+      }
 
       // Predict next PR (assume in 30 days)
       final lastPR = prs.last;
       final daysSinceStart =
           DateTime.now().difference(prs.first.achievedAt).inDays;
-      final daysToPredict = 30;
+      const daysToPredict = 30;
       final predictedX = daysSinceStart + daysToPredict;
 
       final predictedWeight =
@@ -328,7 +333,9 @@ class AnalyticsService {
       if (predictedWeight.isNaN ||
           predictedWeight.isInfinite ||
           predictedWeight <= 0 ||
-          currentWeight <= 0) continue;
+          currentWeight <= 0) {
+        continue;
+      }
 
       // Only predict if there's expected improvement
       if (predictedWeight <= currentWeight) continue;
@@ -346,17 +353,20 @@ class AnalyticsService {
         regression['slope']!,
       );
 
-      predictions.add(PRPrediction(
-        exerciseId: exercise.id,
-        exerciseName: exercise.name,
-        currentPR: currentWeight,
-        predictedPR: predictedWeight,
-        predictedDate: DateTime.now().add(Duration(days: daysToPredict)),
-        confidence: confidence,
-        reasoning:
-            'Based on your consistent ${regression['slope']!.toStringAsFixed(2)}kg/week progress',
-        recommendations: recommendations,
-      ));
+      predictions.add(
+        PRPrediction(
+          exerciseId: exercise.id,
+          exerciseName: exercise.name,
+          currentPR: currentWeight,
+          predictedPR: predictedWeight,
+          predictedDate:
+              DateTime.now().add(const Duration(days: daysToPredict)),
+          confidence: confidence,
+          reasoning:
+              'Based on your consistent ${regression['slope']!.toStringAsFixed(2)}kg/week progress',
+          recommendations: recommendations,
+        ),
+      );
     }
 
     // Sort by confidence
@@ -367,7 +377,8 @@ class AnalyticsService {
 
   /// Calculate linear regression for trend analysis
   Map<String, double> _calculateLinearRegression(
-      List<Map<String, double>> data) {
+    List<Map<String, double>> data,
+  ) {
     final n = data.length.toDouble();
     final sumX = data.fold<double>(0, (sum, point) => sum + point['x']!);
     final sumY = data.fold<double>(0, (sum, point) => sum + point['y']!);
@@ -376,7 +387,7 @@ class AnalyticsService {
     final sumX2 =
         data.fold<double>(0, (sum, point) => sum + point['x']! * point['x']!);
 
-    final denominator = (n * sumX2 - sumX * sumX);
+    final denominator = n * sumX2 - sumX * sumX;
 
     // Prevent division by zero
     if (denominator == 0 || denominator.isNaN) {
@@ -440,9 +451,11 @@ class AnalyticsService {
     final gain = predictedWeight - currentWeight;
 
     recommendations.add(
-        '💡 Try adding ${(gain / 2).toStringAsFixed(1)}kg in your next workout');
+      '💡 Try adding ${(gain / 2).toStringAsFixed(1)}kg in your next workout',
+    );
     recommendations.add(
-        '🎯 Aim for ${(currentWeight + weeklyGain).toStringAsFixed(1)}kg this week');
+      '🎯 Aim for ${(currentWeight + weeklyGain).toStringAsFixed(1)}kg this week',
+    );
 
     if (weeklyGain < 1) {
       recommendations
@@ -483,7 +496,7 @@ class AnalyticsService {
         readsFrom: {
           database.setEntries,
           database.workoutSessions,
-          database.exercises
+          database.exercises,
         },
       ).get();
 
@@ -505,14 +518,16 @@ class AnalyticsService {
         change = ((totalVolume - prevVolume) / prevVolume) * 100;
       }
 
-      trends.add(VolumeAnalysis(
-        date: weekEnd,
-        period: 'week',
-        totalVolume: totalVolume,
-        volumeByMuscleGroup: volumeByMuscle,
-        change: change,
-        isIncreasing: change > 0,
-      ));
+      trends.add(
+        VolumeAnalysis(
+          date: weekEnd,
+          period: 'week',
+          totalVolume: totalVolume,
+          volumeByMuscleGroup: volumeByMuscle,
+          change: change,
+          isIncreasing: change > 0,
+        ),
+      );
     }
 
     return trends;
@@ -546,8 +561,9 @@ class AnalyticsService {
       final currentWeight = lastSet.read<double?>('weight');
 
       // Skip exercises without weight data (e.g., bodyweight exercises)
-      if (startWeight == null || currentWeight == null || startWeight == 0)
+      if (startWeight == null || currentWeight == null || startWeight == 0) {
         continue;
+      }
 
       final totalGain = currentWeight - startWeight;
       final percentageGain = (totalGain / startWeight) * 100;
@@ -567,7 +583,7 @@ class AnalyticsService {
         const weightTolerance = 0.25; // kg
         const timeToleranceSeconds = 2;
 
-        bool isPR = prsForExercise.any((pr) {
+        final bool isPR = prsForExercise.any((pr) {
           final prWeight = pr.weight ?? 0;
           final prReps = pr.reps ?? 0;
           final prDate = pr.achievedAt;
@@ -615,19 +631,21 @@ class AnalyticsService {
         trend = TrendDirection.stable;
       }
 
-      progressList.add(ExerciseProgress(
-        exerciseId: exercise.id,
-        exerciseName: exercise.name,
-        startWeight: startWeight,
-        currentWeight: currentWeight,
-        totalGain: totalGain,
-        percentageGain: percentageGain,
-        workoutCount: sets.length,
-        firstWorkout: firstSet.read<DateTime>('completed_at'),
-        lastWorkout: lastSet.read<DateTime>('completed_at'),
-        trend: trend,
-        history: history,
-      ));
+      progressList.add(
+        ExerciseProgress(
+          exerciseId: exercise.id,
+          exerciseName: exercise.name,
+          startWeight: startWeight,
+          currentWeight: currentWeight,
+          totalGain: totalGain,
+          percentageGain: percentageGain,
+          workoutCount: sets.length,
+          firstWorkout: firstSet.read<DateTime>('completed_at'),
+          lastWorkout: lastSet.read<DateTime>('completed_at'),
+          trend: trend,
+          history: history,
+        ),
+      );
     }
 
     // Sort by total gain
@@ -664,15 +682,18 @@ class AnalyticsService {
           severity = PlateauSeverity.mild;
         }
 
-        plateaus.add(PlateauDetection(
-          exerciseId: exercise.id,
-          exerciseName: exercise.name,
-          weeksStagnant: weeksSinceLastPR,
-          currentWeight: lastPR.weight ?? 0,
-          startDate: lastPR.achievedAt,
-          severity: severity,
-          recommendations: _getPlateauRecommendations(severity, exercise.name),
-        ));
+        plateaus.add(
+          PlateauDetection(
+            exerciseId: exercise.id,
+            exerciseName: exercise.name,
+            weeksStagnant: weeksSinceLastPR,
+            currentWeight: lastPR.weight ?? 0,
+            startDate: lastPR.achievedAt,
+            severity: severity,
+            recommendations:
+                _getPlateauRecommendations(severity, exercise.name),
+          ),
+        );
       }
     }
 
@@ -694,7 +715,9 @@ class AnalyticsService {
   }
 
   List<String> _getPlateauRecommendations(
-      PlateauSeverity severity, String exerciseName) {
+    PlateauSeverity severity,
+    String exerciseName,
+  ) {
     switch (severity) {
       case PlateauSeverity.severe:
         return [
@@ -737,7 +760,7 @@ class AnalyticsService {
       readsFrom: {
         database.setEntries,
         database.workoutSessions,
-        database.exercises
+        database.exercises,
       },
     ).get();
 
@@ -782,13 +805,15 @@ class AnalyticsService {
         status = BalanceStatus.balanced;
       }
 
-      imbalances.add(MuscleGroupBalance(
-        muscleGroup: entry.key,
-        currentPercentage: entry.value,
-        idealPercentage: ideal,
-        difference: diff,
-        status: status,
-      ));
+      imbalances.add(
+        MuscleGroupBalance(
+          muscleGroup: entry.key,
+          currentPercentage: entry.value,
+          idealPercentage: ideal,
+          difference: diff,
+          status: status,
+        ),
+      );
     }
 
     // Calculate overall balance score
@@ -817,12 +842,14 @@ class AnalyticsService {
       if (imbalance.status == BalanceStatus.undertrained &&
           imbalance.difference.abs() > 10) {
         recommendations.add(
-            '🎯 Increase ${imbalance.muscleGroup} training by ${imbalance.difference.abs().round()}%');
+          '🎯 Increase ${imbalance.muscleGroup} training by ${imbalance.difference.abs().round()}%',
+        );
       }
       if (imbalance.status == BalanceStatus.overtrained &&
           imbalance.difference.abs() > 10) {
         recommendations.add(
-            '⚠️ Reduce ${imbalance.muscleGroup} volume slightly to prevent overtraining');
+          '⚠️ Reduce ${imbalance.muscleGroup} volume slightly to prevent overtraining',
+        );
       }
     }
 

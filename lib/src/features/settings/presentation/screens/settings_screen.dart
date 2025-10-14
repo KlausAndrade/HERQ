@@ -4,19 +4,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:herq/l10n/app_localizations.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/database/fix_display_names.dart';
+import '../../../../core/database/seed_database.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/sync_provider.dart';
-import '../../../../core/widgets/animated_switch.dart';
 import '../../../../core/services/notification_service.dart';
-import '../../../../core/database/seed_database.dart';
-import '../../../../core/database/fix_display_names.dart';
+import '../../../../core/widgets/animated_switch.dart';
 import '../../../gamification/data/providers/gamification_provider.dart';
 import '../../../social/presentation/providers/leaderboard_providers.dart';
 import '../../providers/data_export_provider.dart';
-import '../../providers/theme_provider.dart';
 import '../../providers/locale_provider.dart';
+import '../../providers/theme_provider.dart';
 import '../../providers/workout_settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -161,9 +161,11 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: const Icon(Icons.timer_outlined),
                   title: const Text('Default Rest Timer'),
-                  subtitle: Text(ref
-                      .read(workoutSettingsProvider.notifier)
-                      .getFormattedRestTime()),
+                  subtitle: Text(
+                    ref
+                        .read(workoutSettingsProvider.notifier)
+                        .getFormattedRestTime(),
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showRestTimerDialog(context, ref),
                 ),
@@ -171,9 +173,11 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: const Icon(Icons.scale_outlined),
                   title: const Text('Weight Unit'),
-                  subtitle: Text(ref
-                      .read(workoutSettingsProvider.notifier)
-                      .getWeightUnitDisplay()),
+                  subtitle: Text(
+                    ref
+                        .read(workoutSettingsProvider.notifier)
+                        .getWeightUnitDisplay(),
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showWeightUnitDialog(context, ref),
                 ),
@@ -290,7 +294,8 @@ class SettingsScreen extends ConsumerWidget {
                   leading: const Icon(Icons.cloud_upload, color: Colors.indigo),
                   title: const Text('Sync to Supabase'),
                   subtitle: const Text(
-                      'Upload stats to cloud for multi-user leaderboards'),
+                    'Upload stats to cloud for multi-user leaderboards',
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _syncToSupabase(context, ref),
                 ),
@@ -359,10 +364,10 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => context.push('/about-herq'),
                 ),
                 const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.info_outline),
-                  title: const Text('Version'),
-                  subtitle: const Text('1.0.0+1'),
+                const ListTile(
+                  leading: Icon(Icons.info_outline),
+                  title: Text('Version'),
+                  subtitle: Text('1.0.0+1'),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -462,19 +467,21 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(S.of(context)!.chooseLanguage),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: LocaleNotifier.supportedLocales.map((locale) {
-            return RadioListTile<Locale>(
-              title: Text(LocaleNotifier.getLocaleName(locale)),
-              value: locale,
-              groupValue: ref.read(localeProvider),
-              onChanged: (value) {
-                if (value != null) {
-                  ref.read(localeProvider.notifier).setLocale(value);
-                  Navigator.of(context).pop();
-                }
-              },
-            );
-          }).toList(),
+          children: LocaleNotifier.supportedLocales
+              .map(
+                (locale) => RadioListTile<Locale>(
+                  title: Text(LocaleNotifier.getLocaleName(locale)),
+                  value: locale,
+                  groupValue: ref.read(localeProvider),
+                  onChanged: (value) {
+                    if (value != null) {
+                      ref.read(localeProvider.notifier).setLocale(value);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
+              )
+              .toList(),
         ),
       ),
     );
@@ -756,7 +763,7 @@ class SettingsScreen extends ConsumerWidget {
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               title: 'Export failed',
-              body: '${e.toString()}',
+              body: e.toString(),
             )
             .catchError((_) {});
       }
@@ -785,7 +792,7 @@ class SettingsScreen extends ConsumerWidget {
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               title: 'Export failed',
-              body: '${e.toString()}',
+              body: e.toString(),
             )
             .catchError((_) {});
       }
@@ -931,7 +938,8 @@ class SettingsScreen extends ConsumerWidget {
         title: const Text('Privacy Policy'),
         content: const SingleChildScrollView(
           child: Text(
-            '''HERQ Privacy Policy
+            '''
+HERQ Privacy Policy
 
 Last updated: October 14, 2025
 
@@ -983,7 +991,8 @@ By using HERQ, you agree to this privacy policy.''',
         title: const Text('Terms of Service'),
         content: const SingleChildScrollView(
           child: Text(
-            '''HERQ Terms of Service
+            '''
+HERQ Terms of Service
 
 Last updated: October 14, 2025
 
@@ -1044,7 +1053,7 @@ By using HERQ, you agree to these terms.''',
     );
   }
 
-  void _showUserStatsDebug(BuildContext context, WidgetRef ref) async {
+  Future<void> _showUserStatsDebug(BuildContext context, WidgetRef ref) async {
     final db = ref.read(databaseProvider);
     if (db == null) return;
 
@@ -1072,7 +1081,9 @@ By using HERQ, you agree to these terms.''',
           child: stats.isEmpty
               ? const Center(
                   child: Text(
-                      '❌ No user stats found!\n\nRun "Refresh Leaderboard Stats" first.'))
+                    '❌ No user stats found!\n\nRun "Refresh Leaderboard Stats" first.',
+                  ),
+                )
               : ListView.builder(
                   shrinkWrap: true,
                   itemCount: stats.length,
@@ -1080,25 +1091,38 @@ By using HERQ, you agree to these terms.''',
                     final s = stats[index];
                     return Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding: const EdgeInsets.all(12),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('User: ${s.userId}',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 12)),
-                            const SizedBox(height: 8),
-                            Text('Workouts: ${s.totalWorkouts}',
-                                style: const TextStyle(fontSize: 11)),
                             Text(
-                                'Volume: ${s.totalVolumeLifted.toStringAsFixed(1)} kg',
-                                style: const TextStyle(fontSize: 11)),
-                            Text('Sets: ${s.totalSetsCompleted}',
-                                style: const TextStyle(fontSize: 11)),
-                            Text('Streak: ${s.currentStreak} days',
-                                style: const TextStyle(fontSize: 11)),
-                            Text('Level: ${s.level}',
-                                style: const TextStyle(fontSize: 11)),
+                              'User: ${s.userId}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Workouts: ${s.totalWorkouts}',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            Text(
+                              'Volume: ${s.totalVolumeLifted.toStringAsFixed(1)} kg',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            Text(
+                              'Sets: ${s.totalSetsCompleted}',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            Text(
+                              'Streak: ${s.currentStreak} days',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            Text(
+                              'Level: ${s.level}',
+                              style: const TextStyle(fontSize: 11),
+                            ),
                           ],
                         ),
                       ),
@@ -1116,7 +1140,8 @@ By using HERQ, you agree to these terms.''',
     );
   }
 
-  void _refreshLeaderboardStats(BuildContext context, WidgetRef ref) async {
+  Future<void> _refreshLeaderboardStats(
+      BuildContext context, WidgetRef ref) async {
     print('🔄 Refresh Leaderboard Stats button clicked');
 
     showDialog(
@@ -1155,7 +1180,8 @@ By using HERQ, you agree to these terms.''',
         userDisplayName: userDisplayName,
       );
       print(
-          '✅ Stats recalculated: ${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted} kg');
+        '✅ Stats recalculated: ${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted} kg',
+      );
 
       if (!context.mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
@@ -1165,14 +1191,15 @@ By using HERQ, you agree to these terms.''',
       ref.invalidate(supabaseLeaderboardServiceProvider);
       ref.invalidate(localLeaderboardServiceProvider);
       print(
-          '✅ Leaderboard service providers invalidated - all tabs will refresh');
+        '✅ Leaderboard service providers invalidated - all tabs will refresh',
+      );
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              '✅ Stats refreshed!\n${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted.toStringAsFixed(1)} kg volume\n\nOpen Leaderboards to see updates!'),
+            '✅ Stats refreshed!\n${stats.totalWorkouts} workouts, ${stats.totalVolumeLifted.toStringAsFixed(1)} kg volume\n\nOpen Leaderboards to see updates!',
+          ),
           backgroundColor: Colors.green,
-          duration: const Duration(seconds: 4),
         ),
       );
     } catch (e, stackTrace) {
@@ -1192,8 +1219,10 @@ By using HERQ, you agree to these terms.''',
     }
   }
 
-  void _showDebugExerciseTypesDialog(
-      BuildContext context, WidgetRef ref) async {
+  Future<void> _showDebugExerciseTypesDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final db = ref.read(databaseProvider);
     if (db == null) return;
 
@@ -1393,7 +1422,7 @@ By using HERQ, you agree to these terms.''',
     );
   }
 
-  void _syncToSupabase(BuildContext context, WidgetRef ref) async {
+  Future<void> _syncToSupabase(BuildContext context, WidgetRef ref) async {
     print('🌐 Sync to Supabase button clicked');
 
     showDialog(
@@ -1431,9 +1460,9 @@ By using HERQ, you agree to these terms.''',
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-              '✅ Successfully synced to Supabase!\n\nYour stats are now on the cloud leaderboards!'),
+            '✅ Successfully synced to Supabase!\n\nYour stats are now on the cloud leaderboards!',
+          ),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 4),
         ),
       );
 
@@ -1456,7 +1485,7 @@ By using HERQ, you agree to these terms.''',
     }
   }
 
-  void _cleanDuplicateStats(BuildContext context, WidgetRef ref) async {
+  Future<void> _cleanDuplicateStats(BuildContext context, WidgetRef ref) async {
     print('🧹 Clean Duplicate Stats button clicked');
 
     // Show confirmation dialog
@@ -1535,9 +1564,9 @@ By using HERQ, you agree to these terms.''',
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              '✅ Cleaned up $deleted duplicate entries!\n\nYou now have ${remainingStats.length} stat(s).'),
+            '✅ Cleaned up $deleted duplicate entries!\n\nYou now have ${remainingStats.length} stat(s).',
+          ),
           backgroundColor: Colors.green,
-          duration: const Duration(seconds: 4),
         ),
       );
 
@@ -1560,7 +1589,7 @@ By using HERQ, you agree to these terms.''',
     }
   }
 
-  void _fixDisplayNames(BuildContext context, WidgetRef ref) async {
+  Future<void> _fixDisplayNames(BuildContext context, WidgetRef ref) async {
     print('🔧 Fix Display Names button clicked');
 
     // Show confirmation dialog
@@ -1619,9 +1648,9 @@ By using HERQ, you agree to these terms.''',
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-              '✅ Display names fixed!\n\nEmails removed from all user names.'),
+            '✅ Display names fixed!\n\nEmails removed from all user names.',
+          ),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 4),
         ),
       );
 

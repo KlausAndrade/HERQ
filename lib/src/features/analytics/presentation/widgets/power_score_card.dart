@@ -4,12 +4,11 @@ import '../../domain/models/analytics_models.dart';
 
 /// Card displaying user's Power Score with tier badge
 class PowerScoreCard extends StatelessWidget {
-  final PowerScore powerScore;
-
   const PowerScoreCard({
     required this.powerScore,
     super.key,
   });
+  final PowerScore powerScore;
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +171,7 @@ class PowerScoreCard extends StatelessWidget {
     final nextTierIndex = tierThresholds.keys.toList().indexOf(score.tier) + 1;
 
     if (nextTierIndex >= tierThresholds.length) {
-      return 1.0; // Already at max tier
+      return 1; // Already at max tier
     }
 
     final nextThreshold = tierThresholds.values.elementAt(nextTierIndex);
@@ -197,5 +196,11 @@ class PowerScoreCard extends StatelessWidget {
       default:
         return Colors.grey;
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<PowerScore>('powerScore', powerScore));
   }
 }

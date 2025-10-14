@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
-import '../providers/workout_providers.dart';
 import '../providers/filter_providers.dart';
+import '../providers/workout_providers.dart';
 import '../widgets/workout_calendar.dart';
 
 class WorkoutHistoryScreen extends ConsumerStatefulWidget {
@@ -146,241 +146,238 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
     );
   }
 
-  IconData _getViewIcon() {
-    return switch (_viewMode) {
-      HistoryViewMode.list => Icons.calendar_month,
-      HistoryViewMode.monthly => Icons.calendar_view_month,
-      HistoryViewMode.calendar => Icons.list,
-    };
-  }
+  IconData _getViewIcon() => switch (_viewMode) {
+        HistoryViewMode.list => Icons.calendar_month,
+        HistoryViewMode.monthly => Icons.calendar_view_month,
+        HistoryViewMode.calendar => Icons.list,
+      };
 
-  String _getViewTooltip() {
-    return switch (_viewMode) {
-      HistoryViewMode.list => 'Monthly View',
-      HistoryViewMode.monthly => 'Calendar View',
-      HistoryViewMode.calendar => 'List View',
-    };
-  }
+  String _getViewTooltip() => switch (_viewMode) {
+        HistoryViewMode.list => 'Monthly View',
+        HistoryViewMode.monthly => 'Calendar View',
+        HistoryViewMode.calendar => 'List View',
+      };
 
-  Widget _buildCalendarView(AsyncValue workoutSessionsAsync) {
-    return workoutSessionsAsync.when(
-      data: (data) {
-        // For calendar view, we need the flat list of sessions
-        List<WorkoutSession> sessions;
-        if (data is Map<String, List<WorkoutSession>>) {
-          // If data comes from monthly provider, flatten it
-          sessions = data.values.expand((list) => list).toList();
-        } else {
-          sessions = data as List<WorkoutSession>;
-        }
+  Widget _buildCalendarView(AsyncValue workoutSessionsAsync) =>
+      workoutSessionsAsync.when(
+        data: (data) {
+          // For calendar view, we need the flat list of sessions
+          List<WorkoutSession> sessions;
+          if (data is Map<String, List<WorkoutSession>>) {
+            // If data comes from monthly provider, flatten it
+            sessions = data.values.expand((list) => list).toList();
+          } else {
+            sessions = data as List<WorkoutSession>;
+          }
 
-        if (sessions.isEmpty) {
-          return _buildEmptyState();
-        }
+          if (sessions.isEmpty) {
+            return _buildEmptyState();
+          }
 
-        return WorkoutCalendar(
-          workouts: sessions,
-          onWorkoutTap: (workout) {
-            context.push('/workout/${workout.id}');
-          },
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Text('Error loading workouts: $error'),
-      ),
-    );
-  }
+          return WorkoutCalendar(
+            workouts: sessions,
+            onWorkoutTap: (workout) {
+              context.push('/workout/${workout.id}');
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Text('Error loading workouts: $error'),
+        ),
+      );
 
-  Widget _buildGroupedView(AsyncValue workoutSessionsAsync) {
-    return workoutSessionsAsync.when(
-      data: (data) {
-        final groupedSessions = data as Map<String, List<WorkoutSession>>;
-        if (groupedSessions.isEmpty) {
-          return _buildEmptyState();
-        }
+  Widget _buildGroupedView(AsyncValue workoutSessionsAsync) =>
+      workoutSessionsAsync.when(
+        data: (data) {
+          final groupedSessions = data as Map<String, List<WorkoutSession>>;
+          if (groupedSessions.isEmpty) {
+            return _buildEmptyState();
+          }
 
-        final sortedMonths = groupedSessions.keys.toList()
-          ..sort((a, b) => b.compareTo(a));
+          final sortedMonths = groupedSessions.keys.toList()
+            ..sort((a, b) => b.compareTo(a));
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: sortedMonths.length,
-          itemBuilder: (context, index) {
-            final monthKey = sortedMonths[index];
-            final sessions = groupedSessions[monthKey]!;
-            final monthDate = DateTime.parse('$monthKey-01');
-            final monthName = DateFormat('MMMM y').format(monthDate);
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: sortedMonths.length,
+            itemBuilder: (context, index) {
+              final monthKey = sortedMonths[index];
+              final sessions = groupedSessions[monthKey]!;
+              final monthDate = DateTime.parse('$monthKey-01');
+              final monthName = DateFormat('MMMM y').format(monthDate);
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (index > 0) const SizedBox(height: 24),
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (index > 0) const SizedBox(height: 24),
 
-                // Month Header
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    children: [
-                      Text(
-                        monthName,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                  // Month Header
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      children: [
+                        Text(
+                          monthName,
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${sessions.length} workouts',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                        child: Text(
-                          '${sessions.length} workouts',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
 
-                // Month's workouts
-                ...sessions
-                    .map((session) => _WorkoutCard(
-                          workoutSession: session,
-                          showDate: true,
-                        ))
-                    .toList(),
-              ],
-            );
-          },
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error,
+                  // Month's workouts
+                  ...sessions.map(
+                    (session) => _WorkoutCard(
+                      workoutSession: session,
+                      showDate: true,
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error,
                 size: 48,
-                color: Theme.of(context).colorScheme.onSurfaceVariant),
-            const SizedBox(height: 16),
-            Text(
-              'Error loading workout history',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-          ],
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Error loading workout history',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 
-  Widget _buildListView(AsyncValue workoutSessionsAsync) {
-    return workoutSessionsAsync.when(
-      data: (data) {
-        final sessions = data as List<WorkoutSession>;
-        if (sessions.isEmpty) {
-          return _buildEmptyState();
-        }
+  Widget _buildListView(AsyncValue workoutSessionsAsync) =>
+      workoutSessionsAsync.when(
+        data: (data) {
+          final sessions = data as List<WorkoutSession>;
+          if (sessions.isEmpty) {
+            return _buildEmptyState();
+          }
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: sessions.length,
-          itemBuilder: (context, index) {
-            final session = sessions[index];
-            return _WorkoutCard(
-              workoutSession: session,
-              showDate: true,
-            );
-          },
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error,
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: sessions.length,
+            itemBuilder: (context, index) {
+              final session = sessions[index];
+              return _WorkoutCard(
+                workoutSession: session,
+                showDate: true,
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error,
                 size: 48,
-                color: Theme.of(context).colorScheme.onSurfaceVariant),
-            const SizedBox(height: 16),
-            Text(
-              'Error loading workout history',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-          ],
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Error loading workout history',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.history,
-              size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              S.of(context)!.noWorkoutHistoryTitle,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              S.of(context)!.completeFirstWorkout,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () {
-                context.go('/workout-templates?mode=start');
-              },
-              icon: const Icon(Icons.fitness_center),
-              label: Text(S.of(context)!.startFirstWorkout),
-            ),
-          ],
+  Widget _buildEmptyState() => Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.history,
+                size: 64,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                S.of(context)!.noWorkoutHistoryTitle,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                S.of(context)!.completeFirstWorkout,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.7),
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () {
+                  context.go('/workout-templates?mode=start');
+                },
+                icon: const Icon(Icons.fitness_center),
+                label: Text(S.of(context)!.startFirstWorkout),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 
   void _showFilterBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -496,70 +493,74 @@ class _WorkoutStatsHeader extends StatelessWidget {
   final WorkoutStats stats;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.bar_chart,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Your Progress',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  _StatCard(
-                    label: 'Total Workouts',
-                    value: '${stats.totalWorkouts}',
-                    icon: Icons.fitness_center,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 12),
-                  _StatCard(
-                    label: 'Avg Duration',
-                    value: '${stats.averageDurationMinutes}m',
-                    icon: Icons.schedule,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  _StatCard(
-                    label: 'Total Volume',
-                    value: '${stats.totalVolumeKg.toStringAsFixed(0)}kg',
-                    icon: Icons.monitor_weight,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                  const SizedBox(width: 12),
-                  _StatCard(
-                    label: 'Current Streak',
-                    value: '${stats.currentStreak} days',
-                    icon: Icons.local_fire_department,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ],
-              ),
-            ],
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.all(16),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.bar_chart,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Your Progress',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    _StatCard(
+                      label: 'Total Workouts',
+                      value: '${stats.totalWorkouts}',
+                      icon: Icons.fitness_center,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    _StatCard(
+                      label: 'Avg Duration',
+                      value: '${stats.averageDurationMinutes}m',
+                      icon: Icons.schedule,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    _StatCard(
+                      label: 'Total Volume',
+                      value: '${stats.totalVolumeKg.toStringAsFixed(0)}kg',
+                      icon: Icons.monitor_weight,
+                      color: Theme.of(context).colorScheme.tertiary,
+                    ),
+                    const SizedBox(width: 12),
+                    _StatCard(
+                      label: 'Current Streak',
+                      value: '${stats.currentStreak} days',
+                      icon: Icons.local_fire_department,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<WorkoutStats>('stats', stats));
   }
 }
 
@@ -577,44 +578,51 @@ class _StatCard extends StatelessWidget {
   final Color color;
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+  Widget build(BuildContext context) => Expanded(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                color: color,
+                size: 24,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.7),
+                    ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
-                  ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('label', label));
+    properties.add(StringProperty('value', value));
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(ColorProperty('color', color));
   }
 }
 
@@ -755,6 +763,14 @@ class _WorkoutCard extends StatelessWidget {
       return '${duration.inMinutes}m';
     }
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(
+        DiagnosticsProperty<WorkoutSession>('workoutSession', workoutSession));
+    properties.add(DiagnosticsProperty<bool>('showDate', showDate));
+  }
 }
 
 class _QuickStat extends StatelessWidget {
@@ -767,27 +783,34 @@ class _QuickStat extends StatelessWidget {
   final String value;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 14,
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-        ),
-        const SizedBox(width: 4),
-        Flexible(
-          child: Text(
-            value,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                ),
-            overflow: TextOverflow.ellipsis,
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ),
-        ),
-      ],
-    );
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              value,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.8),
+                  ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(StringProperty('value', value));
   }
 }

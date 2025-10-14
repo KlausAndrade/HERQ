@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
 import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+
 import '../theme/app_animations.dart';
 
 /// Professional pull-to-refresh indicator with smooth animations
 class CustomRefreshIndicator extends StatelessWidget {
   const CustomRefreshIndicator({
-    super.key,
     required this.child,
     required this.onRefresh,
+    super.key,
     this.color,
     this.backgroundColor,
     this.displacement = 40.0,
@@ -38,14 +40,26 @@ class CustomRefreshIndicator extends StatelessWidget {
       child: child,
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(ObjectFlagProperty<RefreshCallback>.has('onRefresh', onRefresh));
+    properties.add(ColorProperty('color', color));
+    properties.add(ColorProperty('backgroundColor', backgroundColor));
+    properties.add(DoubleProperty('displacement', displacement));
+    properties.add(DoubleProperty('edgeOffset', edgeOffset));
+    properties.add(DoubleProperty('strokeWidth', strokeWidth));
+  }
 }
 
 /// Advanced pull-to-refresh with custom animated indicator
 class AnimatedRefreshIndicator extends StatefulWidget {
   const AnimatedRefreshIndicator({
-    super.key,
     required this.child,
     required this.onRefresh,
+    super.key,
     this.color,
     this.backgroundColor,
   });
@@ -58,6 +72,15 @@ class AnimatedRefreshIndicator extends StatefulWidget {
   @override
   State<AnimatedRefreshIndicator> createState() =>
       _AnimatedRefreshIndicatorState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(ObjectFlagProperty<RefreshCallback>.has('onRefresh', onRefresh));
+    properties.add(ColorProperty('color', color));
+    properties.add(ColorProperty('backgroundColor', backgroundColor));
+  }
 }
 
 class _AnimatedRefreshIndicatorState extends State<AnimatedRefreshIndicator> {
@@ -71,7 +94,6 @@ class _AnimatedRefreshIndicatorState extends State<AnimatedRefreshIndicator> {
       onRefresh: widget.onRefresh,
       color: indicatorColor,
       backgroundColor: bgColor,
-      strokeWidth: 2.5,
       child: widget.child,
     );
   }
@@ -80,9 +102,9 @@ class _AnimatedRefreshIndicatorState extends State<AnimatedRefreshIndicator> {
 /// Custom refresh indicator with workout-themed animation
 class WorkoutRefreshIndicator extends StatefulWidget {
   const WorkoutRefreshIndicator({
-    super.key,
     required this.child,
     required this.onRefresh,
+    super.key,
     this.color,
   });
 
@@ -93,6 +115,14 @@ class WorkoutRefreshIndicator extends StatefulWidget {
   @override
   State<WorkoutRefreshIndicator> createState() =>
       _WorkoutRefreshIndicatorState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(ObjectFlagProperty<RefreshCallback>.has('onRefresh', onRefresh));
+    properties.add(ColorProperty('color', color));
+  }
 }
 
 class _WorkoutRefreshIndicatorState extends State<WorkoutRefreshIndicator>
@@ -133,7 +163,7 @@ class _WorkoutRefreshIndicatorState extends State<WorkoutRefreshIndicator>
       onRefresh: _handleRefresh,
       color: indicatorColor,
       backgroundColor: theme.colorScheme.surface,
-      strokeWidth: 3.0,
+      strokeWidth: 3,
       child: widget.child,
     );
   }
@@ -198,9 +228,8 @@ class DumbbellRefreshPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(DumbbellRefreshPainter oldDelegate) {
-    return oldDelegate.progress != progress ||
-        oldDelegate.rotation != rotation ||
-        oldDelegate.color != color;
-  }
+  bool shouldRepaint(DumbbellRefreshPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.rotation != rotation ||
+      oldDelegate.color != color;
 }

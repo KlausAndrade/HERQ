@@ -9,8 +9,10 @@ class DisplayNameSanitizer {
   /// - Replace generic "User" with fallback
   ///
   /// Returns: Safe display name, or fallback if invalid
-  static String sanitize(String? displayName,
-      {String fallback = 'Unknown Athlete'}) {
+  static String sanitize(
+    String? displayName, {
+    String fallback = 'Unknown Athlete',
+  }) {
     // Handle null or empty
     if (displayName == null || displayName.isEmpty) {
       return fallback;
@@ -47,10 +49,9 @@ class DisplayNameSanitizer {
   }
 
   /// Sanitize a list of display names
-  static List<String> sanitizeList(List<String?> displayNames,
-      {String fallback = 'Unknown Athlete'}) {
-    return displayNames
-        .map((name) => sanitize(name, fallback: fallback))
-        .toList();
-  }
+  static List<String> sanitizeList(
+    List<String?> displayNames, {
+    String fallback = 'Unknown Athlete',
+  }) =>
+      displayNames.map((name) => sanitize(name, fallback: fallback)).toList();
 }

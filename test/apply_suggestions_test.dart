@@ -1,8 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 import 'package:herq/src/core/database/database.dart';
 import 'package:herq/src/features/ai/presentation/providers/ai_providers.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
   group('Apply Suggestions Functionality Tests', () {
@@ -27,7 +26,8 @@ void main() {
       expect(firstRec.estimatedDuration, isA<int>());
 
       print(
-          '✅ Workout recommendation can be converted to template: ${firstRec.name}');
+        '✅ Workout recommendation can be converted to template: ${firstRec.name}',
+      );
       print('   Exercises: ${firstRec.exercises.length}');
       print('   Duration: ${firstRec.estimatedDuration} minutes');
     });
@@ -44,8 +44,8 @@ void main() {
         tags: ['ai_generated', 'upper_body', 'strength'],
         estimatedDurationMinutes: 60,
         isDefault: false,
-        createdAt: DateTime(2024, 1, 1),
-        updatedAt: DateTime(2024, 1, 1),
+        createdAt: DateTime(2024),
+        updatedAt: DateTime(2024),
       );
 
       // Verify template structure is valid

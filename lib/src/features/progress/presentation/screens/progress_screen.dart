@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/providers/database_provider.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
 import '../providers/chart_providers.dart';
 import '../widgets/chart_widgets.dart';
-import '../../../../core/providers/database_provider.dart';
 
 class ProgressScreen extends ConsumerWidget {
   const ProgressScreen({super.key});
@@ -299,23 +299,27 @@ class ProgressScreen extends ConsumerWidget {
                   }
 
                   return Column(
-                    children: records.take(5).map((record) {
-                      return FutureBuilder(
-                        future: _getExerciseName(ref, record.exerciseId),
-                        builder: (context, snapshot) {
-                          final exerciseName =
-                              snapshot.data ?? record.exerciseId;
-                          return _PersonalRecordCard(
-                            exercise: exerciseName,
-                            type: '1RM Est.',
-                            value: '${record.oneRepMax.toStringAsFixed(1)} kg',
-                            date: _formatDate(record.date),
-                            improvement:
-                                '${record.weight.toStringAsFixed(1)}kg × ${record.reps}',
-                          );
-                        },
-                      );
-                    }).toList(),
+                    children: records
+                        .take(5)
+                        .map(
+                          (record) => FutureBuilder(
+                            future: _getExerciseName(ref, record.exerciseId),
+                            builder: (context, snapshot) {
+                              final exerciseName =
+                                  snapshot.data ?? record.exerciseId;
+                              return _PersonalRecordCard(
+                                exercise: exerciseName,
+                                type: '1RM Est.',
+                                value:
+                                    '${record.oneRepMax.toStringAsFixed(1)} kg',
+                                date: _formatDate(record.date),
+                                improvement:
+                                    '${record.weight.toStringAsFixed(1)}kg × ${record.reps}',
+                              );
+                            },
+                          ),
+                        )
+                        .toList(),
                   );
                 },
                 loading: () => const Card(
@@ -478,6 +482,15 @@ class _StatCard extends StatelessWidget {
           ),
         ),
       );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('title', title));
+    properties.add(StringProperty('value', value));
+    properties.add(StringProperty('subtitle', subtitle));
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+  }
 }
 
 class _PersonalRecordCard extends StatelessWidget {
@@ -537,4 +550,14 @@ class _PersonalRecordCard extends StatelessWidget {
           ),
         ),
       );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('exercise', exercise));
+    properties.add(StringProperty('type', type));
+    properties.add(StringProperty('value', value));
+    properties.add(StringProperty('date', date));
+    properties.add(StringProperty('improvement', improvement));
+  }
 }

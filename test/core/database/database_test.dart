@@ -125,8 +125,8 @@ void main() {
           name: 'Test Workout',
           startedAt: DateTime.now(),
           completedAt: Value(DateTime.now().add(const Duration(hours: 1))),
-          totalVolume: const Value(5000.0),
-          totalTonnage: const Value(2500.0),
+          totalVolume: const Value(5000),
+          totalTonnage: const Value(2500),
           totalSets: const Value(15),
           totalReps: const Value(75),
         );
@@ -160,7 +160,7 @@ void main() {
               ..where((s) => s.id.equals(sessionId)))
             .write(
           const WorkoutSessionsCompanion(
-            totalVolume: Value(7500.0),
+            totalVolume: Value(7500),
             totalSets: Value(20),
             totalReps: Value(100),
           ),
@@ -249,10 +249,10 @@ void main() {
                 id: prId,
                 exerciseId: exerciseId,
                 recordType: '1rm',
-                value: 225.0,
+                value: 225,
                 unit: 'kg',
                 achievedAt: DateTime.now(),
-                weight: const Value(200.0),
+                weight: const Value(200),
                 reps: const Value(5),
               ),
             );
@@ -318,7 +318,7 @@ void main() {
               UserStatsCompanion.insert(
                 userId: userId,
                 totalWorkouts: const Value(10),
-                totalVolumeLifted: const Value(50000.0),
+                totalVolumeLifted: const Value(50000),
                 currentStreak: const Value(5),
                 longestStreak: const Value(10),
                 experiencePoints: const Value(500),
@@ -358,7 +358,7 @@ void main() {
       test('should unlock achievement', () async {
         // Create achievement
         final userId = const Uuid().v4();
-        final achievementId = 'first_workout';
+        const achievementId = 'first_workout';
 
         await database.into(database.userAchievements).insert(
               UserAchievementsCompanion.insert(
@@ -386,7 +386,7 @@ void main() {
               WorkoutTemplatesCompanion.insert(
                 id: templateId,
                 name: 'Push Day Template',
-                exerciseIds: Value(const []),
+                exerciseIds: const Value([]),
                 tags: const ['push', 'strength'],
                 description: const Value('Chest, Shoulders, Triceps'),
               ),
@@ -408,7 +408,7 @@ void main() {
               WorkoutTemplatesCompanion.insert(
                 id: templateId,
                 name: 'Original Template',
-                exerciseIds: Value(const []),
+                exerciseIds: const Value([]),
                 tags: const [],
               ),
             );

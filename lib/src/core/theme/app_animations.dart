@@ -35,7 +35,7 @@ class AppPageTransitions {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    const begin = Offset(1.0, 0.0);
+    const begin = Offset(1, 0);
     const end = Offset.zero;
     final tween = Tween(begin: begin, end: end).chain(
       CurveTween(curve: AppCurves.smooth),
@@ -55,7 +55,7 @@ class AppPageTransitions {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    const begin = Offset(0.0, 1.0);
+    const begin = Offset(0, 1);
     const end = Offset.zero;
     final tween = Tween(begin: begin, end: end).chain(
       CurveTween(curve: AppCurves.smooth),
@@ -74,12 +74,11 @@ class AppPageTransitions {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) {
-    return FadeTransition(
-      opacity: animation,
-      child: child,
-    );
-  }
+  ) =>
+      FadeTransition(
+        opacity: animation,
+        child: child,
+      );
 
   /// Scale transition (for modals)
   static Widget scale(
@@ -87,20 +86,19 @@ class AppPageTransitions {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) {
-    return ScaleTransition(
-      scale: Tween<double>(begin: 0.8, end: 1.0).animate(
-        CurvedAnimation(
-          parent: animation,
-          curve: AppCurves.smooth,
+  ) =>
+      ScaleTransition(
+        scale: Tween<double>(begin: 0.8, end: 1).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: AppCurves.smooth,
+          ),
         ),
-      ),
-      child: FadeTransition(
-        opacity: animation,
-        child: child,
-      ),
-    );
-  }
+        child: FadeTransition(
+          opacity: animation,
+          child: child,
+        ),
+      );
 
   /// Shared axis transition (Material Design 3 style)
   static Widget sharedAxis(
@@ -108,34 +106,34 @@ class AppPageTransitions {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) {
-    return FadeTransition(
-      opacity: animation,
-      child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0.0, 0.05),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(
-          parent: animation,
-          curve: AppCurves.smooth,
-        )),
-        child: child,
-      ),
-    );
-  }
+  ) =>
+      FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.05),
+            end: Offset.zero,
+          ).animate(
+            CurvedAnimation(
+              parent: animation,
+              curve: AppCurves.smooth,
+            ),
+          ),
+          child: child,
+        ),
+      );
 }
 
 /// Staggered animation helper
 class StaggeredAnimation {
-  final Duration duration;
-  final Duration delay;
-  final Curve curve;
-
   const StaggeredAnimation({
     this.duration = AppDurations.normal,
     this.delay = Duration.zero,
     this.curve = AppCurves.smooth,
   });
+  final Duration duration;
+  final Duration delay;
+  final Curve curve;
 
   /// Create a delayed animation controller
   Animation<double> createAnimation(
@@ -162,21 +160,28 @@ class StaggeredAnimation {
 
 /// Animated list item builder
 class AnimatedListItem extends StatefulWidget {
+  const AnimatedListItem({
+    required this.child,
+    super.key,
+    this.index = 0,
+    this.delay = const Duration(milliseconds: 50),
+    this.duration = AppDurations.normal,
+  });
   final Widget child;
   final int index;
   final Duration delay;
   final Duration duration;
 
-  const AnimatedListItem({
-    super.key,
-    required this.child,
-    this.index = 0,
-    this.delay = const Duration(milliseconds: 50),
-    this.duration = AppDurations.normal,
-  });
-
   @override
   State<AnimatedListItem> createState() => _AnimatedListItemState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty('index', index));
+    properties.add(DiagnosticsProperty<Duration>('delay', delay));
+    properties.add(DiagnosticsProperty<Duration>('duration', duration));
+  }
 }
 
 class _AnimatedListItemState extends State<AnimatedListItem>
@@ -193,7 +198,7 @@ class _AnimatedListItemState extends State<AnimatedListItem>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: AppCurves.easeOut),
     );
 
@@ -236,34 +241,39 @@ class _AnimatedListItemState extends State<AnimatedListItem>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: SlideTransition(
-        position: _slideAnimation,
-        child: widget.child,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => FadeTransition(
+        opacity: _fadeAnimation,
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: widget.child,
+        ),
+      );
 }
 
 /// Shimmer effect for skeleton loaders
 class ShimmerLoading extends StatefulWidget {
+  const ShimmerLoading({
+    required this.child,
+    super.key,
+    this.duration = const Duration(milliseconds: 1500),
+    this.baseColor,
+    this.highlightColor,
+  });
   final Widget child;
   final Duration duration;
   final Color? baseColor;
   final Color? highlightColor;
 
-  const ShimmerLoading({
-    super.key,
-    required this.child,
-    this.duration = const Duration(milliseconds: 1500),
-    this.baseColor,
-    this.highlightColor,
-  });
-
   @override
   State<ShimmerLoading> createState() => _ShimmerLoadingState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<Duration>('duration', duration));
+    properties.add(ColorProperty('baseColor', baseColor));
+    properties.add(ColorProperty('highlightColor', highlightColor));
+  }
 }
 
 class _ShimmerLoadingState extends State<ShimmerLoading>
@@ -295,28 +305,24 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
 
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) {
-        return ShaderMask(
-          blendMode: BlendMode.srcATop,
-          shaderCallback: (bounds) {
-            return LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                baseColor,
-                highlightColor,
-                baseColor,
-              ],
-              stops: [
-                _controller.value - 0.3,
-                _controller.value,
-                _controller.value + 0.3,
-              ].map((e) => e.clamp(0.0, 1.0)).toList(),
-            ).createShader(bounds);
-          },
-          child: widget.child,
-        );
-      },
+      builder: (context, child) => ShaderMask(
+        blendMode: BlendMode.srcATop,
+        shaderCallback: (bounds) => LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            baseColor,
+            highlightColor,
+            baseColor,
+          ],
+          stops: [
+            _controller.value - 0.3,
+            _controller.value,
+            _controller.value + 0.3,
+          ].map((e) => e.clamp(0.0, 1.0)).toList(),
+        ).createShader(bounds),
+        child: widget.child,
+      ),
     );
   }
 }

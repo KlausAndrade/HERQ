@@ -7,8 +7,8 @@ import '../providers/social_providers.dart';
 
 class FollowersScreen extends ConsumerWidget {
   const FollowersScreen({
-    super.key,
     required this.userId,
+    super.key,
   });
 
   final String userId;
@@ -90,7 +90,9 @@ class FollowersScreen extends ConsumerWidget {
                               _toggleFollow(ref, user.id, isFollowing),
                           style: OutlinedButton.styleFrom(
                             backgroundColor: isFollowing
-                                ? Theme.of(context).colorScheme.surfaceVariant
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest
                                 : null,
                           ),
                           child: Text(isFollowing ? 'Following' : 'Follow'),
@@ -133,7 +135,10 @@ class FollowersScreen extends ConsumerWidget {
   }
 
   Future<void> _toggleFollow(
-      WidgetRef ref, String targetUserId, bool isFollowing) async {
+    WidgetRef ref,
+    String targetUserId,
+    bool isFollowing,
+  ) async {
     final currentUser = ref.read(currentUserProvider);
     if (currentUser == null) return;
 
@@ -152,5 +157,11 @@ class FollowersScreen extends ConsumerWidget {
     } catch (e) {
       debugPrint('Error toggling follow: $e');
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('userId', userId));
   }
 }

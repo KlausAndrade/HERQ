@@ -19,6 +19,9 @@ class AISuggestion extends Equatable {
     this.actionable = true,
   });
 
+  factory AISuggestion.fromJson(Map<String, dynamic> json) =>
+      _$AISuggestionFromJson(json);
+
   final String id;
   final SuggestionType type;
   final String title;
@@ -30,9 +33,6 @@ class AISuggestion extends Equatable {
   final String? reasoning;
   final Map<String, dynamic>? metadata;
   final bool actionable;
-
-  factory AISuggestion.fromJson(Map<String, dynamic> json) =>
-      _$AISuggestionFromJson(json);
   Map<String, dynamic> toJson() => _$AISuggestionToJson(this);
 
   @override
@@ -84,6 +84,9 @@ class WorkoutRecommendation extends Equatable {
     this.alternatives,
   });
 
+  factory WorkoutRecommendation.fromJson(Map<String, dynamic> json) =>
+      _$WorkoutRecommendationFromJson(json);
+
   final String id;
   final String name;
   final String description;
@@ -95,9 +98,6 @@ class WorkoutRecommendation extends Equatable {
   final double confidence;
   final List<String>? requiredEquipment;
   final List<String>? alternatives;
-
-  factory WorkoutRecommendation.fromJson(Map<String, dynamic> json) =>
-      _$WorkoutRecommendationFromJson(json);
   Map<String, dynamic> toJson() => _$WorkoutRecommendationToJson(this);
 
   @override
@@ -139,6 +139,9 @@ class RecommendedExercise extends Equatable {
     this.substitutions,
   });
 
+  factory RecommendedExercise.fromJson(Map<String, dynamic> json) =>
+      _$RecommendedExerciseFromJson(json);
+
   final String exerciseId;
   final String name;
   final int sets;
@@ -148,9 +151,6 @@ class RecommendedExercise extends Equatable {
   final int? restSeconds;
   final String? notes;
   final List<String>? substitutions;
-
-  factory RecommendedExercise.fromJson(Map<String, dynamic> json) =>
-      _$RecommendedExerciseFromJson(json);
   Map<String, dynamic> toJson() => _$RecommendedExerciseToJson(this);
 
   @override
@@ -182,6 +182,9 @@ class ProgressiveOverloadSuggestion extends Equatable {
     this.timeframe,
   });
 
+  factory ProgressiveOverloadSuggestion.fromJson(Map<String, dynamic> json) =>
+      _$ProgressiveOverloadSuggestionFromJson(json);
+
   final String exerciseId;
   final double currentWeight;
   final int currentReps;
@@ -192,9 +195,6 @@ class ProgressiveOverloadSuggestion extends Equatable {
   final String reasoning;
   final double confidence;
   final String? timeframe;
-
-  factory ProgressiveOverloadSuggestion.fromJson(Map<String, dynamic> json) =>
-      _$ProgressiveOverloadSuggestionFromJson(json);
   Map<String, dynamic> toJson() => _$ProgressiveOverloadSuggestionToJson(this);
 
   @override
@@ -224,7 +224,10 @@ class RecoveryAnalysis extends Equatable {
     this.sleepQuality,
     this.stressLevel,
     this.nutritionScore,
-  });
+  }); // 0.0 to 1.0
+
+  factory RecoveryAnalysis.fromJson(Map<String, dynamic> json) =>
+      _$RecoveryAnalysisFromJson(json);
 
   final String userId;
   final DateTime analysisDate;
@@ -234,10 +237,7 @@ class RecoveryAnalysis extends Equatable {
   final String nextWorkoutSuggestion;
   final double? sleepQuality; // 0.0 to 1.0
   final double? stressLevel; // 0.0 to 1.0
-  final double? nutritionScore; // 0.0 to 1.0
-
-  factory RecoveryAnalysis.fromJson(Map<String, dynamic> json) =>
-      _$RecoveryAnalysisFromJson(json);
+  final double? nutritionScore;
   Map<String, dynamic> toJson() => _$RecoveryAnalysisToJson(this);
 
   @override
@@ -274,13 +274,13 @@ class RecoveryRecommendation extends Equatable {
     required this.priority,
   });
 
+  factory RecoveryRecommendation.fromJson(Map<String, dynamic> json) =>
+      _$RecoveryRecommendationFromJson(json);
+
   final RecoveryType type;
   final String title;
   final String description;
   final Priority priority;
-
-  factory RecoveryRecommendation.fromJson(Map<String, dynamic> json) =>
-      _$RecoveryRecommendationFromJson(json);
   Map<String, dynamic> toJson() => _$RecoveryRecommendationToJson(this);
 
   @override

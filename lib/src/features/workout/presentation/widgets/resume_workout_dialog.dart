@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../domain/models/active_workout.dart';
-import 'package:herq/l10n/app_localizations.dart';
 
 /// Dialog to prompt user to resume an incomplete workout
 class ResumeWorkoutDialog extends StatelessWidget {
-  final ActiveWorkout workout;
-  final DateTime lastSavedAt;
-  final VoidCallback onResume;
-  final VoidCallback onFinish;
-  final VoidCallback onDiscard;
-
   const ResumeWorkoutDialog({
-    super.key,
     required this.workout,
     required this.lastSavedAt,
     required this.onResume,
     required this.onFinish,
     required this.onDiscard,
+    super.key,
   });
+  final ActiveWorkout workout;
+  final DateTime lastSavedAt;
+  final VoidCallback onResume;
+  final VoidCallback onFinish;
+  final VoidCallback onDiscard;
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +153,6 @@ class ResumeWorkoutDialog extends StatelessWidget {
                         color: isCompleteForgotten
                             ? colorScheme.secondary.withOpacity(0.3)
                             : colorScheme.error.withOpacity(0.3),
-                        width: 1,
                       ),
                     ),
                     child: Row(
@@ -173,9 +171,11 @@ class ResumeWorkoutDialog extends StatelessWidget {
                           child: Text(
                             isCompleteForgotten
                                 ? S.of(context)!.finishedTimeAgo(
-                                    _formatDuration(timeSinceLastSave))
+                                      _formatDuration(timeSinceLastSave),
+                                    )
                                 : S.of(context)!.pausedTimeAgo(
-                                    _formatDuration(timeSinceLastSave)),
+                                      _formatDuration(timeSinceLastSave),
+                                    ),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: isCompleteForgotten
                                   ? colorScheme.secondary
@@ -262,8 +262,10 @@ class ResumeWorkoutDialog extends StatelessWidget {
                     OutlinedButton.icon(
                       onPressed: onResume,
                       icon: const Icon(Icons.add),
-                      label: Text(S.of(context)!.addMore,
-                          textAlign: TextAlign.center),
+                      label: Text(
+                        S.of(context)!.addMore,
+                        textAlign: TextAlign.center,
+                      ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: colorScheme.primary,
                         minimumSize: const Size(0, 48), // Consistent height
@@ -273,8 +275,10 @@ class ResumeWorkoutDialog extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: onResume,
                       icon: const Icon(Icons.play_arrow),
-                      label: Text(S.of(context)!.resume,
-                          textAlign: TextAlign.center),
+                      label: Text(
+                        S.of(context)!.resume,
+                        textAlign: TextAlign.center,
+                      ),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(0, 48), // Consistent height
                       ),
@@ -287,9 +291,9 @@ class ResumeWorkoutDialog extends StatelessWidget {
                   if (showFinishOption)
                     FilledButton.icon(
                       onPressed: onFinish,
-                      icon: Icon(isCompleteForgotten
-                          ? Icons.celebration
-                          : Icons.check),
+                      icon: Icon(
+                        isCompleteForgotten ? Icons.celebration : Icons.check,
+                      ),
                       label: Text(
                         isCompleteForgotten
                             ? S.of(context)!.finalize
@@ -310,8 +314,10 @@ class ResumeWorkoutDialog extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: onResume,
                       icon: const Icon(Icons.play_arrow),
-                      label: Text(S.of(context)!.resume,
-                          textAlign: TextAlign.center),
+                      label: Text(
+                        S.of(context)!.resume,
+                        textAlign: TextAlign.center,
+                      ),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(0, 48), // Consistent height
                       ),
@@ -335,18 +341,28 @@ class ResumeWorkoutDialog extends StatelessWidget {
       return '${duration.inMinutes} minute${duration.inMinutes > 1 ? "s" : ""}';
     }
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<ActiveWorkout>('workout', workout));
+    properties.add(DiagnosticsProperty<DateTime>('lastSavedAt', lastSavedAt));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onResume', onResume));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onFinish', onFinish));
+    properties
+        .add(ObjectFlagProperty<VoidCallback>.has('onDiscard', onDiscard));
+  }
 }
 
 class _StatChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-
   const _StatChip({
     required this.icon,
     required this.label,
     required this.color,
   });
+  final IconData icon;
+  final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -376,5 +392,13 @@ class _StatChip extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(StringProperty('label', label));
+    properties.add(ColorProperty('color', color));
   }
 }

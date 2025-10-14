@@ -6,19 +6,17 @@ import '../services/unified_storage_service.dart';
 final userPreferencesProvider =
     FutureProvider<Map<String, dynamic>>((ref) async {
   final storage = ref.read(unifiedStorageProvider);
-  return await storage.getUserPreferences();
+  return storage.getUserPreferences();
 });
 
 /// Provider for updating user preferences
-final preferencesUpdateProvider = Provider<PreferencesUpdateService>((ref) {
-  return PreferencesUpdateService(ref);
-});
+final preferencesUpdateProvider =
+    Provider<PreferencesUpdateService>(PreferencesUpdateService.new);
 
 /// Service for updating preferences and refreshing providers
 class PreferencesUpdateService {
-  final Ref _ref;
-
   PreferencesUpdateService(this._ref);
+  final Ref _ref;
 
   Future<bool> updatePreferences(Map<String, dynamic> preferences) async {
     final storage = _ref.read(unifiedStorageProvider);
@@ -32,15 +30,12 @@ class PreferencesUpdateService {
     return success;
   }
 
-  Future<bool> updateTheme(String theme) async {
-    return updatePreferences({'theme': theme});
-  }
+  Future<bool> updateTheme(String theme) async =>
+      updatePreferences({'theme': theme});
 
-  Future<bool> updateUnits(String units) async {
-    return updatePreferences({'units': units});
-  }
+  Future<bool> updateUnits(String units) async =>
+      updatePreferences({'units': units});
 
-  Future<bool> updateRestTimer(int seconds) async {
-    return updatePreferences({'defaultRestTimer': seconds});
-  }
+  Future<bool> updateRestTimer(int seconds) async =>
+      updatePreferences({'defaultRestTimer': seconds});
 }

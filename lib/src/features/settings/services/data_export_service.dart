@@ -5,9 +5,8 @@ import '../../../core/database/database.dart';
 
 /// Service for exporting user data
 class DataExportService {
-  final AppDatabase _database;
-
   DataExportService(this._database);
+  final AppDatabase _database;
 
   /// Export all user data as JSON
   Future<String> exportAllData() async {
@@ -32,19 +31,21 @@ class DataExportService {
   Future<List<Map<String, dynamic>>> _exportWorkouts() async {
     final workouts = await _database.select(_database.workoutSessions).get();
     return workouts
-        .map((w) => {
-              'id': w.id,
-              'name': w.name,
-              'templateId': w.templateId,
-              'startedAt': w.startedAt.toIso8601String(),
-              'completedAt': w.completedAt?.toIso8601String(),
-              'totalDurationSeconds': w.totalDurationSeconds,
-              'totalVolume': w.totalVolume,
-              'totalTonnage': w.totalTonnage,
-              'totalSets': w.totalSets,
-              'totalReps': w.totalReps,
-              'notes': w.notes,
-            })
+        .map(
+          (w) => {
+            'id': w.id,
+            'name': w.name,
+            'templateId': w.templateId,
+            'startedAt': w.startedAt.toIso8601String(),
+            'completedAt': w.completedAt?.toIso8601String(),
+            'totalDurationSeconds': w.totalDurationSeconds,
+            'totalVolume': w.totalVolume,
+            'totalTonnage': w.totalTonnage,
+            'totalSets': w.totalSets,
+            'totalReps': w.totalReps,
+            'notes': w.notes,
+          },
+        )
         .toList();
   }
 
@@ -52,19 +53,21 @@ class DataExportService {
   Future<List<Map<String, dynamic>>> _exportTemplates() async {
     final templates = await _database.select(_database.workoutTemplates).get();
     return templates
-        .map((t) => {
-              'id': t.id,
-              'name': t.name,
-              'description': t.description,
-              'category': t.category,
-              'exerciseIds': t.exerciseIds,
-              'tags': t.tags,
-              'estimatedDurationMinutes': t.estimatedDurationMinutes,
-              'isDefault': t.isDefault,
-              'sortOrder': t.sortOrder,
-              'createdAt': t.createdAt.toIso8601String(),
-              'updatedAt': t.updatedAt.toIso8601String(),
-            })
+        .map(
+          (t) => {
+            'id': t.id,
+            'name': t.name,
+            'description': t.description,
+            'category': t.category,
+            'exerciseIds': t.exerciseIds,
+            'tags': t.tags,
+            'estimatedDurationMinutes': t.estimatedDurationMinutes,
+            'isDefault': t.isDefault,
+            'sortOrder': t.sortOrder,
+            'createdAt': t.createdAt.toIso8601String(),
+            'updatedAt': t.updatedAt.toIso8601String(),
+          },
+        )
         .toList();
   }
 
@@ -72,19 +75,21 @@ class DataExportService {
   Future<List<Map<String, dynamic>>> _exportExercises() async {
     final exercises = await _database.select(_database.exercises).get();
     return exercises
-        .map((e) => {
-              'id': e.id,
-              'name': e.name,
-              'primaryMuscleGroup': e.primaryMuscleGroup,
-              'secondaryMuscleGroups': e.secondaryMuscleGroups,
-              'equipment': e.equipment,
-              'difficulty': e.difficulty,
-              'instructions': e.instructions,
-              'exerciseType': e.exerciseType,
-              'category': e.category,
-              'isBodyweight': e.isBodyweight,
-              'tags': e.tags,
-            })
+        .map(
+          (e) => {
+            'id': e.id,
+            'name': e.name,
+            'primaryMuscleGroup': e.primaryMuscleGroup,
+            'secondaryMuscleGroups': e.secondaryMuscleGroups,
+            'equipment': e.equipment,
+            'difficulty': e.difficulty,
+            'instructions': e.instructions,
+            'exerciseType': e.exerciseType,
+            'category': e.category,
+            'isBodyweight': e.isBodyweight,
+            'tags': e.tags,
+          },
+        )
         .toList();
   }
 
@@ -92,17 +97,19 @@ class DataExportService {
   Future<List<Map<String, dynamic>>> _exportPersonalRecords() async {
     final records = await _database.select(_database.personalRecords).get();
     return records
-        .map((r) => {
-              'id': r.id,
-              'exerciseId': r.exerciseId,
-              'recordType': r.recordType,
-              'value': r.value,
-              'unit': r.unit,
-              'weight': r.weight,
-              'reps': r.reps,
-              'workoutSessionId': r.workoutSessionId,
-              'achievedAt': r.achievedAt.toIso8601String(),
-            })
+        .map(
+          (r) => {
+            'id': r.id,
+            'exerciseId': r.exerciseId,
+            'recordType': r.recordType,
+            'value': r.value,
+            'unit': r.unit,
+            'weight': r.weight,
+            'reps': r.reps,
+            'workoutSessionId': r.workoutSessionId,
+            'achievedAt': r.achievedAt.toIso8601String(),
+          },
+        )
         .toList();
   }
 
@@ -112,20 +119,23 @@ class DataExportService {
 
     final csvBuffer = StringBuffer();
     csvBuffer.writeln(
-        'ID,Name,Started At,Completed At,Duration (sec),Total Volume,Total Sets,Total Reps,Notes');
+      'ID,Name,Started At,Completed At,Duration (sec),Total Volume,Total Sets,Total Reps,Notes',
+    );
 
     for (final workout in workouts) {
-      csvBuffer.writeln([
-        workout.id,
-        _escapeCsv(workout.name),
-        workout.startedAt.toIso8601String(),
-        workout.completedAt?.toIso8601String() ?? '',
-        workout.totalDurationSeconds ?? '',
-        workout.totalVolume,
-        workout.totalSets,
-        workout.totalReps,
-        _escapeCsv(workout.notes ?? ''),
-      ].join(','));
+      csvBuffer.writeln(
+        [
+          workout.id,
+          _escapeCsv(workout.name),
+          workout.startedAt.toIso8601String(),
+          workout.completedAt?.toIso8601String() ?? '',
+          workout.totalDurationSeconds ?? '',
+          workout.totalVolume,
+          workout.totalSets,
+          workout.totalReps,
+          _escapeCsv(workout.notes ?? ''),
+        ].join(','),
+      );
     }
 
     return csvBuffer.toString();
@@ -137,20 +147,23 @@ class DataExportService {
 
     final csvBuffer = StringBuffer();
     csvBuffer.writeln(
-        'ID,Name,Description,Category,Exercise Count,Tags,Duration (min),Is Default,Sort Order');
+      'ID,Name,Description,Category,Exercise Count,Tags,Duration (min),Is Default,Sort Order',
+    );
 
     for (final template in templates) {
-      csvBuffer.writeln([
-        template.id,
-        _escapeCsv(template.name),
-        _escapeCsv(template.description ?? ''),
-        template.category,
-        template.exerciseIds.length,
-        _escapeCsv(template.tags.join('; ')),
-        template.estimatedDurationMinutes ?? '',
-        template.isDefault,
-        template.sortOrder,
-      ].join(','));
+      csvBuffer.writeln(
+        [
+          template.id,
+          _escapeCsv(template.name),
+          _escapeCsv(template.description ?? ''),
+          template.category,
+          template.exerciseIds.length,
+          _escapeCsv(template.tags.join('; ')),
+          template.estimatedDurationMinutes ?? '',
+          template.isDefault,
+          template.sortOrder,
+        ].join(','),
+      );
     }
 
     return csvBuffer.toString();

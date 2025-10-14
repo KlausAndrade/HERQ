@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../core/providers/auth_provider.dart';
-import 'package:herq/src/core/services/notification_service.dart';
+import '../../../../core/services/notification_service.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -32,262 +32,265 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 40),
+  Widget build(BuildContext context) => Scaffold(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 40),
 
-                // Logo and title
-                Icon(
-                  Icons.fitness_center,
-                  size: 80,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(height: 24),
+                  // Logo and title
+                  Icon(
+                    Icons.fitness_center,
+                    size: 80,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(height: 24),
 
-                Text(
-                  S.of(context)!.appTitle,
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-
-                Text(
-                  S.of(context)!.yourIntelligentWorkoutCompanion,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.7),
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-
-                // Auth form
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          _isSignUp ? 'Create Account' : 'Welcome Back',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                          textAlign: TextAlign.center,
+                  Text(
+                    S.of(context)!.appTitle,
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                        const SizedBox(height: 24),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
 
-                        // Name field (signup only)
-                        if (_isSignUp) ...[
+                  Text(
+                    S.of(context)!.yourIntelligentWorkoutCompanion,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.7),
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
+
+                  // Auth form
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            _isSignUp ? 'Create Account' : 'Welcome Back',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Name field (signup only)
+                          if (_isSignUp) ...[
+                            TextFormField(
+                              controller: _nameController,
+                              decoration: const InputDecoration(
+                                labelText: 'Display Name',
+                                prefixIcon: Icon(Icons.person_outline),
+                              ),
+                              validator: (value) {
+                                if (_isSignUp &&
+                                    (value == null || value.trim().isEmpty)) {
+                                  return 'Please enter your name';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+
+                          // Email field
                           TextFormField(
-                            controller: _nameController,
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
                             decoration: const InputDecoration(
-                              labelText: 'Display Name',
-                              prefixIcon: Icon(Icons.person_outline),
+                              labelText: 'Email',
+                              prefixIcon: Icon(Icons.email_outlined),
                             ),
                             validator: (value) {
-                              if (_isSignUp &&
-                                  (value == null || value.trim().isEmpty)) {
-                                return 'Please enter your name';
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter your email';
+                              }
+                              if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                  .hasMatch(value)) {
+                                return 'Please enter a valid email';
                               }
                               return null;
                             },
                           ),
                           const SizedBox(height: 16),
-                        ],
 
-                        // Email field
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.email_outlined),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Please enter your email';
-                            }
-                            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                .hasMatch(value)) {
-                              return 'Please enter a valid email';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Password field
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            prefixIcon: const Icon(Icons.lock_outline),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
+                          // Password field
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
                               ),
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your password';
+                              }
+                              if (_isSignUp && value.length < 6) {
+                                return 'Password must be at least 6 characters';
+                              }
+                              return null;
+                            },
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your password';
-                            }
-                            if (_isSignUp && value.length < 6) {
-                              return 'Password must be at least 6 characters';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
+                          const SizedBox(height: 24),
 
-                        // Submit button
-                        ElevatedButton(
-                          onPressed: _isLoading ? null : _handleSubmit,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          // Submit button
+                          ElevatedButton(
+                            onPressed: _isLoading ? null : _handleSubmit,
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
+                                  )
+                                : Text(
+                                    _isSignUp ? 'Create Account' : 'Sign In'),
                           ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : Text(_isSignUp ? 'Create Account' : 'Sign In'),
-                        ),
-                        const SizedBox(height: 16),
+                          const SizedBox(height: 16),
 
-                        // Toggle sign up/sign in
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isSignUp = !_isSignUp;
-                            });
-                          },
-                          child: Text(
-                            _isSignUp
-                                ? 'Already have an account? Sign In'
-                                : 'Don\'t have an account? Sign Up',
-                          ),
-                        ),
-
-                        // Forgot password (sign in only)
-                        if (!_isSignUp) ...[
+                          // Toggle sign up/sign in
                           TextButton(
-                            onPressed: _handleForgotPassword,
-                            child: const Text('Forgot Password?'),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Social sign in
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Or continue with',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.7),
-                                  ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed:
-                                    _isLoading ? null : _handleGoogleSignIn,
-                                icon: const Icon(Icons.g_mobiledata, size: 24),
-                                label: const Text('Google'),
-                                style: OutlinedButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                ),
-                              ),
+                            onPressed: () {
+                              setState(() {
+                                _isSignUp = !_isSignUp;
+                              });
+                            },
+                            child: Text(
+                              _isSignUp
+                                  ? 'Already have an account? Sign In'
+                                  : 'Don\'t have an account? Sign Up',
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed:
-                                    _isLoading ? null : _handleAppleSignIn,
-                                icon: const Icon(Icons.apple, size: 24),
-                                label: const Text('Apple'),
-                                style: OutlinedButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                ),
-                              ),
+                          ),
+
+                          // Forgot password (sign in only)
+                          if (!_isSignUp) ...[
+                            TextButton(
+                              onPressed: _handleForgotPassword,
+                              child: const Text('Forgot Password?'),
                             ),
                           ],
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed:
-                                _isLoading ? null : _handleFacebookSignIn,
-                            icon: const Icon(Icons.facebook, size: 24),
-                            label: const Text('Continue with Facebook'),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              backgroundColor: const Color(0xFF1877F2),
-                              foregroundColor: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                // Skip for now button
-                TextButton(
-                  onPressed: () => context.go('/'),
-                  child: const Text('Skip for now'),
-                ),
-              ],
+                  // Social sign in
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Or continue with',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.7),
+                                ),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed:
+                                      _isLoading ? null : _handleGoogleSignIn,
+                                  icon:
+                                      const Icon(Icons.g_mobiledata, size: 24),
+                                  label: const Text('Google'),
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed:
+                                      _isLoading ? null : _handleAppleSignIn,
+                                  icon: const Icon(Icons.apple, size: 24),
+                                  label: const Text('Apple'),
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed:
+                                  _isLoading ? null : _handleFacebookSignIn,
+                              icon: const Icon(Icons.facebook, size: 24),
+                              label: const Text('Continue with Facebook'),
+                              style: OutlinedButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                backgroundColor: const Color(0xFF1877F2),
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Skip for now button
+                  TextButton(
+                    onPressed: () => context.go('/'),
+                    child: const Text('Skip for now'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -333,7 +336,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               title: 'Error',
-              body: '${e.toString()}',
+              body: e.toString(),
             )
             .catchError((_) {});
       }
@@ -364,7 +367,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               title: 'Error',
-              body: '${e.toString()}',
+              body: e.toString(),
             )
             .catchError((_) {});
       }
@@ -395,7 +398,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               title: 'Error',
-              body: '${e.toString()}',
+              body: e.toString(),
             )
             .catchError((_) {});
       }
@@ -426,7 +429,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               title: 'Error',
-              body: '${e.toString()}',
+              body: e.toString(),
             )
             .catchError((_) {});
       }
@@ -470,7 +473,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               title: 'Error',
-              body: '${e.toString()}',
+              body: e.toString(),
             )
             .catchError((_) {});
       }

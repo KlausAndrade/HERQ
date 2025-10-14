@@ -1,11 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
-import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/database_provider.dart';
 
 // Provider for all workout templates grouped by category (with cloud sync)
 final workoutTemplatesProvider =
@@ -44,7 +44,6 @@ final workoutTemplatesProvider =
                   exerciseIds:
                       List<String>.from(template['exercise_ids'] ?? []),
                   tags: const [],
-                  estimatedDurationMinutes: null,
                   isDefault: false,
                   createdAt: template['created_at'] != null
                       ? DateTime.parse(template['created_at'])
@@ -121,7 +120,7 @@ final templateCategoriesProvider = FutureProvider<List<String>>((ref) async {
       'PHUL',
       'Strength',
       'Bodybuilding',
-      'Custom'
+      'Custom',
     ];
   }
 
@@ -143,7 +142,7 @@ final templateCategoriesProvider = FutureProvider<List<String>>((ref) async {
       'PHUL',
       'Strength',
       'Bodybuilding',
-      'Custom'
+      'Custom',
     ];
   }
 
@@ -151,12 +150,12 @@ final templateCategoriesProvider = FutureProvider<List<String>>((ref) async {
 });
 
 // Template management actions
-final templateActionsProvider = Provider<TemplateActions>((ref) {
-  return TemplateActions(
+final templateActionsProvider = Provider<TemplateActions>(
+  (ref) => TemplateActions(
     ref.read(databaseProvider),
     ref.read(supabaseClientProvider),
-  );
-});
+  ),
+);
 
 class TemplateActions {
   TemplateActions(this._database, this._supabase);
@@ -281,7 +280,10 @@ class TemplateActions {
   }
 
   Future<bool> moveTemplate(
-      String templateId, String newCategory, int newSortOrder) async {
+    String templateId,
+    String newCategory,
+    int newSortOrder,
+  ) async {
     if (_database == null) return false;
 
     try {
@@ -336,7 +338,9 @@ class TemplateActions {
 
   /// Reorder templates within a category
   Future<bool> reorderTemplates(
-      List<WorkoutTemplate> templates, String? category) async {
+    List<WorkoutTemplate> templates,
+    String? category,
+  ) async {
     if (_database == null) return false;
 
     try {
@@ -453,430 +457,430 @@ Map<String, List<WorkoutTemplate>> _getDefaultTemplatesByCategory() {
   return grouped;
 }
 
-List<WorkoutTemplate> _getDefaultTemplates() {
-  return [
-    // Push Pull Legs (3-day, 6-day)
-    WorkoutTemplate(
-      id: 'ppl_push',
-      name: 'Push Day',
-      description: 'Chest, shoulders, and triceps focused workout',
-      category: 'Push Pull Legs',
-      sortOrder: 1,
-      exerciseIds: [
-        'bench_press',
-        'incline_dumbbell_press',
-        'overhead_press',
-        'lateral_raises',
-        'tricep_dips',
-        'close_grip_bench_press'
-      ],
-      tags: ['chest', 'shoulders', 'triceps', 'push'],
-      estimatedDurationMinutes: 75,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'ppl_pull',
-      name: 'Pull Day',
-      description: 'Back and biceps focused workout',
-      category: 'Push Pull Legs',
-      sortOrder: 2,
-      exerciseIds: [
-        'deadlift',
-        'pull_ups',
-        'barbell_rows',
-        'lat_pulldowns',
-        'face_pulls',
-        'barbell_curls',
-        'hammer_curls'
-      ],
-      tags: ['back', 'biceps', 'pull'],
-      estimatedDurationMinutes: 75,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'ppl_legs',
-      name: 'Leg Day',
-      description: 'Lower body and core focused workout',
-      category: 'Push Pull Legs',
-      sortOrder: 3,
-      exerciseIds: [
-        'squats',
-        'romanian_deadlift',
-        'leg_press',
-        'leg_curls',
-        'calf_raises',
-        'walking_lunges',
-        'planks'
-      ],
-      tags: ['legs', 'glutes', 'calves', 'core'],
-      estimatedDurationMinutes: 80,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
+List<WorkoutTemplate> _getDefaultTemplates() => [
+      // Push Pull Legs (3-day, 6-day)
+      WorkoutTemplate(
+        id: 'ppl_push',
+        name: 'Push Day',
+        description: 'Chest, shoulders, and triceps focused workout',
+        category: 'Push Pull Legs',
+        sortOrder: 1,
+        exerciseIds: [
+          'bench_press',
+          'incline_dumbbell_press',
+          'overhead_press',
+          'lateral_raises',
+          'tricep_dips',
+          'close_grip_bench_press',
+        ],
+        tags: ['chest', 'shoulders', 'triceps', 'push'],
+        estimatedDurationMinutes: 75,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'ppl_pull',
+        name: 'Pull Day',
+        description: 'Back and biceps focused workout',
+        category: 'Push Pull Legs',
+        sortOrder: 2,
+        exerciseIds: [
+          'deadlift',
+          'pull_ups',
+          'barbell_rows',
+          'lat_pulldowns',
+          'face_pulls',
+          'barbell_curls',
+          'hammer_curls',
+        ],
+        tags: ['back', 'biceps', 'pull'],
+        estimatedDurationMinutes: 75,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'ppl_legs',
+        name: 'Leg Day',
+        description: 'Lower body and core focused workout',
+        category: 'Push Pull Legs',
+        sortOrder: 3,
+        exerciseIds: [
+          'squats',
+          'romanian_deadlift',
+          'leg_press',
+          'leg_curls',
+          'calf_raises',
+          'walking_lunges',
+          'planks',
+        ],
+        tags: ['legs', 'glutes', 'calves', 'core'],
+        estimatedDurationMinutes: 80,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
 
-    // Full Body Programs (2-day, 3-day)
-    WorkoutTemplate(
-      id: 'full_body_a',
-      name: 'Full Body A',
-      description: 'Complete full body workout with compound movements',
-      category: 'Full Body',
-      sortOrder: 1,
-      exerciseIds: [
-        'squats',
-        'bench_press',
-        'barbell_rows',
-        'overhead_press',
-        'deadlift',
-        'planks'
-      ],
-      tags: ['full_body', 'compound', 'strength'],
-      estimatedDurationMinutes: 60,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'full_body_b',
-      name: 'Full Body B',
-      description:
-          'Alternative full body workout with different exercise selection',
-      category: 'Full Body',
-      sortOrder: 2,
-      exerciseIds: [
-        'deadlift',
-        'incline_dumbbell_press',
-        'pull_ups',
-        'dumbbell_shoulder_press',
-        'leg_press',
-        'dumbbell_curls'
-      ],
-      tags: ['full_body', 'compound', 'dumbbells'],
-      estimatedDurationMinutes: 60,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'full_body_c',
-      name: 'Full Body C',
-      description: 'Third variation for full body routine',
-      category: 'Full Body',
-      sortOrder: 3,
-      exerciseIds: [
-        'front_squats',
-        'dumbbell_bench_press',
-        'seated_cable_rows',
-        'lateral_raises',
-        'romanian_deadlift',
-        'tricep_dips'
-      ],
-      tags: ['full_body', 'variation', 'accessories'],
-      estimatedDurationMinutes: 55,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
+      // Full Body Programs (2-day, 3-day)
+      WorkoutTemplate(
+        id: 'full_body_a',
+        name: 'Full Body A',
+        description: 'Complete full body workout with compound movements',
+        category: 'Full Body',
+        sortOrder: 1,
+        exerciseIds: [
+          'squats',
+          'bench_press',
+          'barbell_rows',
+          'overhead_press',
+          'deadlift',
+          'planks',
+        ],
+        tags: ['full_body', 'compound', 'strength'],
+        estimatedDurationMinutes: 60,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'full_body_b',
+        name: 'Full Body B',
+        description:
+            'Alternative full body workout with different exercise selection',
+        category: 'Full Body',
+        sortOrder: 2,
+        exerciseIds: [
+          'deadlift',
+          'incline_dumbbell_press',
+          'pull_ups',
+          'dumbbell_shoulder_press',
+          'leg_press',
+          'dumbbell_curls',
+        ],
+        tags: ['full_body', 'compound', 'dumbbells'],
+        estimatedDurationMinutes: 60,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'full_body_c',
+        name: 'Full Body C',
+        description: 'Third variation for full body routine',
+        category: 'Full Body',
+        sortOrder: 3,
+        exerciseIds: [
+          'front_squats',
+          'dumbbell_bench_press',
+          'seated_cable_rows',
+          'lateral_raises',
+          'romanian_deadlift',
+          'tricep_dips',
+        ],
+        tags: ['full_body', 'variation', 'accessories'],
+        estimatedDurationMinutes: 55,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
 
-    // Upper Lower Split (4-day)
-    WorkoutTemplate(
-      id: 'upper_lower_upper',
-      name: 'Upper Body',
-      description: 'Upper body focused workout for upper/lower split',
-      category: 'Upper Lower',
-      sortOrder: 1,
-      exerciseIds: [
-        'bench_press',
-        'pull_ups',
-        'overhead_press',
-        'barbell_rows',
-        'incline_dumbbell_press',
-        'barbell_curls',
-        'tricep_dips'
-      ],
-      tags: ['upper_body', 'chest', 'back', 'shoulders', 'arms'],
-      estimatedDurationMinutes: 70,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'upper_lower_lower',
-      name: 'Lower Body',
-      description: 'Lower body focused workout for upper/lower split',
-      category: 'Upper Lower',
-      sortOrder: 2,
-      exerciseIds: [
-        'squats',
-        'romanian_deadlift',
-        'leg_press',
-        'leg_curls',
-        'calf_raises',
-        'walking_lunges',
-        'planks',
-        'leg_extensions'
-      ],
-      tags: ['lower_body', 'legs', 'glutes', 'calves'],
-      estimatedDurationMinutes: 70,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
+      // Upper Lower Split (4-day)
+      WorkoutTemplate(
+        id: 'upper_lower_upper',
+        name: 'Upper Body',
+        description: 'Upper body focused workout for upper/lower split',
+        category: 'Upper Lower',
+        sortOrder: 1,
+        exerciseIds: [
+          'bench_press',
+          'pull_ups',
+          'overhead_press',
+          'barbell_rows',
+          'incline_dumbbell_press',
+          'barbell_curls',
+          'tricep_dips',
+        ],
+        tags: ['upper_body', 'chest', 'back', 'shoulders', 'arms'],
+        estimatedDurationMinutes: 70,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'upper_lower_lower',
+        name: 'Lower Body',
+        description: 'Lower body focused workout for upper/lower split',
+        category: 'Upper Lower',
+        sortOrder: 2,
+        exerciseIds: [
+          'squats',
+          'romanian_deadlift',
+          'leg_press',
+          'leg_curls',
+          'calf_raises',
+          'walking_lunges',
+          'planks',
+          'leg_extensions',
+        ],
+        tags: ['lower_body', 'legs', 'glutes', 'calves'],
+        estimatedDurationMinutes: 70,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
 
-    // PHUL (Power Hypertrophy Upper Lower)
-    WorkoutTemplate(
-      id: 'phul_upper_power',
-      name: 'Upper Power',
-      description: 'Upper body power training with heavy weights and low reps',
-      category: 'PHUL',
-      sortOrder: 1,
-      exerciseIds: [
-        'barbell_bench_press',
-        'weighted_pull_ups',
-        'overhead_press',
-        'barbell_rows',
-        'close_grip_bench_press',
-        'barbell_curls'
-      ],
-      tags: ['power', 'upper_body', 'strength', 'heavy'],
-      estimatedDurationMinutes: 65,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'phul_lower_power',
-      name: 'Lower Power',
-      description: 'Lower body power training with heavy weights and low reps',
-      category: 'PHUL',
-      sortOrder: 2,
-      exerciseIds: [
-        'squats',
-        'deadlift',
-        'front_squats',
-        'leg_curls',
-        'calf_raises'
-      ],
-      tags: ['power', 'lower_body', 'strength', 'heavy'],
-      estimatedDurationMinutes: 65,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'phul_upper_hypertrophy',
-      name: 'Upper Hypertrophy',
-      description:
-          'Upper body hypertrophy training with moderate weights and higher reps',
-      category: 'PHUL',
-      sortOrder: 3,
-      exerciseIds: [
-        'incline_dumbbell_press',
-        'lat_pulldowns',
-        'dumbbell_shoulder_press',
-        'seated_cable_rows',
-        'dumbbell_flyes',
-        'lateral_raises',
-        'dumbbell_curls',
-        'tricep_extensions'
-      ],
-      tags: ['hypertrophy', 'upper_body', 'volume', 'muscle_building'],
-      estimatedDurationMinutes: 80,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'phul_lower_hypertrophy',
-      name: 'Lower Hypertrophy',
-      description:
-          'Lower body hypertrophy training with moderate weights and higher reps',
-      category: 'PHUL',
-      sortOrder: 4,
-      exerciseIds: [
-        'leg_press',
-        'romanian_deadlift',
-        'leg_extensions',
-        'leg_curls',
-        'walking_lunges',
-        'calf_raises',
-        'bulgarian_split_squats'
-      ],
-      tags: ['hypertrophy', 'lower_body', 'volume', 'muscle_building'],
-      estimatedDurationMinutes: 75,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
+      // PHUL (Power Hypertrophy Upper Lower)
+      WorkoutTemplate(
+        id: 'phul_upper_power',
+        name: 'Upper Power',
+        description:
+            'Upper body power training with heavy weights and low reps',
+        category: 'PHUL',
+        sortOrder: 1,
+        exerciseIds: [
+          'barbell_bench_press',
+          'weighted_pull_ups',
+          'overhead_press',
+          'barbell_rows',
+          'close_grip_bench_press',
+          'barbell_curls',
+        ],
+        tags: ['power', 'upper_body', 'strength', 'heavy'],
+        estimatedDurationMinutes: 65,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'phul_lower_power',
+        name: 'Lower Power',
+        description:
+            'Lower body power training with heavy weights and low reps',
+        category: 'PHUL',
+        sortOrder: 2,
+        exerciseIds: [
+          'squats',
+          'deadlift',
+          'front_squats',
+          'leg_curls',
+          'calf_raises',
+        ],
+        tags: ['power', 'lower_body', 'strength', 'heavy'],
+        estimatedDurationMinutes: 65,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'phul_upper_hypertrophy',
+        name: 'Upper Hypertrophy',
+        description:
+            'Upper body hypertrophy training with moderate weights and higher reps',
+        category: 'PHUL',
+        sortOrder: 3,
+        exerciseIds: [
+          'incline_dumbbell_press',
+          'lat_pulldowns',
+          'dumbbell_shoulder_press',
+          'seated_cable_rows',
+          'dumbbell_flyes',
+          'lateral_raises',
+          'dumbbell_curls',
+          'tricep_extensions',
+        ],
+        tags: ['hypertrophy', 'upper_body', 'volume', 'muscle_building'],
+        estimatedDurationMinutes: 80,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'phul_lower_hypertrophy',
+        name: 'Lower Hypertrophy',
+        description:
+            'Lower body hypertrophy training with moderate weights and higher reps',
+        category: 'PHUL',
+        sortOrder: 4,
+        exerciseIds: [
+          'leg_press',
+          'romanian_deadlift',
+          'leg_extensions',
+          'leg_curls',
+          'walking_lunges',
+          'calf_raises',
+          'bulgarian_split_squats',
+        ],
+        tags: ['hypertrophy', 'lower_body', 'volume', 'muscle_building'],
+        estimatedDurationMinutes: 75,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
 
-    // Strength Programs (5/3/1 style)
-    WorkoutTemplate(
-      id: 'strength_squat_day',
-      name: 'Squat Focus',
-      description: 'Strength training focused on squat progression',
-      category: 'Strength',
-      sortOrder: 1,
-      exerciseIds: [
-        'squats',
-        'front_squats',
-        'leg_press',
-        'leg_curls',
-        'calf_raises',
-        'planks'
-      ],
-      tags: ['strength', 'squat', 'progressive_overload'],
-      estimatedDurationMinutes: 60,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'strength_bench_day',
-      name: 'Bench Focus',
-      description: 'Strength training focused on bench press progression',
-      category: 'Strength',
-      sortOrder: 2,
-      exerciseIds: [
-        'bench_press',
-        'incline_bench_press',
-        'dumbbell_press',
-        'tricep_dips',
-        'overhead_press'
-      ],
-      tags: ['strength', 'bench_press', 'progressive_overload'],
-      estimatedDurationMinutes: 55,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'strength_deadlift_day',
-      name: 'Deadlift Focus',
-      description: 'Strength training focused on deadlift progression',
-      category: 'Strength',
-      sortOrder: 3,
-      exerciseIds: [
-        'deadlift',
-        'romanian_deadlift',
-        'barbell_rows',
-        'pull_ups',
-        'barbell_curls'
-      ],
-      tags: ['strength', 'deadlift', 'progressive_overload'],
-      estimatedDurationMinutes: 55,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'strength_press_day',
-      name: 'Press Focus',
-      description: 'Strength training focused on overhead press progression',
-      category: 'Strength',
-      sortOrder: 4,
-      exerciseIds: [
-        'overhead_press',
-        'bench_press',
-        'dumbbell_shoulder_press',
-        'lateral_raises',
-        'tricep_extensions'
-      ],
-      tags: ['strength', 'overhead_press', 'progressive_overload'],
-      estimatedDurationMinutes: 50,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
+      // Strength Programs (5/3/1 style)
+      WorkoutTemplate(
+        id: 'strength_squat_day',
+        name: 'Squat Focus',
+        description: 'Strength training focused on squat progression',
+        category: 'Strength',
+        sortOrder: 1,
+        exerciseIds: [
+          'squats',
+          'front_squats',
+          'leg_press',
+          'leg_curls',
+          'calf_raises',
+          'planks',
+        ],
+        tags: ['strength', 'squat', 'progressive_overload'],
+        estimatedDurationMinutes: 60,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'strength_bench_day',
+        name: 'Bench Focus',
+        description: 'Strength training focused on bench press progression',
+        category: 'Strength',
+        sortOrder: 2,
+        exerciseIds: [
+          'bench_press',
+          'incline_bench_press',
+          'dumbbell_press',
+          'tricep_dips',
+          'overhead_press',
+        ],
+        tags: ['strength', 'bench_press', 'progressive_overload'],
+        estimatedDurationMinutes: 55,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'strength_deadlift_day',
+        name: 'Deadlift Focus',
+        description: 'Strength training focused on deadlift progression',
+        category: 'Strength',
+        sortOrder: 3,
+        exerciseIds: [
+          'deadlift',
+          'romanian_deadlift',
+          'barbell_rows',
+          'pull_ups',
+          'barbell_curls',
+        ],
+        tags: ['strength', 'deadlift', 'progressive_overload'],
+        estimatedDurationMinutes: 55,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'strength_press_day',
+        name: 'Press Focus',
+        description: 'Strength training focused on overhead press progression',
+        category: 'Strength',
+        sortOrder: 4,
+        exerciseIds: [
+          'overhead_press',
+          'bench_press',
+          'dumbbell_shoulder_press',
+          'lateral_raises',
+          'tricep_extensions',
+        ],
+        tags: ['strength', 'overhead_press', 'progressive_overload'],
+        estimatedDurationMinutes: 50,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
 
-    // Bodybuilding Programs
-    WorkoutTemplate(
-      id: 'bb_chest_triceps',
-      name: 'Chest & Triceps',
-      description: 'Bodybuilding focused chest and triceps workout',
-      category: 'Bodybuilding',
-      sortOrder: 1,
-      exerciseIds: [
-        'bench_press',
-        'incline_dumbbell_press',
-        'dumbbell_flyes',
-        'cable_crossovers',
-        'tricep_dips',
-        'tricep_extensions',
-        'close_grip_bench_press'
-      ],
-      tags: ['bodybuilding', 'chest', 'triceps', 'isolation'],
-      estimatedDurationMinutes: 85,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'bb_back_biceps',
-      name: 'Back & Biceps',
-      description: 'Bodybuilding focused back and biceps workout',
-      category: 'Bodybuilding',
-      sortOrder: 2,
-      exerciseIds: [
-        'pull_ups',
-        'barbell_rows',
-        'lat_pulldowns',
-        'seated_cable_rows',
-        'face_pulls',
-        'barbell_curls',
-        'hammer_curls',
-        'preacher_curls'
-      ],
-      tags: ['bodybuilding', 'back', 'biceps', 'isolation'],
-      estimatedDurationMinutes: 85,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'bb_shoulders',
-      name: 'Shoulders',
-      description: 'Bodybuilding focused shoulder workout',
-      category: 'Bodybuilding',
-      sortOrder: 3,
-      exerciseIds: [
-        'overhead_press',
-        'dumbbell_shoulder_press',
-        'lateral_raises',
-        'rear_delt_flyes',
-        'upright_rows',
-        'shrugs'
-      ],
-      tags: ['bodybuilding', 'shoulders', 'delts', 'isolation'],
-      estimatedDurationMinutes: 70,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    WorkoutTemplate(
-      id: 'bb_legs_glutes',
-      name: 'Legs & Glutes',
-      description: 'Bodybuilding focused legs and glutes workout',
-      category: 'Bodybuilding',
-      sortOrder: 4,
-      exerciseIds: [
-        'squats',
-        'leg_press',
-        'leg_extensions',
-        'leg_curls',
-        'romanian_deadlift',
-        'hip_thrusts',
-        'calf_raises',
-        'walking_lunges'
-      ],
-      tags: ['bodybuilding', 'legs', 'glutes', 'isolation'],
-      estimatedDurationMinutes: 90,
-      isDefault: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-  ];
-}
+      // Bodybuilding Programs
+      WorkoutTemplate(
+        id: 'bb_chest_triceps',
+        name: 'Chest & Triceps',
+        description: 'Bodybuilding focused chest and triceps workout',
+        category: 'Bodybuilding',
+        sortOrder: 1,
+        exerciseIds: [
+          'bench_press',
+          'incline_dumbbell_press',
+          'dumbbell_flyes',
+          'cable_crossovers',
+          'tricep_dips',
+          'tricep_extensions',
+          'close_grip_bench_press',
+        ],
+        tags: ['bodybuilding', 'chest', 'triceps', 'isolation'],
+        estimatedDurationMinutes: 85,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'bb_back_biceps',
+        name: 'Back & Biceps',
+        description: 'Bodybuilding focused back and biceps workout',
+        category: 'Bodybuilding',
+        sortOrder: 2,
+        exerciseIds: [
+          'pull_ups',
+          'barbell_rows',
+          'lat_pulldowns',
+          'seated_cable_rows',
+          'face_pulls',
+          'barbell_curls',
+          'hammer_curls',
+          'preacher_curls',
+        ],
+        tags: ['bodybuilding', 'back', 'biceps', 'isolation'],
+        estimatedDurationMinutes: 85,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'bb_shoulders',
+        name: 'Shoulders',
+        description: 'Bodybuilding focused shoulder workout',
+        category: 'Bodybuilding',
+        sortOrder: 3,
+        exerciseIds: [
+          'overhead_press',
+          'dumbbell_shoulder_press',
+          'lateral_raises',
+          'rear_delt_flyes',
+          'upright_rows',
+          'shrugs',
+        ],
+        tags: ['bodybuilding', 'shoulders', 'delts', 'isolation'],
+        estimatedDurationMinutes: 70,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      WorkoutTemplate(
+        id: 'bb_legs_glutes',
+        name: 'Legs & Glutes',
+        description: 'Bodybuilding focused legs and glutes workout',
+        category: 'Bodybuilding',
+        sortOrder: 4,
+        exerciseIds: [
+          'squats',
+          'leg_press',
+          'leg_extensions',
+          'leg_curls',
+          'romanian_deadlift',
+          'hip_thrusts',
+          'calf_raises',
+          'walking_lunges',
+        ],
+        tags: ['bodybuilding', 'legs', 'glutes', 'isolation'],
+        estimatedDurationMinutes: 90,
+        isDefault: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    ];

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/widgets/animated_fab.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/skeleton_loader.dart';
-import '../providers/exercise_providers.dart';
 import '../providers/exercise_favorites_provider.dart';
-import 'package:herq/l10n/app_localizations.dart';
+import '../providers/exercise_providers.dart';
 
 class ExerciseLibraryScreen extends ConsumerStatefulWidget {
   const ExerciseLibraryScreen({super.key});
@@ -22,7 +22,7 @@ class ExerciseLibraryScreen extends ConsumerStatefulWidget {
 class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
   String _selectedMuscleGroup = 'All';
   String _selectedCategory = 'All';
-  String _searchQuery = '';
+  final String _searchQuery = '';
   bool _showVariants = false;
   bool _showOnlyFavorites = false;
 
@@ -283,17 +283,22 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
           // Apply category filter
           if (_selectedCategory != 'All') {
             filtered = filtered
-                .where((e) =>
-                    e.category.toLowerCase() == _selectedCategory.toLowerCase())
+                .where(
+                  (e) =>
+                      e.category.toLowerCase() ==
+                      _selectedCategory.toLowerCase(),
+                )
                 .toList();
           }
 
           // Apply muscle group filter
           if (_selectedMuscleGroup != 'All') {
             filtered = filtered
-                .where((e) =>
-                    e.primaryMuscleGroup.toLowerCase() ==
-                    _selectedMuscleGroup.toLowerCase())
+                .where(
+                  (e) =>
+                      e.primaryMuscleGroup.toLowerCase() ==
+                      _selectedMuscleGroup.toLowerCase(),
+                )
                 .toList();
           }
 
@@ -301,10 +306,12 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
           if (_searchQuery.isNotEmpty) {
             final query = _searchQuery.toLowerCase();
             filtered = filtered
-                .where((e) =>
-                    e.name.toLowerCase().contains(query) ||
-                    e.primaryMuscleGroup.toLowerCase().contains(query) ||
-                    e.equipment.toLowerCase().contains(query))
+                .where(
+                  (e) =>
+                      e.name.toLowerCase().contains(query) ||
+                      e.primaryMuscleGroup.toLowerCase().contains(query) ||
+                      e.equipment.toLowerCase().contains(query),
+                )
                 .toList();
           }
 
@@ -317,7 +324,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
           return AsyncValue.data(filtered);
         },
         loading: () => const AsyncValue.loading(),
-        error: (error, stack) => AsyncValue.error(error, stack),
+        error: AsyncValue.error,
       );
     }
 
@@ -329,26 +336,33 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
       final categoryExercises = ref
           .watch(exercisesByCategoryProvider(_selectedCategory.toLowerCase()));
       if (!_showVariants) {
-        return categoryExercises.whenData((exercises) =>
-            exercises.where((e) => e.parentExerciseId == null).toList());
+        return categoryExercises.whenData(
+          (exercises) =>
+              exercises.where((e) => e.parentExerciseId == null).toList(),
+        );
       }
       return categoryExercises;
     }
 
     if (_selectedMuscleGroup != 'All') {
       final muscleExercises = ref.watch(
-          exercisesByMuscleGroupProvider(_selectedMuscleGroup.toLowerCase()));
+        exercisesByMuscleGroupProvider(_selectedMuscleGroup.toLowerCase()),
+      );
       if (!_showVariants) {
-        return muscleExercises.whenData((exercises) =>
-            exercises.where((e) => e.parentExerciseId == null).toList());
+        return muscleExercises.whenData(
+          (exercises) =>
+              exercises.where((e) => e.parentExerciseId == null).toList(),
+        );
       }
       return muscleExercises;
     }
 
     final allExercises = ref.watch(exercisesProvider);
     if (!_showVariants) {
-      return allExercises.whenData((exercises) =>
-          exercises.where((e) => e.parentExerciseId == null).toList());
+      return allExercises.whenData(
+        (exercises) =>
+            exercises.where((e) => e.parentExerciseId == null).toList(),
+      );
     }
     return allExercises;
   }
@@ -399,7 +413,8 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
               const SizedBox(height: 8),
               Expanded(
                 child: _ExerciseProgressionsView(
-                    scrollController: scrollController),
+                  scrollController: scrollController,
+                ),
               ),
             ],
           ),
@@ -469,7 +484,6 @@ class _ExerciseCard extends ConsumerWidget {
     final favoritesNotifier = ref.read(favoritesNotifierProvider);
 
     return AppCard(
-      variant: AppCardVariant.elevated,
       heroTag: 'exercise-${exercise.id}',
       onTap: onTap,
       child: ListTile(
@@ -572,7 +586,8 @@ class _ExerciseCard extends ConsumerWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                            content: Text('Failed to update favorite: $e')),
+                          content: Text('Failed to update favorite: $e'),
+                        ),
                       );
                     }
                   }
@@ -657,6 +672,14 @@ class _ExerciseCard extends ConsumerWidget {
         return Colors.grey;
     }
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<Exercise>('exercise', exercise));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
+    properties.add(ObjectFlagProperty<VoidCallback?>.has('onEdit', onEdit));
+  }
 }
 
 class _DifficultyChip extends StatelessWidget {
@@ -699,6 +722,12 @@ class _DifficultyChip extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('difficulty', difficulty));
   }
 }
 
@@ -749,6 +778,12 @@ class _ExerciseTypeChip extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('type', type));
   }
 }
 
@@ -834,22 +869,20 @@ class _ExerciseProgressionsView extends ConsumerWidget {
                     ),
 
                     // Variants
-                    ...variants
-                        .map((variant) => _ProgressionItem(
-                              exercise: variant,
-                              isParent: false,
-                              onTap: () {
-                                Navigator.of(context)
-                                    .pop(); // Close bottom sheet
-                                Future.delayed(
-                                    const Duration(milliseconds: 100), () {
-                                  if (context.mounted) {
-                                    context.go('/exercise/${variant.id}');
-                                  }
-                                });
-                              },
-                            ))
-                        .toList(),
+                    ...variants.map(
+                      (variant) => _ProgressionItem(
+                        exercise: variant,
+                        isParent: false,
+                        onTap: () {
+                          Navigator.of(context).pop(); // Close bottom sheet
+                          Future.delayed(const Duration(milliseconds: 100), () {
+                            if (context.mounted) {
+                              context.go('/exercise/${variant.id}');
+                            }
+                          });
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -893,6 +926,13 @@ class _ExerciseProgressionsView extends ConsumerWidget {
         return Theme.of(context).colorScheme.primary;
     }
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<ScrollController>(
+        'scrollController', scrollController));
+  }
 }
 
 class _ProgressionItem extends StatelessWidget {
@@ -907,83 +947,83 @@ class _ProgressionItem extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: isParent ? 0 : 24, bottom: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: isParent
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                : Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+  Widget build(BuildContext context) => Padding(
+        padding: EdgeInsets.only(left: isParent ? 0 : 24, bottom: 8),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isParent
+                  ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                  : Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              ),
+            ),
+            child: Row(
+              children: [
+                if (!isParent) ...[
+                  const Icon(
+                    Icons.trending_up,
+                    size: 16,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        exercise.name,
+                        style: TextStyle(
+                          fontWeight:
+                              isParent ? FontWeight.bold : FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      const SizedBox(height: 4),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: [
+                          _DifficultyChip(difficulty: exercise.difficulty),
+                          if (!isParent && exercise.variantType != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _getVariantColor(exercise.variantType),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                exercise.variantType!.toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right),
+              ],
             ),
           ),
-          child: Row(
-            children: [
-              if (!isParent) ...[
-                Icon(
-                  Icons.trending_up,
-                  size: 16,
-                  color: Colors.grey,
-                ),
-                const SizedBox(width: 8),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      exercise.name,
-                      style: TextStyle(
-                        fontWeight:
-                            isParent ? FontWeight.bold : FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    const SizedBox(height: 4),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 4,
-                      children: [
-                        _DifficultyChip(difficulty: exercise.difficulty),
-                        if (!isParent && exercise.variantType != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: _getVariantColor(exercise.variantType),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              exercise.variantType!.toUpperCase(),
-                              style: const TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right),
-            ],
-          ),
         ),
-      ),
-    );
-  }
+      );
 
   Color _getVariantColor(String? variantType) {
     switch (variantType?.toLowerCase()) {
@@ -1003,12 +1043,19 @@ class _ProgressionItem extends StatelessWidget {
         return Colors.grey;
     }
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<Exercise>('exercise', exercise));
+    properties.add(DiagnosticsProperty<bool>('isParent', isParent));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
+  }
 }
 
 class ExerciseSearchDelegate extends SearchDelegate<String> {
-  final WidgetRef ref;
-
   ExerciseSearchDelegate(this.ref);
+  final WidgetRef ref;
 
   @override
   List<Widget> buildActions(BuildContext context) => [

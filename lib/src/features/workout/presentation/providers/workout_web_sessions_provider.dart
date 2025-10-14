@@ -8,7 +8,8 @@ final recentSessionsWebProvider =
     FutureProvider<List<Map<String, dynamic>>>((ref) async {
   if (!kIsWeb) {
     throw UnimplementedError(
-        'Use mobile sessions provider for non-web platforms');
+      'Use mobile sessions provider for non-web platforms',
+    );
   }
 
   final supabase = ref.watch(supabaseClientProvider);
@@ -31,7 +32,8 @@ final allSessionsWebProvider =
     StreamProvider<List<Map<String, dynamic>>>((ref) {
   if (!kIsWeb) {
     throw UnimplementedError(
-        'Use mobile sessions provider for non-web platforms');
+      'Use mobile sessions provider for non-web platforms',
+    );
   }
 
   final supabase = ref.watch(supabaseClientProvider);
@@ -45,6 +47,6 @@ final allSessionsWebProvider =
       .from('workout_sessions')
       .stream(primaryKey: ['id'])
       .eq('user_id', user.id)
-      .order('started_at', ascending: false)
-      .map((data) => List<Map<String, dynamic>>.from(data));
+      .order('started_at')
+      .map(List<Map<String, dynamic>>.from);
 });

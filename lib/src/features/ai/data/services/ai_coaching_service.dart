@@ -16,12 +16,14 @@ class AICoachingService {
     List<String>? availableEquipment,
     int? maxDuration,
   }) async {
-    await Future.delayed(Duration(
-        milliseconds: MockDataConfig.aiCoachingParams[
-            'mlProcessingDelayMs'])); // Simulate ML processing
+    await Future.delayed(
+      Duration(
+        milliseconds: MockDataConfig.aiCoachingParams['mlProcessingDelayMs'],
+      ),
+    ); // Simulate ML processing
 
     final recommendations = <WorkoutRecommendation>[
-      WorkoutRecommendation(
+      const WorkoutRecommendation(
         id: 'rec_1',
         name: 'Upper Body Power',
         description: 'Focus on compound movements for upper body strength',
@@ -31,7 +33,7 @@ class AICoachingService {
             name: 'Bench Press',
             sets: 4,
             reps: '5-6',
-            weight: 185.0,
+            weight: 185,
             rpe: 8,
             restSeconds: 180,
             notes: 'Focus on controlled eccentric',
@@ -41,7 +43,7 @@ class AICoachingService {
             name: 'Bent Over Row',
             sets: 4,
             reps: '6-8',
-            weight: 155.0,
+            weight: 155,
             rpe: 7,
             restSeconds: 150,
           ),
@@ -50,7 +52,7 @@ class AICoachingService {
             name: 'Overhead Press',
             sets: 3,
             reps: '8-10',
-            weight: 95.0,
+            weight: 95,
             rpe: 8,
             restSeconds: 120,
           ),
@@ -63,7 +65,7 @@ class AICoachingService {
         confidence: 0.85,
         requiredEquipment: ['barbell', 'bench', 'plates'],
       ),
-      WorkoutRecommendation(
+      const WorkoutRecommendation(
         id: 'rec_2',
         name: 'Lower Body Hypertrophy',
         description: 'High volume lower body workout for muscle growth',
@@ -73,7 +75,7 @@ class AICoachingService {
             name: 'Back Squat',
             sets: 4,
             reps: '8-12',
-            weight: 225.0,
+            weight: 225,
             rpe: 7,
             restSeconds: 120,
           ),
@@ -82,7 +84,7 @@ class AICoachingService {
             name: 'Romanian Deadlift',
             sets: 3,
             reps: '10-12',
-            weight: 185.0,
+            weight: 185,
             rpe: 8,
             restSeconds: 90,
           ),
@@ -91,7 +93,7 @@ class AICoachingService {
             name: 'Leg Press',
             sets: 3,
             reps: '12-15',
-            weight: 315.0,
+            weight: 315,
             rpe: 7,
             restSeconds: 90,
           ),
@@ -114,19 +116,22 @@ class AICoachingService {
     String userId,
     String exerciseId,
   ) async {
-    await Future.delayed(Duration(
+    await Future.delayed(
+      Duration(
         milliseconds:
             (MockDataConfig.aiCoachingParams['mlProcessingDelayMs'] * 0.75)
-                .round()));
+                .round(),
+      ),
+    );
 
     // Mock suggestions based on exercise performance patterns
     return [
       ProgressiveOverloadSuggestion(
         exerciseId: exerciseId,
-        currentWeight: 185.0,
+        currentWeight: 185,
         currentReps: 8,
         currentSets: 3,
-        suggestedWeight: 190.0,
+        suggestedWeight: 190,
         suggestedReps: 8,
         suggestedSets: 3,
         reasoning:
@@ -136,10 +141,10 @@ class AICoachingService {
       ),
       ProgressiveOverloadSuggestion(
         exerciseId: exerciseId,
-        currentWeight: 185.0,
+        currentWeight: 185,
         currentReps: 8,
         currentSets: 3,
-        suggestedWeight: 185.0,
+        suggestedWeight: 185,
         suggestedReps: 10,
         suggestedSets: 3,
         reasoning:
@@ -152,10 +157,13 @@ class AICoachingService {
 
   /// Analyze user's recovery state and provide recommendations
   Future<RecoveryAnalysis> getRecoveryAnalysis(String userId) async {
-    await Future.delayed(Duration(
+    await Future.delayed(
+      Duration(
         milliseconds:
             (MockDataConfig.aiCoachingParams['mlProcessingDelayMs'] * 0.875)
-                .round()));
+                .round(),
+      ),
+    );
 
     // Use consistent mock data based on userId hash to prevent random scores each load
     final userHash = userId.hashCode.abs();
@@ -168,14 +176,14 @@ class AICoachingService {
 
     if (recoveryScore < 0.6) {
       recommendations.addAll([
-        RecoveryRecommendation(
+        const RecoveryRecommendation(
           type: RecoveryType.sleep,
           title: 'Prioritize Sleep',
           description:
               'Aim for 7-9 hours of quality sleep. Your recovery score suggests sleep quality may be impacting performance.',
           priority: Priority.high,
         ),
-        RecoveryRecommendation(
+        const RecoveryRecommendation(
           type: RecoveryType.rest,
           title: 'Consider Active Recovery',
           description:
@@ -188,7 +196,7 @@ class AICoachingService {
     if (fatigueLevel == FatigueLevel.high ||
         fatigueLevel == FatigueLevel.severe) {
       recommendations.add(
-        RecoveryRecommendation(
+        const RecoveryRecommendation(
           type: RecoveryType.nutrition,
           title: 'Focus on Nutrition',
           description:
@@ -200,13 +208,13 @@ class AICoachingService {
 
     // Always include some general recommendations
     recommendations.addAll([
-      RecoveryRecommendation(
+      const RecoveryRecommendation(
         type: RecoveryType.hydration,
         title: 'Stay Hydrated',
         description: 'Aim for at least 35ml per kg of bodyweight daily.',
         priority: Priority.medium,
       ),
-      RecoveryRecommendation(
+      const RecoveryRecommendation(
         type: RecoveryType.stretching,
         title: 'Dynamic Warm-up',
         description:
@@ -250,10 +258,13 @@ class AICoachingService {
 
   /// Get general AI suggestions for the user
   Future<List<AISuggestion>> getGeneralSuggestions(String userId) async {
-    await Future.delayed(Duration(
+    await Future.delayed(
+      Duration(
         milliseconds:
             (MockDataConfig.aiCoachingParams['mlProcessingDelayMs'] * 0.625)
-                .round()));
+                .round(),
+      ),
+    );
 
     final suggestions = <AISuggestion>[
       AISuggestion(
@@ -302,10 +313,13 @@ class AICoachingService {
     List<String>? availableEquipment,
     List<String>? limitedBodyParts,
   }) async {
-    await Future.delayed(Duration(
+    await Future.delayed(
+      Duration(
         milliseconds:
             (MockDataConfig.aiCoachingParams['mlProcessingDelayMs'] * 0.5)
-                .round()));
+                .round(),
+      ),
+    );
 
     // Mock substitution logic
     final substitutions = <String, List<String>>{
@@ -334,10 +348,13 @@ class AICoachingService {
 
   /// Analyze workout data to detect patterns and suggest optimizations
   Future<List<AISuggestion>> analyzeWorkoutPatterns(String userId) async {
-    await Future.delayed(Duration(
+    await Future.delayed(
+      Duration(
         milliseconds:
             (MockDataConfig.aiCoachingParams['mlProcessingDelayMs'] * 1.125)
-                .round()));
+                .round(),
+      ),
+    );
 
     // Mock pattern analysis
     return [
@@ -351,7 +368,7 @@ class AICoachingService {
         createdAt: DateTime.now(),
         reasoning:
             'Performance metrics show signs of accumulated fatigue. A deload week can help break through plateaus.',
-        metadata: {
+        metadata: const {
           'plateau_duration': 3,
           'volume_trend': 'declining',
           'strength_trend': 'stagnant',
@@ -367,7 +384,7 @@ class AICoachingService {
         createdAt: DateTime.now(),
         reasoning:
             'Your upper body is progressing faster than lower body. Frequency increase could help balance development.',
-        metadata: {
+        metadata: const {
           'current_frequency': 2,
           'suggested_frequency': 3,
           'muscle_group': 'legs',

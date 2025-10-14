@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/auth_provider.dart';
-import 'package:herq/src/core/services/notification_service.dart';
+import '../../../../core/services/notification_service.dart';
 
 class EmailVerificationBanner extends ConsumerWidget {
   const EmailVerificationBanner({super.key});

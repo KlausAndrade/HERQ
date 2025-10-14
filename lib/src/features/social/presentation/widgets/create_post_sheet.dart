@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/providers/auth_provider.dart';
@@ -72,48 +72,44 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
 
           // User info
           currentUserProfile.when(
-            data: (profile) {
-              return Row(
-                children: [
-                  if (profile?.avatarUrl != null &&
-                      profile!.avatarUrl!.isNotEmpty)
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundImage: NetworkImage(profile.avatarUrl!),
-                    )
-                  else
-                    CircleAvatar(
-                      radius: 20,
-                      child: Text(
-                        DisplayNameSanitizer.getInitial(profile?.displayName),
-                      ),
+            data: (profile) => Row(
+              children: [
+                if (profile?.avatarUrl != null &&
+                    profile!.avatarUrl!.isNotEmpty)
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: NetworkImage(profile.avatarUrl!),
+                  )
+                else
+                  CircleAvatar(
+                    radius: 20,
+                    child: Text(
+                      DisplayNameSanitizer.getInitial(profile?.displayName),
                     ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        DisplayNameSanitizer.sanitize(profile?.displayName),
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                      ),
-                      if (profile?.bio != null && profile!.bio!.isNotEmpty)
-                        Text(
-                          profile.bio!,
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.grey,
-                                  ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                    ],
                   ),
-                ],
-              );
-            },
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      DisplayNameSanitizer.sanitize(profile?.displayName),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                    if (profile?.bio != null && profile!.bio!.isNotEmpty)
+                      Text(
+                        profile.bio!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey,
+                            ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+              ],
+            ),
             loading: () => Row(
               children: [
                 const CircleAvatar(
@@ -297,14 +293,12 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
         bytes,
         quality: 85,
         minWidth: 1080,
-        minHeight: 1080,
       );
 
       return result;
     } catch (e) {
       debugPrint('Error compressing image: $e');
-      return await file
-          .readAsBytes(); // Return original bytes if compression fails
+      return file.readAsBytes(); // Return original bytes if compression fails
     }
   }
 

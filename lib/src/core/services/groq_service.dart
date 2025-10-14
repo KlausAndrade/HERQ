@@ -3,10 +3,6 @@ import 'package:groq/groq.dart';
 
 /// Service for interacting with Groq AI API
 class GroqService {
-  late final Groq? _groq;
-  final bool _isMock;
-  static const String _defaultModel = 'llama-3.3-70b-versatile';
-
   /// If no API key is provided in the environment, the service will run in
   /// a deterministic mock mode which returns predictable responses. This
   /// prevents tests that don't configure env vars from failing at
@@ -23,6 +19,9 @@ class GroqService {
       model: _defaultModel,
     );
   }
+  late final Groq? _groq;
+  final bool _isMock;
+  static const String _defaultModel = 'llama-3.3-70b-versatile';
 
   static bool _initMockMode() {
     try {
@@ -47,7 +46,8 @@ class GroqService {
     if (_isMock) {
       // Deterministic mock response for tests
       return Future.value(
-          'MOCK: ${prompt.substring(0, prompt.length > 80 ? 80 : prompt.length)}');
+        'MOCK: ${prompt.substring(0, prompt.length > 80 ? 80 : prompt.length)}',
+      );
     }
 
     try {

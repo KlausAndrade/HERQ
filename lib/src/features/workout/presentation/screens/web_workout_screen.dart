@@ -8,9 +8,8 @@ import '../../domain/models/active_workout.dart';
 import '../providers/active_workout_web_provider.dart';
 
 class WebWorkoutScreen extends ConsumerWidget {
+  const WebWorkoutScreen({required this.templateId, super.key});
   final String templateId;
-
-  const WebWorkoutScreen({super.key, required this.templateId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -128,21 +127,35 @@ class WebWorkoutScreen extends ConsumerWidget {
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('templateId', templateId));
+  }
 }
 
 class _SetRow extends StatefulWidget {
-  final ActiveSet set;
-  final String exerciseType;
-  final Function(ActiveSet) onUpdate;
-
   const _SetRow({
     required this.set,
     required this.exerciseType,
     required this.onUpdate,
   });
+  final ActiveSet set;
+  final String exerciseType;
+  final Function(ActiveSet) onUpdate;
 
   @override
   State<_SetRow> createState() => _SetRowState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<ActiveSet>('set', set));
+    properties.add(StringProperty('exerciseType', exerciseType));
+    properties.add(
+        ObjectFlagProperty<Function(ActiveSet p1)>.has('onUpdate', onUpdate));
+  }
 }
 
 class _SetRowState extends State<_SetRow> {
@@ -200,14 +213,14 @@ class _SetRowState extends State<_SetRow> {
       title: Row(
         children: [
           // Dynamic input fields based on exercise type
-          ...fields.map((field) {
-            return Expanded(
+          ...fields.map(
+            (field) => Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(right: 12),
                 child: _buildInputField(field),
               ),
-            );
-          }).toList(),
+            ),
+          ),
 
           // Complete button
           IconButton(
@@ -324,5 +337,22 @@ class _SetRowState extends State<_SetRow> {
   int? _parseInt(String text) {
     if (text.isEmpty) return null;
     return int.tryParse(text);
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'weightController', weightController));
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'repsController', repsController));
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'durationController', durationController));
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'distanceController', distanceController));
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'assistanceWeightController', assistanceWeightController));
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'addedWeightController', addedWeightController));
   }
 }

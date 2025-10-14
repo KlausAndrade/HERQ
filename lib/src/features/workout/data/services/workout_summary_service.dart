@@ -7,9 +7,8 @@ import '../../domain/models/workout_summary.dart';
 
 /// Service for calculating workout summaries and detecting personal records
 class WorkoutSummaryService {
-  final AppDatabase database;
-
   WorkoutSummaryService(this.database);
+  final AppDatabase database;
 
   /// Calculate comprehensive workout summary with PR detection
   Future<WorkoutSummary> calculateSummary({
@@ -35,7 +34,7 @@ class WorkoutSummaryService {
         .expand((e) => e.sets)
         .where((s) => s.isCompleted && s.weight != null)
         .fold(
-          0.0,
+          0,
           (sum, set) => sum + (set.weight! * set.reps),
         );
 
@@ -55,7 +54,8 @@ class WorkoutSummaryService {
   }
 
   Future<List<ExerciseSummary>> _calculateExerciseSummaries(
-      ActiveWorkout workout) async {
+    ActiveWorkout workout,
+  ) async {
     final summaries = <ExerciseSummary>[];
 
     for (final exercise in workout.exercises) {
@@ -73,16 +73,18 @@ class WorkoutSummaryService {
       });
       final totalVolume = completedSets
           .where((s) => s.weight != null)
-          .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
+          .fold(0, (sum, set) => sum + (set.weight! * set.reps));
 
-      summaries.add(ExerciseSummary(
-        exerciseId: exercise.id,
-        exerciseName: exercise.name,
-        sets: sets,
-        totalReps: totalReps,
-        maxWeight: maxWeight,
-        totalVolume: totalVolume,
-      ));
+      summaries.add(
+        ExerciseSummary(
+          exerciseId: exercise.id,
+          exerciseName: exercise.name,
+          sets: sets,
+          totalReps: totalReps,
+          maxWeight: maxWeight,
+          totalVolume: totalVolume,
+        ),
+      );
     }
 
     return summaries;
@@ -103,14 +105,16 @@ class WorkoutSummaryService {
 
         if (previousMaxWeight == null ||
             exerciseSummary.maxWeight! > previousMaxWeight) {
-          prs.add(PersonalRecordAchievement(
-            exerciseId: exerciseSummary.exerciseId,
-            exerciseName: exerciseSummary.exerciseName,
-            type: PRType.maxWeight,
-            value: exerciseSummary.maxWeight!,
-            previousValue: previousMaxWeight,
-            unit: 'kg',
-          ));
+          prs.add(
+            PersonalRecordAchievement(
+              exerciseId: exerciseSummary.exerciseId,
+              exerciseName: exerciseSummary.exerciseName,
+              type: PRType.maxWeight,
+              value: exerciseSummary.maxWeight!,
+              previousValue: previousMaxWeight,
+              unit: 'kg',
+            ),
+          );
 
           // Save PR to database
           await _savePersonalRecord(
@@ -131,14 +135,16 @@ class WorkoutSummaryService {
 
         if (previousMaxVolume == null ||
             exerciseSummary.totalVolume! > previousMaxVolume) {
-          prs.add(PersonalRecordAchievement(
-            exerciseId: exerciseSummary.exerciseId,
-            exerciseName: exerciseSummary.exerciseName,
-            type: PRType.totalVolume,
-            value: exerciseSummary.totalVolume!,
-            previousValue: previousMaxVolume,
-            unit: 'kg',
-          ));
+          prs.add(
+            PersonalRecordAchievement(
+              exerciseId: exerciseSummary.exerciseId,
+              exerciseName: exerciseSummary.exerciseName,
+              type: PRType.totalVolume,
+              value: exerciseSummary.totalVolume!,
+              previousValue: previousMaxVolume,
+              unit: 'kg',
+            ),
+          );
 
           // Save PR to database
           await _savePersonalRecord(
@@ -167,14 +173,16 @@ class WorkoutSummaryService {
         );
 
         if (previousMaxReps == null || maxRepsSet.reps > previousMaxReps) {
-          prs.add(PersonalRecordAchievement(
-            exerciseId: exerciseSummary.exerciseId,
-            exerciseName: exerciseSummary.exerciseName,
-            type: PRType.maxReps,
-            value: maxRepsSet.reps.toDouble(),
-            previousValue: previousMaxReps?.toDouble(),
-            unit: 'reps',
-          ));
+          prs.add(
+            PersonalRecordAchievement(
+              exerciseId: exerciseSummary.exerciseId,
+              exerciseName: exerciseSummary.exerciseName,
+              type: PRType.maxReps,
+              value: maxRepsSet.reps.toDouble(),
+              previousValue: previousMaxReps?.toDouble(),
+              unit: 'reps',
+            ),
+          );
 
           // Save PR to database
           await _savePersonalRecord(
@@ -208,7 +216,7 @@ class WorkoutSummaryService {
     final totalVolume = workout.exercises
         .expand((e) => e.sets)
         .where((s) => s.isCompleted && s.weight != null)
-        .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
+        .fold(0, (sum, set) => sum + (set.weight! * set.reps));
 
     // Check if this is a personal best workout
     final previousBestVolume = await _getPreviousBestTotalVolume();
@@ -242,9 +250,11 @@ class WorkoutSummaryService {
 
   Future<double?> _getPreviousMaxWeight(String exerciseId) async {
     final records = await (database.select(database.personalRecords)
-          ..where((tbl) =>
-              tbl.exerciseId.equals(exerciseId) &
-              tbl.recordType.equals('max_weight'))
+          ..where(
+            (tbl) =>
+                tbl.exerciseId.equals(exerciseId) &
+                tbl.recordType.equals('max_weight'),
+          )
           ..orderBy([(tbl) => OrderingTerm.desc(tbl.achievedAt)])
           ..limit(1))
         .get();
@@ -254,9 +264,11 @@ class WorkoutSummaryService {
 
   Future<double?> _getPreviousMaxVolume(String exerciseId) async {
     final records = await (database.select(database.personalRecords)
-          ..where((tbl) =>
-              tbl.exerciseId.equals(exerciseId) &
-              tbl.recordType.equals('total_volume'))
+          ..where(
+            (tbl) =>
+                tbl.exerciseId.equals(exerciseId) &
+                tbl.recordType.equals('total_volume'),
+          )
           ..orderBy([(tbl) => OrderingTerm.desc(tbl.achievedAt)])
           ..limit(1))
         .get();
@@ -266,9 +278,11 @@ class WorkoutSummaryService {
 
   Future<int?> _getPreviousMaxReps(String exerciseId, double? weight) async {
     final records = await (database.select(database.personalRecords)
-          ..where((tbl) =>
-              tbl.exerciseId.equals(exerciseId) &
-              tbl.recordType.equals('max_reps'))
+          ..where(
+            (tbl) =>
+                tbl.exerciseId.equals(exerciseId) &
+                tbl.recordType.equals('max_reps'),
+          )
           ..orderBy([(tbl) => OrderingTerm.desc(tbl.achievedAt)])
           ..limit(1))
         .get();

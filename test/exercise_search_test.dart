@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:herq/src/core/database/database.dart';
 
 void main() {
@@ -10,14 +10,14 @@ void main() {
     await db.seedDefaultData();
 
     // Search for preacher alias
-    final q = '%preacher%';
+    const q = '%preacher%';
     final rows = await db.customSelect(
       'SELECT * FROM exercises WHERE LOWER(name) LIKE ? OR LOWER(primary_muscle_group) LIKE ? OR LOWER(aliases) LIKE ? OR LOWER(tags) LIKE ? COLLATE NOCASE',
       variables: [
-        Variable<String>(q),
-        Variable<String>(q),
-        Variable<String>(q),
-        Variable<String>(q),
+        const Variable<String>(q),
+        const Variable<String>(q),
+        const Variable<String>(q),
+        const Variable<String>(q),
       ],
     ).get();
 
@@ -26,19 +26,19 @@ void main() {
     final ids = results.map((e) => e.id).toSet();
     expect(ids.contains('preacher_curls'), isTrue);
     expect(
-        ids.contains('db_preacher_curl') ||
-            ids.contains('barbell_preacher_curl'),
-        isTrue);
+      ids.contains('db_preacher_curl') || ids.contains('barbell_preacher_curl'),
+      isTrue,
+    );
 
     // Search by muscle group: biceps
-    final qb = '%biceps%';
+    const qb = '%biceps%';
     final rows2 = await db.customSelect(
       'SELECT * FROM exercises WHERE LOWER(name) LIKE ? OR LOWER(primary_muscle_group) LIKE ? OR LOWER(aliases) LIKE ? OR LOWER(tags) LIKE ? COLLATE NOCASE',
       variables: [
-        Variable<String>(qb),
-        Variable<String>(qb),
-        Variable<String>(qb),
-        Variable<String>(qb),
+        const Variable<String>(qb),
+        const Variable<String>(qb),
+        const Variable<String>(qb),
+        const Variable<String>(qb),
       ],
     ).get();
 

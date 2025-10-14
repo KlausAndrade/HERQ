@@ -7,7 +7,7 @@ import '../../../../core/providers/database_provider.dart';
 class ChartConfig {
   static const int defaultWeeksToShow = 12;
   static const int defaultMonthsToShow = 12;
-  static const double oneRepMaxConstant = 30.0;
+  static const double oneRepMaxConstant = 30;
 }
 
 // Provider for weekly volume data
@@ -32,10 +32,12 @@ final weeklyVolumeProvider = FutureProvider<List<VolumeData>>((ref) async {
 
   // Convert to list and sort by date
   final volumeList = weeklyData.entries
-      .map((e) => VolumeData(
-            date: DateTime.parse(e.key),
-            volume: e.value,
-          ))
+      .map(
+        (e) => VolumeData(
+          date: DateTime.parse(e.key),
+          volume: e.value,
+        ),
+      )
       .toList()
     ..sort((a, b) => a.date.compareTo(b.date));
 
@@ -70,10 +72,12 @@ final monthlyVolumeProvider = FutureProvider<List<VolumeData>>((ref) async {
 
   // Convert to list and sort by date
   final volumeList = monthlyData.entries
-      .map((e) => VolumeData(
-            date: DateTime.parse('${e.key}-01'),
-            volume: e.value,
-          ))
+      .map(
+        (e) => VolumeData(
+          date: DateTime.parse('${e.key}-01'),
+          volume: e.value,
+        ),
+      )
       .toList()
     ..sort((a, b) => a.date.compareTo(b.date));
 
@@ -109,10 +113,12 @@ final workoutFrequencyProvider =
 
   // Convert to list and sort by date
   final frequencyList = weeklyData.entries
-      .map((e) => FrequencyData(
-            date: DateTime.parse(e.key),
-            count: e.value,
-          ))
+      .map(
+        (e) => FrequencyData(
+          date: DateTime.parse(e.key),
+          count: e.value,
+        ),
+      )
       .toList()
     ..sort((a, b) => a.date.compareTo(b.date));
 

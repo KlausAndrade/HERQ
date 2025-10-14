@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
+import '../../../workout/presentation/providers/workout_providers.dart';
+import '../../../workout/presentation/widgets/workout_calendar.dart';
 import '../../data/providers/gamification_provider.dart';
 import '../../domain/models/achievement.dart';
 import '../widgets/gamification_widgets.dart';
-import '../../../workout/presentation/widgets/workout_calendar.dart';
-import '../../../workout/presentation/providers/workout_providers.dart';
 
 class GamificationScreen extends ConsumerStatefulWidget {
   const GamificationScreen({super.key});
@@ -62,13 +63,14 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
             data: (stats) => stats != null
                 ? _buildStatsTab(stats)
                 : const Center(
-                    child: Text('Start working out to see your stats!')),
+                    child: Text('Start working out to see your stats!'),
+                  ),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (_, __) => Center(child: Text(S.of(context)!.error)),
           ),
           // Achievements Tab
           achievementsAsync.when(
-            data: (achievements) => _buildAchievementsTab(achievements),
+            data: _buildAchievementsTab,
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (_, __) => Center(child: Text(S.of(context)!.error)),
           ),
@@ -123,7 +125,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                 const SizedBox(height: 24),
                 LinearProgressIndicator(
                   value: gamificationService.calculateLevelProgress(
-                      totalXp, level),
+                    totalXp,
+                    level,
+                  ),
                   minHeight: 8,
                   backgroundColor: Colors.grey.shade200,
                 ),
@@ -366,12 +370,6 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
 }
 
 class _StatTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String label;
-  final String value;
-  final String subtitle;
-
   const _StatTile({
     required this.icon,
     required this.iconColor,
@@ -379,76 +377,94 @@ class _StatTile extends StatelessWidget {
     required this.value,
     required this.subtitle,
   });
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String value;
+  final String subtitle;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: iconColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: iconColor, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: iconColor,
-                ),
-          ),
-          Text(
-            subtitle,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey.shade600,
-                ),
-          ),
-        ],
-      ),
-    );
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: iconColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: iconColor, size: 32),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: iconColor,
+                  ),
+            ),
+            Text(
+              subtitle,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey.shade600,
+                  ),
+            ),
+          ],
+        ),
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(ColorProperty('iconColor', iconColor));
+    properties.add(StringProperty('label', label));
+    properties.add(StringProperty('value', value));
+    properties.add(StringProperty('subtitle', subtitle));
   }
 }
 
 class _StatRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
   const _StatRow({
     required this.icon,
     required this.label,
     required this.value,
   });
+  final IconData icon;
+  final String label;
+  final String value;
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        children: [
-          Icon(icon, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyLarge,
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon, color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
             ),
-          ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-        ],
-      ),
-    );
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ],
+        ),
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(StringProperty('label', label));
+    properties.add(StringProperty('value', value));
   }
 }

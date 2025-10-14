@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CreateFolderDialog extends ConsumerStatefulWidget {
-  final String? initialName;
-  final String? initialDescription;
-  final String? folderId; // If editing existing folder
+  // If editing existing folder
 
   const CreateFolderDialog({
     super.key,
@@ -12,9 +10,20 @@ class CreateFolderDialog extends ConsumerStatefulWidget {
     this.initialDescription,
     this.folderId,
   });
+  final String? initialName;
+  final String? initialDescription;
+  final String? folderId;
 
   @override
   ConsumerState<CreateFolderDialog> createState() => _CreateFolderDialogState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('initialName', initialName));
+    properties.add(StringProperty('initialDescription', initialDescription));
+    properties.add(StringProperty('folderId', folderId));
+  }
 }
 
 class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {

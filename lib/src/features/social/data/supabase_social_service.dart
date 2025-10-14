@@ -2,9 +2,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Supabase Social Service for handling social interactions
 class SupabaseSocialService {
-  final SupabaseClient _supabase;
-
   SupabaseSocialService(this._supabase);
+  final SupabaseClient _supabase;
 
   // ===== POSTS =====
 
@@ -47,7 +46,8 @@ class SupabaseSocialService {
           .single();
 
       print(
-          'Deleting post: $postId, user: ${response['user_id']}, image: ${response['image_url']}');
+        'Deleting post: $postId, user: ${response['user_id']}, image: ${response['image_url']}',
+      );
 
       // Delete the post from database first
       await _supabase.from('posts').delete().eq('id', postId);

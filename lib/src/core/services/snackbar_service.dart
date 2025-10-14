@@ -111,8 +111,11 @@ class SnackbarService {
   /// display the SnackBar as before. By default this will publish the
   /// in-app overlay only. Pass `preserveFallback: true` to also show the
   /// original SnackBar (useful during staged rollouts).
-  static void showFromSnackBar(BuildContext context, SnackBar snackBar,
-      {bool preserveFallback = false}) {
+  static void showFromSnackBar(
+    BuildContext context,
+    SnackBar snackBar, {
+    bool preserveFallback = false,
+  }) {
     if (!context.mounted) return;
 
     // Attempt to extract a simple text message from the SnackBar content.
@@ -214,7 +217,6 @@ class SnackbarService {
     show(
       context,
       message: message,
-      type: SnackbarType.info,
       duration: duration,
       actionLabel: actionLabel,
       onAction: onAction,

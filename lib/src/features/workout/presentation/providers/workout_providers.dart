@@ -2,8 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/database/database.dart';
-import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/database_provider.dart';
 
 // Provider for all workout sessions (with cloud sync)
 final workoutSessionsProvider =
@@ -159,10 +159,10 @@ final workoutStatsProvider = FutureProvider<WorkoutStats>((ref) async {
       .fold(0, (sum, s) => sum + (s.totalDurationSeconds ?? 0));
 
   final totalVolume =
-      completedSessions.fold(0.0, (sum, s) => sum + s.totalVolume);
+      completedSessions.fold(0, (sum, s) => sum + s.totalVolume);
 
   final totalTonnage =
-      completedSessions.fold(0.0, (sum, s) => sum + s.totalTonnage);
+      completedSessions.fold(0, (sum, s) => sum + s.totalTonnage);
 
   final avgDuration = totalDuration > 0 ? totalDuration / totalWorkouts : 0;
 
@@ -270,9 +270,11 @@ final weeklyStatsProvider = FutureProvider<WeeklyStats>((ref) async {
 
   // Get workout sessions for this week
   final sessions = await (database.select(database.workoutSessions)
-        ..where((tbl) =>
-            tbl.startedAt.isBiggerOrEqualValue(startOfWeekDate) &
-            tbl.startedAt.isSmallerThanValue(endOfWeekDate))
+        ..where(
+          (tbl) =>
+              tbl.startedAt.isBiggerOrEqualValue(startOfWeekDate) &
+              tbl.startedAt.isSmallerThanValue(endOfWeekDate),
+        )
         ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)]))
       .get();
 
@@ -284,7 +286,7 @@ final weeklyStatsProvider = FutureProvider<WeeklyStats>((ref) async {
   }
 
   // Calculate total volume from all sets in these sessions
-  double totalVolume = 0.0;
+  double totalVolume = 0;
   int totalPRs = 0;
 
   for (final session in completedSessions) {
@@ -319,15 +321,15 @@ class WeeklyStats {
     required this.prsSet,
   });
 
+  factory WeeklyStats.empty() => const WeeklyStats(
+        workoutsCount: 0,
+        totalVolumeKg: 0,
+        prsSet: 0,
+      );
+
   final int workoutsCount;
   final double totalVolumeKg;
   final int prsSet;
-
-  factory WeeklyStats.empty() => const WeeklyStats(
-        workoutsCount: 0,
-        totalVolumeKg: 0.0,
-        prsSet: 0,
-      );
 
   String get formattedVolume {
     if (totalVolumeKg >= 1000) {
@@ -347,17 +349,17 @@ class WorkoutStats {
     required this.currentStreak,
   });
 
+  factory WorkoutStats.empty() => const WorkoutStats(
+        totalWorkouts: 0,
+        averageDurationMinutes: 0,
+        totalVolumeKg: 0,
+        totalTonnage: 0,
+        currentStreak: 0,
+      );
+
   final int totalWorkouts;
   final int averageDurationMinutes;
   final double totalVolumeKg;
   final double totalTonnage;
   final int currentStreak;
-
-  factory WorkoutStats.empty() => const WorkoutStats(
-        totalWorkouts: 0,
-        averageDurationMinutes: 0,
-        totalVolumeKg: 0.0,
-        totalTonnage: 0.0,
-        currentStreak: 0,
-      );
 }

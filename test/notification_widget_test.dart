@@ -8,21 +8,23 @@ void main() {
     var primaryPressed = false;
     var secondaryPressed = false;
 
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: NotificationCard(
-          id: 't1',
-          title: 'Test Title',
-          body:
-              'This is the body of the notification used during widget tests.',
-          leading: const Icon(Icons.info),
-          primaryActionLabel: 'Open',
-          onPrimaryAction: () => primaryPressed = true,
-          secondaryActionLabel: 'Dismiss',
-          onSecondaryAction: () => secondaryPressed = true,
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: NotificationCard(
+            id: 't1',
+            title: 'Test Title',
+            body:
+                'This is the body of the notification used during widget tests.',
+            leading: const Icon(Icons.info),
+            primaryActionLabel: 'Open',
+            onPrimaryAction: () => primaryPressed = true,
+            secondaryActionLabel: 'Dismiss',
+            onSecondaryAction: () => secondaryPressed = true,
+          ),
         ),
       ),
-    ));
+    );
 
     // Should find title and body texts
     expect(find.text('Test Title'), findsOneWidget);

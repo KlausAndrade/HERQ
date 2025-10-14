@@ -6,8 +6,8 @@ import '../providers/chart_providers.dart';
 
 class VolumeChart extends StatelessWidget {
   const VolumeChart({
-    super.key,
     required this.data,
+    super.key,
     this.height = 200,
   });
 
@@ -40,22 +40,16 @@ class VolumeChart extends StatelessWidget {
       child: LineChart(
         LineChartData(
           gridData: FlGridData(
-            show: true,
             drawVerticalLine: false,
             horizontalInterval: horizontalInterval,
-            getDrawingHorizontalLine: (value) {
-              return FlLine(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                strokeWidth: 1,
-              );
-            },
+            getDrawingHorizontalLine: (value) => FlLine(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              strokeWidth: 1,
+            ),
           ),
           titlesData: FlTitlesData(
-            show: true,
-            rightTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(),
+            topTitles: const AxisTitles(),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -88,21 +82,19 @@ class VolumeChart extends StatelessWidget {
                 showTitles: true,
                 interval: horizontalInterval,
                 reservedSize: 50,
-                getTitlesWidget: (value, meta) {
-                  return SideTitleWidget(
-                    axisSide: meta.axisSide,
-                    child: Text(
-                      '${(value / 1000).toStringAsFixed(1)}k',
-                      style: TextStyle(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.6),
-                        fontSize: 11,
-                      ),
+                getTitlesWidget: (value, meta) => SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  child: Text(
+                    '${(value / 1000).toStringAsFixed(1)}k',
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
+                      fontSize: 11,
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
           ),
@@ -118,23 +110,24 @@ class VolumeChart extends StatelessWidget {
           maxY: maxVolume + (volumeRange * 0.1),
           lineBarsData: [
             LineChartBarData(
-              spots: data.asMap().entries.map((entry) {
-                return FlSpot(entry.key.toDouble(), entry.value.volume);
-              }).toList(),
+              spots: data
+                  .asMap()
+                  .entries
+                  .map((entry) =>
+                      FlSpot(entry.key.toDouble(), entry.value.volume))
+                  .toList(),
               isCurved: true,
               color: Theme.of(context).colorScheme.primary,
               barWidth: 3,
               isStrokeCapRound: true,
               dotData: FlDotData(
-                show: true,
-                getDotPainter: (spot, percent, barData, index) {
-                  return FlDotCirclePainter(
-                    radius: 4,
-                    color: Theme.of(context).colorScheme.primary,
-                    strokeWidth: 2,
-                    strokeColor: Theme.of(context).colorScheme.surface,
-                  );
-                },
+                getDotPainter: (spot, percent, barData, index) =>
+                    FlDotCirclePainter(
+                  radius: 4,
+                  color: Theme.of(context).colorScheme.primary,
+                  strokeWidth: 2,
+                  strokeColor: Theme.of(context).colorScheme.surface,
+                ),
               ),
               belowBarData: BarAreaData(
                 show: true,
@@ -143,37 +136,42 @@ class VolumeChart extends StatelessWidget {
             ),
           ],
           lineTouchData: LineTouchData(
-            enabled: true,
             touchTooltipData: LineTouchTooltipData(
               tooltipBgColor: Theme.of(context).colorScheme.inverseSurface,
-              getTooltipItems: (touchedSpots) {
-                return touchedSpots.map((LineBarSpot touchedSpot) {
-                  final index = touchedSpot.x.toInt();
-                  if (index >= 0 && index < data.length) {
-                    final dataPoint = data[index];
-                    return LineTooltipItem(
-                      '${DateFormat('MMM d').format(dataPoint.date)}\n${(dataPoint.volume / 1000).toStringAsFixed(1)}k kg',
-                      TextStyle(
-                        color: Theme.of(context).colorScheme.onInverseSurface,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    );
-                  }
-                  return null;
-                }).toList();
-              },
+              getTooltipItems: (touchedSpots) =>
+                  touchedSpots.map((LineBarSpot touchedSpot) {
+                final index = touchedSpot.x.toInt();
+                if (index >= 0 && index < data.length) {
+                  final dataPoint = data[index];
+                  return LineTooltipItem(
+                    '${DateFormat('MMM d').format(dataPoint.date)}\n${(dataPoint.volume / 1000).toStringAsFixed(1)}k kg',
+                    TextStyle(
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }
+                return null;
+              }).toList(),
             ),
           ),
         ),
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IterableProperty<VolumeData>('data', data));
+    properties.add(DoubleProperty('height', height));
+  }
 }
 
 class FrequencyChart extends StatelessWidget {
   const FrequencyChart({
-    super.key,
     required this.data,
+    super.key,
     this.height = 200,
   });
 
@@ -223,11 +221,8 @@ class FrequencyChart extends StatelessWidget {
             ),
           ),
           titlesData: FlTitlesData(
-            show: true,
-            rightTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(),
+            topTitles: const AxisTitles(),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -258,21 +253,19 @@ class FrequencyChart extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 interval: 1,
-                getTitlesWidget: (value, meta) {
-                  return SideTitleWidget(
-                    axisSide: meta.axisSide,
-                    child: Text(
-                      value.toInt().toString(),
-                      style: TextStyle(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.6),
-                        fontSize: 11,
-                      ),
+                getTitlesWidget: (value, meta) => SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  child: Text(
+                    value.toInt().toString(),
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
+                      fontSize: 11,
                     ),
-                  );
-                },
+                  ),
+                ),
                 reservedSize: 30,
               ),
             ),
@@ -283,43 +276,51 @@ class FrequencyChart extends StatelessWidget {
               color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
             ),
           ),
-          barGroups: data.asMap().entries.map((entry) {
-            return BarChartGroupData(
-              x: entry.key,
-              barRods: [
-                BarChartRodData(
-                  toY: entry.value.count.toDouble(),
-                  color: Theme.of(context).colorScheme.secondary,
-                  width: 16,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(4),
-                    topRight: Radius.circular(4),
-                  ),
+          barGroups: data
+              .asMap()
+              .entries
+              .map(
+                (entry) => BarChartGroupData(
+                  x: entry.key,
+                  barRods: [
+                    BarChartRodData(
+                      toY: entry.value.count.toDouble(),
+                      color: Theme.of(context).colorScheme.secondary,
+                      width: 16,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(4),
+                        topRight: Radius.circular(4),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            );
-          }).toList(),
+              )
+              .toList(),
           gridData: FlGridData(
-            show: true,
             drawVerticalLine: false,
             horizontalInterval: 1,
-            getDrawingHorizontalLine: (value) {
-              return FlLine(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                strokeWidth: 1,
-              );
-            },
+            getDrawingHorizontalLine: (value) => FlLine(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              strokeWidth: 1,
+            ),
           ),
         ),
       ),
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IterableProperty<FrequencyData>('data', data));
+    properties.add(DoubleProperty('height', height));
+  }
 }
 
 class ExerciseProgressChart extends StatelessWidget {
   const ExerciseProgressChart({
-    super.key,
     required this.data,
+    super.key,
     this.height = 200,
   });
 
@@ -354,22 +355,16 @@ class ExerciseProgressChart extends StatelessWidget {
       child: LineChart(
         LineChartData(
           gridData: FlGridData(
-            show: true,
             drawVerticalLine: false,
             horizontalInterval: horizontalInterval,
-            getDrawingHorizontalLine: (value) {
-              return FlLine(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                strokeWidth: 1,
-              );
-            },
+            getDrawingHorizontalLine: (value) => FlLine(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              strokeWidth: 1,
+            ),
           ),
           titlesData: FlTitlesData(
-            show: true,
-            rightTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(),
+            topTitles: const AxisTitles(),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -402,21 +397,19 @@ class ExerciseProgressChart extends StatelessWidget {
                 showTitles: true,
                 interval: horizontalInterval,
                 reservedSize: 40,
-                getTitlesWidget: (value, meta) {
-                  return SideTitleWidget(
-                    axisSide: meta.axisSide,
-                    child: Text(
-                      value.toStringAsFixed(0),
-                      style: TextStyle(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.6),
-                        fontSize: 11,
-                      ),
+                getTitlesWidget: (value, meta) => SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  child: Text(
+                    value.toStringAsFixed(0),
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
+                      fontSize: 11,
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
           ),
@@ -432,23 +425,24 @@ class ExerciseProgressChart extends StatelessWidget {
           maxY: maxOneRM + (oneRMRange * 0.1),
           lineBarsData: [
             LineChartBarData(
-              spots: data.asMap().entries.map((entry) {
-                return FlSpot(entry.key.toDouble(), entry.value.oneRepMax);
-              }).toList(),
+              spots: data
+                  .asMap()
+                  .entries
+                  .map((entry) =>
+                      FlSpot(entry.key.toDouble(), entry.value.oneRepMax))
+                  .toList(),
               isCurved: true,
               color: Theme.of(context).colorScheme.tertiary,
               barWidth: 3,
               isStrokeCapRound: true,
               dotData: FlDotData(
-                show: true,
-                getDotPainter: (spot, percent, barData, index) {
-                  return FlDotCirclePainter(
-                    radius: 4,
-                    color: Theme.of(context).colorScheme.tertiary,
-                    strokeWidth: 2,
-                    strokeColor: Theme.of(context).colorScheme.surface,
-                  );
-                },
+                getDotPainter: (spot, percent, barData, index) =>
+                    FlDotCirclePainter(
+                  radius: 4,
+                  color: Theme.of(context).colorScheme.tertiary,
+                  strokeWidth: 2,
+                  strokeColor: Theme.of(context).colorScheme.surface,
+                ),
               ),
               belowBarData: BarAreaData(
                 show: true,
@@ -457,29 +451,34 @@ class ExerciseProgressChart extends StatelessWidget {
             ),
           ],
           lineTouchData: LineTouchData(
-            enabled: true,
             touchTooltipData: LineTouchTooltipData(
               tooltipBgColor: Theme.of(context).colorScheme.inverseSurface,
-              getTooltipItems: (touchedSpots) {
-                return touchedSpots.map((LineBarSpot touchedSpot) {
-                  final index = touchedSpot.x.toInt();
-                  if (index >= 0 && index < data.length) {
-                    final dataPoint = data[index];
-                    return LineTooltipItem(
-                      '${DateFormat('MMM d').format(dataPoint.date)}\n${dataPoint.weight.toStringAsFixed(1)} kg × ${dataPoint.reps}\nEst. 1RM: ${dataPoint.oneRepMax.toStringAsFixed(1)} kg',
-                      TextStyle(
-                        color: Theme.of(context).colorScheme.onInverseSurface,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    );
-                  }
-                  return null;
-                }).toList();
-              },
+              getTooltipItems: (touchedSpots) =>
+                  touchedSpots.map((LineBarSpot touchedSpot) {
+                final index = touchedSpot.x.toInt();
+                if (index >= 0 && index < data.length) {
+                  final dataPoint = data[index];
+                  return LineTooltipItem(
+                    '${DateFormat('MMM d').format(dataPoint.date)}\n${dataPoint.weight.toStringAsFixed(1)} kg × ${dataPoint.reps}\nEst. 1RM: ${dataPoint.oneRepMax.toStringAsFixed(1)} kg',
+                    TextStyle(
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }
+                return null;
+              }).toList(),
             ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IterableProperty<ExerciseProgressData>('data', data));
+    properties.add(DoubleProperty('height', height));
   }
 }

@@ -24,7 +24,7 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
       vsync: this,
     )..repeat(reverse: true);
 
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+    _pulseAnimation = Tween<double>(begin: 1, end: 1.05).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
@@ -50,7 +50,7 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
     final isAlmostDone = restTimer.remainingSeconds <= 10;
 
     return ScaleTransition(
-      scale: isAlmostDone ? _pulseAnimation : const AlwaysStoppedAnimation(1.0),
+      scale: isAlmostDone ? _pulseAnimation : const AlwaysStoppedAnimation(1),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
@@ -113,7 +113,7 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
                           Colors.white,
                         ),
                       ),
-                      Icon(
+                      const Icon(
                         Icons.timer,
                         color: Colors.white,
                         size: 16,

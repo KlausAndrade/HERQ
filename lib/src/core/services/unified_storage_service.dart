@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,9 +27,8 @@ abstract class UnifiedStorageService {
 
 /// Mobile implementation using Drift database
 class MobileStorageService implements UnifiedStorageService {
-  final AppDatabase database;
-
   MobileStorageService(this.database);
+  final AppDatabase database;
 
   @override
   Future<List<Map<String, dynamic>>> getWorkoutSessions() async {
@@ -116,7 +115,9 @@ class MobileStorageService implements UnifiedStorageService {
       final updatedPrefs = {...currentPrefs, ...preferences};
 
       final success = await prefs.setString(
-          'herq_user_preferences', jsonEncode(updatedPrefs));
+        'herq_user_preferences',
+        jsonEncode(updatedPrefs),
+      );
 
       return success;
     } catch (e) {
@@ -171,9 +172,8 @@ class MobileStorageService implements UnifiedStorageService {
 /// Web implementation using localStorage
 class WebStorageServiceImpl implements UnifiedStorageService {
   @override
-  Future<List<Map<String, dynamic>>> getWorkoutSessions() async {
-    return WebStorageService.getWorkoutSessions();
-  }
+  Future<List<Map<String, dynamic>>> getWorkoutSessions() async =>
+      WebStorageService.getWorkoutSessions();
 
   @override
   Future<bool> saveWorkoutSession(Map<String, dynamic> session) async {
@@ -183,9 +183,8 @@ class WebStorageServiceImpl implements UnifiedStorageService {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getExercises() async {
-    return WebStorageService.getExercises();
-  }
+  Future<List<Map<String, dynamic>>> getExercises() async =>
+      WebStorageService.getExercises();
 
   @override
   Future<bool> saveExercise(Map<String, dynamic> exercise) async {
@@ -203,9 +202,8 @@ class WebStorageServiceImpl implements UnifiedStorageService {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getTemplates() async {
-    return WebStorageService.getTemplates();
-  }
+  Future<List<Map<String, dynamic>>> getTemplates() async =>
+      WebStorageService.getTemplates();
 
   @override
   Future<bool> saveTemplate(Map<String, dynamic> template) async {
@@ -223,9 +221,8 @@ class WebStorageServiceImpl implements UnifiedStorageService {
   }
 
   @override
-  Future<Map<String, dynamic>> getUserPreferences() async {
-    return WebStorageService.getUserPreferences();
-  }
+  Future<Map<String, dynamic>> getUserPreferences() async =>
+      WebStorageService.getUserPreferences();
 
   @override
   Future<bool> updatePreferences(Map<String, dynamic> preferences) async {
@@ -244,14 +241,12 @@ class WebStorageServiceImpl implements UnifiedStorageService {
   }
 
   @override
-  Future<Map<String, dynamic>?> exportData() async {
-    return WebStorageService.exportAllData();
-  }
+  Future<Map<String, dynamic>?> exportData() async =>
+      WebStorageService.exportAllData();
 
   @override
-  Future<bool> importData(Map<String, dynamic> data) async {
-    return WebStorageService.importData(data);
-  }
+  Future<bool> importData(Map<String, dynamic> data) async =>
+      WebStorageService.importData(data);
 }
 
 /// Provider for unified storage service

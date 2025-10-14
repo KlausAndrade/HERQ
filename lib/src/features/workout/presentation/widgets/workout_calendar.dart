@@ -3,19 +3,28 @@ import 'package:intl/intl.dart';
 import '../../../../core/database/database.dart';
 
 class WorkoutCalendar extends StatefulWidget {
+  const WorkoutCalendar({
+    required this.workouts,
+    super.key,
+    this.onDaySelected,
+    this.onWorkoutTap,
+  });
   final List<WorkoutSession> workouts;
   final Function(DateTime)? onDaySelected;
   final Function(WorkoutSession)? onWorkoutTap;
 
-  const WorkoutCalendar({
-    super.key,
-    required this.workouts,
-    this.onDaySelected,
-    this.onWorkoutTap,
-  });
-
   @override
   State<WorkoutCalendar> createState() => _WorkoutCalendarState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IterableProperty<WorkoutSession>('workouts', workouts));
+    properties.add(ObjectFlagProperty<Function(DateTime p1)?>.has(
+        'onDaySelected', onDaySelected));
+    properties.add(ObjectFlagProperty<Function(WorkoutSession p1)?>.has(
+        'onWorkoutTap', onWorkoutTap));
+  }
 }
 
 class _WorkoutCalendarState extends State<WorkoutCalendar> {
@@ -29,72 +38,68 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Month Navigation
-        _buildMonthNavigation(),
-
-        // Calendar Grid
-        Expanded(
-          child: _buildCalendarGrid(),
-        ),
-
-        // Selected Day Workouts
-        if (_selectedDay != null) _buildSelectedDayWorkouts(),
-      ],
-    );
-  }
-
-  Widget _buildMonthNavigation() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).dividerColor,
-            width: 1,
-          ),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget build(BuildContext context) => Column(
         children: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _focusedMonth = DateTime(
-                  _focusedMonth.year,
-                  _focusedMonth.month - 1,
-                );
-              });
-            },
-            icon: const Icon(Icons.chevron_left),
+          // Month Navigation
+          _buildMonthNavigation(),
+
+          // Calendar Grid
+          Expanded(
+            child: _buildCalendarGrid(),
           ),
-          Text(
-            DateFormat('MMMM y').format(_focusedMonth),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          IconButton(
-            onPressed: _canGoToNextMonth()
-                ? () {
-                    setState(() {
-                      _focusedMonth = DateTime(
-                        _focusedMonth.year,
-                        _focusedMonth.month + 1,
-                      );
-                    });
-                  }
-                : null,
-            icon: const Icon(Icons.chevron_right),
-          ),
+
+          // Selected Day Workouts
+          if (_selectedDay != null) _buildSelectedDayWorkouts(),
         ],
-      ),
-    );
-  }
+      );
+
+  Widget _buildMonthNavigation() => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color:
+              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+          border: Border(
+            bottom: BorderSide(
+              color: Theme.of(context).dividerColor,
+            ),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _focusedMonth = DateTime(
+                    _focusedMonth.year,
+                    _focusedMonth.month - 1,
+                  );
+                });
+              },
+              icon: const Icon(Icons.chevron_left),
+            ),
+            Text(
+              DateFormat('MMMM y').format(_focusedMonth),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            IconButton(
+              onPressed: _canGoToNextMonth()
+                  ? () {
+                      setState(() {
+                        _focusedMonth = DateTime(
+                          _focusedMonth.year,
+                          _focusedMonth.month + 1,
+                        );
+                      });
+                    }
+                  : null,
+              icon: const Icon(Icons.chevron_right),
+            ),
+          ],
+        ),
+      );
 
   bool _canGoToNextMonth() {
     final now = DateTime.now();
@@ -104,8 +109,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   Widget _buildCalendarGrid() {
     final daysInMonth = _getDaysInMonth();
-    final firstDayOfMonth =
-        DateTime(_focusedMonth.year, _focusedMonth.month, 1);
+    final firstDayOfMonth = DateTime(_focusedMonth.year, _focusedMonth.month);
     final firstWeekday = firstDayOfMonth.weekday % 7; // 0 = Sunday
 
     final workoutsByDate = _groupWorkoutsByDate();
@@ -114,7 +118,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
-        childAspectRatio: 1,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
@@ -196,7 +199,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       textColor = Theme.of(context).colorScheme.onPrimaryContainer;
     }
 
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: backgroundColor,
         border: borderColor != null
@@ -277,11 +280,13 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+          color: Theme.of(context)
+              .colorScheme
+              .surfaceContainerHighest
+              .withOpacity(0.5),
           border: Border(
             top: BorderSide(
               color: Theme.of(context).dividerColor,
-              width: 1,
             ),
           ),
         ),
@@ -299,11 +304,13 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     return Container(
       constraints: const BoxConstraints(maxHeight: 200),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withOpacity(0.5),
         border: Border(
           top: BorderSide(
             color: Theme.of(context).dividerColor,
-            width: 1,
           ),
         ),
       ),
@@ -363,9 +370,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     );
   }
 
-  int _getDaysInMonth() {
-    return DateTime(_focusedMonth.year, _focusedMonth.month + 1, 0).day;
-  }
+  int _getDaysInMonth() =>
+      DateTime(_focusedMonth.year, _focusedMonth.month + 1, 0).day;
 
   String _getWeekdayName(int weekday) {
     const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -377,15 +383,12 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     return _isSameDay(date, now);
   }
 
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
+  bool _isSameDay(DateTime date1, DateTime date2) =>
+      date1.year == date2.year &&
+      date1.month == date2.month &&
+      date1.day == date2.day;
 
-  String _dateKey(DateTime date) {
-    return DateFormat('yyyy-MM-dd').format(date);
-  }
+  String _dateKey(DateTime date) => DateFormat('yyyy-MM-dd').format(date);
 
   Map<String, List<WorkoutSession>> _groupWorkoutsByDate() {
     final Map<String, List<WorkoutSession>> grouped = {};

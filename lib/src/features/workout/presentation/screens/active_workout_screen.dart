@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:herq/l10n/app_localizations.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
-import 'package:herq/src/core/services/notification_service.dart';
 import '../providers/active_workout_provider.dart';
 import '../widgets/exercise_picker_dialog.dart';
 import '../widgets/exercise_variant_picker.dart';
@@ -23,6 +23,12 @@ class ActiveWorkoutScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<ActiveWorkoutScreen> createState() =>
       _ActiveWorkoutScreenState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('templateId', templateId));
+  }
 }
 
 class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
@@ -109,7 +115,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     super.dispose();
   }
 
-  void _handleBackButtonPressed(BuildContext context) async {
+  Future<void> _handleBackButtonPressed(BuildContext context) async {
     final activeWorkout = ref.read(activeWorkoutProvider);
 
     if (activeWorkout == null) {
@@ -240,7 +246,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                     itemBuilder: (context, index) {
                       final exercise = activeWorkout.exercises[index];
                       // Create a key for each exercise if it doesn't exist
-                      _exerciseKeys.putIfAbsent(index, () => GlobalKey());
+                      _exerciseKeys.putIfAbsent(index, GlobalKey.new);
                       return ReorderableDelayedDragStartListener(
                         key: ValueKey('exercise-${exercise.id}-$index'),
                         index: index,
@@ -271,7 +277,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                             if (updatedSet.isCompleted && !oldSet.isCompleted) {
                               // Wait for state to update
                               await Future.delayed(
-                                  const Duration(milliseconds: 300));
+                                const Duration(milliseconds: 300),
+                              );
                               final updatedWorkout =
                                   ref.read(activeWorkoutProvider);
                               if (updatedWorkout != null) {
@@ -330,7 +337,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size(4, 4),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -357,7 +366,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(0, 48),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                           ),
                           child: Text(
                             S.of(context)!.finishWorkout,
@@ -390,7 +401,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
         ],
       );
 
-  void _showAddExerciseDialog(BuildContext context) async {
+  Future<void> _showAddExerciseDialog(BuildContext context) async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => const ExercisePickerDialog(),
@@ -436,7 +447,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   }
 
   void _showIncompleteExercisesWarning(
-      BuildContext context, List<int> incompleteExercises) {
+    BuildContext context,
+    List<int> incompleteExercises,
+  ) {
     final activeWorkout = ref.read(activeWorkoutProvider);
     if (activeWorkout == null) return;
 
@@ -568,7 +581,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       ),
     );
 
-    if (confirmed == true && mounted) {
+    if (confirmed ?? false && mounted) {
       // Navigate to home first
       context.go('/');
       // Then force cleanup in the background
@@ -603,16 +616,16 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       totalVolume: workout.exercises
           .expand((e) => e.sets)
           .where((s) => s.isCompleted && s.weight != null)
-          .fold(0.0, (sum, s) => sum + (s.weight! * s.reps)),
+          .fold(0, (sum, s) => sum + (s.weight! * s.reps)),
       totalTonnage: workout.exercises
           .expand((e) => e.sets)
           .where((s) => s.isCompleted && s.weight != null)
-          .fold(0.0, (sum, s) => sum + (s.weight! * s.reps)),
+          .fold(0, (sum, s) => sum + (s.weight! * s.reps)),
       exercises: workout.exercises.map((e) {
         final completedSets = e.sets.where((s) => s.isCompleted).toList();
         final exerciseVolume = completedSets
             .where((s) => s.weight != null)
-            .fold<double>(0.0, (sum, s) => sum + (s.weight! * s.reps));
+            .fold<double>(0, (sum, s) => sum + (s.weight! * s.reps));
         final maxWeight = completedSets
             .map((s) => s.weight)
             .whereType<double>()
@@ -630,7 +643,6 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       prs: const [],
       achievements: WorkoutAchievements(
         perfectCompletion: workout.isFullyCompleted(),
-        streak: 0,
       ),
     );
 
@@ -696,10 +708,14 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                   Text('You made changes during this workout:'),
                   SizedBox(height: 8),
                   Text('• Reordered exercises', style: TextStyle(fontSize: 13)),
-                  Text('• Added or removed exercises',
-                      style: TextStyle(fontSize: 13)),
-                  Text('• Added or removed sets',
-                      style: TextStyle(fontSize: 13)),
+                  Text(
+                    '• Added or removed exercises',
+                    style: TextStyle(fontSize: 13),
+                  ),
+                  Text(
+                    '• Added or removed sets',
+                    style: TextStyle(fontSize: 13),
+                  ),
                   SizedBox(height: 12),
                   Text('These changes will be saved in your workout history.'),
                 ],
@@ -761,7 +777,6 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           controller: _timerController,
           focusNode: _timerFocusNode,
           keyboardType: TextInputType.number,
-          textAlign: TextAlign.start,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
               ),
@@ -781,11 +796,13 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.primary, width: 2),
+                color: Theme.of(context).colorScheme.primary,
+                width: 2,
+              ),
             ),
             isDense: true,
           ),
-          onSubmitted: (value) => _saveTimerEdit(value),
+          onSubmitted: _saveTimerEdit,
           onTapOutside: (event) {
             _saveTimerEdit(_timerController.text);
           },
@@ -907,13 +924,13 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 
 class _ExerciseCard extends ConsumerWidget {
   const _ExerciseCard({
-    super.key,
     required this.exercise,
     required this.exerciseIndex,
     required this.isExpanded,
     required this.onTap,
     required this.onSetChanged,
     required this.onAddSet,
+    super.key,
     this.showDragHandle = false,
   });
   final ActiveExercise exercise;
@@ -994,7 +1011,9 @@ class _ExerciseCard extends ConsumerWidget {
                           Text(
                             exercise.name,
                             style: const TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 15),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -1017,7 +1036,9 @@ class _ExerciseCard extends ConsumerWidget {
                                 Flexible(
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 6, vertical: 1),
+                                      horizontal: 6,
+                                      vertical: 1,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Theme.of(context)
                                           .colorScheme
@@ -1029,11 +1050,13 @@ class _ExerciseCard extends ConsumerWidget {
                                       [
                                         if (exercise.equipmentUsed != null)
                                           _getEquipmentShortName(
-                                              exercise.equipmentUsed!),
+                                            exercise.equipmentUsed!,
+                                          ),
                                         if (exercise.variantType != null &&
                                             exercise.variantType != 'standard')
                                           _getVariantShortName(
-                                              exercise.variantType!),
+                                            exercise.variantType!,
+                                          ),
                                       ].join(' • '),
                                       style: TextStyle(
                                         fontSize: 10,
@@ -1097,7 +1120,9 @@ class _ExerciseCard extends ConsumerWidget {
                     // Rest Timer Controls
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 6),
+                        horizontal: 20,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(10),
@@ -1106,7 +1131,6 @@ class _ExerciseCard extends ConsumerWidget {
                               .colorScheme
                               .outline
                               .withOpacity(0.15),
-                          width: 1,
                         ),
                       ),
                       child: Row(
@@ -1157,7 +1181,9 @@ class _ExerciseCard extends ConsumerWidget {
                           // Compact value display
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Theme.of(context)
                                   .colorScheme
@@ -1297,21 +1323,23 @@ class _ExerciseCard extends ConsumerWidget {
                         onPressed: onAddSet,
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                         ),
-                        child: Row(
+                        child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.add, size: 18),
-                            const SizedBox(width: 6),
+                            Icon(Icons.add, size: 18),
+                            SizedBox(width: 6),
                             Flexible(
                               child: Text(
                                 'Add Set',
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 13),
+                                style: TextStyle(fontSize: 13),
                               ),
                             ),
                           ],
@@ -1326,4 +1354,18 @@ class _ExerciseCard extends ConsumerWidget {
           ],
         ),
       );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<ActiveExercise>('exercise', exercise));
+    properties.add(IntProperty('exerciseIndex', exerciseIndex));
+    properties.add(DiagnosticsProperty<bool>('isExpanded', isExpanded));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
+    properties.add(ObjectFlagProperty<
+            Future<void> Function(int setIndex, ActiveSet updatedSet)>.has(
+        'onSetChanged', onSetChanged));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onAddSet', onAddSet));
+    properties.add(DiagnosticsProperty<bool>('showDragHandle', showDragHandle));
+  }
 }

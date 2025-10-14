@@ -8,14 +8,20 @@ import '../providers/social_providers.dart';
 
 class PostCommentsScreen extends ConsumerStatefulWidget {
   const PostCommentsScreen({
-    super.key,
     required this.postId,
+    super.key,
   });
 
   final String postId;
 
   @override
   ConsumerState<PostCommentsScreen> createState() => _PostCommentsScreenState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('postId', postId));
+  }
 }
 
 class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
@@ -65,7 +71,8 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                           : null,
                       child: post.userAvatar == null
                           ? Text(
-                              (post.userName ?? post.userId)[0].toUpperCase())
+                              (post.userName ?? post.userId)[0].toUpperCase(),
+                            )
                           : null,
                     ),
                     const SizedBox(width: 12),
@@ -265,9 +272,11 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                       }
                       return CircleAvatar(
                         radius: 16,
-                        child: Text(profile?.displayName?[0].toUpperCase() ??
-                            currentUser?.id[0].toUpperCase() ??
-                            '?'),
+                        child: Text(
+                          profile?.displayName?[0].toUpperCase() ??
+                              currentUser?.id[0].toUpperCase() ??
+                              '?',
+                        ),
                       );
                     },
                     loading: () => const CircleAvatar(

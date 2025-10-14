@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:herq/src/core/database/database.dart';
 
 void main() {
@@ -21,8 +21,11 @@ void main() {
         .getSingleOrNull();
 
     expect(tricep, isNot(null), reason: 'tricep_dips should be inserted');
-    expect(dbsp, isNot(null),
-        reason: 'dumbbell_shoulder_press should be inserted');
+    expect(
+      dbsp,
+      isNot(null),
+      reason: 'dumbbell_shoulder_press should be inserted',
+    );
     expect(scr, isNot(null), reason: 'seated_cable_rows should be inserted');
 
     // Check variant/parent relationships

@@ -8,7 +8,8 @@ final exercisesWebProvider =
     FutureProvider<List<Map<String, dynamic>>>((ref) async {
   if (!kIsWeb) {
     throw UnimplementedError(
-        'Use mobile exercise provider for non-web platforms');
+      'Use mobile exercise provider for non-web platforms',
+    );
   }
 
   // Web: Fetch from Supabase
@@ -22,7 +23,8 @@ final exerciseByIdProvider =
     FutureProvider.family<Map<String, dynamic>?, String>((ref, id) async {
   if (!kIsWeb) {
     throw UnimplementedError(
-        'Use mobile exercise provider for non-web platforms');
+      'Use mobile exercise provider for non-web platforms',
+    );
   }
 
   final supabase = ref.watch(supabaseClientProvider);
@@ -37,7 +39,8 @@ final exercisesByCategoryProvider =
         (ref, category) async {
   if (!kIsWeb) {
     throw UnimplementedError(
-        'Use mobile exercise provider for non-web platforms');
+      'Use mobile exercise provider for non-web platforms',
+    );
   }
 
   final supabase = ref.watch(supabaseClientProvider);

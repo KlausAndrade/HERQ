@@ -1,16 +1,8 @@
 /// Models for advanced analytics and gamification
+library;
 
 /// Overall analytics data for a user
 class AnalyticsData {
-  final PowerScore powerScore;
-  final List<PRStreak> prStreaks;
-  final List<NearMissPR> nearMisses;
-  final List<PRPrediction> predictions;
-  final List<VolumeAnalysis> volumeTrends;
-  final List<ExerciseProgress> exerciseProgress;
-  final PlateauAnalysis plateauAnalysis;
-  final StrengthBalance strengthBalance;
-
   const AnalyticsData({
     required this.powerScore,
     required this.prStreaks,
@@ -21,17 +13,18 @@ class AnalyticsData {
     required this.plateauAnalysis,
     required this.strengthBalance,
   });
+  final PowerScore powerScore;
+  final List<PRStreak> prStreaks;
+  final List<NearMissPR> nearMisses;
+  final List<PRPrediction> predictions;
+  final List<VolumeAnalysis> volumeTrends;
+  final List<ExerciseProgress> exerciseProgress;
+  final PlateauAnalysis plateauAnalysis;
+  final StrengthBalance strengthBalance;
 }
 
 /// User's overall strength score
 class PowerScore {
-  final double current;
-  final double change30Days;
-  final double changeAllTime;
-  final int rank; // Rank among all users
-  final String tier; // Bronze, Silver, Gold, Platinum, Diamond
-  final int pointsToNextTier;
-
   const PowerScore({
     required this.current,
     required this.change30Days,
@@ -40,6 +33,12 @@ class PowerScore {
     required this.tier,
     required this.pointsToNextTier,
   });
+  final double current;
+  final double change30Days;
+  final double changeAllTime;
+  final int rank; // Rank among all users
+  final String tier; // Bronze, Silver, Gold, Platinum, Diamond
+  final int pointsToNextTier;
 
   String get tierEmoji {
     switch (tier.toLowerCase()) {
@@ -61,13 +60,6 @@ class PowerScore {
 
 /// Tracking consecutive PRs
 class PRStreak {
-  final String exerciseId;
-  final String exerciseName;
-  final int currentStreak;
-  final int longestStreak;
-  final DateTime? lastPRDate;
-  final DateTime? nextPossiblePR;
-
   const PRStreak({
     required this.exerciseId,
     required this.exerciseName,
@@ -76,6 +68,12 @@ class PRStreak {
     this.lastPRDate,
     this.nextPossiblePR,
   });
+  final String exerciseId;
+  final String exerciseName;
+  final int currentStreak;
+  final int longestStreak;
+  final DateTime? lastPRDate;
+  final DateTime? nextPossiblePR;
 
   bool get isActive => currentStreak > 0;
   bool get isOnFire => currentStreak >= 3;
@@ -83,15 +81,6 @@ class PRStreak {
 
 /// Near-miss PRs to motivate users
 class NearMissPR {
-  final String exerciseId;
-  final String exerciseName;
-  final double currentBest;
-  final double attemptedWeight;
-  final int attemptedReps;
-  final double percentageClose;
-  final DateTime attemptDate;
-  final String motivationalMessage;
-
   const NearMissPR({
     required this.exerciseId,
     required this.exerciseName,
@@ -102,6 +91,14 @@ class NearMissPR {
     required this.attemptDate,
     required this.motivationalMessage,
   });
+  final String exerciseId;
+  final String exerciseName;
+  final double currentBest;
+  final double attemptedWeight;
+  final int attemptedReps;
+  final double percentageClose;
+  final DateTime attemptDate;
+  final String motivationalMessage;
 
   /// How close the attempt was (0-100%)
   bool get isVeryClose => percentageClose >= 90;
@@ -110,15 +107,6 @@ class NearMissPR {
 
 /// AI-powered PR predictions
 class PRPrediction {
-  final String exerciseId;
-  final String exerciseName;
-  final double currentPR;
-  final double predictedPR;
-  final DateTime predictedDate;
-  final double confidence; // 0-100%
-  final String reasoning;
-  final List<String> recommendations;
-
   const PRPrediction({
     required this.exerciseId,
     required this.exerciseName,
@@ -129,6 +117,14 @@ class PRPrediction {
     required this.reasoning,
     required this.recommendations,
   });
+  final String exerciseId;
+  final String exerciseName;
+  final double currentPR;
+  final double predictedPR;
+  final DateTime predictedDate;
+  final double confidence; // 0-100%
+  final String reasoning;
+  final List<String> recommendations;
 
   double get improvement => predictedPR - currentPR;
   double get improvementPercentage => (improvement / currentPR) * 100;
@@ -137,13 +133,6 @@ class PRPrediction {
 
 /// Volume analysis over time
 class VolumeAnalysis {
-  final DateTime date;
-  final String period; // 'day', 'week', 'month'
-  final double totalVolume;
-  final Map<String, double> volumeByMuscleGroup;
-  final double change; // Compared to previous period
-  final bool isIncreasing;
-
   const VolumeAnalysis({
     required this.date,
     required this.period,
@@ -152,22 +141,16 @@ class VolumeAnalysis {
     required this.change,
     required this.isIncreasing,
   });
+  final DateTime date;
+  final String period; // 'day', 'week', 'month'
+  final double totalVolume;
+  final Map<String, double> volumeByMuscleGroup;
+  final double change; // Compared to previous period
+  final bool isIncreasing;
 }
 
 /// Progress tracking for specific exercises
 class ExerciseProgress {
-  final String exerciseId;
-  final String exerciseName;
-  final double startWeight;
-  final double currentWeight;
-  final double totalGain;
-  final double percentageGain;
-  final int workoutCount;
-  final DateTime firstWorkout;
-  final DateTime lastWorkout;
-  final TrendDirection trend;
-  final List<ProgressDataPoint> history;
-
   const ExerciseProgress({
     required this.exerciseId,
     required this.exerciseName,
@@ -181,46 +164,47 @@ class ExerciseProgress {
     required this.trend,
     required this.history,
   });
+  final String exerciseId;
+  final String exerciseName;
+  final double startWeight;
+  final double currentWeight;
+  final double totalGain;
+  final double percentageGain;
+  final int workoutCount;
+  final DateTime firstWorkout;
+  final DateTime lastWorkout;
+  final TrendDirection trend;
+  final List<ProgressDataPoint> history;
 }
 
 class ProgressDataPoint {
-  final DateTime date;
-  final double weight;
-  final int reps;
-  final bool isPR;
-
   const ProgressDataPoint({
     required this.date,
     required this.weight,
     required this.reps,
     required this.isPR,
   });
+  final DateTime date;
+  final double weight;
+  final int reps;
+  final bool isPR;
 }
 
 enum TrendDirection { increasing, stable, decreasing, plateau }
 
 /// Plateau detection and recommendations
 class PlateauAnalysis {
-  final List<PlateauDetection> plateaus;
-  final int totalPlateaus;
-  final DateTime? lastPlateauBroken;
-
   const PlateauAnalysis({
     required this.plateaus,
     required this.totalPlateaus,
     this.lastPlateauBroken,
   });
+  final List<PlateauDetection> plateaus;
+  final int totalPlateaus;
+  final DateTime? lastPlateauBroken;
 }
 
 class PlateauDetection {
-  final String exerciseId;
-  final String exerciseName;
-  final int weeksStagnant;
-  final double currentWeight;
-  final DateTime startDate;
-  final PlateauSeverity severity;
-  final List<String> recommendations;
-
   const PlateauDetection({
     required this.exerciseId,
     required this.exerciseName,
@@ -230,32 +214,32 @@ class PlateauDetection {
     required this.severity,
     required this.recommendations,
   });
+  final String exerciseId;
+  final String exerciseName;
+  final int weeksStagnant;
+  final double currentWeight;
+  final DateTime startDate;
+  final PlateauSeverity severity;
+  final List<String> recommendations;
 }
 
 enum PlateauSeverity { mild, moderate, severe }
 
 /// Strength balance across muscle groups
 class StrengthBalance {
-  final Map<String, double> volumeDistribution; // Percentage per muscle group
-  final List<MuscleGroupBalance> imbalances;
-  final double balanceScore; // 0-100, higher is more balanced
-  final List<String> recommendations;
-
   const StrengthBalance({
     required this.volumeDistribution,
     required this.imbalances,
     required this.balanceScore,
     required this.recommendations,
   });
+  final Map<String, double> volumeDistribution; // Percentage per muscle group
+  final List<MuscleGroupBalance> imbalances;
+  final double balanceScore; // 0-100, higher is more balanced
+  final List<String> recommendations;
 }
 
 class MuscleGroupBalance {
-  final String muscleGroup;
-  final double currentPercentage;
-  final double idealPercentage;
-  final double difference;
-  final BalanceStatus status;
-
   const MuscleGroupBalance({
     required this.muscleGroup,
     required this.currentPercentage,
@@ -263,12 +247,31 @@ class MuscleGroupBalance {
     required this.difference,
     required this.status,
   });
+  final String muscleGroup;
+  final double currentPercentage;
+  final double idealPercentage;
+  final double difference;
+  final BalanceStatus status;
 }
 
 enum BalanceStatus { undertrained, balanced, overtrained }
 
 /// Weekly/Monthly challenges
 class Challenge {
+  const Challenge({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.type,
+    required this.startDate,
+    required this.endDate,
+    required this.targetValue,
+    required this.currentProgress,
+    required this.exerciseId,
+    required this.rewardPoints,
+    required this.isCompleted,
+    this.exerciseName,
+  });
   final String id;
   final String title;
   final String description;
@@ -281,21 +284,6 @@ class Challenge {
   final String? exerciseName;
   final int rewardPoints;
   final bool isCompleted;
-
-  const Challenge({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.type,
-    required this.startDate,
-    required this.endDate,
-    required this.targetValue,
-    required this.currentProgress,
-    required this.exerciseId,
-    this.exerciseName,
-    required this.rewardPoints,
-    required this.isCompleted,
-  });
 
   double get progressPercentage =>
       (currentProgress / targetValue * 100).clamp(0, 100);
@@ -313,6 +301,17 @@ enum ChallengeType {
 
 /// Achievement/Badge system
 class Achievement {
+  const Achievement({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.rarity,
+    required this.points,
+    required this.progress,
+    required this.requirement,
+    this.unlockedAt,
+  });
   final String id;
   final String title;
   final String description;
@@ -322,18 +321,6 @@ class Achievement {
   final DateTime? unlockedAt;
   final double progress; // 0-100%
   final String requirement;
-
-  const Achievement({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.icon,
-    required this.rarity,
-    required this.points,
-    this.unlockedAt,
-    required this.progress,
-    required this.requirement,
-  });
 
   bool get isUnlocked => unlockedAt != null;
 }

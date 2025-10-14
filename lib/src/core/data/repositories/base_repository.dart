@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-
 import '../dto/workout_dto.dart';
 
 /// Base repository interface for workout data operations

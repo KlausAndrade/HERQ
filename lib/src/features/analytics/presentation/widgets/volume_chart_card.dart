@@ -5,12 +5,11 @@ import '../../domain/models/analytics_models.dart';
 
 /// Card showing volume trends over time with chart
 class VolumeChartCard extends StatelessWidget {
-  final List<VolumeAnalysis> volumeTrends;
-
   const VolumeChartCard({
     required this.volumeTrends,
     super.key,
   });
+  final List<VolumeAnalysis> volumeTrends;
 
   @override
   Widget build(BuildContext context) {
@@ -44,34 +43,29 @@ class VolumeChartCard extends StatelessWidget {
               height: 200,
               child: LineChart(
                 LineChartData(
-                  gridData: FlGridData(show: true),
-                  titlesData: FlTitlesData(
-                    show: true,
+                  titlesData: const FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(showTitles: true),
                     ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
+                    bottomTitles: AxisTitles(),
+                    rightTitles: AxisTitles(),
+                    topTitles: AxisTitles(),
                   ),
                   lineBarsData: [
                     LineChartBarData(
-                      spots: volumeTrends.asMap().entries.map((entry) {
-                        return FlSpot(
-                          entry.key.toDouble(),
-                          entry.value.totalVolume / 1000, // Convert to tons
-                        );
-                      }).toList(),
+                      spots: volumeTrends
+                          .asMap()
+                          .entries
+                          .map(
+                            (entry) => FlSpot(
+                              entry.key.toDouble(),
+                              entry.value.totalVolume / 1000, // Convert to tons
+                            ),
+                          )
+                          .toList(),
                       isCurved: true,
                       color: theme.colorScheme.primary,
                       barWidth: 3,
-                      dotData: FlDotData(show: true),
                     ),
                   ],
                 ),
@@ -81,5 +75,12 @@ class VolumeChartCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(IterableProperty<VolumeAnalysis>('volumeTrends', volumeTrends));
   }
 }

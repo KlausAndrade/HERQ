@@ -25,7 +25,8 @@ Future<void> fixDisplayNames(AppDatabase db) async {
         );
 
     print(
-        '  🔧 Fixed user ${user.id}: "${user.displayName}" → "Unknown Athlete"');
+      '  🔧 Fixed user ${user.id}: "${user.displayName}" → "Unknown Athlete"',
+    );
     fixed++;
   }
 

@@ -7,17 +7,17 @@ const defaultFoldersData = [
   {
     'id': 'fold_ppl',
     'name': 'Push/Pull/Legs',
-    'description': 'Classic 3-day split'
+    'description': 'Classic 3-day split',
   },
   {
     'id': 'fold_phul',
     'name': 'PHUL',
-    'description': 'Power Hypertrophy Upper Lower'
+    'description': 'Power Hypertrophy Upper Lower',
   },
   {
     'id': 'fold_hiit',
     'name': 'HIIT',
-    'description': 'High intensity interval training'
+    'description': 'High intensity interval training',
   },
   {'id': 'fold_yoga', 'name': 'YOGA', 'description': 'Yoga flows and routines'},
   {'id': 'fold_circuit', 'name': 'Circuit Training'},
@@ -28,12 +28,12 @@ const defaultFoldersData = [
   {
     'id': 'fold_calisthenics',
     'name': 'Calisthenics',
-    'description': 'Bodyweight strength & skill training'
+    'description': 'Bodyweight strength & skill training',
   },
   {
     'id': 'fold_acroyoga',
     'name': 'AcroYoga',
-    'description': 'Partner acrobatics and therapeutic flying'
+    'description': 'Partner acrobatics and therapeutic flying',
   },
 ];
 
@@ -50,7 +50,7 @@ const defaultTemplatesData = [
       'overhead_press',
       'lateral_raises',
       'tricep_dips',
-      'close_grip_bench_press'
+      'close_grip_bench_press',
     ],
     'tags': ['push', 'strength'],
     'estimatedDurationMinutes': 75,
@@ -68,7 +68,7 @@ const defaultTemplatesData = [
       'barbell_rows',
       'lat_pulldowns',
       'face_pulls',
-      'barbell_curls'
+      'barbell_curls',
     ],
     'tags': ['pull', 'strength'],
     'estimatedDurationMinutes': 75,
@@ -87,7 +87,7 @@ const defaultTemplatesData = [
       'leg_curls',
       'calf_raises',
       'walking_lunges',
-      'planks'
+      'planks',
     ],
     'tags': ['legs', 'strength'],
     'estimatedDurationMinutes': 80,
@@ -103,7 +103,7 @@ const defaultTemplatesData = [
       'barbell_bench_press',
       'weighted_pull_up',
       'overhead_press',
-      'barbell_rows'
+      'barbell_rows',
     ],
     'tags': ['phul', 'power'],
     'isDefault': true,
@@ -126,7 +126,7 @@ const defaultTemplatesData = [
       'incline_dumbbell_press',
       'lat_pulldowns',
       'dumbbell_shoulder_press',
-      'seated_cable_rows'
+      'seated_cable_rows',
     ],
     'tags': ['phul', 'hypertrophy'],
     'isDefault': true,
@@ -140,7 +140,7 @@ const defaultTemplatesData = [
       'leg_press',
       'romanian_deadlift',
       'leg_curls',
-      'walking_lunges'
+      'walking_lunges',
     ],
     'tags': ['phul', 'hypertrophy'],
     'isDefault': true,
@@ -176,7 +176,7 @@ const defaultTemplatesData = [
       'sun_salutation_a',
       'downward_dog',
       'cobra_pose',
-      'child_pose'
+      'child_pose',
     ],
     'tags': ['yoga', 'flow', 'morning'],
     'estimatedDurationMinutes': 20,
@@ -257,7 +257,7 @@ const defaultTemplatesData = [
       'squat',
       'planks',
       'bridge_pose',
-      'burpees'
+      'burpees',
     ],
     'tags': ['calisthenics', 'beginner', 'bodyweight', 'full_body'],
     'estimatedDurationMinutes': 40,
@@ -274,7 +274,7 @@ const defaultTemplatesData = [
       'push_up',
       'false_grip_pull_up',
       'weighted_pull_up',
-      'hollow_body_hold'
+      'hollow_body_hold',
     ],
     'tags': ['calisthenics', 'upper', 'strength'],
     'estimatedDurationMinutes': 50,
@@ -290,7 +290,7 @@ const defaultTemplatesData = [
       'handstand',
       'pseudo_planche_push_up',
       'handstand_push_up',
-      'hollow_body_hold'
+      'hollow_body_hold',
     ],
     'tags': ['calisthenics', 'skills', 'handstand'],
     'estimatedDurationMinutes': 30,
@@ -307,7 +307,7 @@ const defaultTemplatesData = [
       'romanian_deadlift',
       'hanging_leg_raises',
       'planks',
-      'mountain_climbers'
+      'mountain_climbers',
     ],
     'tags': ['calisthenics', 'core', 'legs'],
     'estimatedDurationMinutes': 45,
@@ -323,7 +323,7 @@ const defaultTemplatesData = [
       'box_jumps',
       'mountain_climbers',
       'push_up',
-      'jump_rope'
+      'jump_rope',
     ],
     'tags': ['calisthenics', 'hiit', 'conditioning'],
     'estimatedDurationMinutes': 20,
@@ -351,7 +351,7 @@ const defaultTemplatesData = [
       'reverse_bird',
       'shoulder_stand',
       'free_bird',
-      'straddle_bat'
+      'straddle_bat',
     ],
     'tags': ['acroyoga', 'balance', 'partner'],
     'estimatedDurationMinutes': 50,
@@ -367,7 +367,7 @@ const defaultTemplatesData = [
       'shoulder_mount',
       'hand_to_hand',
       'standing_star',
-      'flag_pose'
+      'flag_pose',
     ],
     'tags': ['acroyoga', 'standing', 'advanced'],
     'estimatedDurationMinutes': 40,
@@ -383,7 +383,7 @@ const defaultTemplatesData = [
       'high_flying_whale',
       'folding_leaf',
       'therapeutic_bird',
-      'washing_machine'
+      'washing_machine',
     ],
     'tags': ['acroyoga', 'flying', 'therapeutic'],
     'estimatedDurationMinutes': 55,

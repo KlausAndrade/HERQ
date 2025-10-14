@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 
 class Achievement {
-  final String id;
-  final String title;
-  final String description;
-  final IconData icon;
-  final Color color;
-  final int requiredProgress;
-  final int xpReward;
-  final AchievementCategory category;
-
   const Achievement({
     required this.id,
     required this.title,
@@ -20,6 +11,14 @@ class Achievement {
     required this.xpReward,
     required this.category,
   });
+  final String id;
+  final String title;
+  final String description;
+  final IconData icon;
+  final Color color;
+  final int requiredProgress;
+  final int xpReward;
+  final AchievementCategory category;
 }
 
 enum AchievementCategory {

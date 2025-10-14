@@ -21,6 +21,9 @@ class UserProfile extends Equatable {
     this.preferences,
   });
 
+  factory UserProfile.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileFromJson(json);
+
   final String id;
   final String displayName;
   final String email;
@@ -34,9 +37,6 @@ class UserProfile extends Equatable {
   final int maxStreak;
   final bool isPublic;
   final UserPreferences? preferences;
-
-  factory UserProfile.fromJson(Map<String, dynamic> json) =>
-      _$UserProfileFromJson(json);
   Map<String, dynamic> toJson() => _$UserProfileToJson(this);
 
   UserProfile copyWith({
@@ -53,23 +53,22 @@ class UserProfile extends Equatable {
     int? maxStreak,
     bool? isPublic,
     UserPreferences? preferences,
-  }) {
-    return UserProfile(
-      id: id ?? this.id,
-      displayName: displayName ?? this.displayName,
-      email: email ?? this.email,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
-      bio: bio ?? this.bio,
-      location: location ?? this.location,
-      joinedAt: joinedAt ?? this.joinedAt,
-      totalWorkouts: totalWorkouts ?? this.totalWorkouts,
-      totalVolume: totalVolume ?? this.totalVolume,
-      currentStreak: currentStreak ?? this.currentStreak,
-      maxStreak: maxStreak ?? this.maxStreak,
-      isPublic: isPublic ?? this.isPublic,
-      preferences: preferences ?? this.preferences,
-    );
-  }
+  }) =>
+      UserProfile(
+        id: id ?? this.id,
+        displayName: displayName ?? this.displayName,
+        email: email ?? this.email,
+        avatarUrl: avatarUrl ?? this.avatarUrl,
+        bio: bio ?? this.bio,
+        location: location ?? this.location,
+        joinedAt: joinedAt ?? this.joinedAt,
+        totalWorkouts: totalWorkouts ?? this.totalWorkouts,
+        totalVolume: totalVolume ?? this.totalVolume,
+        currentStreak: currentStreak ?? this.currentStreak,
+        maxStreak: maxStreak ?? this.maxStreak,
+        isPublic: isPublic ?? this.isPublic,
+        preferences: preferences ?? this.preferences,
+      );
 
   @override
   List<Object?> get props => [
@@ -100,15 +99,15 @@ class UserPreferences extends Equatable {
     this.notifyOnFriendWorkout = false,
   });
 
+  factory UserPreferences.fromJson(Map<String, dynamic> json) =>
+      _$UserPreferencesFromJson(json);
+
   final bool shareWorkouts;
   final bool sharePRs;
   final bool allowFriendRequests;
   final bool showInLeaderboards;
   final bool notifyOnFriendPR;
   final bool notifyOnFriendWorkout;
-
-  factory UserPreferences.fromJson(Map<String, dynamic> json) =>
-      _$UserPreferencesFromJson(json);
   Map<String, dynamic> toJson() => _$UserPreferencesToJson(this);
 
   UserPreferences copyWith({
@@ -118,17 +117,16 @@ class UserPreferences extends Equatable {
     bool? showInLeaderboards,
     bool? notifyOnFriendPR,
     bool? notifyOnFriendWorkout,
-  }) {
-    return UserPreferences(
-      shareWorkouts: shareWorkouts ?? this.shareWorkouts,
-      sharePRs: sharePRs ?? this.sharePRs,
-      allowFriendRequests: allowFriendRequests ?? this.allowFriendRequests,
-      showInLeaderboards: showInLeaderboards ?? this.showInLeaderboards,
-      notifyOnFriendPR: notifyOnFriendPR ?? this.notifyOnFriendPR,
-      notifyOnFriendWorkout:
-          notifyOnFriendWorkout ?? this.notifyOnFriendWorkout,
-    );
-  }
+  }) =>
+      UserPreferences(
+        shareWorkouts: shareWorkouts ?? this.shareWorkouts,
+        sharePRs: sharePRs ?? this.sharePRs,
+        allowFriendRequests: allowFriendRequests ?? this.allowFriendRequests,
+        showInLeaderboards: showInLeaderboards ?? this.showInLeaderboards,
+        notifyOnFriendPR: notifyOnFriendPR ?? this.notifyOnFriendPR,
+        notifyOnFriendWorkout:
+            notifyOnFriendWorkout ?? this.notifyOnFriendWorkout,
+      );
 
   @override
   List<Object?> get props => [
@@ -152,15 +150,15 @@ class FriendConnection extends Equatable {
     this.acceptedAt,
   });
 
+  factory FriendConnection.fromJson(Map<String, dynamic> json) =>
+      _$FriendConnectionFromJson(json);
+
   final String id;
   final String userId;
   final String friendId;
   final FriendStatus status;
   final DateTime createdAt;
   final DateTime? acceptedAt;
-
-  factory FriendConnection.fromJson(Map<String, dynamic> json) =>
-      _$FriendConnectionFromJson(json);
   Map<String, dynamic> toJson() => _$FriendConnectionToJson(this);
 
   @override
@@ -192,6 +190,9 @@ class FeedItem extends Equatable {
     this.metadata,
   });
 
+  factory FeedItem.fromJson(Map<String, dynamic> json) =>
+      _$FeedItemFromJson(json);
+
   final String id;
   final String userId;
   final FeedItemType type;
@@ -200,9 +201,6 @@ class FeedItem extends Equatable {
   final String? exerciseId;
   final Achievement? achievement;
   final Map<String, dynamic>? metadata;
-
-  factory FeedItem.fromJson(Map<String, dynamic> json) =>
-      _$FeedItemFromJson(json);
   Map<String, dynamic> toJson() => _$FeedItemToJson(this);
 
   @override
@@ -214,7 +212,7 @@ class FeedItem extends Equatable {
         workoutId,
         exerciseId,
         achievement,
-        metadata
+        metadata,
       ];
 }
 
@@ -243,6 +241,9 @@ class Achievement extends Equatable {
     this.badgeColor,
   });
 
+  factory Achievement.fromJson(Map<String, dynamic> json) =>
+      _$AchievementFromJson(json);
+
   final String id;
   final String name;
   final String description;
@@ -250,9 +251,6 @@ class Achievement extends Equatable {
   final DateTime unlockedAt;
   final String? iconUrl;
   final String? badgeColor;
-
-  factory Achievement.fromJson(Map<String, dynamic> json) =>
-      _$AchievementFromJson(json);
   Map<String, dynamic> toJson() => _$AchievementToJson(this);
 
   @override
@@ -284,15 +282,15 @@ class Leaderboard extends Equatable {
     required this.updatedAt,
   });
 
+  factory Leaderboard.fromJson(Map<String, dynamic> json) =>
+      _$LeaderboardFromJson(json);
+
   final String id;
   final String name;
   final LeaderboardType type;
   final Period period;
   final List<LeaderboardEntry> entries;
   final DateTime updatedAt;
-
-  factory Leaderboard.fromJson(Map<String, dynamic> json) =>
-      _$LeaderboardFromJson(json);
   Map<String, dynamic> toJson() => _$LeaderboardToJson(this);
 
   @override
@@ -330,17 +328,17 @@ class LeaderboardEntry extends Equatable {
     required this.score,
     this.avatarUrl,
     this.change,
-  });
+  }); // Position change from previous period
+
+  factory LeaderboardEntry.fromJson(Map<String, dynamic> json) =>
+      _$LeaderboardEntryFromJson(json);
 
   final String userId;
   final String displayName;
   final int rank;
   final double score;
   final String? avatarUrl;
-  final int? change; // Position change from previous period
-
-  factory LeaderboardEntry.fromJson(Map<String, dynamic> json) =>
-      _$LeaderboardEntryFromJson(json);
+  final int? change;
   Map<String, dynamic> toJson() => _$LeaderboardEntryToJson(this);
 
   @override

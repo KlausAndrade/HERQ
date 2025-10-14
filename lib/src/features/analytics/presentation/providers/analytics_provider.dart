@@ -1,9 +1,9 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../data/services/analytics_service.dart';
 import '../../domain/models/analytics_models.dart';
-import '../../../../core/providers/auth_provider.dart';
 
 /// Provider for analytics service
 final analyticsServiceProvider = Provider<AnalyticsService>((ref) {

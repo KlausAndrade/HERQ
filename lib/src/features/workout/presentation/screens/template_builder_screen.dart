@@ -4,20 +4,28 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
-import 'package:herq/src/core/services/notification_service.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
-import '../widgets/multi_exercise_picker_dialog.dart';
 import '../providers/template_providers.dart';
+import '../widgets/multi_exercise_picker_dialog.dart';
 
 class TemplateBuilderScreen extends ConsumerStatefulWidget {
-  final String? templateId; // For editing existing templates
-  final String? folderId; // Optional: preselect folder when creating
+  // Optional: preselect folder when creating
 
   const TemplateBuilderScreen({super.key, this.templateId, this.folderId});
+  final String? templateId; // For editing existing templates
+  final String? folderId;
 
   @override
   ConsumerState<TemplateBuilderScreen> createState() =>
       _TemplateBuilderScreenState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('templateId', templateId));
+    properties.add(StringProperty('folderId', folderId));
+  }
 }
 
 class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
@@ -107,7 +115,8 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            widget.templateId == null ? 'Create Template' : 'Edit Template'),
+          widget.templateId == null ? 'Create Template' : 'Edit Template',
+        ),
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _saveTemplate,
@@ -152,59 +161,63 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                   const SizedBox(height: 16),
 
                   // Category Selection
-                  Builder(builder: (context) {
-                    // Default category options; include currently selected
-                    // category if it's not already present to avoid the
-                    // DropdownButton assertion when editing templates with
-                    // a custom or seeded category (e.g., 'YOGA').
-                    final defaultCategories = [
-                      'Custom',
-                      'Push Pull Legs',
-                      'Full Body',
-                      'Upper Lower',
-                      'PHUL',
-                      'Strength',
-                      'Bodybuilding',
-                    ];
+                  Builder(
+                    builder: (context) {
+                      // Default category options; include currently selected
+                      // category if it's not already present to avoid the
+                      // DropdownButton assertion when editing templates with
+                      // a custom or seeded category (e.g., 'YOGA').
+                      final defaultCategories = [
+                        'Custom',
+                        'Push Pull Legs',
+                        'Full Body',
+                        'Upper Lower',
+                        'PHUL',
+                        'Strength',
+                        'Bodybuilding',
+                      ];
 
-                    // Build categories list and normalize entries by trimming
-                    // whitespace. Use a LinkedHashSet-like approach to preserve
-                    // insertion order while removing duplicates that differ
-                    // only by surrounding whitespace.
-                    final categories = List<String>.from(defaultCategories);
-                    final selectedTrimmed = _selectedCategory.trim();
-                    if (selectedTrimmed.isNotEmpty &&
-                        !categories.any((c) => c.trim() == selectedTrimmed)) {
-                      categories.insert(0, _selectedCategory);
-                    }
-
-                    final uniqueCategories = <String>[];
-                    for (final c in categories) {
-                      final trimmed = c.trim();
-                      if (!uniqueCategories.any((u) => u.trim() == trimmed)) {
-                        uniqueCategories.add(c);
+                      // Build categories list and normalize entries by trimming
+                      // whitespace. Use a LinkedHashSet-like approach to preserve
+                      // insertion order while removing duplicates that differ
+                      // only by surrounding whitespace.
+                      final categories = List<String>.from(defaultCategories);
+                      final selectedTrimmed = _selectedCategory.trim();
+                      if (selectedTrimmed.isNotEmpty &&
+                          !categories.any((c) => c.trim() == selectedTrimmed)) {
+                        categories.insert(0, _selectedCategory);
                       }
-                    }
 
-                    return DropdownButtonFormField<String>(
-                      value: _selectedCategory,
-                      decoration: const InputDecoration(
-                        labelText: 'Category',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: uniqueCategories
-                          .map((category) => DropdownMenuItem(
+                      final uniqueCategories = <String>[];
+                      for (final c in categories) {
+                        final trimmed = c.trim();
+                        if (!uniqueCategories.any((u) => u.trim() == trimmed)) {
+                          uniqueCategories.add(c);
+                        }
+                      }
+
+                      return DropdownButtonFormField<String>(
+                        initialValue: _selectedCategory,
+                        decoration: const InputDecoration(
+                          labelText: 'Category',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: uniqueCategories
+                            .map(
+                              (category) => DropdownMenuItem(
                                 value: category,
                                 child: Text(category),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _selectedCategory = value);
-                        }
-                      },
-                    );
-                  }),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() => _selectedCategory = value);
+                          }
+                        },
+                      );
+                    },
+                  ),
                   const SizedBox(height: 16),
 
                   // Estimated Duration
@@ -366,12 +379,14 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      ..._tags.map((tag) => Chip(
-                            label: Text(tag),
-                            onDeleted: () {
-                              setState(() => _tags.remove(tag));
-                            },
-                          )),
+                      ..._tags.map(
+                        (tag) => Chip(
+                          label: Text(tag),
+                          onDeleted: () {
+                            setState(() => _tags.remove(tag));
+                          },
+                        ),
+                      ),
                       ActionChip(
                         avatar: const Icon(Icons.add, size: 16),
                         label: const Text('Add Tag'),

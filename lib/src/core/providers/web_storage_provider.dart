@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 
 // Conditional import for web storage service
 import '../services/web_storage_service.dart'
@@ -14,9 +14,8 @@ final webStorageServiceProvider = Provider<WebStorageService?>((ref) {
 });
 
 /// Provider for checking if web storage is available
-final webStorageAvailableProvider = Provider<bool>((ref) {
-  return kIsWeb && WebStorageService.isSupported;
-});
+final webStorageAvailableProvider =
+    Provider<bool>((ref) => kIsWeb && WebStorageService.isSupported);
 
 /// Provider for storage information
 final storageInfoProvider = FutureProvider<Map<String, dynamic>>((ref) async {
@@ -216,9 +215,8 @@ class WebStorageNotifier
 /// Provider for web storage state management
 final webStorageProvider =
     StateNotifierProvider<WebStorageNotifier, AsyncValue<Map<String, dynamic>>>(
-        (ref) {
-  return WebStorageNotifier();
-});
+  (ref) => WebStorageNotifier(),
+);
 
 /// Provider for workout sessions from web storage
 final webWorkoutSessionsProvider =

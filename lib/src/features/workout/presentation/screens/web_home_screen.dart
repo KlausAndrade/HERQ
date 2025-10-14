@@ -80,8 +80,11 @@ class WebHomeScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(32),
                       child: Column(
                         children: [
-                          const Icon(Icons.add_circle_outline,
-                              size: 48, color: Colors.grey),
+                          const Icon(
+                            Icons.add_circle_outline,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
                           const SizedBox(height: 16),
                           const Text('No templates yet'),
                           const SizedBox(height: 8),
@@ -163,7 +166,8 @@ class WebHomeScreen extends ConsumerWidget {
                           '${session['total_sets'] ?? 0} sets • ${_formatDate(date)}',
                         ),
                         trailing: Text(
-                            '${session['total_volume']?.toStringAsFixed(0) ?? 0} kg'),
+                          '${session['total_volume']?.toStringAsFixed(0) ?? 0} kg',
+                        ),
                       ),
                     );
                   },
@@ -190,43 +194,49 @@ class WebHomeScreen extends ConsumerWidget {
 }
 
 class _QuickActionCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
   const _QuickActionCard({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
   });
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              Icon(icon, size: 48, color: const Color(0xFF6366F1)),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
+  Widget build(BuildContext context) => Card(
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                Icon(icon, size: 48, color: const Color(0xFF6366F1)),
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(StringProperty('title', title));
+    properties.add(StringProperty('subtitle', subtitle));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
   }
 }

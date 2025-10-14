@@ -8,7 +8,7 @@ class AppDatabase {
 
   // Keep the same named constructor to satisfy call sites. on web this
   // returns a minimal in-memory placeholder that throws on SQL operations.
-  AppDatabase.forTesting([dynamic _]) {
+  AppDatabase.forTesting([_]) {
     // no-op
   }
 
