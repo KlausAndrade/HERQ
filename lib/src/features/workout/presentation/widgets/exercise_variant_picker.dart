@@ -148,10 +148,10 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 2),
               Wrap(
                 spacing: 8,
-                runSpacing: 8,
+                runSpacing: 2,
                 children: equipmentOptions.map((equipment) {
                   final isSelected = equipment == selectedEquipment;
                   return ChoiceChip(
@@ -174,9 +174,9 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                 }).toList(),
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 6),
               const Divider(),
-              const SizedBox(height: 16),
+              const SizedBox(height: 6),
               
               // Variant Type Selection
               Text(
@@ -185,10 +185,10 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Wrap(
                 spacing: 8,
-                runSpacing: 8,
+                runSpacing: 2,
                 children: variantOptions.map((variant) {
                   final isSelected = variant == selectedVariant;
                   return ChoiceChip(
