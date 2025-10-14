@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 /// A compact, modern notification card with swipe-to-dismiss.
 ///

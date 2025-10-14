@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -616,11 +617,11 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       totalVolume: workout.exercises
           .expand((e) => e.sets)
           .where((s) => s.isCompleted && s.weight != null)
-          .fold(0, (sum, s) => sum + (s.weight! * s.reps)),
+          .fold(0.0, (sum, s) => sum + (s.weight! * s.reps)),
       totalTonnage: workout.exercises
           .expand((e) => e.sets)
           .where((s) => s.isCompleted && s.weight != null)
-          .fold(0, (sum, s) => sum + (s.weight! * s.reps)),
+          .fold(0.0, (sum, s) => sum + (s.weight! * s.reps)),
       exercises: workout.exercises.map((e) {
         final completedSets = e.sets.where((s) => s.isCompleted).toList();
         final exerciseVolume = completedSets

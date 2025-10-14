@@ -235,7 +235,7 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       final totalTonnage = workout.exercises
           .expand((e) => e.sets)
           .where((s) => s.isCompleted && s.weight != null)
-          .fold(0, (sum, set) => sum + (set.weight! * set.reps));
+          .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
 
       // Web: Save to Supabase
       final user = supabase.auth.currentUser;

@@ -159,10 +159,10 @@ final workoutStatsProvider = FutureProvider<WorkoutStats>((ref) async {
       .fold(0, (sum, s) => sum + (s.totalDurationSeconds ?? 0));
 
   final totalVolume =
-      completedSessions.fold(0, (sum, s) => sum + s.totalVolume);
+      completedSessions.fold(0.0, (sum, s) => sum + s.totalVolume);
 
   final totalTonnage =
-      completedSessions.fold(0, (sum, s) => sum + s.totalTonnage);
+      completedSessions.fold(0.0, (sum, s) => sum + s.totalTonnage);
 
   final avgDuration = totalDuration > 0 ? totalDuration / totalWorkouts : 0;
 

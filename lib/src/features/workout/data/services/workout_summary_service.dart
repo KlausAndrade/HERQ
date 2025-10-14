@@ -34,7 +34,7 @@ class WorkoutSummaryService {
         .expand((e) => e.sets)
         .where((s) => s.isCompleted && s.weight != null)
         .fold(
-          0,
+          0.0,
           (sum, set) => sum + (set.weight! * set.reps),
         );
 
@@ -73,7 +73,7 @@ class WorkoutSummaryService {
       });
       final totalVolume = completedSets
           .where((s) => s.weight != null)
-          .fold(0, (sum, set) => sum + (set.weight! * set.reps));
+          .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
 
       summaries.add(
         ExerciseSummary(
@@ -216,7 +216,7 @@ class WorkoutSummaryService {
     final totalVolume = workout.exercises
         .expand((e) => e.sets)
         .where((s) => s.isCompleted && s.weight != null)
-        .fold(0, (sum, set) => sum + (set.weight! * set.reps));
+        .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
 
     // Check if this is a personal best workout
     final previousBestVolume = await _getPreviousBestTotalVolume();

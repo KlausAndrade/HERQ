@@ -1054,7 +1054,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final totalTonnage = workout.exercises
           .expand((e) => e.sets)
           .where((s) => s.isCompleted && s.weight != null)
-          .fold(0, (sum, set) => sum + (set.weight! * set.reps));
+          .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
 
       // Create fallback summary if service failed
       if (summary == null && totalSets > 0) {

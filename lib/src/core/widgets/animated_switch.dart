@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../services/haptic_service.dart';
 import '../theme/app_animations.dart';

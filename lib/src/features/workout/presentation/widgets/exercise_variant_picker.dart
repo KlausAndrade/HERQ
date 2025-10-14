@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 /// A compact picker for selecting equipment and variant type for an exercise
 class ExerciseVariantPicker extends StatelessWidget {
