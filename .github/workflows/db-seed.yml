@@ -16,5 +16,7 @@ jobs:
           channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
+      - name: Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
       - name: Run seeder test only
         run: flutter test test/database_seeder_test.dart
