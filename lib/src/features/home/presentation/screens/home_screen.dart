@@ -7,6 +7,7 @@ import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_animations.dart';
 import '../../../../core/services/haptic_service.dart';
+import 'package:gym_ai/l10n/app_localizations.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
 import '../../../workout/presentation/providers/active_workout_provider.dart';
 import '../../../workout/presentation/providers/workout_checkpoint_provider.dart';
@@ -107,7 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Welcome back!',
+                              S.of(context).welcomeBack,
                               style: Theme.of(context)
                                   .textTheme
                                   .displayMedium
@@ -119,7 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Ready for your next workout?',
+                              S.of(context).readyForWorkout,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge
@@ -188,7 +189,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Quick Actions',
+                S.of(context).quickActions,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -333,7 +334,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'This Week',
+              S.of(context).thisWeek,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -431,7 +432,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Row(
           children: [
             Text(
-              'Recent Workouts',
+              S.of(context).recentWorkouts,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -439,7 +440,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const Spacer(),
             TextButton(
               onPressed: () => context.go('/workout-history'),
-              child: const Text('View All'),
+              child: Text(S.of(context).viewAll),
             ),
           ],
         ),
@@ -459,11 +460,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'No workouts yet',
+                        S.of(context).noWorkoutsYet,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
-                        'Start your first workout to see your progress here',
+                        S.of(context).startFirstWorkout,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Theme.of(context).colorScheme.outline,
                             ),

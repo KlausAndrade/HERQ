@@ -7,7 +7,8 @@ import 'core/services/app_lifecycle_observer.dart';
 import 'features/onboarding/presentation/splash_screen.dart';
 import 'core/theme/app_theme.dart';
 import 'features/settings/providers/theme_provider.dart';
-import 'generated/l10n.dart';
+import 'features/settings/providers/locale_provider.dart';
+import 'package:gym_ai/l10n/app_localizations.dart';
 import 'core/ui/notification_redesign/notification_overlay.dart';
 
 class GymAIApp extends ConsumerStatefulWidget {
@@ -54,6 +55,7 @@ class _GymAIAppState extends ConsumerState<GymAIApp> {
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
 
     if (_showSplash) {
       return MaterialApp(
@@ -61,6 +63,14 @@ class _GymAIAppState extends ConsumerState<GymAIApp> {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeMode,
+        locale: locale,
+        localizationsDelegates: const [
+          S.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: S.supportedLocales,
         debugShowCheckedModeBanner: false,
         home: SplashScreen(
           onFinished: () async {
@@ -79,6 +89,7 @@ class _GymAIAppState extends ConsumerState<GymAIApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
+      locale: locale,
       routerConfig: router,
       localizationsDelegates: const [
         S.delegate,
@@ -86,7 +97,7 @@ class _GymAIAppState extends ConsumerState<GymAIApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: S.delegate.supportedLocales,
+      supportedLocales: S.supportedLocales,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
         // Place the notification overlay above the app shell so in-app
