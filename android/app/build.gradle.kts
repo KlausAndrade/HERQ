@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.klausandrade.gym_ai"
+    namespace = "com.herq.app"
     compileSdk = 36  // Required by multiple plugins
 
     compileOptions {
@@ -21,7 +21,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.klausandrade.gym_ai"
+        applicationId = "com.herq.app"
         minSdk = flutter.minSdkVersion  // Required for most modern plugins
         targetSdk = 36  // Match compileSdk
         versionCode = flutter.versionCode

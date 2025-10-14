@@ -23,7 +23,7 @@ import '../models/user_stats.dart';
 import '../models/workout_checkpoint.dart';
 import '../models/workout_session.dart';
 import '../models/workout_template.dart';
-import 'package:gym_ai/src/features/workout/data/seed/default_template_seed.dart';
+import 'package:herq/src/features/workout/data/seed/default_template_seed.dart';
 
 part 'database_native.g.dart';
 

@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
-import 'package:gym_ai/src/core/services/snackbar_service.dart';
-import 'package:gym_ai/src/core/services/notification_service.dart';
+import 'package:herq/src/core/services/snackbar_service.dart';
+import 'package:herq/src/core/services/notification_service.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
 import '../widgets/exercise_picker_dialog.dart';
 import '../widgets/multi_exercise_picker_dialog.dart';

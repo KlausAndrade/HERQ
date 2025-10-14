@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/database/database.dart';
-import 'package:gym_ai/src/core/services/notification_service.dart';
+import 'package:herq/src/core/services/notification_service.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/empty_state.dart';

@@ -1,5 +1,5 @@
-name: gym_ai
-description: "A mobile-first workout tracker with AI coaching capabilities"
+name: herq
+description: "HERQ - Smart strength training with AI coaching"
 publish_to: 'none'
 
 version: 1.0.0+1

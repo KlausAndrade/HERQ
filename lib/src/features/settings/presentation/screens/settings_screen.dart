@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:gym_ai/l10n/app_localizations.dart';
+import 'package:herq/l10n/app_localizations.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/sync_provider.dart';
@@ -24,7 +24,9 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final themeMode = ref.watch(themeModeProvider);
+    final themeVariant = ref.watch(themeVariantProvider);
     final locale = ref.watch(localeProvider);
     final workoutSettings = ref.watch(workoutSettingsProvider);
 
@@ -118,6 +120,14 @@ class SettingsScreen extends ConsumerWidget {
                   subtitle: Text(_getThemeModeText(context, themeMode)),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showThemeDialog(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.color_lens_outlined),
+                  title: Text(S.of(context)!.colorTheme),
+                  subtitle: Text(_getThemeVariantText(context, themeVariant)),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showThemeVariantDialog(context, ref),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -327,6 +337,17 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               children: [
                 ListTile(
+                  leading: Icon(
+                    Icons.fitness_center,
+                    color: theme.colorScheme.primary,
+                  ),
+                  title: Text(S.of(context)!.aboutHerq),
+                  subtitle: Text(S.of(context)!.appTagline),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/about-herq'),
+                ),
+                const Divider(height: 1),
+                ListTile(
                   leading: const Icon(Icons.info_outline),
                   title: const Text('Version'),
                   subtitle: const Text('1.0.0+1'),
@@ -361,6 +382,17 @@ class SettingsScreen extends ConsumerWidget {
         return S.of(context)!.dark;
       case ThemeMode.system:
         return S.of(context)!.system;
+    }
+  }
+
+  String _getThemeVariantText(BuildContext context, String variant) {
+    switch (variant) {
+      case 'herq':
+        return S.of(context)!.herqTheme;
+      case 'default':
+        return S.of(context)!.defaultTheme;
+      default:
+        return S.of(context)!.herqTheme;
     }
   }
 
@@ -431,6 +463,44 @@ class SettingsScreen extends ConsumerWidget {
               },
             );
           }).toList(),
+        ),
+      ),
+    );
+  }
+
+  void _showThemeVariantDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(S.of(context)!.colorTheme),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: Text(S.of(context)!.herqTheme),
+              subtitle: const Text('Electric Teal & Lime'),
+              value: 'herq',
+              groupValue: ref.read(themeVariantProvider),
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(themeVariantProvider.notifier).setThemeVariant(value);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: Text(S.of(context)!.defaultTheme),
+              subtitle: const Text('Blue & Green'),
+              value: 'default',
+              groupValue: ref.read(themeVariantProvider),
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(themeVariantProvider.notifier).setThemeVariant(value);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -831,9 +901,9 @@ class SettingsScreen extends ConsumerWidget {
         title: const Text('Privacy Policy'),
         content: const SingleChildScrollView(
           child: Text(
-            '''GymAI Privacy Policy
+            '''HERQ Privacy Policy
 
-Last updated: October 6, 2025
+Last updated: October 14, 2025
 
 1. Data Collection
 We collect and store your workout data locally on your device, including:
@@ -861,9 +931,9 @@ You have the right to:
 • Request information about stored data
 
 6. Contact
-For privacy concerns, please contact: privacy@gymai.app
+For privacy concerns, please contact: privacy@herq.app
 
-By using GymAI, you agree to this privacy policy.''',
+By using HERQ, you agree to this privacy policy.''',
           ),
         ),
         actions: [
@@ -883,19 +953,20 @@ By using GymAI, you agree to this privacy policy.''',
         title: const Text('Terms of Service'),
         content: const SingleChildScrollView(
           child: Text(
-            '''GymAI Terms of Service
+            '''HERQ Terms of Service
 
-Last updated: October 6, 2025
+Last updated: October 14, 2025
 
 1. Acceptance of Terms
-By using GymAI, you agree to these Terms of Service.
+By using HERQ, you agree to these Terms of Service.
 
 2. Service Description
-GymAI is a fitness tracking application that helps users:
-• Track workout sessions
+HERQ is a smart strength training application that helps users:
+• Track workout sessions with intelligence
 • Monitor progress and achievements
 • Create and manage workout templates
 • Record personal records
+• Get AI-powered coaching insights
 
 3. User Responsibilities
 You agree to:
@@ -905,7 +976,7 @@ You agree to:
 • Take responsibility for your own fitness decisions
 
 4. Health Disclaimer
-• GymAI is not a substitute for professional medical advice
+• HERQ is not a substitute for professional medical advice
 • Consult healthcare professionals before starting new fitness programs
 • We are not liable for injuries or health issues
 • Use the app at your own risk
@@ -916,7 +987,7 @@ You agree to:
 • See our Privacy Policy for more details
 
 6. Intellectual Property
-All app content, design, and features are owned by GymAI and protected by copyright laws.
+All app content, design, and features are owned by HERQ and protected by copyright laws.
 
 7. Disclaimer of Warranties
 The app is provided "as is" without warranties of any kind.
@@ -928,9 +999,9 @@ We are not liable for any damages arising from app use.
 We may update these terms. Continued use constitutes acceptance of changes.
 
 10. Contact
-For questions: support@gymai.app
+For questions: support@herq.app
 
-By using GymAI, you agree to these terms.''',
+By using HERQ, you agree to these terms.''',
           ),
         ),
         actions: [

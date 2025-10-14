@@ -186,7 +186,7 @@ abstract class S {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'GymAI'**
+  /// **'HERQ'**
   String get appTitle;
 
   /// No description provided for @description.
@@ -3510,8 +3510,44 @@ abstract class S {
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'Your personal AI fitness coach'**
+  /// **'Smart Strength. Simplified.'**
   String get appTagline;
+
+  /// HERQ brand story
+  ///
+  /// In en, this message translates to:
+  /// **'Inspired by the spirit of Heracles — the original symbol of strength and perseverance — HERQ fuses ancient power with modern intelligence. Built for lifters, movers, and everyday heroes who believe strength isn\'t just physical — it\'s a mindset.'**
+  String get brandStory;
+
+  /// HERQ brand mission statement
+  ///
+  /// In en, this message translates to:
+  /// **'Whether you\'re chasing your first pull-up or your next PR, HERQ helps you train smarter, recover better, and rise stronger.'**
+  String get brandMission;
+
+  /// Label for color theme selection
+  ///
+  /// In en, this message translates to:
+  /// **'Color Theme'**
+  String get colorTheme;
+
+  /// Default color theme option
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get defaultTheme;
+
+  /// HERQ color theme option
+  ///
+  /// In en, this message translates to:
+  /// **'HERQ'**
+  String get herqTheme;
+
+  /// About HERQ menu item
+  ///
+  /// In en, this message translates to:
+  /// **'About HERQ'**
+  String get aboutHerq;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

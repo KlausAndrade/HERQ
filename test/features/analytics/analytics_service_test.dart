@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:uuid/uuid.dart';
-import 'package:gym_ai/src/core/database/database.dart';
-import 'package:gym_ai/src/features/analytics/data/analytics_service.dart';
+import 'package:herq/src/core/database/database.dart';
+import 'package:herq/src/features/analytics/data/analytics_service.dart';
 
 void main() {
   test('weeklyVolume aggregates set entries by ISO week', () async {

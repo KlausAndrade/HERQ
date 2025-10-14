@@ -5,7 +5,7 @@
 import 'package:drift/drift.dart';
 import 'database_open.dart';
 import '../converters/json_converters.dart';
-import 'package:gym_ai/src/features/workout/data/seed/default_template_seed.dart';
+import 'package:herq/src/features/workout/data/seed/default_template_seed.dart';
 import '../utils/exercise_type_mapper.dart';
 import '../constants/exercise_types.dart';
 

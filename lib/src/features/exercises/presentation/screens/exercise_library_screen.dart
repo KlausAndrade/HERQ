@@ -9,7 +9,7 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/skeleton_loader.dart';
 import '../providers/exercise_providers.dart';
 import '../providers/exercise_favorites_provider.dart';
-import 'package:gym_ai/l10n/app_localizations.dart';
+import 'package:herq/l10n/app_localizations.dart';
 
 class ExerciseLibraryScreen extends ConsumerStatefulWidget {
   const ExerciseLibraryScreen({super.key});

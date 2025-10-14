@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:gym_ai/l10n/app_localizations.dart';
+import 'package:herq/l10n/app_localizations.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
-import 'package:gym_ai/src/core/services/notification_service.dart';
+import 'package:herq/src/core/services/notification_service.dart';
 import '../providers/active_workout_provider.dart';
 import '../widgets/exercise_picker_dialog.dart';
 import '../widgets/exercise_variant_picker.dart';

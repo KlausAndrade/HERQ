@@ -20,9 +20,9 @@ class GymAINavApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
-      title: 'GymAI - Workout Tracker',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      title: 'HERQ - Smart Strength Training',
+      theme: AppTheme.herqLightTheme,
+      darkTheme: AppTheme.herqDarkTheme,
       themeMode: ThemeMode.dark,
       routerConfig: router,
       debugShowCheckedModeBanner: false,

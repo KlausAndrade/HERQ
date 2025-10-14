@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gym_ai/src/features/workout/presentation/providers/active_workout_provider.dart';
+import 'package:herq/src/features/workout/presentation/providers/active_workout_provider.dart';
 
 void main() {
   group('ActiveWorkoutProvider Tests', () {

@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:gym_ai/src/core/services/snackbar_service.dart';
-import 'package:gym_ai/src/core/services/notification_service.dart';
-import 'package:gym_ai/src/core/ui/notification_redesign/in_app_notification.dart';
+import 'package:herq/src/core/services/snackbar_service.dart';
+import 'package:herq/src/core/services/notification_service.dart';
+import 'package:herq/src/core/ui/notification_redesign/in_app_notification.dart';
 
 void main() {
   testWidgets('SnackbarService.showFromSnackBar emits in-app notification and shows SnackBar',

@@ -16,6 +16,7 @@ import '../../features/exercises/presentation/screens/create_exercise_screen.dar
 import '../../features/progress/presentation/screens/progress_screen.dart';
 import '../../features/analytics/presentation/screens/analytics_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/settings/presentation/screens/about_herq_screen.dart';
 import '../../features/social/presentation/screens/social_feed_screen.dart';
 import '../../features/social/presentation/screens/leaderboards_screen.dart';
 import '../../features/social/presentation/screens/post_comments_screen.dart';
@@ -258,6 +259,14 @@ final routerProvider = Provider<GoRouter>((ref) => GoRouter(
           name: 'settings',
           pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
             const SettingsScreen(),
+            key: state.pageKey,
+          ),
+        ),
+        GoRoute(
+          path: '/about-herq',
+          name: 'about-herq',
+          pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+            const AboutHerqScreen(),
             key: state.pageKey,
           ),
         ),

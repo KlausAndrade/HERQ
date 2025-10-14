@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/gamification_provider.dart';
 import '../../domain/models/achievement.dart';
-import 'package:gym_ai/l10n/app_localizations.dart';
+import 'package:herq/l10n/app_localizations.dart';
 
 class StreakBadge extends ConsumerWidget {
   final double size;

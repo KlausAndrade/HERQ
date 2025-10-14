@@ -36,15 +36,15 @@ class GymAIWebApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'GymAI - Workout Tracker',
+      title: 'HERQ - Smart Strength Training',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF00BFA6)), // HERQ Teal
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+          seedColor: const Color(0xFF00BFA6), // HERQ Teal
           brightness: Brightness.dark,
         ),
       ),

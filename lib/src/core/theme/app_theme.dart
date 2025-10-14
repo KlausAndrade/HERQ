@@ -36,6 +36,20 @@ class AppTheme {
   static const Color surfaceDark = Color(0xFF1A1A1A);
   static const Color onSurfaceDark = Color(0xFFF9FAFB);
 
+  // HERQ Brand Colors
+  static const Color herqGraphite = Color(0xFF1B1D21);      // Primary Dark - Strength, focus
+  static const Color herqTeal = Color(0xFF00BFA6);          // Primary Accent - Modern energy
+  static const Color herqLime = Color(0xFFD4FF4D);          // Secondary Accent - Vitality, contrast
+  static const Color herqCharcoal = Color(0xFF141516);      // Background - Professional contrast
+  static const Color herqWhite = Color(0xFFF8F8FA);         // Text - Clean typography
+  
+  // HERQ Gradient
+  static const LinearGradient herqGradient = LinearGradient(
+    colors: [herqTeal, herqLime],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [primaryLight, primaryDark],
@@ -560,6 +574,366 @@ class AppTheme {
           backgroundColor: surfaceDark,
           selectedItemColor: primaryLight,
           unselectedItemColor: Colors.grey,
+          selectedLabelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+      );
+
+  // HERQ Light Theme - Professional, clean with HERQ brand colors
+  static ThemeData get herqLightTheme => ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.light(
+          primary: herqTeal,
+          secondary: herqLime,
+          tertiary: herqGraphite,
+          error: errorColor,
+          background: herqWhite,
+          surface: herqWhite,
+          surfaceVariant: const Color(0xFFF0F0F2),
+          onPrimary: herqGraphite,
+          onSecondary: herqGraphite,
+          onTertiary: herqWhite,
+          onError: Colors.white,
+          onBackground: herqGraphite,
+          onSurface: herqGraphite,
+          onSurfaceVariant: const Color(0xFF6B6D71),
+          outline: const Color(0xFFD0D2D6),
+          outlineVariant: const Color(0xFFE5E7EB),
+        ),
+        typography: Typography.material2021(),
+        textTheme: TextTheme(
+          displayLarge: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+            height: 1.2,
+            color: herqGraphite,
+          ),
+          displayMedium: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+            height: 1.2,
+            color: herqGraphite,
+          ),
+          displaySmall: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.25,
+            height: 1.3,
+            color: herqGraphite,
+          ),
+          headlineMedium: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0,
+            height: 1.4,
+            color: herqGraphite,
+          ),
+          titleLarge: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0,
+            height: 1.4,
+            color: herqGraphite,
+          ),
+          titleMedium: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.15,
+            height: 1.5,
+            color: herqGraphite,
+          ),
+          bodyLarge: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+            letterSpacing: 0.15,
+            height: 1.5,
+            color: herqGraphite,
+          ),
+          bodyMedium: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.normal,
+            letterSpacing: 0.25,
+            height: 1.5,
+            color: herqGraphite,
+          ),
+          labelLarge: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.5,
+            height: 1.4,
+            color: herqGraphite,
+          ),
+        ),
+        appBarTheme: AppBarTheme(
+          elevation: 0,
+          backgroundColor: herqWhite,
+          foregroundColor: herqGraphite,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: herqGraphite,
+            letterSpacing: 0,
+          ),
+        ),
+        cardTheme: CardThemeData(
+          elevation: 2,
+          color: herqWhite,
+          shadowColor: Colors.black.withOpacity(0.1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusMD),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 2,
+            backgroundColor: herqTeal,
+            foregroundColor: herqGraphite,
+            shadowColor: herqTeal.withOpacity(0.3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radiusSM),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: spacingLG,
+              vertical: spacingMD,
+            ),
+            textStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            elevation: 0,
+            backgroundColor: herqTeal,
+            foregroundColor: herqGraphite,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radiusSM),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: spacingLG,
+              vertical: spacingMD,
+            ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            elevation: 0,
+            foregroundColor: herqTeal,
+            side: BorderSide(color: herqTeal, width: 1.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radiusSM),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: spacingLG,
+              vertical: spacingMD,
+            ),
+          ),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: herqTeal,
+          foregroundColor: herqGraphite,
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusLG),
+          ),
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: herqWhite,
+          selectedItemColor: herqTeal,
+          unselectedItemColor: const Color(0xFF6B6D71),
+          selectedLabelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+      );
+
+  // HERQ Dark Theme - Bold, modern with HERQ brand colors
+  static ThemeData get herqDarkTheme => ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.dark(
+          primary: herqTeal,
+          secondary: herqLime,
+          tertiary: herqTeal,
+          error: errorColor,
+          background: herqCharcoal,
+          surface: herqGraphite,
+          surfaceVariant: const Color(0xFF23252A),
+          onPrimary: herqGraphite,
+          onSecondary: herqGraphite,
+          onTertiary: herqGraphite,
+          onError: Colors.white,
+          onBackground: herqWhite,
+          onSurface: herqWhite,
+          onSurfaceVariant: const Color(0xFFB8BABD),
+          outline: const Color(0xFF3A3C41),
+          outlineVariant: const Color(0xFF2A2C31),
+        ),
+        typography: Typography.material2021(),
+        textTheme: TextTheme(
+          displayLarge: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+            height: 1.2,
+            color: herqWhite,
+          ),
+          displayMedium: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+            height: 1.2,
+            color: herqWhite,
+          ),
+          displaySmall: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.25,
+            height: 1.3,
+            color: herqWhite,
+          ),
+          headlineMedium: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0,
+            height: 1.4,
+            color: herqWhite,
+          ),
+          titleLarge: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0,
+            height: 1.4,
+            color: herqWhite,
+          ),
+          titleMedium: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.15,
+            height: 1.5,
+            color: herqWhite,
+          ),
+          bodyLarge: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+            letterSpacing: 0.15,
+            height: 1.5,
+            color: herqWhite,
+          ),
+          bodyMedium: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.normal,
+            letterSpacing: 0.25,
+            height: 1.5,
+            color: herqWhite,
+          ),
+          labelLarge: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.5,
+            height: 1.4,
+            color: herqWhite,
+          ),
+        ),
+        appBarTheme: AppBarTheme(
+          elevation: 0,
+          backgroundColor: herqCharcoal,
+          foregroundColor: herqWhite,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: herqWhite,
+            letterSpacing: 0,
+          ),
+        ),
+        cardTheme: CardThemeData(
+          elevation: 4,
+          color: herqGraphite,
+          shadowColor: Colors.black.withOpacity(0.3),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusMD),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 2,
+            backgroundColor: herqTeal,
+            foregroundColor: herqGraphite,
+            shadowColor: herqTeal.withOpacity(0.3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radiusSM),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: spacingLG,
+              vertical: spacingMD,
+            ),
+            textStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            elevation: 0,
+            backgroundColor: herqTeal,
+            foregroundColor: herqGraphite,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radiusSM),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: spacingLG,
+              vertical: spacingMD,
+            ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            elevation: 0,
+            foregroundColor: herqTeal,
+            side: BorderSide(color: herqTeal, width: 1.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radiusSM),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: spacingLG,
+              vertical: spacingMD,
+            ),
+          ),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: herqTeal,
+          foregroundColor: herqGraphite,
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusLG),
+          ),
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: herqGraphite,
+          selectedItemColor: herqTeal,
+          unselectedItemColor: const Color(0xFF6B6D71),
           selectedLabelStyle: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/social_providers.dart';
-import 'package:gym_ai/src/core/services/notification_service.dart';
+import 'package:herq/src/core/services/notification_service.dart';
 
 class EditPostDialog extends ConsumerStatefulWidget {
   const EditPostDialog({
