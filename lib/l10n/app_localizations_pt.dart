@@ -84,16 +84,10 @@ class SPt extends S {
   String get viewProgress => 'Ver Progresso';
 
   @override
-  String get exerciseLibrary => 'Biblioteca de Exercícios';
-
-  @override
   String get history => 'Histórico';
 
   @override
   String get thisWeek => 'Esta Semana';
-
-  @override
-  String get workouts => 'Treinos';
 
   @override
   String get totalVolume => 'Volume Total';
@@ -111,8 +105,7 @@ class SPt extends S {
   String get noWorkoutsYet => 'Nenhum treino ainda';
 
   @override
-  String get startFirstWorkout =>
-      'Inicie seu primeiro treino para ver seu progresso aqui';
+  String get startFirstWorkout => 'Começar Primeiro Treino';
 
   @override
   String get errorLoadingWorkouts => 'Erro ao carregar treinos';
@@ -371,7 +364,7 @@ class SPt extends S {
   String get sets => 'Séries';
 
   @override
-  String get reps => 'Reps';
+  String get reps => 'Repetições';
 
   @override
   String get weight => 'Peso';
@@ -386,10 +379,10 @@ class SPt extends S {
   String get restTimer => 'Timer de Descanso';
 
   @override
-  String get minutes => 'Minutos';
+  String get minutes => 'minutos';
 
   @override
-  String get seconds => 'Segundos';
+  String get seconds => 'segundos';
 
   @override
   String get kg => 'kg';
@@ -466,7 +459,7 @@ class SPt extends S {
   String get allWorkouts => 'Todos os Treinos';
 
   @override
-  String get completed => 'Concluídos';
+  String get completed => 'Concluído';
 
   @override
   String get inProgress => 'Em Andamento';
@@ -599,7 +592,10 @@ class SPt extends S {
   String get appPreferences => 'Preferências do app';
 
   @override
-  String get day => 'dia';
+  String get workouts => 'Treinos';
+
+  @override
+  String get day => 'Dia';
 
   @override
   String get days => 'dias';
@@ -617,6 +613,9 @@ class SPt extends S {
 
   @override
   String get exercise => 'Exercício';
+
+  @override
+  String get exerciseLibrary => 'Biblioteca de Exercícios';
 
   @override
   String get createExercise => 'Criar Exercício';
@@ -761,7 +760,7 @@ class SPt extends S {
   String get feed => 'Feed';
 
   @override
-  String get leaderboards => 'Rankings';
+  String get leaderboards => 'Classificações';
 
   @override
   String get createPost => 'Criar Postagem';
@@ -815,7 +814,7 @@ class SPt extends S {
   String get rank => 'Posição';
 
   @override
-  String get you => 'Você';
+  String get you => 'VOCÊ';
 
   @override
   String get noDataAvailable => 'Nenhum dado disponível';
@@ -970,7 +969,7 @@ class SPt extends S {
   String get tempo => 'Tempo';
 
   @override
-  String get pause => 'Pausa';
+  String get pause => 'Pausar';
 
   @override
   String get explore => 'Explorar';
@@ -1045,4 +1044,494 @@ class SPt extends S {
 
   @override
   String get noWorkoutHistory => 'Ainda sem histórico de treinos!';
+
+  @override
+  String get compareCompete => 'Compare e compita';
+
+  @override
+  String get noWorkoutHistoryTitle => 'Sem Histórico de Treinos';
+
+  @override
+  String get completeFirstWorkout =>
+      'Complete seu primeiro treino para ver seu histórico aqui';
+
+  @override
+  String get allCompleted => 'Todos Completos';
+
+  @override
+  String get thisMonth => 'Este Mês';
+
+  @override
+  String get totalVolumeLeaderboardTitle => 'Volume Total';
+
+  @override
+  String get workoutCountLeaderboardTitle => 'Quantidade de Treinos';
+
+  @override
+  String get streakLeaderboardTitle => 'Sequência';
+
+  @override
+  String get prCountLeaderboardTitle => 'Recordes';
+
+  @override
+  String get recommendations => 'Recomendações';
+
+  @override
+  String get recovery => 'Recuperação';
+
+  @override
+  String get progressAnalysis => 'Progresso';
+
+  @override
+  String get suggestions => 'Sugestões';
+
+  @override
+  String get viewDetails => 'Ver Detalhes';
+
+  @override
+  String get applyProgressiveOverload => 'Aplicar Sobrecarga Progressiva';
+
+  @override
+  String applySuggestionQuestion(String exercise) {
+    return 'Aplicar esta sugestão ao seu próximo treino de $exercise?';
+  }
+
+  @override
+  String suggestedWeight(String weight) {
+    return 'Peso: ${weight}kg';
+  }
+
+  @override
+  String suggestedReps(String reps) {
+    return 'Repetições: $reps';
+  }
+
+  @override
+  String suggestedSets(String sets) {
+    return 'Séries: $sets';
+  }
+
+  @override
+  String get workoutTemplates => 'Modelos de Treino';
+
+  @override
+  String get workoutInProgressTitle => 'Treino em Andamento';
+
+  @override
+  String get startingNewWillEndCurrent =>
+      'Iniciar um novo treino encerrará o atual.';
+
+  @override
+  String get startNewWorkout => 'Iniciar Novo Treino';
+
+  @override
+  String get defaultTemplates => 'Modelos Padrão';
+
+  @override
+  String get pushDay => 'Dia de Empurrar';
+
+  @override
+  String get pullDay => 'Dia de Puxar';
+
+  @override
+  String get legDay => 'Dia de Pernas';
+
+  @override
+  String get pushDayDescription => 'Treino de peito, ombros e tríceps';
+
+  @override
+  String get pullDayDescription => 'Treino de costas e bíceps';
+
+  @override
+  String get legDayDescription =>
+      'Treino de quadríceps, posteriores e panturrilhas';
+
+  @override
+  String get signIn => 'Entrar';
+
+  @override
+  String get signUp => 'Cadastrar';
+
+  @override
+  String get email => 'E-mail';
+
+  @override
+  String get password => 'Senha';
+
+  @override
+  String get confirmPassword => 'Confirmar Senha';
+
+  @override
+  String get forgotPassword => 'Esqueceu a senha?';
+
+  @override
+  String get dontHaveAccount => 'Não tem uma conta?';
+
+  @override
+  String get alreadyHaveAccount => 'Já tem uma conta?';
+
+  @override
+  String get enterEmail => 'Digite seu e-mail';
+
+  @override
+  String get enterPassword => 'Digite sua senha';
+
+  @override
+  String get fixingDisplayNames => 'Corrigindo nomes de exibição...';
+
+  @override
+  String get removeEmailsFromDisplayNames =>
+      'Isto removerá todos os e-mails dos nomes de exibição dos usuários e os substituirá por \"Atleta Desconhecido\".';
+
+  @override
+  String get thisFixesLeaderboards =>
+      'Isso corrige as classificações que mostram e-mails em vez de nomes.';
+
+  @override
+  String get areYouSure => 'Você tem certeza?';
+
+  @override
+  String get fixNames => 'Corrigir Nomes';
+
+  @override
+  String get welcome => 'Bem-vindo';
+
+  @override
+  String get quickStart => 'Início Rápido';
+
+  @override
+  String get templates => 'Modelos';
+
+  @override
+  String get createManage => 'Criar e Gerenciar';
+
+  @override
+  String get viewProgressHistory => 'Ver Progresso';
+
+  @override
+  String get errorLoadingLeaderboard => 'Erro ao carregar classificação';
+
+  @override
+  String get noLeaderboardData => 'Nenhum dado de classificação disponível';
+
+  @override
+  String get week => 'Semana';
+
+  @override
+  String get month => 'Mês';
+
+  @override
+  String get allTime => 'Todo o Tempo';
+
+  @override
+  String get totalWorkouts => 'Total de Treinos';
+
+  @override
+  String get recentPersonalRecords => 'Recordes Pessoais Recentes';
+
+  @override
+  String get yourProgress => 'Seu Progresso';
+
+  @override
+  String get stats => 'Estatísticas';
+
+  @override
+  String get calendar => 'Calendário';
+
+  @override
+  String get variations => 'Variações';
+
+  @override
+  String get progression => 'Progressão';
+
+  @override
+  String get advanced => 'Avançado';
+
+  @override
+  String get expert => 'Especialista';
+
+  @override
+  String get beginner => 'Iniciante';
+
+  @override
+  String get intermediate => 'Intermediário';
+
+  @override
+  String get monday => 'Segunda-feira';
+
+  @override
+  String get tuesday => 'Terça-feira';
+
+  @override
+  String get wednesday => 'Quarta-feira';
+
+  @override
+  String get thursday => 'Quinta-feira';
+
+  @override
+  String get friday => 'Sexta-feira';
+
+  @override
+  String get saturday => 'Sábado';
+
+  @override
+  String get sunday => 'Domingo';
+
+  @override
+  String get mon => 'Seg';
+
+  @override
+  String get tue => 'Ter';
+
+  @override
+  String get wed => 'Qua';
+
+  @override
+  String get thu => 'Qui';
+
+  @override
+  String get fri => 'Sex';
+
+  @override
+  String get sat => 'Sáb';
+
+  @override
+  String get sun => 'Dom';
+
+  @override
+  String get january => 'Janeiro';
+
+  @override
+  String get february => 'Fevereiro';
+
+  @override
+  String get march => 'Março';
+
+  @override
+  String get april => 'Abril';
+
+  @override
+  String get may => 'Maio';
+
+  @override
+  String get june => 'Junho';
+
+  @override
+  String get july => 'Julho';
+
+  @override
+  String get august => 'Agosto';
+
+  @override
+  String get september => 'Setembro';
+
+  @override
+  String get october => 'Outubro';
+
+  @override
+  String get november => 'Novembro';
+
+  @override
+  String get december => 'Dezembro';
+
+  @override
+  String get jan => 'Jan';
+
+  @override
+  String get feb => 'Fev';
+
+  @override
+  String get mar => 'Mar';
+
+  @override
+  String get apr => 'Abr';
+
+  @override
+  String get jun => 'Jun';
+
+  @override
+  String get jul => 'Jul';
+
+  @override
+  String get aug => 'Ago';
+
+  @override
+  String get sep => 'Set';
+
+  @override
+  String get oct => 'Out';
+
+  @override
+  String get nov => 'Nov';
+
+  @override
+  String get dec => 'Dez';
+
+  @override
+  String get loading => 'Carregando...';
+
+  @override
+  String get loadingData => 'Carregando dados...';
+
+  @override
+  String get noData => 'Sem dados';
+
+  @override
+  String get success => 'Sucesso';
+
+  @override
+  String get failed => 'Falhou';
+
+  @override
+  String get notStarted => 'Não Iniciado';
+
+  @override
+  String get search => 'Buscar';
+
+  @override
+  String get filter => 'Filtrar';
+
+  @override
+  String get sort => 'Ordenar';
+
+  @override
+  String get selectAll => 'Selecionar Todos';
+
+  @override
+  String get deselectAll => 'Desmarcar Todos';
+
+  @override
+  String get selected => 'Selecionado';
+
+  @override
+  String get clear => 'Limpar';
+
+  @override
+  String get reset => 'Redefinir';
+
+  @override
+  String get name => 'Nome';
+
+  @override
+  String get description => 'Descrição';
+
+  @override
+  String get notes => 'Notas';
+
+  @override
+  String get tags => 'Tags';
+
+  @override
+  String get date => 'Data';
+
+  @override
+  String get time => 'Hora';
+
+  @override
+  String get type => 'Tipo';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get start => 'Iniciar';
+
+  @override
+  String get stop => 'Parar';
+
+  @override
+  String get complete => 'Completar';
+
+  @override
+  String get add => 'Adicionar';
+
+  @override
+  String get remove => 'Remover';
+
+  @override
+  String get update => 'Atualizar';
+
+  @override
+  String get create => 'Criar';
+
+  @override
+  String get view => 'Visualizar';
+
+  @override
+  String get hide => 'Ocultar';
+
+  @override
+  String get show => 'Mostrar';
+
+  @override
+  String get more => 'Mais';
+
+  @override
+  String get less => 'Menos';
+
+  @override
+  String get previous => 'Anterior';
+
+  @override
+  String get previousSet => 'Série Anterior';
+
+  @override
+  String get nextSet => 'Próxima Série';
+
+  @override
+  String get intensity => 'Intensidade';
+
+  @override
+  String get frequency => 'Frequência';
+
+  @override
+  String get consistency => 'Consistência';
+
+  @override
+  String get personal => 'Pessoal';
+
+  @override
+  String get record => 'Recorde';
+
+  @override
+  String get best => 'Melhor';
+
+  @override
+  String get metric => 'Métrico';
+
+  @override
+  String get imperial => 'Imperial';
+
+  @override
+  String get min => 'min';
+
+  @override
+  String get sec => 'seg';
+
+  @override
+  String get hour => 'hora';
+
+  @override
+  String get hours => 'horas';
+
+  @override
+  String get kgLifted => 'kg levantados';
+
+  @override
+  String get avgDuration => 'Duração Média';
+
+  @override
+  String get progressCharts => 'Gráficos de Progresso';
+
+  @override
+  String get newFolder => 'Nova Pasta';
+
+  @override
+  String get folders => 'Pastas';
+
+  @override
+  String get myTemplates => 'Meus Modelos';
+
+  @override
+  String get sharedTemplates => 'Modelos Compartilhados';
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
 import '../providers/chart_providers.dart';
 import '../widgets/chart_widgets.dart';
@@ -22,7 +23,7 @@ class ProgressScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: const Text('Progress'),
+        title: Text(S.of(context)!.progress),
         actions: [
           IconButton(
             icon: const Icon(Icons.psychology),
@@ -42,7 +43,7 @@ class ProgressScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: _StatCard(
-                        title: 'Total Workouts',
+                        title: S.of(context)!.totalWorkouts,
                         value: stats.totalWorkouts.toString(),
                         subtitle: 'Completed',
                         icon: Icons.fitness_center,
@@ -51,10 +52,10 @@ class ProgressScreen extends ConsumerWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _StatCard(
-                        title: 'Total Volume',
+                        title: S.of(context)!.totalVolume,
                         value:
                             '${(stats.totalVolumeKg / 1000).toStringAsFixed(1)}k',
-                        subtitle: 'kg lifted',
+                        subtitle: S.of(context)!.kgLifted,
                         icon: Icons.scale,
                       ),
                     ),
@@ -65,18 +66,18 @@ class ProgressScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: _StatCard(
-                        title: 'Avg Duration',
+                        title: S.of(context)!.avgDuration,
                         value: stats.averageDurationMinutes.toString(),
-                        subtitle: 'Minutes',
+                        subtitle: S.of(context)!.minutes,
                         icon: Icons.schedule,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: _StatCard(
-                        title: 'Streak',
+                        title: S.of(context)!.streak,
                         value: stats.currentStreak.toString(),
-                        subtitle: 'Days',
+                        subtitle: S.of(context)!.days,
                         icon: Icons.local_fire_department,
                       ),
                     ),
@@ -90,7 +91,7 @@ class ProgressScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: _StatCard(
-                        title: 'Loading...',
+                        title: S.of(context)!.loading,
                         value: '-',
                         subtitle: '',
                         icon: Icons.fitness_center,
@@ -99,7 +100,7 @@ class ProgressScreen extends ConsumerWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _StatCard(
-                        title: 'Loading...',
+                        title: S.of(context)!.loading,
                         value: '-',
                         subtitle: '',
                         icon: Icons.scale,
@@ -112,7 +113,7 @@ class ProgressScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: _StatCard(
-                        title: 'Loading...',
+                        title: S.of(context)!.loading,
                         value: '-',
                         subtitle: '',
                         icon: Icons.schedule,
@@ -121,7 +122,7 @@ class ProgressScreen extends ConsumerWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _StatCard(
-                        title: 'Loading...',
+                        title: S.of(context)!.loading,
                         value: '-',
                         subtitle: '',
                         icon: Icons.local_fire_department,
@@ -131,15 +132,15 @@ class ProgressScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            error: (error, stack) => const Center(
-              child: Text('Error loading stats'),
+            error: (error, stack) => Center(
+              child: Text(S.of(context)!.error),
             ),
           ),
           const SizedBox(height: 24),
 
           // Charts Section
           Text(
-            'Progress Charts',
+            S.of(context)!.progressCharts,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -391,26 +392,26 @@ class ProgressScreen extends ConsumerWidget {
               break;
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: S.of(context)!.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center_outlined),
-            activeIcon: Icon(Icons.fitness_center),
-            label: 'Workouts',
+            icon: const Icon(Icons.fitness_center_outlined),
+            activeIcon: const Icon(Icons.fitness_center),
+            label: S.of(context)!.workouts,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Exercises',
+            icon: const Icon(Icons.search_outlined),
+            activeIcon: const Icon(Icons.search),
+            label: S.of(context)!.exercises,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up_outlined),
-            activeIcon: Icon(Icons.trending_up),
-            label: 'Progress',
+            icon: const Icon(Icons.trending_up_outlined),
+            activeIcon: const Icon(Icons.trending_up),
+            label: S.of(context)!.progress,
           ),
         ],
       );

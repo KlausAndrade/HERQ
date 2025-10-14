@@ -422,26 +422,26 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
               break;
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: S.of(context)!.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center_outlined),
-            activeIcon: Icon(Icons.fitness_center),
-            label: 'Workouts',
+            icon: const Icon(Icons.fitness_center_outlined),
+            activeIcon: const Icon(Icons.fitness_center),
+            label: S.of(context)!.workouts,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Exercises',
+            icon: const Icon(Icons.search_outlined),
+            activeIcon: const Icon(Icons.search),
+            label: S.of(context)!.exercises,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up_outlined),
-            activeIcon: Icon(Icons.trending_up),
-            label: 'Progress',
+            icon: const Icon(Icons.trending_up_outlined),
+            activeIcon: const Icon(Icons.trending_up),
+            label: S.of(context)!.progress,
           ),
         ],
       );

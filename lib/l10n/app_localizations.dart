@@ -249,12 +249,6 @@ abstract class S {
   /// **'View Progress'**
   String get viewProgress;
 
-  /// Exercise library button text
-  ///
-  /// In en, this message translates to:
-  /// **'Exercise Library'**
-  String get exerciseLibrary;
-
   /// History button text
   ///
   /// In en, this message translates to:
@@ -266,12 +260,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'This Week'**
   String get thisWeek;
-
-  /// Workouts label
-  ///
-  /// In en, this message translates to:
-  /// **'Workouts'**
-  String get workouts;
 
   /// Total volume label
   ///
@@ -306,7 +294,7 @@ abstract class S {
   /// No description provided for @startFirstWorkout.
   ///
   /// In en, this message translates to:
-  /// **'Start your first workout to see your progress here'**
+  /// **'Start First Workout'**
   String get startFirstWorkout;
 
   /// No description provided for @errorLoadingWorkouts.
@@ -834,13 +822,13 @@ abstract class S {
   /// No description provided for @minutes.
   ///
   /// In en, this message translates to:
-  /// **'Minutes'**
+  /// **'minutes'**
   String get minutes;
 
   /// No description provided for @seconds.
   ///
   /// In en, this message translates to:
-  /// **'Seconds'**
+  /// **'seconds'**
   String get seconds;
 
   /// No description provided for @kg.
@@ -1227,10 +1215,16 @@ abstract class S {
   /// **'App preferences'**
   String get appPreferences;
 
+  /// Workouts label
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts'**
+  String get workouts;
+
   /// No description provided for @day.
   ///
   /// In en, this message translates to:
-  /// **'day'**
+  /// **'Day'**
   String get day;
 
   /// No description provided for @days.
@@ -1262,6 +1256,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Exercise'**
   String get exercise;
+
+  /// Exercise library button text
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Library'**
+  String get exerciseLibrary;
 
   /// No description provided for @createExercise.
   ///
@@ -1656,7 +1656,7 @@ abstract class S {
   /// No description provided for @you.
   ///
   /// In en, this message translates to:
-  /// **'You'**
+  /// **'YOU'**
   String get you;
 
   /// No description provided for @noDataAvailable.
@@ -2096,6 +2096,960 @@ abstract class S {
   /// In en, this message translates to:
   /// **'No workout history yet!'**
   String get noWorkoutHistory;
+
+  /// No description provided for @compareCompete.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare & compete'**
+  String get compareCompete;
+
+  /// No description provided for @noWorkoutHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Workout History'**
+  String get noWorkoutHistoryTitle;
+
+  /// No description provided for @completeFirstWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your first workout to see your history here'**
+  String get completeFirstWorkout;
+
+  /// No description provided for @allCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'All Completed'**
+  String get allCompleted;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This Month'**
+  String get thisMonth;
+
+  /// No description provided for @totalVolumeLeaderboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Volume'**
+  String get totalVolumeLeaderboardTitle;
+
+  /// No description provided for @workoutCountLeaderboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Count'**
+  String get workoutCountLeaderboardTitle;
+
+  /// No description provided for @streakLeaderboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get streakLeaderboardTitle;
+
+  /// No description provided for @prCountLeaderboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'PRs'**
+  String get prCountLeaderboardTitle;
+
+  /// No description provided for @recommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendations'**
+  String get recommendations;
+
+  /// No description provided for @recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery'**
+  String get recovery;
+
+  /// No description provided for @progressAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get progressAnalysis;
+
+  /// No description provided for @suggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions'**
+  String get suggestions;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get viewDetails;
+
+  /// No description provided for @applyProgressiveOverload.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Progressive Overload'**
+  String get applyProgressiveOverload;
+
+  /// Question about applying AI suggestion
+  ///
+  /// In en, this message translates to:
+  /// **'Apply this suggestion to your next {exercise} workout?'**
+  String applySuggestionQuestion(String exercise);
+
+  /// No description provided for @suggestedWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight: {weight}kg'**
+  String suggestedWeight(String weight);
+
+  /// No description provided for @suggestedReps.
+  ///
+  /// In en, this message translates to:
+  /// **'Reps: {reps}'**
+  String suggestedReps(String reps);
+
+  /// No description provided for @suggestedSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets: {sets}'**
+  String suggestedSets(String sets);
+
+  /// No description provided for @workoutTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Templates'**
+  String get workoutTemplates;
+
+  /// No description provided for @workoutInProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout in Progress'**
+  String get workoutInProgressTitle;
+
+  /// No description provided for @startingNewWillEndCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting a new workout will end the current one.'**
+  String get startingNewWillEndCurrent;
+
+  /// No description provided for @startNewWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Start New Workout'**
+  String get startNewWorkout;
+
+  /// No description provided for @defaultTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Templates'**
+  String get defaultTemplates;
+
+  /// No description provided for @pushDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Push Day'**
+  String get pushDay;
+
+  /// No description provided for @pullDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull Day'**
+  String get pullDay;
+
+  /// No description provided for @legDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Leg Day'**
+  String get legDay;
+
+  /// No description provided for @pushDayDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Chest, shoulders, and triceps workout'**
+  String get pushDayDescription;
+
+  /// No description provided for @pullDayDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Back and biceps workout'**
+  String get pullDayDescription;
+
+  /// No description provided for @legDayDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Quads, hamstrings, and calves workout'**
+  String get legDayDescription;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signIn;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUp;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPassword;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get dontHaveAccount;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @enterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get enterEmail;
+
+  /// No description provided for @enterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get enterPassword;
+
+  /// No description provided for @fixingDisplayNames.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixing display names...'**
+  String get fixingDisplayNames;
+
+  /// No description provided for @removeEmailsFromDisplayNames.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove all emails from user display names and replace them with \"Unknown Athlete\".'**
+  String get removeEmailsFromDisplayNames;
+
+  /// No description provided for @thisFixesLeaderboards.
+  ///
+  /// In en, this message translates to:
+  /// **'This fixes leaderboards showing emails instead of names.'**
+  String get thisFixesLeaderboards;
+
+  /// No description provided for @areYouSure.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure?'**
+  String get areYouSure;
+
+  /// No description provided for @fixNames.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix Names'**
+  String get fixNames;
+
+  /// No description provided for @welcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome'**
+  String get welcome;
+
+  /// No description provided for @quickStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Start'**
+  String get quickStart;
+
+  /// No description provided for @templates.
+  ///
+  /// In en, this message translates to:
+  /// **'Templates'**
+  String get templates;
+
+  /// No description provided for @createManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create & Manage'**
+  String get createManage;
+
+  /// No description provided for @viewProgressHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'View Progress'**
+  String get viewProgressHistory;
+
+  /// No description provided for @errorLoadingLeaderboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading leaderboard'**
+  String get errorLoadingLeaderboard;
+
+  /// No description provided for @noLeaderboardData.
+  ///
+  /// In en, this message translates to:
+  /// **'No leaderboard data available'**
+  String get noLeaderboardData;
+
+  /// No description provided for @week.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get week;
+
+  /// No description provided for @month.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get month;
+
+  /// No description provided for @allTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All Time'**
+  String get allTime;
+
+  /// No description provided for @totalWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Workouts'**
+  String get totalWorkouts;
+
+  /// No description provided for @recentPersonalRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Personal Records'**
+  String get recentPersonalRecords;
+
+  /// No description provided for @yourProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Progress'**
+  String get yourProgress;
+
+  /// No description provided for @stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Stats'**
+  String get stats;
+
+  /// No description provided for @calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get calendar;
+
+  /// No description provided for @variations.
+  ///
+  /// In en, this message translates to:
+  /// **'Variations'**
+  String get variations;
+
+  /// No description provided for @progression.
+  ///
+  /// In en, this message translates to:
+  /// **'Progression'**
+  String get progression;
+
+  /// No description provided for @advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get advanced;
+
+  /// No description provided for @expert.
+  ///
+  /// In en, this message translates to:
+  /// **'Expert'**
+  String get expert;
+
+  /// No description provided for @beginner.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner'**
+  String get beginner;
+
+  /// No description provided for @intermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate'**
+  String get intermediate;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
+
+  /// No description provided for @mon.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get mon;
+
+  /// No description provided for @tue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get tue;
+
+  /// No description provided for @wed.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get wed;
+
+  /// No description provided for @thu.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get thu;
+
+  /// No description provided for @fri.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get fri;
+
+  /// No description provided for @sat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get sat;
+
+  /// No description provided for @sun.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get sun;
+
+  /// No description provided for @january.
+  ///
+  /// In en, this message translates to:
+  /// **'January'**
+  String get january;
+
+  /// No description provided for @february.
+  ///
+  /// In en, this message translates to:
+  /// **'February'**
+  String get february;
+
+  /// No description provided for @march.
+  ///
+  /// In en, this message translates to:
+  /// **'March'**
+  String get march;
+
+  /// No description provided for @april.
+  ///
+  /// In en, this message translates to:
+  /// **'April'**
+  String get april;
+
+  /// No description provided for @may.
+  ///
+  /// In en, this message translates to:
+  /// **'May'**
+  String get may;
+
+  /// No description provided for @june.
+  ///
+  /// In en, this message translates to:
+  /// **'June'**
+  String get june;
+
+  /// No description provided for @july.
+  ///
+  /// In en, this message translates to:
+  /// **'July'**
+  String get july;
+
+  /// No description provided for @august.
+  ///
+  /// In en, this message translates to:
+  /// **'August'**
+  String get august;
+
+  /// No description provided for @september.
+  ///
+  /// In en, this message translates to:
+  /// **'September'**
+  String get september;
+
+  /// No description provided for @october.
+  ///
+  /// In en, this message translates to:
+  /// **'October'**
+  String get october;
+
+  /// No description provided for @november.
+  ///
+  /// In en, this message translates to:
+  /// **'November'**
+  String get november;
+
+  /// No description provided for @december.
+  ///
+  /// In en, this message translates to:
+  /// **'December'**
+  String get december;
+
+  /// No description provided for @jan.
+  ///
+  /// In en, this message translates to:
+  /// **'Jan'**
+  String get jan;
+
+  /// No description provided for @feb.
+  ///
+  /// In en, this message translates to:
+  /// **'Feb'**
+  String get feb;
+
+  /// No description provided for @mar.
+  ///
+  /// In en, this message translates to:
+  /// **'Mar'**
+  String get mar;
+
+  /// No description provided for @apr.
+  ///
+  /// In en, this message translates to:
+  /// **'Apr'**
+  String get apr;
+
+  /// No description provided for @jun.
+  ///
+  /// In en, this message translates to:
+  /// **'Jun'**
+  String get jun;
+
+  /// No description provided for @jul.
+  ///
+  /// In en, this message translates to:
+  /// **'Jul'**
+  String get jul;
+
+  /// No description provided for @aug.
+  ///
+  /// In en, this message translates to:
+  /// **'Aug'**
+  String get aug;
+
+  /// No description provided for @sep.
+  ///
+  /// In en, this message translates to:
+  /// **'Sep'**
+  String get sep;
+
+  /// No description provided for @oct.
+  ///
+  /// In en, this message translates to:
+  /// **'Oct'**
+  String get oct;
+
+  /// No description provided for @nov.
+  ///
+  /// In en, this message translates to:
+  /// **'Nov'**
+  String get nov;
+
+  /// No description provided for @dec.
+  ///
+  /// In en, this message translates to:
+  /// **'Dec'**
+  String get dec;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @loadingData.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading data...'**
+  String get loadingData;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get noData;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
+
+  /// No description provided for @failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get failed;
+
+  /// No description provided for @notStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Started'**
+  String get notStarted;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
+  /// No description provided for @sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sort;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get selectAll;
+
+  /// No description provided for @deselectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect All'**
+  String get deselectAll;
+
+  /// No description provided for @selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get selected;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tags;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get time;
+
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stop;
+
+  /// No description provided for @complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get complete;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @view.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get view;
+
+  /// No description provided for @hide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get hide;
+
+  /// No description provided for @show.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get show;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get more;
+
+  /// No description provided for @less.
+  ///
+  /// In en, this message translates to:
+  /// **'Less'**
+  String get less;
+
+  /// No description provided for @previous.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previous;
+
+  /// No description provided for @previousSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Set'**
+  String get previousSet;
+
+  /// No description provided for @nextSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Set'**
+  String get nextSet;
+
+  /// No description provided for @intensity.
+  ///
+  /// In en, this message translates to:
+  /// **'Intensity'**
+  String get intensity;
+
+  /// No description provided for @frequency.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency'**
+  String get frequency;
+
+  /// No description provided for @consistency.
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency'**
+  String get consistency;
+
+  /// No description provided for @personal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get personal;
+
+  /// No description provided for @record.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get record;
+
+  /// No description provided for @best.
+  ///
+  /// In en, this message translates to:
+  /// **'Best'**
+  String get best;
+
+  /// No description provided for @metric.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get metric;
+
+  /// No description provided for @imperial.
+  ///
+  /// In en, this message translates to:
+  /// **'Imperial'**
+  String get imperial;
+
+  /// No description provided for @min.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get min;
+
+  /// No description provided for @sec.
+  ///
+  /// In en, this message translates to:
+  /// **'sec'**
+  String get sec;
+
+  /// No description provided for @hour.
+  ///
+  /// In en, this message translates to:
+  /// **'hour'**
+  String get hour;
+
+  /// No description provided for @hours.
+  ///
+  /// In en, this message translates to:
+  /// **'hours'**
+  String get hours;
+
+  /// No description provided for @kgLifted.
+  ///
+  /// In en, this message translates to:
+  /// **'kg lifted'**
+  String get kgLifted;
+
+  /// No description provided for @avgDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Duration'**
+  String get avgDuration;
+
+  /// No description provided for @progressCharts.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress Charts'**
+  String get progressCharts;
+
+  /// No description provided for @newFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'New Folder'**
+  String get newFolder;
+
+  /// No description provided for @folders.
+  ///
+  /// In en, this message translates to:
+  /// **'Folders'**
+  String get folders;
+
+  /// No description provided for @myTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'My Templates'**
+  String get myTemplates;
+
+  /// No description provided for @sharedTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Templates'**
+  String get sharedTemplates;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

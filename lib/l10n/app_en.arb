@@ -1,6 +1,5 @@
 {
   "@@locale": "en",
-  
   "save": "Save",
   "cancel": "Cancel",
   "delete": "Delete",
@@ -15,86 +14,46 @@
   "skip": "Skip",
   "confirm": "Confirm",
   "gotIt": "Got it",
-  
   "appTitle": "GymAI",
   "@appTitle": {
     "description": "The title of the application"
   },
-  
   "home": "Home",
   "@home": {
-    "description": "Home navigation label"
-  },
   "exercises": "Exercises",
   "@exercises": {
-    "description": "Exercises navigation label"
-  },
   "social": "Social",
   "progress": "Progress",
   "@progress": {
-    "description": "Progress navigation label"
-  },
   "settings": "Settings",
   "@settings": {
-    "description": "Settings screen title"
-  },
-  
   "welcomeBack": "Welcome back!",
   "@welcomeBack": {
-    "description": "Welcome message on home screen"
-  },
   "readyForWorkout": "Ready for your next workout?",
   "@readyForWorkout": {
-    "description": "Subtitle on home screen"
-  },
   "quickActions": "Quick Actions",
   "@quickActions": {
-    "description": "Section title for quick action buttons"
-  },
   "startWorkout": "Start Workout",
   "@startWorkout": {
-    "description": "Start workout button text"
-  },
   "viewProgress": "View Progress",
   "@viewProgress": {
-    "description": "View progress button text"
-  },
-  "exerciseLibrary": "Exercise Library",
   "@exerciseLibrary": {
-    "description": "Exercise library button text"
-  },
   "history": "History",
   "@history": {
-    "description": "History button text"
-  },
   "thisWeek": "This Week",
   "@thisWeek": {
-    "description": "This week stats section title"
-  },
-  "workouts": "Workouts",
   "@workouts": {
-    "description": "Workouts label"
-  },
   "totalVolume": "Total Volume",
   "@totalVolume": {
-    "description": "Total volume label"
-  },
   "prsSet": "PRs Set",
   "@prsSet": {
-    "description": "Personal records set label"
-  },
   "recentWorkouts": "Recent Workouts",
   "@recentWorkouts": {
-    "description": "Recent workouts section title"
-  },
   "viewAll": "View All",
   "@viewAll": {
-    "description": "View all button text"
-  },
   "noWorkoutsYet": "No workouts yet",
-  "startFirstWorkout": "Start your first workout to see your progress here",
+  "startFirstWorkout": "Start First Workout",
   "errorLoadingWorkouts": "Error loading workouts",
-  
   "account": "Account",
   "loggedIn": "Logged In",
   "noEmail": "No email",
@@ -105,7 +64,6 @@
   "signedOutSuccessfully": "Signed out successfully",
   "signInSignUp": "Sign In / Sign Up",
   "syncDataAcrossDevices": "Sync your data across devices",
-  
   "appearance": "Appearance",
   "theme": "Theme",
   "chooseTheme": "Choose Theme",
@@ -114,7 +72,6 @@
   "system": "System",
   "language": "Language",
   "chooseLanguage": "Choose Language",
-  
   "workoutSettings": "Workout Settings",
   "defaultRestTimer": "Default Rest Timer",
   "weightUnit": "Weight Unit",
@@ -124,7 +81,6 @@
   "vibrateOnTimerCompletion": "Vibrate on timer completion",
   "autoStartRestTimer": "Auto-start Rest Timer",
   "startTimerAfterSet": "Start timer after completing a set",
-  
   "dataPrivacy": "Data & Privacy",
   "syncData": "Sync Data",
   "lastSyncedNever": "Last synced: Never",
@@ -150,7 +106,6 @@
   "deleted": "Deleted",
   "accountDataDeleted": "Account data deleted",
   "error": "Error",
-  
   "maintenance": "Maintenance",
   "debugExerciseTypes": "Debug Exercise Types",
   "showAllExercises": "Show all exercises and their types",
@@ -168,12 +123,10 @@
   "reassignExerciseTypes": "Reassign exercise types to all exercises",
   "reloadTemplatesExercises": "Reload Templates & Exercises",
   "loadNewTemplates": "Load new workout templates and exercises",
-  
   "about": "About",
   "version": "Version",
   "privacyPolicy": "Privacy Policy",
   "termsOfService": "Terms of Service",
-  
   "workout": "Workout",
   "activeWorkout": "Active Workout",
   "noActiveWorkout": "No active workout",
@@ -187,8 +140,8 @@
   "duration": "Duration",
   "distance": "Distance",
   "restTimer": "Rest Timer",
-  "minutes": "Minutes",
-  "seconds": "Seconds",
+  "minutes": "minutes",
+  "seconds": "seconds",
   "kg": "kg",
   "lb": "lb",
   "km": "km",
@@ -236,20 +189,13 @@
   "youHaveUnfinishedWorkout": "You have an unfinished workout:",
   "finishedTimeAgo": "Finished {timeAgo} ago - don't forget to save!",
   "@finishedTimeAgo": {
-    "description": "Time since workout was finished",
     "placeholders": {
       "timeAgo": {
         "type": "String"
-      }
     }
   },
   "pausedTimeAgo": "Paused {timeAgo} ago",
   "@pausedTimeAgo": {
-    "description": "Time since workout was paused",
-    "placeholders": {
-      "timeAgo": {
-        "type": "String"
-      }
     }
   },
   "tapFinalizeToSave": "Tap \"Finalize\" to save your workout and see your summary!",
@@ -260,11 +206,7 @@
   "resumeWorkoutTitle": "Resume Workout",
   "continueWorkoutName": "Continue {name}",
   "@continueWorkoutName": {
-    "description": "Continue workout with name",
-    "placeholders": {
       "name": {
-        "type": "String"
-      }
     }
   },
   "beginNewSession": "Begin a new session",
@@ -277,24 +219,16 @@
   "aiCoach": "AI Coach",
   "smartTrainingHelp": "Smart training help",
   "appPreferences": "App preferences",
-  "home": "Home",
   "workouts": "Workouts",
-  "exercises": "Exercises",
-  "progress": "Progress",
-  "day": "day",
+  "day": "Day",
   "days": "days",
   "today": "Today",
   "yesterday": "Yesterday",
   "daysAgo": "{count} days ago",
   "@daysAgo": {
-    "description": "How many days ago",
-    "placeholders": {
       "count": {
-        "type": "int"
-      }
     }
   },
-  
   "exercise": "Exercise",
   "exerciseLibrary": "Exercise Library",
   "createExercise": "Create Exercise",
@@ -315,7 +249,6 @@
   "favorites": "Favorites",
   "showVariants": "Show Variants",
   "all": "All",
-  
   "weightReps": "Weight & Reps",
   "bodyweightReps": "Bodyweight Reps",
   "weightedBodyweight": "Weighted Bodyweight",
@@ -324,7 +257,6 @@
   "durationWeight": "Duration & Weight",
   "distanceDuration": "Distance & Duration",
   "weightDistance": "Weight & Distance",
-  
   "upperBody": "Upper Body",
   "lowerBody": "Lower Body",
   "core": "Core",
@@ -337,7 +269,6 @@
   "yoga": "Yoga",
   "pilates": "Pilates",
   "other": "Other",
-  
   "barbell": "Barbell",
   "dumbbell": "Dumbbell",
   "kettlebell": "Kettlebell",
@@ -346,7 +277,6 @@
   "bodyweight": "Bodyweight",
   "bands": "Bands",
   "none": "None",
-  
   "feed": "Feed",
   "leaderboards": "Leaderboards",
   "createPost": "Create Post",
@@ -358,7 +288,6 @@
   "following": "Following",
   "followers": "Followers",
   "profile": "Profile",
-  
   "totalVolumeLeaderboard": "Total Volume",
   "workoutCountLeaderboard": "Workout Count",
   "streakLeaderboard": "Streak",
@@ -367,14 +296,12 @@
   "thisMonthPeriod": "This Month",
   "allTimePeriod": "All Time",
   "rank": "Rank",
-  "you": "You",
+  "you": "YOU",
   "noDataAvailable": "No data available",
-  
   "yourStats": "Your Stats",
   "level": "Level",
   "xp": "XP",
   "streak": "Streak",
-  "days": "days",
   "totalWorkoutsCompleted": "Total Workouts Completed",
   "totalVolumeLifted": "Total Volume Lifted",
   "currentStreak": "Current Streak",
@@ -386,19 +313,16 @@
   "nearMissPRs": "Near Miss PRs",
   "exerciseProgress": "Exercise Progress",
   "plateauDetection": "Plateau Detection",
-  
   "required": "Required",
   "invalidEmail": "Invalid email",
   "passwordTooShort": "Password too short",
   "passwordsDoNotMatch": "Passwords do not match",
   "invalidNumber": "Invalid number",
-  
   "somethingWentWrong": "Something went wrong",
   "tryAgain": "Try again",
   "noInternetConnection": "No internet connection",
   "failedToLoad": "Failed to load",
   "failedToSave": "Failed to save",
-  
   "saveWorkout": "Save Workout",
   "workoutName": "Workout Name",
   "enterWorkoutName": "Enter workout name",
@@ -409,15 +333,11 @@
   "letOthersSee": "Let others see your accomplishment",
   "discard": "Discard",
   "workoutNotSaved": "This workout will not be saved. All progress will be lost. Are you sure?",
-  "duration": "Duration",
   "volume": "Volume",
-  "sets": "Sets",
   "personalRecord": "Personal Record",
-  "personalRecords": "Personal Records",
   "takePhoto": "Take Photo",
   "chooseFromGallery": "Choose from Gallery",
   "pleaseEnterWorkoutName": "Please enter a workout name",
-  
   "exerciseVariant": "Exercise Variant",
   "variantType": "Variant Type",
   "changeEquipmentVariant": "Change equipment/variant",
@@ -428,7 +348,6 @@
   "weighted": "Weighted",
   "tempo": "Tempo",
   "pause": "Pause",
-  
   "explore": "Explore",
   "retry": "Retry",
   "noPostsYet": "No posts yet",
@@ -437,15 +356,10 @@
   "unknownAthlete": "Unknown Athlete",
   "whatsOnYourMind": "What's on your mind?",
   "failedToLoadFeed": "Failed to load feed",
-  
   "gamificationNotAvailable": "Gamification not available",
   "xpToLevel": "{xp} / {needed} XP to Level {level}",
   "@xpToLevel": {
-    "description": "XP progress to next level",
-    "placeholders": {
-      "xp": {"type": "int"},
-      "needed": {"type": "int"},
-      "level": {"type": "int"}
+      "needed": {
     }
   },
   "achievementProgress": "Achievement Progress",
@@ -457,21 +371,182 @@
   "specialMilestones": "Special Milestones",
   "levelN": "Level {level}",
   "@levelN": {
-    "description": "Level number",
-    "placeholders": {
-      "level": {"type": "int"}
     }
   },
   "xpProgress": "{current} / {total} XP",
   "@xpProgress": {
-    "description": "XP progress",
-    "placeholders": {
-      "current": {"type": "int"},
-      "total": {"type": "int"}
+      "current": {
+      "total": {
     }
   },
-  
   "continueExercisesOrFinish": "Do you want to continue these exercises or finish anyway?",
   "shareWorkout": "Share Workout",
-  "noWorkoutHistory": "No workout history yet!"
-}
+  "noWorkoutHistory": "No workout history yet!",
+  "compareCompete": "Compare & compete",
+  "noWorkoutHistoryTitle": "No Workout History",
+  "completeFirstWorkout": "Complete your first workout to see your history here",
+  "allCompleted": "All Completed",
+  "thisMonth": "This Month",
+  "totalVolumeLeaderboardTitle": "Total Volume",
+  "workoutCountLeaderboardTitle": "Workout Count",
+  "streakLeaderboardTitle": "Streak",
+  "prCountLeaderboardTitle": "PRs",
+  "recommendations": "Recommendations",
+  "recovery": "Recovery",
+  "progressAnalysis": "Progress",
+  "suggestions": "Suggestions",
+  "viewDetails": "View Details",
+  "applyProgressiveOverload": "Apply Progressive Overload",
+  "applySuggestionQuestion": "Apply this suggestion to your next {exercise} workout?",
+  "@applySuggestionQuestion": {
+    }
+  },
+  "suggestedWeight": "Weight: {weight}kg",
+  "@suggestedWeight": {
+    }
+  },
+  "suggestedReps": "Reps: {reps}",
+  "@suggestedReps": {
+    }
+  },
+  "suggestedSets": "Sets: {sets}",
+  "@suggestedSets": {
+    }
+  },
+  "workoutTemplates": "Workout Templates",
+  "workoutInProgressTitle": "Workout in Progress",
+  "startingNewWillEndCurrent": "Starting a new workout will end the current one.",
+  "startNewWorkout": "Start New Workout",
+  "defaultTemplates": "Default Templates",
+  "pushDay": "Push Day",
+  "pullDay": "Pull Day",
+  "legDay": "Leg Day",
+  "pushDayDescription": "Chest, shoulders, and triceps workout",
+  "pullDayDescription": "Back and biceps workout",
+  "legDayDescription": "Quads, hamstrings, and calves workout",
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "forgotPassword": "Forgot Password?",
+  "dontHaveAccount": "Don't have an account?",
+  "alreadyHaveAccount": "Already have an account?",
+  "enterEmail": "Enter your email",
+  "enterPassword": "Enter your password",
+  "fixingDisplayNames": "Fixing display names...",
+  "removeEmailsFromDisplayNames": "This will remove all emails from user display names and replace them with \"Unknown Athlete\".",
+  "thisFixesLeaderboards": "This fixes leaderboards showing emails instead of names.",
+  "areYouSure": "Are you sure?",
+  "fixNames": "Fix Names",
+  "welcome": "Welcome",
+  "quickStart": "Quick Start",
+  "templates": "Templates",
+  "createManage": "Create & Manage",
+  "viewProgressHistory": "View Progress",
+  "errorLoadingLeaderboard": "Error loading leaderboard",
+  "noLeaderboardData": "No leaderboard data available",
+  "week": "Week",
+  "month": "Month",
+  "allTime": "All Time",
+  "totalWorkouts": "Total Workouts",
+  "recentPersonalRecords": "Recent Personal Records",
+  "yourProgress": "Your Progress",
+  "stats": "Stats",
+  "calendar": "Calendar",
+  "variations": "Variations",
+  "progression": "Progression",
+  "advanced": "Advanced",
+  "expert": "Expert",
+  "beginner": "Beginner",
+  "intermediate": "Intermediate",
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday",
+  "mon": "Mon",
+  "tue": "Tue",
+  "wed": "Wed",
+  "thu": "Thu",
+  "fri": "Fri",
+  "sat": "Sat",
+  "sun": "Sun",
+  "january": "January",
+  "february": "February",
+  "march": "March",
+  "april": "April",
+  "may": "May",
+  "june": "June",
+  "july": "July",
+  "august": "August",
+  "september": "September",
+  "october": "October",
+  "november": "November",
+  "december": "December",
+  "jan": "Jan",
+  "feb": "Feb",
+  "mar": "Mar",
+  "apr": "Apr",
+  "jun": "Jun",
+  "jul": "Jul",
+  "aug": "Aug",
+  "sep": "Sep",
+  "oct": "Oct",
+  "nov": "Nov",
+  "dec": "Dec",
+  "loading": "Loading...",
+  "loadingData": "Loading data...",
+  "noData": "No data",
+  "success": "Success",
+  "failed": "Failed",
+  "notStarted": "Not Started",
+  "search": "Search",
+  "filter": "Filter",
+  "sort": "Sort",
+  "selectAll": "Select All",
+  "deselectAll": "Deselect All",
+  "selected": "Selected",
+  "clear": "Clear",
+  "reset": "Reset",
+  "notes": "Notes",
+  "tags": "Tags",
+  "date": "Date",
+  "time": "Time",
+  "status": "Status",
+  "start": "Start",
+  "stop": "Stop",
+  "complete": "Complete",
+  "add": "Add",
+  "remove": "Remove",
+  "update": "Update",
+  "create": "Create",
+  "view": "View",
+  "hide": "Hide",
+  "show": "Show",
+  "more": "More",
+  "less": "Less",
+  "previous": "Previous",
+  "previousSet": "Previous Set",
+  "nextSet": "Next Set",
+  "intensity": "Intensity",
+  "frequency": "Frequency",
+  "consistency": "Consistency",
+  "personal": "Personal",
+  "record": "Record",
+  "best": "Best",
+  "metric": "Metric",
+  "imperial": "Imperial",
+  "min": "min",
+  "sec": "sec",
+  "hour": "hour",
+  "hours": "hours",
+  "kgLifted": "kg lifted",
+  "avgDuration": "Avg Duration",
+  "progressCharts": "Progress Charts",
+  "newFolder": "New Folder",
+  "folders": "Folders",
+  "myTemplates": "My Templates",
+  "sharedTemplates": "Shared Templates"

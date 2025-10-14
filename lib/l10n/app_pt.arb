@@ -1,6 +1,5 @@
 {
   "@@locale": "pt",
-  
   "save": "Salvar",
   "cancel": "Cancelar",
   "delete": "Excluir",
@@ -15,86 +14,41 @@
   "skip": "Pular",
   "confirm": "Confirmar",
   "gotIt": "Entendi",
-  
   "appTitle": "GymAI",
   "@appTitle": {
     "description": "The title of the application"
   },
-  
-  "home": "Início",
   "@home": {
-    "description": "Home navigation label"
-  },
-  "exercises": "Exercícios",
   "@exercises": {
-    "description": "Exercises navigation label"
-  },
   "social": "Social",
-  "progress": "Progresso",
   "@progress": {
-    "description": "Progress navigation label"
-  },
   "settings": "Configurações",
   "@settings": {
-    "description": "Settings screen title"
-  },
-  
   "welcomeBack": "Bem-vindo de volta!",
   "@welcomeBack": {
-    "description": "Welcome message on home screen"
-  },
   "readyForWorkout": "Pronto para o próximo treino?",
   "@readyForWorkout": {
-    "description": "Subtitle on home screen"
-  },
   "quickActions": "Ações Rápidas",
   "@quickActions": {
-    "description": "Section title for quick action buttons"
-  },
   "startWorkout": "Iniciar Treino",
   "@startWorkout": {
-    "description": "Start workout button text"
-  },
   "viewProgress": "Ver Progresso",
   "@viewProgress": {
-    "description": "View progress button text"
-  },
-  "exerciseLibrary": "Biblioteca de Exercícios",
   "@exerciseLibrary": {
-    "description": "Exercise library button text"
-  },
   "history": "Histórico",
   "@history": {
-    "description": "History button text"
-  },
-  "thisWeek": "Esta Semana",
   "@thisWeek": {
-    "description": "This week stats section title"
-  },
-  "workouts": "Treinos",
   "@workouts": {
-    "description": "Workouts label"
-  },
   "totalVolume": "Volume Total",
   "@totalVolume": {
-    "description": "Total volume label"
-  },
   "prsSet": "RPs Estabelecidos",
   "@prsSet": {
-    "description": "Personal records set label"
-  },
   "recentWorkouts": "Treinos Recentes",
   "@recentWorkouts": {
-    "description": "Recent workouts section title"
-  },
   "viewAll": "Ver Tudo",
   "@viewAll": {
-    "description": "View all button text"
-  },
   "noWorkoutsYet": "Nenhum treino ainda",
-  "startFirstWorkout": "Inicie seu primeiro treino para ver seu progresso aqui",
   "errorLoadingWorkouts": "Erro ao carregar treinos",
-  
   "account": "Conta",
   "loggedIn": "Conectado",
   "noEmail": "Sem email",
@@ -105,7 +59,6 @@
   "signedOutSuccessfully": "Desconectado com sucesso",
   "signInSignUp": "Entrar / Cadastrar",
   "syncDataAcrossDevices": "Sincronize seus dados entre dispositivos",
-  
   "appearance": "Aparência",
   "theme": "Tema",
   "chooseTheme": "Escolher Tema",
@@ -114,7 +67,6 @@
   "system": "Sistema",
   "language": "Idioma",
   "chooseLanguage": "Escolher Idioma",
-  
   "workoutSettings": "Configurações de Treino",
   "defaultRestTimer": "Timer de Descanso Padrão",
   "weightUnit": "Unidade de Peso",
@@ -124,7 +76,6 @@
   "vibrateOnTimerCompletion": "Vibrar ao completar o timer",
   "autoStartRestTimer": "Iniciar Timer Automaticamente",
   "startTimerAfterSet": "Iniciar timer após completar uma série",
-  
   "dataPrivacy": "Dados e Privacidade",
   "syncData": "Sincronizar Dados",
   "lastSyncedNever": "Última sincronização: Nunca",
@@ -149,8 +100,6 @@
   "pleaseTypeDelete": "Por favor, digite EXCLUIR para confirmar",
   "deleted": "Excluído",
   "accountDataDeleted": "Dados da conta excluídos",
-  "error": "Erro",
-  
   "maintenance": "Manutenção",
   "debugExerciseTypes": "Debug de Tipos de Exercício",
   "showAllExercises": "Mostrar todos os exercícios e seus tipos",
@@ -162,18 +111,15 @@
   "uploadStatsToCloud": "Enviar estatísticas para a nuvem para rankings multi-usuário",
   "cleanDuplicateStats": "Limpar Estatísticas Duplicadas",
   "removeDuplicateEntries": "Remover entradas duplicadas de user_stats local",
-  "fixDisplayNames": "Corrigir Nomes de Exibição",
   "removeEmailsFromNames": "Remover emails dos nomes de exibição",
   "updateExerciseTypes": "Atualizar Tipos de Exercício",
   "reassignExerciseTypes": "Reatribuir tipos de exercício a todos os exercícios",
   "reloadTemplatesExercises": "Recarregar Modelos e Exercícios",
   "loadNewTemplates": "Carregar novos modelos de treino e exercícios",
-  
   "about": "Sobre",
   "version": "Versão",
   "privacyPolicy": "Política de Privacidade",
   "termsOfService": "Termos de Serviço",
-  
   "workout": "Treino",
   "activeWorkout": "Treino Ativo",
   "noActiveWorkout": "Nenhum treino ativo",
@@ -181,14 +127,8 @@
   "cancelWorkout": "Cancelar Treino",
   "addExercise": "Adicionar Exercício",
   "removeExercise": "Remover Exercício",
-  "sets": "Séries",
-  "reps": "Reps",
-  "weight": "Peso",
-  "duration": "Duração",
   "distance": "Distância",
   "restTimer": "Timer de Descanso",
-  "minutes": "Minutos",
-  "seconds": "Segundos",
   "kg": "kg",
   "lb": "lb",
   "km": "km",
@@ -201,7 +141,6 @@
   "congratulations": "Parabéns!",
   "workoutCompleted": "Treino Concluído",
   "totalSets": "Séries Totais",
-  "personalRecords": "Recordes Pessoais",
   "achievements": "Conquistas",
   "continue_": "Continuar",
   "savingWorkout": "Salvando treino...",
@@ -213,7 +152,7 @@
   "workoutHistory": "Histórico de Treinos",
   "filters": "Filtros",
   "allWorkouts": "Todos os Treinos",
-  "completed": "Concluídos",
+  "completed": "Concluído",
   "inProgress": "Em Andamento",
   "workoutInProgress": "Treino em Andamento",
   "haveActiveWorkout": "Você tem um treino ativo \"{name}\" em andamento.",
@@ -236,20 +175,13 @@
   "youHaveUnfinishedWorkout": "Você tem um treino inacabado:",
   "finishedTimeAgo": "Finalizado há {timeAgo} - não esqueça de salvar!",
   "@finishedTimeAgo": {
-    "description": "Tempo desde que o treino foi finalizado",
     "placeholders": {
       "timeAgo": {
         "type": "String"
-      }
     }
   },
   "pausedTimeAgo": "Pausado há {timeAgo}",
   "@pausedTimeAgo": {
-    "description": "Tempo desde que o treino foi pausado",
-    "placeholders": {
-      "timeAgo": {
-        "type": "String"
-      }
     }
   },
   "tapFinalizeToSave": "Toque em \"Finalizar\" para salvar seu treino e ver o resumo!",
@@ -260,11 +192,7 @@
   "resumeWorkoutTitle": "Retomar Treino",
   "continueWorkoutName": "Continuar {name}",
   "@continueWorkoutName": {
-    "description": "Continuar treino com nome",
-    "placeholders": {
       "name": {
-        "type": "String"
-      }
     }
   },
   "beginNewSession": "Começar uma nova sessão",
@@ -281,20 +209,13 @@
   "workouts": "Treinos",
   "exercises": "Exercícios",
   "progress": "Progresso",
-  "day": "dia",
-  "days": "dias",
   "today": "Hoje",
   "yesterday": "Ontem",
   "daysAgo": "{count} dias atrás",
   "@daysAgo": {
-    "description": "Quantos dias atrás",
-    "placeholders": {
       "count": {
-        "type": "int"
-      }
     }
   },
-  
   "exercise": "Exercício",
   "exerciseLibrary": "Biblioteca de Exercícios",
   "createExercise": "Criar Exercício",
@@ -315,7 +236,6 @@
   "favorites": "Favoritos",
   "showVariants": "Mostrar Variantes",
   "all": "Todos",
-  
   "weightReps": "Peso e Reps",
   "bodyweightReps": "Reps com Peso Corporal",
   "weightedBodyweight": "Peso Corporal com Carga",
@@ -324,7 +244,6 @@
   "durationWeight": "Duração e Peso",
   "distanceDuration": "Distância e Duração",
   "weightDistance": "Peso e Distância",
-  
   "upperBody": "Parte Superior",
   "lowerBody": "Parte Inferior",
   "core": "Core",
@@ -337,7 +256,6 @@
   "yoga": "Yoga",
   "pilates": "Pilates",
   "other": "Outro",
-  
   "barbell": "Barra",
   "dumbbell": "Halter",
   "kettlebell": "Kettlebell",
@@ -346,9 +264,8 @@
   "bodyweight": "Peso Corporal",
   "bands": "Elásticos",
   "none": "Nenhum",
-  
   "feed": "Feed",
-  "leaderboards": "Rankings",
+  "leaderboards": "Classificações",
   "createPost": "Criar Postagem",
   "writePost": "Escreva sua postagem...",
   "post": "Postar",
@@ -358,7 +275,6 @@
   "following": "Seguindo",
   "followers": "Seguidores",
   "profile": "Perfil",
-  
   "totalVolumeLeaderboard": "Volume Total",
   "workoutCountLeaderboard": "Total de Treinos",
   "streakLeaderboard": "Sequência",
@@ -367,9 +283,6 @@
   "thisMonthPeriod": "Este Mês",
   "allTimePeriod": "Todos os Tempos",
   "rank": "Posição",
-  "you": "Você",
-  "noDataAvailable": "Nenhum dado disponível",
-  
   "yourStats": "Suas Estatísticas",
   "level": "Nível",
   "xp": "XP",
@@ -386,19 +299,16 @@
   "nearMissPRs": "Quase RPs",
   "exerciseProgress": "Progresso dos Exercícios",
   "plateauDetection": "Detecção de Platô",
-  
   "required": "Obrigatório",
   "invalidEmail": "Email inválido",
   "passwordTooShort": "Senha muito curta",
   "passwordsDoNotMatch": "As senhas não coincidem",
   "invalidNumber": "Número inválido",
-  
   "somethingWentWrong": "Algo deu errado",
   "tryAgain": "Tentar novamente",
   "noInternetConnection": "Sem conexão com a internet",
   "failedToLoad": "Falha ao carregar",
   "failedToSave": "Falha ao salvar",
-  
   "saveWorkout": "Salvar Treino",
   "workoutName": "Nome do Treino",
   "enterWorkoutName": "Digite o nome do treino",
@@ -417,7 +327,6 @@
   "takePhoto": "Tirar Foto",
   "chooseFromGallery": "Escolher da Galeria",
   "pleaseEnterWorkoutName": "Por favor, digite um nome para o treino",
-  
   "exerciseVariant": "Variante do Exercício",
   "variantType": "Tipo de Variante",
   "changeEquipmentVariant": "Mudar equipamento/variante",
@@ -427,8 +336,7 @@
   "assisted": "Assistido",
   "weighted": "Com Peso",
   "tempo": "Tempo",
-  "pause": "Pausa",
-  
+  "pause": "Pausar",
   "explore": "Explorar",
   "retry": "Tentar Novamente",
   "noPostsYet": "Ainda sem publicações",
@@ -437,15 +345,10 @@
   "unknownAthlete": "Atleta Desconhecido",
   "whatsOnYourMind": "O que você está pensando?",
   "failedToLoadFeed": "Falha ao carregar feed",
-  
   "gamificationNotAvailable": "Gamificação não disponível",
   "xpToLevel": "{xp} / {needed} XP para Nível {level}",
   "@xpToLevel": {
-    "description": "XP progress to next level",
-    "placeholders": {
-      "xp": {"type": "int"},
-      "needed": {"type": "int"},
-      "level": {"type": "int"}
+      "needed": {
     }
   },
   "achievementProgress": "Progresso de Conquistas",
@@ -457,21 +360,193 @@
   "specialMilestones": "Marcos Especiais",
   "levelN": "Nível {level}",
   "@levelN": {
-    "description": "Level number",
-    "placeholders": {
-      "level": {"type": "int"}
     }
   },
   "xpProgress": "{current} / {total} XP",
   "@xpProgress": {
-    "description": "XP progress",
-    "placeholders": {
-      "current": {"type": "int"},
-      "total": {"type": "int"}
+      "current": {
+      "total": {
     }
   },
-  
   "continueExercisesOrFinish": "Você quer continuar esses exercícios ou finalizar mesmo assim?",
   "shareWorkout": "Compartilhar Treino",
-  "noWorkoutHistory": "Ainda sem histórico de treinos!"
-}
+  "noWorkoutHistory": "Ainda sem histórico de treinos!",
+  "compareCompete": "Compare e compita",
+  "noWorkoutHistoryTitle": "Sem Histórico de Treinos",
+  "completeFirstWorkout": "Complete seu primeiro treino para ver seu histórico aqui",
+  "startFirstWorkout": "Começar Primeiro Treino",
+  "allCompleted": "Todos Completos",
+  "thisWeek": "Esta Semana",
+  "thisMonth": "Este Mês",
+  "totalVolumeLeaderboardTitle": "Volume Total",
+  "workoutCountLeaderboardTitle": "Quantidade de Treinos",
+  "streakLeaderboardTitle": "Sequência",
+  "prCountLeaderboardTitle": "Recordes",
+  "recommendations": "Recomendações",
+  "recovery": "Recuperação",
+  "progressAnalysis": "Progresso",
+  "suggestions": "Sugestões",
+  "viewDetails": "Ver Detalhes",
+  "applyProgressiveOverload": "Aplicar Sobrecarga Progressiva",
+  "applySuggestionQuestion": "Aplicar esta sugestão ao seu próximo treino de {exercise}?",
+  "@applySuggestionQuestion": {
+    }
+  },
+  "weight": "Peso",
+  "reps": "Repetições",
+  "suggestedWeight": "Peso: {weight}kg",
+  "@suggestedWeight": {
+    }
+  },
+  "suggestedReps": "Repetições: {reps}",
+  "@suggestedReps": {
+    }
+  },
+  "suggestedSets": "Séries: {sets}",
+  "@suggestedSets": {
+    }
+  },
+  "workoutTemplates": "Modelos de Treino",
+  "workoutInProgressTitle": "Treino em Andamento",
+  "startingNewWillEndCurrent": "Iniciar um novo treino encerrará o atual.",
+  "startNewWorkout": "Iniciar Novo Treino",
+  "defaultTemplates": "Modelos Padrão",
+  "pushDay": "Dia de Empurrar",
+  "pullDay": "Dia de Puxar",
+  "legDay": "Dia de Pernas",
+  "pushDayDescription": "Treino de peito, ombros e tríceps",
+  "pullDayDescription": "Treino de costas e bíceps",
+  "legDayDescription": "Treino de quadríceps, posteriores e panturrilhas",
+  "signIn": "Entrar",
+  "signUp": "Cadastrar",
+  "email": "E-mail",
+  "password": "Senha",
+  "confirmPassword": "Confirmar Senha",
+  "forgotPassword": "Esqueceu a senha?",
+  "dontHaveAccount": "Não tem uma conta?",
+  "alreadyHaveAccount": "Já tem uma conta?",
+  "enterEmail": "Digite seu e-mail",
+  "enterPassword": "Digite sua senha",
+  "fixDisplayNames": "Corrigir Nomes de Exibição",
+  "fixingDisplayNames": "Corrigindo nomes de exibição...",
+  "removeEmailsFromDisplayNames": "Isto removerá todos os e-mails dos nomes de exibição dos usuários e os substituirá por \"Atleta Desconhecido\".",
+  "thisFixesLeaderboards": "Isso corrige as classificações que mostram e-mails em vez de nomes.",
+  "areYouSure": "Você tem certeza?",
+  "fixNames": "Corrigir Nomes",
+  "welcome": "Bem-vindo",
+  "quickStart": "Início Rápido",
+  "templates": "Modelos",
+  "createManage": "Criar e Gerenciar",
+  "viewProgressHistory": "Ver Progresso",
+  "you": "VOCÊ",
+  "errorLoadingLeaderboard": "Erro ao carregar classificação",
+  "noLeaderboardData": "Nenhum dado de classificação disponível",
+  "day": "Dia",
+  "week": "Semana",
+  "month": "Mês",
+  "allTime": "Todo o Tempo",
+  "noDataAvailable": "Nenhum dado disponível",
+  "totalWorkouts": "Total de Treinos",
+  "recentPersonalRecords": "Recordes Pessoais Recentes",
+  "yourProgress": "Seu Progresso",
+  "stats": "Estatísticas",
+  "calendar": "Calendário",
+  "variations": "Variações",
+  "progression": "Progressão",
+  "advanced": "Avançado",
+  "expert": "Especialista",
+  "beginner": "Iniciante",
+  "intermediate": "Intermediário",
+  "monday": "Segunda-feira",
+  "tuesday": "Terça-feira",
+  "wednesday": "Quarta-feira",
+  "thursday": "Quinta-feira",
+  "friday": "Sexta-feira",
+  "saturday": "Sábado",
+  "sunday": "Domingo",
+  "mon": "Seg",
+  "tue": "Ter",
+  "wed": "Qua",
+  "thu": "Qui",
+  "fri": "Sex",
+  "sat": "Sáb",
+  "sun": "Dom",
+  "january": "Janeiro",
+  "february": "Fevereiro",
+  "march": "Março",
+  "april": "Abril",
+  "may": "Maio",
+  "june": "Junho",
+  "july": "Julho",
+  "august": "Agosto",
+  "september": "Setembro",
+  "october": "Outubro",
+  "november": "Novembro",
+  "december": "Dezembro",
+  "jan": "Jan",
+  "feb": "Fev",
+  "mar": "Mar",
+  "apr": "Abr",
+  "jun": "Jun",
+  "jul": "Jul",
+  "aug": "Ago",
+  "sep": "Set",
+  "oct": "Out",
+  "nov": "Nov",
+  "dec": "Dez",
+  "loading": "Carregando...",
+  "loadingData": "Carregando dados...",
+  "noData": "Sem dados",
+  "error": "Erro",
+  "success": "Sucesso",
+  "failed": "Falhou",
+  "notStarted": "Não Iniciado",
+  "search": "Buscar",
+  "filter": "Filtrar",
+  "sort": "Ordenar",
+  "selectAll": "Selecionar Todos",
+  "deselectAll": "Desmarcar Todos",
+  "selected": "Selecionado",
+  "clear": "Limpar",
+  "reset": "Redefinir",
+  "notes": "Notas",
+  "tags": "Tags",
+  "date": "Data",
+  "time": "Hora",
+  "status": "Status",
+  "start": "Iniciar",
+  "stop": "Parar",
+  "complete": "Completar",
+  "add": "Adicionar",
+  "remove": "Remover",
+  "update": "Atualizar",
+  "create": "Criar",
+  "view": "Visualizar",
+  "hide": "Ocultar",
+  "show": "Mostrar",
+  "more": "Mais",
+  "less": "Menos",
+  "previous": "Anterior",
+  "previousSet": "Série Anterior",
+  "nextSet": "Próxima Série",
+  "intensity": "Intensidade",
+  "frequency": "Frequência",
+  "consistency": "Consistência",
+  "personal": "Pessoal",
+  "record": "Recorde",
+  "best": "Melhor",
+  "metric": "Métrico",
+  "imperial": "Imperial",
+  "min": "min",
+  "sec": "seg",
+  "hour": "hora",
+  "hours": "horas",
+  "minutes": "minutos",
+  "seconds": "segundos",
+  "kgLifted": "kg levantados",
+  "avgDuration": "Duração Média",
+  "progressCharts": "Gráficos de Progresso",
+  "newFolder": "Nova Pasta",
+  "folders": "Pastas",
+  "myTemplates": "Meus Modelos",
+  "sharedTemplates": "Modelos Compartilhados"

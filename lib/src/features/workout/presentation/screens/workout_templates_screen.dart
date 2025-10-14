@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../providers/active_workout_provider.dart';
 
 class WorkoutTemplatesScreen extends ConsumerWidget {
@@ -19,20 +20,20 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Workout in Progress'),
+          title: Text(S.of(context)!.workoutInProgressTitle),
           content: Text(
             'You have an active workout "${activeWorkout.name}" in progress. '
-            'Starting a new workout will end the current one.\n\n'
-            'Do you want to continue?',
+            '${S.of(context)!.startingNewWillEndCurrent}\n\n'
+            '${S.of(context)!.doYouWantToContinue}',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(S.of(context)!.cancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Start New Workout'),
+              child: Text(S.of(context)!.startNewWorkout),
             ),
             FilledButton(
               onPressed: () async {
@@ -40,7 +41,7 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
                 // Force cleanup to ensure clean state
                 await ref.read(activeWorkoutProvider.notifier).forceCleanup();
               },
-              child: const Text('Clear & Start New'),
+              child: Text(S.of(context)!.clearAndStartNew),
             ),
           ],
         ),
@@ -58,9 +59,9 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
+      Widget build(BuildContext context, WidgetRef ref) => Scaffold(
         appBar: AppBar(
-          title: const Text('Workout Templates'),
+          title: Text(S.of(context)!.workoutTemplates),
           actions: [
             IconButton(
               onPressed: () {
@@ -75,7 +76,7 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
           children: [
             // Default Templates Section
             Text(
-              'Default Templates',
+              S.of(context)!.defaultTemplates,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -195,26 +196,26 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
               break;
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: S.of(context)!.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center_outlined),
-            activeIcon: Icon(Icons.fitness_center),
-            label: 'Workouts',
+            icon: const Icon(Icons.fitness_center_outlined),
+            activeIcon: const Icon(Icons.fitness_center),
+            label: S.of(context)!.workouts,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Exercises',
+            icon: const Icon(Icons.search_outlined),
+            activeIcon: const Icon(Icons.search),
+            label: S.of(context)!.exercises,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up_outlined),
-            activeIcon: Icon(Icons.trending_up),
-            label: 'Progress',
+            icon: const Icon(Icons.trending_up_outlined),
+            activeIcon: const Icon(Icons.trending_up),
+            label: S.of(context)!.progress,
           ),
         ],
       );

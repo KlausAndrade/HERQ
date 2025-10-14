@@ -64,14 +64,14 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                 : const Center(
                     child: Text('Start working out to see your stats!')),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, __) => const Center(child: Text('Error loading stats')),
+            error: (_, __) => Center(child: Text(S.of(context)!.error)),
           ),
           // Achievements Tab
           achievementsAsync.when(
             data: (achievements) => _buildAchievementsTab(achievements),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (_, __) =>
-                const Center(child: Text('Error loading achievements')),
+                Center(child: Text(S.of(context)!.error)),
           ),
           // Calendar Tab
           workoutsAsync.when(
@@ -91,7 +91,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (_, __) =>
-                const Center(child: Text('Error loading calendar')),
+                Center(child: Text(S.of(context)!.error)),
           ),
         ],
       ),

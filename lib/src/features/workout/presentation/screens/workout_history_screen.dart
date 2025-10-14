@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
-import '../../../../core/providers/database_provider.dart';
 import '../providers/workout_providers.dart';
 import '../providers/filter_providers.dart';
 import '../widgets/workout_calendar.dart';
@@ -35,7 +35,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: const Text('Workout History'),
+        title: Text(S.of(context)!.workoutHistory),
         actions: [
           IconButton(
             onPressed: () {
@@ -349,14 +349,14 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'No Workout History',
+              S.of(context)!.noWorkoutHistoryTitle,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(height: 12),
             Text(
-              'Complete your first workout to see your history here',
+              S.of(context)!.completeFirstWorkout,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Theme.of(context)
                         .colorScheme
@@ -371,7 +371,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
                 context.go('/workout-templates?mode=start');
               },
               icon: const Icon(Icons.fitness_center),
-              label: const Text('Start First Workout'),
+              label: Text(S.of(context)!.startFirstWorkout),
             ),
           ],
         ),
@@ -408,7 +408,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             const SizedBox(height: 8),
             ListTile(
               leading: const Icon(Icons.all_inclusive),
-              title: const Text('All Completed'),
+              title: Text(S.of(context)!.allCompleted),
               onTap: () {
                 Navigator.pop(context);
                 ref
@@ -418,7 +418,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.calendar_today),
-              title: const Text('This Week'),
+              title: Text(S.of(context)!.thisWeek),
               onTap: () {
                 Navigator.pop(context);
                 ref
@@ -428,7 +428,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.calendar_month),
-              title: const Text('This Month'),
+              title: Text(S.of(context)!.thisMonth),
               onTap: () {
                 Navigator.pop(context);
                 ref
@@ -462,26 +462,26 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
               break;
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: S.of(context)!.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center_outlined),
-            activeIcon: Icon(Icons.fitness_center),
-            label: 'Workouts',
+            icon: const Icon(Icons.fitness_center_outlined),
+            activeIcon: const Icon(Icons.fitness_center),
+            label: S.of(context)!.workouts,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Exercises',
+            icon: const Icon(Icons.search_outlined),
+            activeIcon: const Icon(Icons.search),
+            label: S.of(context)!.exercises,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up_outlined),
-            activeIcon: Icon(Icons.trending_up),
-            label: 'Progress',
+            icon: const Icon(Icons.trending_up_outlined),
+            activeIcon: const Icon(Icons.trending_up),
+            label: S.of(context)!.progress,
           ),
         ],
       );

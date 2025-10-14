@@ -869,7 +869,7 @@ By using GymAI, you agree to this privacy policy.''',
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(S.of(context)!.close),
           ),
         ],
       ),
@@ -936,7 +936,7 @@ By using GymAI, you agree to these terms.''',
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(S.of(context)!.close),
           ),
         ],
       ),
@@ -998,7 +998,7 @@ By using GymAI, you agree to these terms.''',
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: Text(S.of(context)!.close),
           ),
         ],
       ),
@@ -1113,7 +1113,7 @@ By using GymAI, you agree to these terms.''',
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: Text(S.of(context)!.close),
           ),
         ],
       ),
@@ -1440,21 +1440,21 @@ By using GymAI, you agree to these terms.''',
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Fix Display Names'),
-        content: const Text(
-          'This will remove all emails from user display names and replace them with "Unknown Athlete".\n\n'
-          'This fixes leaderboards showing emails instead of names.\n\n'
-          'Are you sure?',
+        title: Text(S.of(context)!.fixDisplayNames),
+        content: Text(
+          '${S.of(context)!.removeEmailsFromDisplayNames}\n\n'
+          '${S.of(context)!.thisFixesLeaderboards}\n\n'
+          '${S.of(context)!.areYouSure}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(S.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.purple),
-            child: const Text('Fix Names'),
+            child: Text(S.of(context)!.fixNames),
           ),
         ],
       ),
@@ -1465,13 +1465,13 @@ By using GymAI, you agree to these terms.''',
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const AlertDialog(
+      builder: (context) => AlertDialog(
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Fixing display names...'),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(S.of(context)!.fixingDisplayNames),
           ],
         ),
       ),

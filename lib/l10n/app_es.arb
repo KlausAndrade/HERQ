@@ -1,6 +1,5 @@
 {
   "@@locale": "es",
-  
   "save": "Guardar",
   "cancel": "Cancelar",
   "delete": "Eliminar",
@@ -15,86 +14,48 @@
   "skip": "Saltar",
   "confirm": "Confirmar",
   "gotIt": "Entendido",
-  
   "appTitle": "GymAI",
   "@appTitle": {
     "description": "The title of the application"
   },
-  
   "home": "Inicio",
   "@home": {
-    "description": "Home navigation label"
-  },
   "exercises": "Ejercicios",
   "@exercises": {
-    "description": "Exercises navigation label"
-  },
   "social": "Social",
   "progress": "Progreso",
   "@progress": {
-    "description": "Progress navigation label"
-  },
   "settings": "Configuración",
   "@settings": {
-    "description": "Settings screen title"
-  },
-  
   "welcomeBack": "¡Bienvenido de nuevo!",
   "@welcomeBack": {
-    "description": "Welcome message on home screen"
-  },
   "readyForWorkout": "¿Listo para tu próximo entrenamiento?",
   "@readyForWorkout": {
-    "description": "Subtitle on home screen"
-  },
   "quickActions": "Acciones Rápidas",
   "@quickActions": {
-    "description": "Section title for quick action buttons"
-  },
   "startWorkout": "Iniciar Entrenamiento",
   "@startWorkout": {
-    "description": "Start workout button text"
-  },
   "viewProgress": "Ver Progreso",
   "@viewProgress": {
-    "description": "View progress button text"
-  },
   "exerciseLibrary": "Biblioteca de Ejercicios",
   "@exerciseLibrary": {
-    "description": "Exercise library button text"
-  },
   "history": "Historial",
   "@history": {
-    "description": "History button text"
-  },
   "thisWeek": "Esta Semana",
   "@thisWeek": {
-    "description": "This week stats section title"
-  },
   "workouts": "Entrenamientos",
   "@workouts": {
-    "description": "Workouts label"
-  },
   "totalVolume": "Volumen Total",
   "@totalVolume": {
-    "description": "Total volume label"
-  },
   "prsSet": "RPs Establecidos",
   "@prsSet": {
-    "description": "Personal records set label"
-  },
   "recentWorkouts": "Entrenamientos Recientes",
   "@recentWorkouts": {
-    "description": "Recent workouts section title"
-  },
   "viewAll": "Ver Todo",
   "@viewAll": {
-    "description": "View all button text"
-  },
   "noWorkoutsYet": "Aún no hay entrenamientos",
-  "startFirstWorkout": "Inicia tu primer entrenamiento para ver tu progreso aquí",
+  "startFirstWorkout": "Comenzar Primer Entrenamiento",
   "errorLoadingWorkouts": "Error al cargar entrenamientos",
-  
   "account": "Cuenta",
   "loggedIn": "Conectado",
   "noEmail": "Sin email",
@@ -105,7 +66,6 @@
   "signedOutSuccessfully": "Sesión cerrada exitosamente",
   "signInSignUp": "Iniciar Sesión / Registrarse",
   "syncDataAcrossDevices": "Sincroniza tus datos entre dispositivos",
-  
   "appearance": "Apariencia",
   "theme": "Tema",
   "chooseTheme": "Elegir Tema",
@@ -114,7 +74,6 @@
   "system": "Sistema",
   "language": "Idioma",
   "chooseLanguage": "Elegir Idioma",
-  
   "workoutSettings": "Configuración de Entrenamiento",
   "defaultRestTimer": "Temporizador de Descanso Predeterminado",
   "weightUnit": "Unidad de Peso",
@@ -124,7 +83,6 @@
   "vibrateOnTimerCompletion": "Vibrar al completar el temporizador",
   "autoStartRestTimer": "Iniciar Temporizador Automáticamente",
   "startTimerAfterSet": "Iniciar temporizador después de completar una serie",
-  
   "dataPrivacy": "Datos y Privacidad",
   "syncData": "Sincronizar Datos",
   "lastSyncedNever": "Última sincronización: Nunca",
@@ -150,7 +108,6 @@
   "deleted": "Eliminado",
   "accountDataDeleted": "Datos de la cuenta eliminados",
   "error": "Error",
-  
   "maintenance": "Mantenimiento",
   "debugExerciseTypes": "Debug de Tipos de Ejercicio",
   "showAllExercises": "Mostrar todos los ejercicios y sus tipos",
@@ -168,12 +125,10 @@
   "reassignExerciseTypes": "Reasignar tipos de ejercicio a todos los ejercicios",
   "reloadTemplatesExercises": "Recargar Plantillas y Ejercicios",
   "loadNewTemplates": "Cargar nuevas plantillas de entrenamiento y ejercicios",
-  
   "about": "Acerca de",
   "version": "Versión",
   "privacyPolicy": "Política de Privacidad",
   "termsOfService": "Términos de Servicio",
-  
   "workout": "Entrenamiento",
   "activeWorkout": "Entrenamiento Activo",
   "noActiveWorkout": "Sin entrenamiento activo",
@@ -182,13 +137,13 @@
   "addExercise": "Añadir Ejercicio",
   "removeExercise": "Eliminar Ejercicio",
   "sets": "Series",
-  "reps": "Reps",
+  "reps": "Repeticiones",
   "weight": "Peso",
   "duration": "Duración",
   "distance": "Distancia",
   "restTimer": "Temporizador de Descanso",
-  "minutes": "Minutos",
-  "seconds": "Segundos",
+  "minutes": "minutos",
+  "seconds": "segundos",
   "kg": "kg",
   "lb": "lb",
   "km": "km",
@@ -213,8 +168,8 @@
   "workoutHistory": "Historial de Entrenamientos",
   "filters": "Filtros",
   "allWorkouts": "Todos los Entrenamientos",
-  "completed": "Completados",
-  "inProgress": "En Progreso",
+  "completed": "Completado",
+  "inProgress": "En Curso",
   "workoutInProgress": "Entrenamiento en Progreso",
   "haveActiveWorkout": "Tienes un entrenamiento activo \"{name}\" en progreso.",
   "startingNewWillEnd": "Iniciar un nuevo entrenamiento finalizará el actual.",
@@ -236,20 +191,13 @@
   "youHaveUnfinishedWorkout": "Tienes un entrenamiento sin terminar:",
   "finishedTimeAgo": "Finalizado hace {timeAgo} - ¡no olvides guardar!",
   "@finishedTimeAgo": {
-    "description": "Tiempo desde que el entrenamiento fue finalizado",
     "placeholders": {
       "timeAgo": {
         "type": "String"
-      }
     }
   },
   "pausedTimeAgo": "Pausado hace {timeAgo}",
   "@pausedTimeAgo": {
-    "description": "Tiempo desde que el entrenamiento fue pausado",
-    "placeholders": {
-      "timeAgo": {
-        "type": "String"
-      }
     }
   },
   "tapFinalizeToSave": "Toca \"Finalizar\" para guardar tu entrenamiento y ver el resumen!",
@@ -260,11 +208,7 @@
   "resumeWorkoutTitle": "Reanudar Entrenamiento",
   "continueWorkoutName": "Continuar {name}",
   "@continueWorkoutName": {
-    "description": "Continuar entrenamiento con nombre",
-    "placeholders": {
       "name": {
-        "type": "String"
-      }
     }
   },
   "beginNewSession": "Comenzar una nueva sesión",
@@ -277,26 +221,16 @@
   "aiCoach": "Entrenador IA",
   "smartTrainingHelp": "Ayuda inteligente de entrenamiento",
   "appPreferences": "Preferencias de la app",
-  "home": "Inicio",
-  "workouts": "Entrenamientos",
-  "exercises": "Ejercicios",
-  "progress": "Progreso",
-  "day": "día",
+  "day": "Día",
   "days": "días",
   "today": "Hoy",
   "yesterday": "Ayer",
   "daysAgo": "hace {count} días",
   "@daysAgo": {
-    "description": "Cuántos días atrás",
-    "placeholders": {
       "count": {
-        "type": "int"
-      }
     }
   },
-  
   "exercise": "Ejercicio",
-  "exerciseLibrary": "Biblioteca de Ejercicios",
   "createExercise": "Crear Ejercicio",
   "editExercise": "Editar Ejercicio",
   "exerciseName": "Nombre del Ejercicio",
@@ -315,7 +249,6 @@
   "favorites": "Favoritos",
   "showVariants": "Mostrar Variantes",
   "all": "Todos",
-  
   "weightReps": "Peso y Reps",
   "bodyweightReps": "Reps con Peso Corporal",
   "weightedBodyweight": "Peso Corporal con Carga",
@@ -324,7 +257,6 @@
   "durationWeight": "Duración y Peso",
   "distanceDuration": "Distancia y Duración",
   "weightDistance": "Peso y Distancia",
-  
   "upperBody": "Parte Superior",
   "lowerBody": "Parte Inferior",
   "core": "Core",
@@ -337,7 +269,6 @@
   "yoga": "Yoga",
   "pilates": "Pilates",
   "other": "Otro",
-  
   "barbell": "Barra",
   "dumbbell": "Mancuerna",
   "kettlebell": "Kettlebell",
@@ -346,9 +277,8 @@
   "bodyweight": "Peso Corporal",
   "bands": "Bandas",
   "none": "Ninguno",
-  
   "feed": "Feed",
-  "leaderboards": "Rankings",
+  "leaderboards": "Clasificaciones",
   "createPost": "Crear Publicación",
   "writePost": "Escribe tu publicación...",
   "post": "Publicar",
@@ -358,7 +288,6 @@
   "following": "Siguiendo",
   "followers": "Seguidores",
   "profile": "Perfil",
-  
   "totalVolumeLeaderboard": "Volumen Total",
   "workoutCountLeaderboard": "Total de Entrenamientos",
   "streakLeaderboard": "Racha",
@@ -367,14 +296,12 @@
   "thisMonthPeriod": "Este Mes",
   "allTimePeriod": "Todo el Tiempo",
   "rank": "Posición",
-  "you": "Tú",
+  "you": "TÚ",
   "noDataAvailable": "No hay datos disponibles",
-  
   "yourStats": "Tus Estadísticas",
   "level": "Nivel",
   "xp": "XP",
   "streak": "Racha",
-  "days": "días",
   "totalWorkoutsCompleted": "Total de Entrenamientos Completados",
   "totalVolumeLifted": "Volumen Total Levantado",
   "currentStreak": "Racha Actual",
@@ -386,19 +313,16 @@
   "nearMissPRs": "Casi RPs",
   "exerciseProgress": "Progreso de Ejercicios",
   "plateauDetection": "Detección de Meseta",
-  
   "required": "Requerido",
   "invalidEmail": "Email inválido",
   "passwordTooShort": "Contraseña demasiado corta",
   "passwordsDoNotMatch": "Las contraseñas no coinciden",
   "invalidNumber": "Número inválido",
-  
   "somethingWentWrong": "Algo salió mal",
   "tryAgain": "Intentar de nuevo",
   "noInternetConnection": "Sin conexión a internet",
   "failedToLoad": "Error al cargar",
   "failedToSave": "Error al guardar",
-  
   "saveWorkout": "Guardar Entrenamiento",
   "workoutName": "Nombre del Entrenamiento",
   "enterWorkoutName": "Ingrese el nombre del entrenamiento",
@@ -409,15 +333,11 @@
   "letOthersSee": "Deja que otros vean tu logro",
   "discard": "Descartar",
   "workoutNotSaved": "Este entrenamiento no se guardará. Todo el progreso se perderá. ¿Estás seguro?",
-  "duration": "Duración",
   "volume": "Volumen",
-  "sets": "Series",
   "personalRecord": "Récord Personal",
-  "personalRecords": "Récords Personales",
   "takePhoto": "Tomar Foto",
   "chooseFromGallery": "Elegir de la Galería",
   "pleaseEnterWorkoutName": "Por favor, ingrese un nombre para el entrenamiento",
-  
   "exerciseVariant": "Variante del Ejercicio",
   "variantType": "Tipo de Variante",
   "changeEquipmentVariant": "Cambiar equipamiento/variante",
@@ -427,8 +347,7 @@
   "assisted": "Asistido",
   "weighted": "Con Peso",
   "tempo": "Tempo",
-  "pause": "Pausa",
-  
+  "pause": "Pausar",
   "explore": "Explorar",
   "retry": "Reintentar",
   "noPostsYet": "Aún no hay publicaciones",
@@ -437,15 +356,10 @@
   "unknownAthlete": "Atleta Desconocido",
   "whatsOnYourMind": "¿Qué estás pensando?",
   "failedToLoadFeed": "Error al cargar el feed",
-  
   "gamificationNotAvailable": "Gamificación no disponible",
   "xpToLevel": "{xp} / {needed} XP para Nivel {level}",
   "@xpToLevel": {
-    "description": "XP progress to next level",
-    "placeholders": {
-      "xp": {"type": "int"},
-      "needed": {"type": "int"},
-      "level": {"type": "int"}
+      "needed": {
     }
   },
   "achievementProgress": "Progreso de Logros",
@@ -457,21 +371,182 @@
   "specialMilestones": "Hitos Especiales",
   "levelN": "Nivel {level}",
   "@levelN": {
-    "description": "Level number",
-    "placeholders": {
-      "level": {"type": "int"}
     }
   },
   "xpProgress": "{current} / {total} XP",
   "@xpProgress": {
-    "description": "XP progress",
-    "placeholders": {
-      "current": {"type": "int"},
-      "total": {"type": "int"}
+      "current": {
+      "total": {
     }
   },
-  
   "continueExercisesOrFinish": "¿Quieres continuar estos ejercicios o finalizar de todos modos?",
   "shareWorkout": "Compartir Entrenamiento",
-  "noWorkoutHistory": "¡Aún no hay historial de entrenamientos!"
-}
+  "noWorkoutHistory": "¡Aún no hay historial de entrenamientos!",
+  "compareCompete": "Compara y compite",
+  "noWorkoutHistoryTitle": "Sin Historial de Entrenamientos",
+  "completeFirstWorkout": "Completa tu primer entrenamiento para ver tu historial aquí",
+  "allCompleted": "Todos Completos",
+  "thisMonth": "Este Mes",
+  "totalVolumeLeaderboardTitle": "Volumen Total",
+  "workoutCountLeaderboardTitle": "Cantidad de Entrenamientos",
+  "streakLeaderboardTitle": "Racha",
+  "prCountLeaderboardTitle": "Récords",
+  "recommendations": "Recomendaciones",
+  "recovery": "Recuperación",
+  "progressAnalysis": "Progreso",
+  "suggestions": "Sugerencias",
+  "viewDetails": "Ver Detalles",
+  "applyProgressiveOverload": "Aplicar Sobrecarga Progresiva",
+  "applySuggestionQuestion": "¿Aplicar esta sugerencia a tu próximo entrenamiento de {exercise}?",
+  "@applySuggestionQuestion": {
+    }
+  },
+  "suggestedWeight": "Peso: {weight}kg",
+  "@suggestedWeight": {
+    }
+  },
+  "suggestedReps": "Repeticiones: {reps}",
+  "@suggestedReps": {
+    }
+  },
+  "suggestedSets": "Series: {sets}",
+  "@suggestedSets": {
+    }
+  },
+  "workoutTemplates": "Plantillas de Entrenamiento",
+  "workoutInProgressTitle": "Entrenamiento en Curso",
+  "startingNewWillEndCurrent": "Iniciar un nuevo entrenamiento finalizará el actual.",
+  "startNewWorkout": "Iniciar Nuevo Entrenamiento",
+  "defaultTemplates": "Plantillas Predeterminadas",
+  "pushDay": "Día de Empuje",
+  "pullDay": "Día de Tracción",
+  "legDay": "Día de Piernas",
+  "pushDayDescription": "Entrenamiento de pecho, hombros y tríceps",
+  "pullDayDescription": "Entrenamiento de espalda y bíceps",
+  "legDayDescription": "Entrenamiento de cuádriceps, isquiotibiales y pantorrillas",
+  "signIn": "Iniciar Sesión",
+  "signUp": "Registrarse",
+  "email": "Correo Electrónico",
+  "password": "Contraseña",
+  "confirmPassword": "Confirmar Contraseña",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "dontHaveAccount": "¿No tienes una cuenta?",
+  "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+  "enterEmail": "Ingresa tu correo electrónico",
+  "enterPassword": "Ingresa tu contraseña",
+  "fixingDisplayNames": "Corrigiendo nombres de visualización...",
+  "removeEmailsFromDisplayNames": "Esto eliminará todos los correos electrónicos de los nombres de visualización de los usuarios y los reemplazará con \"Atleta Desconocido\".",
+  "thisFixesLeaderboards": "Esto corrige las clasificaciones que muestran correos electrónicos en lugar de nombres.",
+  "areYouSure": "¿Estás seguro?",
+  "fixNames": "Corregir Nombres",
+  "welcome": "Bienvenido",
+  "quickStart": "Inicio Rápido",
+  "templates": "Plantillas",
+  "createManage": "Crear y Gestionar",
+  "viewProgressHistory": "Ver Progreso",
+  "errorLoadingLeaderboard": "Error al cargar clasificación",
+  "noLeaderboardData": "No hay datos de clasificación disponibles",
+  "week": "Semana",
+  "month": "Mes",
+  "allTime": "Todo el Tiempo",
+  "totalWorkouts": "Total de Entrenamientos",
+  "recentPersonalRecords": "Récords Personales Recientes",
+  "yourProgress": "Tu Progreso",
+  "stats": "Estadísticas",
+  "calendar": "Calendario",
+  "variations": "Variaciones",
+  "progression": "Progresión",
+  "advanced": "Avanzado",
+  "expert": "Experto",
+  "beginner": "Principiante",
+  "intermediate": "Intermedio",
+  "monday": "Lunes",
+  "tuesday": "Martes",
+  "wednesday": "Miércoles",
+  "thursday": "Jueves",
+  "friday": "Viernes",
+  "saturday": "Sábado",
+  "sunday": "Domingo",
+  "mon": "Lun",
+  "tue": "Mar",
+  "wed": "Mié",
+  "thu": "Jue",
+  "fri": "Vie",
+  "sat": "Sáb",
+  "sun": "Dom",
+  "january": "Enero",
+  "february": "Febrero",
+  "march": "Marzo",
+  "april": "Abril",
+  "may": "Mayo",
+  "june": "Junio",
+  "july": "Julio",
+  "august": "Agosto",
+  "september": "Septiembre",
+  "october": "Octubre",
+  "november": "Noviembre",
+  "december": "Diciembre",
+  "jan": "Ene",
+  "feb": "Feb",
+  "mar": "Mar",
+  "apr": "Abr",
+  "jun": "Jun",
+  "jul": "Jul",
+  "aug": "Ago",
+  "sep": "Sep",
+  "oct": "Oct",
+  "nov": "Nov",
+  "dec": "Dic",
+  "loading": "Cargando...",
+  "loadingData": "Cargando datos...",
+  "noData": "Sin datos",
+  "success": "Éxito",
+  "failed": "Fallido",
+  "notStarted": "No Iniciado",
+  "search": "Buscar",
+  "filter": "Filtrar",
+  "sort": "Ordenar",
+  "selectAll": "Seleccionar Todos",
+  "deselectAll": "Deseleccionar Todos",
+  "selected": "Seleccionado",
+  "clear": "Limpiar",
+  "reset": "Restablecer",
+  "notes": "Notas",
+  "tags": "Etiquetas",
+  "date": "Fecha",
+  "time": "Hora",
+  "status": "Estado",
+  "start": "Iniciar",
+  "stop": "Detener",
+  "complete": "Completar",
+  "add": "Agregar",
+  "remove": "Eliminar",
+  "update": "Actualizar",
+  "create": "Crear",
+  "view": "Ver",
+  "hide": "Ocultar",
+  "show": "Mostrar",
+  "more": "Más",
+  "less": "Menos",
+  "previous": "Anterior",
+  "previousSet": "Serie Anterior",
+  "nextSet": "Siguiente Serie",
+  "intensity": "Intensidad",
+  "frequency": "Frecuencia",
+  "consistency": "Consistencia",
+  "personal": "Personal",
+  "record": "Récord",
+  "best": "Mejor",
+  "metric": "Métrico",
+  "imperial": "Imperial",
+  "min": "min",
+  "sec": "seg",
+  "hour": "hora",
+  "hours": "horas",
+  "kgLifted": "kg levantados",
+  "avgDuration": "Duración Promedio",
+  "progressCharts": "Gráficos de Progreso",
+  "newFolder": "Nueva Carpeta",
+  "folders": "Carpetas",
+  "myTemplates": "Mis Plantillas",
+  "sharedTemplates": "Plantillas Compartidas"

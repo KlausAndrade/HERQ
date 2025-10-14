@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/display_name_sanitizer.dart';
 import '../../domain/models/leaderboard_models.dart';
 import '../providers/leaderboard_providers.dart';
@@ -20,14 +21,14 @@ class LeaderboardsScreen extends HookConsumerWidget {
             icon: const Icon(Icons.arrow_back),
             onPressed: () => context.go('/'),
           ),
-          title: const Text('Leaderboards'),
-          bottom: const TabBar(
+          title: Text(S.of(context)!.leaderboards),
+          bottom: TabBar(
             isScrollable: true,
             tabs: [
-              Tab(text: 'Volume'),
-              Tab(text: 'Workouts'),
-              Tab(text: 'Streaks'),
-              Tab(text: 'PRs'),
+              Tab(text: S.of(context)!.totalVolumeLeaderboardTitle),
+              Tab(text: S.of(context)!.workoutCountLeaderboardTitle),
+              Tab(text: S.of(context)!.streakLeaderboardTitle),
+              Tab(text: S.of(context)!.prCountLeaderboardTitle),
             ],
           ),
         ),
@@ -106,7 +107,7 @@ class LeaderboardTab extends HookConsumerWidget {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => ref.invalidate(leaderboardProvider(params)),
-                      child: const Text('Retry'),
+                      child: Text(S.of(context)!.retry),
                     ),
                   ],
                 ),
@@ -516,8 +517,8 @@ class LeaderboardTab extends HookConsumerWidget {
                         color: theme.colorScheme.primary,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Text(
-                        'YOU',
+                      child: Text(
+                        S.of(context)!.you,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 9,

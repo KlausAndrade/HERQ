@@ -295,8 +295,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _QuickActionCard(
-                      title: 'Leaderboards',
-                      subtitle: 'Compare & compete',
+                      title: S.of(context)!.leaderboards,
+                      subtitle: S.of(context)!.compareCompete,
                       icon: Icons.emoji_events,
                       color: Colors.amber,
                       onTap: () => context.go('/leaderboards'),

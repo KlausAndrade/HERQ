@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
@@ -170,7 +171,7 @@ class UserProfileScreen extends ConsumerWidget {
                   ),
                 ] else ...[
                   Text(
-                    'No workout data',
+                    'No data available',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey[600],

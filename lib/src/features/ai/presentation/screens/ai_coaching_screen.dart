@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:gym_ai/src/core/services/notification_service.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../workout/presentation/providers/template_providers.dart';
@@ -26,14 +27,14 @@ class AICoachingScreen extends HookConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-          title: const Text('AI Coach'),
-          bottom: const TabBar(
+          title: Text(S.of(context)!.aiCoach),
+          bottom: TabBar(
             isScrollable: true,
             tabs: [
-              Tab(text: 'Recommendations', icon: Icon(Icons.lightbulb_outline)),
-              Tab(text: 'Recovery', icon: Icon(Icons.spa)),
-              Tab(text: 'Progress', icon: Icon(Icons.trending_up)),
-              Tab(text: 'Suggestions', icon: Icon(Icons.tips_and_updates)),
+              Tab(text: S.of(context)!.recommendations, icon: const Icon(Icons.lightbulb_outline)),
+              Tab(text: S.of(context)!.recovery, icon: const Icon(Icons.spa)),
+              Tab(text: S.of(context)!.progressAnalysis, icon: const Icon(Icons.trending_up)),
+              Tab(text: S.of(context)!.suggestions, icon: const Icon(Icons.tips_and_updates)),
             ],
           ),
         ),
@@ -91,7 +92,7 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => ref.invalidate(workoutRecommendationsProvider),
-              child: const Text('Retry'),
+              child: Text(S.of(context)!.retry),
             ),
           ],
         ),
@@ -256,7 +257,7 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
                     onPressed: () {
                       // View details
                     },
-                    child: const Text('View Details'),
+                    child: Text(S.of(context)!.viewDetails),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -267,7 +268,7 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
                       ref, 
                       recommendation,
                     ),
-                    child: const Text('Start Workout'),
+                    child: Text(S.of(context)!.startWorkout),
                   ),
                 ),
               ],
@@ -917,12 +918,12 @@ class ProgressAnalysisTab extends HookConsumerWidget {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Apply Progressive Overload'),
+          title: Text(S.of(context)!.applyProgressiveOverload),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Apply this suggestion to your next ${suggestion.exerciseId} workout?'),
+              Text(S.of(context)!.applySuggestionQuestion(suggestion.exerciseId)),
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -939,9 +940,9 @@ class ProgressAnalysisTab extends HookConsumerWidget {
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
-                    Text('Weight: ${suggestion.suggestedWeight}kg'),
-                    Text('Reps: ${suggestion.suggestedReps}'),
-                    Text('Sets: ${suggestion.suggestedSets}'),
+                    Text(S.of(context)!.suggestedWeight(suggestion.suggestedWeight.toString())),
+                    Text(S.of(context)!.suggestedReps(suggestion.suggestedReps.toString())),
+                    Text(S.of(context)!.suggestedSets(suggestion.suggestedSets.toString())),
                   ],
                 ),
               ),
