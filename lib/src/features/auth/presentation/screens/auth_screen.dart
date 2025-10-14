@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../core/providers/auth_provider.dart';
 import 'package:herq/src/core/services/notification_service.dart';
@@ -53,7 +53,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 const SizedBox(height: 24),
 
                 Text(
-                  AppLocalizations.of(context)!.appTitle,
+                  S.of(context)!.appTitle,
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
@@ -63,7 +63,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 const SizedBox(height: 8),
 
                 Text(
-                  AppLocalizations.of(context)!.yourIntelligentWorkoutCompanion,
+                  S.of(context)!.yourIntelligentWorkoutCompanion,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Theme.of(context)
                             .colorScheme

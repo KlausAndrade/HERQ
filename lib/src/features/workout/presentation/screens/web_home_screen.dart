@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import '../providers/template_web_provider.dart';
 import '../providers/workout_web_sessions_provider.dart';
@@ -16,11 +16,9 @@ class WebHomeScreen extends ConsumerWidget {
     final templates = ref.watch(workoutTemplatesWebProvider);
     final recentSessions = ref.watch(recentSessionsWebProvider);
 
-    final l10n = AppLocalizations.of(context)!;
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.appTitle),
+        title: Text(S.of(context)!.appTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),

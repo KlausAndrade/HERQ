@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:herq/src/core/services/notification_service.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 import '../providers/social_providers.dart';
 import 'edit_post_dialog.dart';
@@ -175,7 +175,7 @@ class PostCard extends ConsumerWidget {
       final webLink =
           'https://yourapp.com/post/${post.id}'; // Update with your actual domain
 
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = S.of(context)!;
       final String shareText =
           (post.caption != null && post.caption!.isNotEmpty)
               ? '${post.caption}\n\n$webLink'

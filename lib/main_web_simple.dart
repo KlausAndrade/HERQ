@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 /// Web-specific entry point for HERQ
@@ -52,7 +52,7 @@ class HerqWebApp extends StatelessWidget {
         ),
       ),
       localizationsDelegates: const [
-        AppLocalizations.delegate,
+        S.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
@@ -86,7 +86,7 @@ class WebComingSoonScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Text(
-                AppLocalizations.of(context)!.appTitle,
+                S.of(context)!.appTitle,
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.blue,
@@ -94,7 +94,7 @@ class WebComingSoonScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                AppLocalizations.of(context)!.mobileFirstWorkoutTracker,
+                S.of(context)!.mobileFirstWorkoutTracker,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.grey[600],
                     ),
@@ -124,8 +124,9 @@ class WebComingSoonScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        AppLocalizations.of(context)!.optimizedForMobile(
-                            AppLocalizations.of(context)!.appTitle),
+                        S
+                            .of(context)!
+                            .optimizedForMobile(S.of(context)!.appTitle),
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 16),
