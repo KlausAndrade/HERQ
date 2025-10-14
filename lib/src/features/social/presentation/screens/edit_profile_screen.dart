@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../providers/social_providers.dart';
@@ -124,8 +125,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (mounted) {
         NotificationService().showInAppNotification(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Profile updated',
-          body: 'Profile updated successfully!',
+          title: S.of(context)!.profileUpdated,
+          body: S.of(context)!.profileUpdatedSuccessfully,
           backgroundColor: Colors.green,
         );
         context.pop();
@@ -134,8 +135,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (mounted) {
         NotificationService().showInAppNotification(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Profile update failed',
-          body: 'Error updating profile: $e',
+          title: S.of(context)!.profileUpdateFailed,
+          body: '${S.of(context)!.errorUpdatingProfile}: $e',
           backgroundColor: Colors.red,
         );
       }
@@ -152,7 +153,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: Text(S.of(context)!.editProfile),
         actions: [
           if (_isLoading)
             const Center(
@@ -168,7 +169,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           else
             TextButton(
               onPressed: _saveProfile,
-              child: const Text('Save'),
+              child: Text(S.of(context)!.save),
             ),
         ],
       ),
@@ -216,19 +217,19 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             // Display Name
             TextFormField(
               controller: _displayNameController,
-              decoration: const InputDecoration(
-                labelText: 'Display Name',
-                hintText: 'Enter your display name',
-                prefixIcon: Icon(Icons.person),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: S.of(context)!.displayName,
+                hintText: S.of(context)!.enterDisplayName,
+                prefixIcon: const Icon(Icons.person),
+                border: const OutlineInputBorder(),
               ),
               maxLength: 50,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter a display name';
+                  return S.of(context)!.pleaseEnterDisplayName;
                 }
                 if (value.trim().length < 2) {
-                  return 'Name must be at least 2 characters';
+                  return S.of(context)!.nameAtLeast2Chars;
                 }
                 return null;
               },
@@ -238,18 +239,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             // Bio
             TextFormField(
               controller: _bioController,
-              decoration: const InputDecoration(
-                labelText: 'Bio',
-                hintText: 'Tell us about yourself',
-                prefixIcon: Icon(Icons.description),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: S.of(context)!.bio,
+                hintText: S.of(context)!.tellUsAboutYourself,
+                prefixIcon: const Icon(Icons.description),
+                border: const OutlineInputBorder(),
                 alignLabelWithHint: true,
               ),
               maxLines: 4,
               maxLength: 200,
               validator: (value) {
                 if (value != null && value.trim().length > 200) {
-                  return 'Bio must be less than 200 characters';
+                  return S.of(context)!.bioMaxLength;
                 }
                 return null;
               },
@@ -259,10 +260,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             // Email (read-only)
             TextFormField(
               initialValue: currentUser?.email ?? '',
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                prefixIcon: Icon(Icons.email),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: S.of(context)!.email,
+                prefixIcon: const Icon(Icons.email),
+                border: const OutlineInputBorder(),
                 enabled: false,
               ),
             ),
@@ -271,9 +272,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             // Privacy Settings
             Card(
               child: SwitchListTile(
-                title: const Text('Private Account'),
-                subtitle: const Text(
-                  'When your account is private, only followers can see your posts',
+                title: Text(S.of(context)!.privateAccount),
+                subtitle: Text(
+                  S.of(context)!.privateAccountDescription,
                 ),
                 value: _isPrivate,
                 onChanged: (value) => setState(() => _isPrivate = value),
@@ -284,7 +285,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
             // Info text
             Text(
-              'Your email cannot be changed. Contact support if you need assistance.',
+              S.of(context)!.emailCannotBeChanged,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.grey,
                   ),

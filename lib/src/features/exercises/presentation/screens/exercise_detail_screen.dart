@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../l10n/app_localizations.dart';
+
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import 'package:gym_ai/src/core/services/notification_service.dart';
@@ -27,10 +29,10 @@ class ExerciseDetailScreen extends ConsumerWidget {
         if (exercise == null) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Exercise Not Found'),
+              title: Text(S.of(context)!.exerciseNotFound),
             ),
-            body: const Center(
-              child: Text('Exercise not found'),
+            body: Center(
+              child: Text(S.of(context)!.exerciseNotFoundMessage),
             ),
           );
         }
@@ -55,8 +57,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
                     color: isFavorited ? Colors.red : null,
                   ),
                   tooltip: isFavorited
-                      ? 'Remove from favorites'
-                      : 'Add to favorites',
+                      ? S.of(context)!.removeFromFavorites
+                      : S.of(context)!.addToFavorites,
                 ),
                 loading: () => const IconButton(
                   onPressed: null,
@@ -72,7 +74,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () => context.push('/exercises/create?id=${exercise.id}'),
-                  tooltip: 'Edit exercise',
+                  tooltip: S.of(context)!.editExercise,
                 ),
             ],
           ),
@@ -118,7 +120,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Primary: ${exercise.primaryMuscleGroup[0].toUpperCase() + exercise.primaryMuscleGroup.substring(1)}',
+                                    '${S.of(context)!.primary}: ${exercise.primaryMuscleGroup[0].toUpperCase() + exercise.primaryMuscleGroup.substring(1)}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
@@ -151,8 +153,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                   ? Icons.accessibility
                                   : Icons.monitor_weight,
                               label: exercise.isBodyweight
-                                  ? 'Bodyweight'
-                                  : 'Weighted',
+                                  ? S.of(context)!.bodyweight
+                                  : S.of(context)!.weighted,
                             ),
                             _DifficultyChip(difficulty: exercise.difficulty),
                           ],
@@ -409,7 +411,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Instructions',
+                          S.of(context)!.instructions,
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -479,7 +481,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
                             _startQuickWorkout(context, ref, exercise);
                           },
                           icon: const Icon(Icons.play_arrow),
-                          label: const Text('Quick Workout'),
+                          label: Text(S.of(context)!.quickWorkout),
                         ),
                         const SizedBox(height: 8),
                         OutlinedButton.icon(
@@ -487,7 +489,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
                             _showAddToTemplateDialog(context, ref, exercise);
                           },
                           icon: const Icon(Icons.add),
-                          label: const Text('Add to Workout'),
+                          label: Text(S.of(context)!.addToWorkout),
                         ),
                       ],
                     ),
@@ -500,7 +502,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
       },
       loading: () => Scaffold(
         appBar: AppBar(
-          title: const Text('Loading...'),
+          title: Text(S.of(context)!.loading),
         ),
         body: const Center(
           child: CircularProgressIndicator(),

@@ -148,7 +148,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
                 children: [
                   const SizedBox(width: 40),
                   Text(
-                    'Workout Options',
+                    S.of(context)!.workoutOptions,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -162,7 +162,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.repeat),
-              title: const Text('Repeat Workout'),
+              title: Text(S.of(context)!.repeatWorkout),
               onTap: () {
                 Navigator.pop(context);
                 _startNewWorkoutWithTemplate(context, ref, workoutSession);
@@ -178,7 +178,7 @@ class WorkoutDetailScreen extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.edit),
-              title: const Text('Edit Notes'),
+              title: Text(S.of(context)!.editNotes),
               onTap: () {
                 Navigator.pop(context);
                 _showEditNotesDialog(context, ref, workoutSession);
@@ -187,8 +187,8 @@ class WorkoutDetailScreen extends ConsumerWidget {
             if (workoutSession.completedAt == null)
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text('Delete Workout',
-                    style: TextStyle(color: Colors.red)),
+                title: Text(S.of(context)!.deleteWorkout,
+                    style: const TextStyle(color: Colors.red)),
                 onTap: () {
                   Navigator.pop(context);
                   _showDeleteConfirmation(context, ref, workoutSession);
@@ -207,13 +207,13 @@ class WorkoutDetailScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit Notes'),
+        title: Text(S.of(context)!.editNotes),
         content: TextField(
           controller: controller,
           maxLines: 4,
-          decoration: const InputDecoration(
-            hintText: 'Add workout notes...',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            hintText: S.of(context)!.addWorkoutNotes,
+            border: const OutlineInputBorder(),
           ),
         ),
         actions: [
@@ -779,7 +779,7 @@ class _ExerciseCard extends ConsumerWidget {
 
     return exerciseAsync.when(
       data: (exercise) {
-        final exerciseName = exercise?.name ?? 'Unknown Exercise';
+        final exerciseName = exercise?.name ?? S.of(context)!.unknownExercise;
 
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
@@ -807,7 +807,7 @@ class _ExerciseCard extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      '${sets.length} sets',
+                      '${sets.length} ${S.of(context)!.sets}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Theme.of(context)
                                 .colorScheme

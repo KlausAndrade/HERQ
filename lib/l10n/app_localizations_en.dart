@@ -1523,4 +1523,238 @@ class SEn extends S {
 
   @override
   String get sharedTemplates => 'Shared Templates';
+
+  @override
+  String get workoutOptions => 'Workout Options';
+
+  @override
+  String get repeatWorkout => 'Repeat Workout';
+
+  @override
+  String get editNotes => 'Edit Notes';
+
+  @override
+  String get deleteWorkout => 'Delete Workout';
+
+  @override
+  String get addWorkoutNotes => 'Add workout notes...';
+
+  @override
+  String get unknownExercise => 'Unknown Exercise';
+
+  @override
+  String get exerciseNotFound => 'Exercise Not Found';
+
+  @override
+  String get exerciseNotFoundMessage => 'Exercise not found';
+
+  @override
+  String get removeFromFavorites => 'Remove from favorites';
+
+  @override
+  String get addToFavorites => 'Add to favorites';
+
+  @override
+  String get primary => 'Primary';
+
+  @override
+  String get quickWorkout => 'Quick Workout';
+
+  @override
+  String get addToWorkout => 'Add to Workout';
+
+  @override
+  String get displayName => 'Display Name';
+
+  @override
+  String get enterDisplayName => 'Enter your display name';
+
+  @override
+  String get pleaseEnterDisplayName => 'Please enter a display name';
+
+  @override
+  String get nameAtLeast2Chars => 'Name must be at least 2 characters';
+
+  @override
+  String get bio => 'Bio';
+
+  @override
+  String get tellUsAboutYourself => 'Tell us about yourself';
+
+  @override
+  String get bioMaxLength => 'Bio must be less than 200 characters';
+
+  @override
+  String get privateAccount => 'Private Account';
+
+  @override
+  String get privateAccountDescription =>
+      'When your account is private, only followers can see your posts';
+
+  @override
+  String get emailCannotBeChanged =>
+      'Your email cannot be changed. Contact support if you need assistance.';
+
+  @override
+  String get profileUpdated => 'Profile updated';
+
+  @override
+  String get profileUpdatedSuccessfully => 'Profile updated successfully!';
+
+  @override
+  String get profileUpdateFailed => 'Profile update failed';
+
+  @override
+  String get errorUpdatingProfile => 'Error updating profile';
+
+  @override
+  String get editExerciseTitle => 'Edit Exercise';
+
+  @override
+  String get exerciseNameRequired => 'Exercise Name *';
+
+  @override
+  String get exerciseNameHint => 'e.g., Barbell Bench Press';
+
+  @override
+  String get pleaseEnterExerciseName => 'Please enter an exercise name';
+
+  @override
+  String get nameAtLeast3Chars => 'Name must be at least 3 characters';
+
+  @override
+  String get primaryMuscleGroup => 'Primary Muscle Group *';
+
+  @override
+  String get secondaryMuscleGroups => 'Secondary Muscle Groups';
+
+  @override
+  String get equipmentRequired => 'Equipment *';
+
+  @override
+  String get bodyweightExercise => 'Bodyweight Exercise';
+
+  @override
+  String get exerciseTypeRequired => 'Exercise Type *';
+
+  @override
+  String get difficultyRequired => 'Difficulty *';
+
+  @override
+  String get categoryRequired => 'Category *';
+
+  @override
+  String get isThisVariant => 'Is this a variant?';
+
+  @override
+  String get howToPerform => 'How to perform this exercise...';
+
+  @override
+  String get validationError => 'Validation error';
+
+  @override
+  String get pleaseFixErrors => 'Please fix the errors before saving';
+
+  @override
+  String get missingName => 'Missing name';
+
+  @override
+  String get exerciseNameRequiredError => 'Exercise name is required';
+
+  @override
+  String get databaseNotAvailable => 'Database not available';
+
+  @override
+  String get editPost => 'Edit Post';
+
+  @override
+  String get deletePost => 'Delete Post';
+
+  @override
+  String get deletePostConfirmation =>
+      'Are you sure you want to delete this post?';
+
+  @override
+  String get resend => 'Resend';
+
+  @override
+  String get chest => 'Chest';
+
+  @override
+  String get shoulders => 'Shoulders';
+
+  @override
+  String get arms => 'Arms';
+
+  @override
+  String get legs => 'Legs';
+
+  @override
+  String get glutes => 'Glutes';
+
+  @override
+  String get calves => 'Calves';
+
+  @override
+  String get forearms => 'Forearms';
+
+  @override
+  String get traps => 'Traps';
+
+  @override
+  String get medicineBall => 'Medicine Ball';
+
+  @override
+  String get strength => 'Strength';
+
+  @override
+  String get calisthenics => 'Calisthenics';
+
+  @override
+  String get regression => 'Regression';
+
+  @override
+  String get strict => 'Strict';
+
+  @override
+  String get angle => 'Angle';
+
+  @override
+  String get compound => 'Compound';
+
+  @override
+  String get isolation => 'Isolation';
+
+  @override
+  String get push => 'Push';
+
+  @override
+  String get pull => 'Pull';
+
+  @override
+  String get unilateral => 'Unilateral';
+
+  @override
+  String get bilateral => 'Bilateral';
+
+  @override
+  String get stability => 'Stability';
+
+  @override
+  String get power => 'Power';
+
+  @override
+  String get hypertrophy => 'Hypertrophy';
+
+  @override
+  String get rest => 'Rest';
+
+  @override
+  String get selectWorkout => 'Select a Workout';
+
+  @override
+  String get workoutComplete => 'Workout Complete';
+
+  @override
+  String get exerciseBreakdown => 'Exercise Breakdown';
 }

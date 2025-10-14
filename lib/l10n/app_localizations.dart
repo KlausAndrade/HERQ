@@ -3044,6 +3044,468 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Shared Templates'**
   String get sharedTemplates;
+
+  /// No description provided for @workoutOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Options'**
+  String get workoutOptions;
+
+  /// No description provided for @repeatWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat Workout'**
+  String get repeatWorkout;
+
+  /// No description provided for @editNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Notes'**
+  String get editNotes;
+
+  /// No description provided for @deleteWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Workout'**
+  String get deleteWorkout;
+
+  /// No description provided for @addWorkoutNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Add workout notes...'**
+  String get addWorkoutNotes;
+
+  /// No description provided for @unknownExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Exercise'**
+  String get unknownExercise;
+
+  /// No description provided for @exerciseNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Not Found'**
+  String get exerciseNotFound;
+
+  /// No description provided for @exerciseNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise not found'**
+  String get exerciseNotFoundMessage;
+
+  /// No description provided for @removeFromFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get removeFromFavorites;
+
+  /// No description provided for @addToFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favorites'**
+  String get addToFavorites;
+
+  /// No description provided for @primary.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary'**
+  String get primary;
+
+  /// No description provided for @quickWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Workout'**
+  String get quickWorkout;
+
+  /// No description provided for @addToWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Workout'**
+  String get addToWorkout;
+
+  /// No description provided for @displayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Name'**
+  String get displayName;
+
+  /// No description provided for @enterDisplayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your display name'**
+  String get enterDisplayName;
+
+  /// No description provided for @pleaseEnterDisplayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a display name'**
+  String get pleaseEnterDisplayName;
+
+  /// No description provided for @nameAtLeast2Chars.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters'**
+  String get nameAtLeast2Chars;
+
+  /// No description provided for @bio.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get bio;
+
+  /// No description provided for @tellUsAboutYourself.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about yourself'**
+  String get tellUsAboutYourself;
+
+  /// No description provided for @bioMaxLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio must be less than 200 characters'**
+  String get bioMaxLength;
+
+  /// No description provided for @privateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Private Account'**
+  String get privateAccount;
+
+  /// No description provided for @privateAccountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'When your account is private, only followers can see your posts'**
+  String get privateAccountDescription;
+
+  /// No description provided for @emailCannotBeChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email cannot be changed. Contact support if you need assistance.'**
+  String get emailCannotBeChanged;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
+  String get profileUpdated;
+
+  /// No description provided for @profileUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully!'**
+  String get profileUpdatedSuccessfully;
+
+  /// No description provided for @profileUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile update failed'**
+  String get profileUpdateFailed;
+
+  /// No description provided for @errorUpdatingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating profile'**
+  String get errorUpdatingProfile;
+
+  /// No description provided for @editExerciseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Exercise'**
+  String get editExerciseTitle;
+
+  /// No description provided for @exerciseNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Name *'**
+  String get exerciseNameRequired;
+
+  /// No description provided for @exerciseNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Barbell Bench Press'**
+  String get exerciseNameHint;
+
+  /// No description provided for @pleaseEnterExerciseName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an exercise name'**
+  String get pleaseEnterExerciseName;
+
+  /// No description provided for @nameAtLeast3Chars.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 3 characters'**
+  String get nameAtLeast3Chars;
+
+  /// No description provided for @primaryMuscleGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Muscle Group *'**
+  String get primaryMuscleGroup;
+
+  /// No description provided for @secondaryMuscleGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary Muscle Groups'**
+  String get secondaryMuscleGroups;
+
+  /// No description provided for @equipmentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment *'**
+  String get equipmentRequired;
+
+  /// No description provided for @bodyweightExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Bodyweight Exercise'**
+  String get bodyweightExercise;
+
+  /// No description provided for @exerciseTypeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Type *'**
+  String get exerciseTypeRequired;
+
+  /// No description provided for @difficultyRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Difficulty *'**
+  String get difficultyRequired;
+
+  /// No description provided for @categoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Category *'**
+  String get categoryRequired;
+
+  /// No description provided for @isThisVariant.
+  ///
+  /// In en, this message translates to:
+  /// **'Is this a variant?'**
+  String get isThisVariant;
+
+  /// No description provided for @howToPerform.
+  ///
+  /// In en, this message translates to:
+  /// **'How to perform this exercise...'**
+  String get howToPerform;
+
+  /// No description provided for @validationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Validation error'**
+  String get validationError;
+
+  /// No description provided for @pleaseFixErrors.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fix the errors before saving'**
+  String get pleaseFixErrors;
+
+  /// No description provided for @missingName.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing name'**
+  String get missingName;
+
+  /// No description provided for @exerciseNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise name is required'**
+  String get exerciseNameRequiredError;
+
+  /// No description provided for @databaseNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Database not available'**
+  String get databaseNotAvailable;
+
+  /// No description provided for @editPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Post'**
+  String get editPost;
+
+  /// No description provided for @deletePost.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Post'**
+  String get deletePost;
+
+  /// No description provided for @deletePostConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this post?'**
+  String get deletePostConfirmation;
+
+  /// No description provided for @resend.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend'**
+  String get resend;
+
+  /// No description provided for @chest.
+  ///
+  /// In en, this message translates to:
+  /// **'Chest'**
+  String get chest;
+
+  /// No description provided for @shoulders.
+  ///
+  /// In en, this message translates to:
+  /// **'Shoulders'**
+  String get shoulders;
+
+  /// No description provided for @arms.
+  ///
+  /// In en, this message translates to:
+  /// **'Arms'**
+  String get arms;
+
+  /// No description provided for @legs.
+  ///
+  /// In en, this message translates to:
+  /// **'Legs'**
+  String get legs;
+
+  /// No description provided for @glutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Glutes'**
+  String get glutes;
+
+  /// No description provided for @calves.
+  ///
+  /// In en, this message translates to:
+  /// **'Calves'**
+  String get calves;
+
+  /// No description provided for @forearms.
+  ///
+  /// In en, this message translates to:
+  /// **'Forearms'**
+  String get forearms;
+
+  /// No description provided for @traps.
+  ///
+  /// In en, this message translates to:
+  /// **'Traps'**
+  String get traps;
+
+  /// No description provided for @medicineBall.
+  ///
+  /// In en, this message translates to:
+  /// **'Medicine Ball'**
+  String get medicineBall;
+
+  /// No description provided for @strength.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get strength;
+
+  /// No description provided for @calisthenics.
+  ///
+  /// In en, this message translates to:
+  /// **'Calisthenics'**
+  String get calisthenics;
+
+  /// No description provided for @regression.
+  ///
+  /// In en, this message translates to:
+  /// **'Regression'**
+  String get regression;
+
+  /// No description provided for @strict.
+  ///
+  /// In en, this message translates to:
+  /// **'Strict'**
+  String get strict;
+
+  /// No description provided for @angle.
+  ///
+  /// In en, this message translates to:
+  /// **'Angle'**
+  String get angle;
+
+  /// No description provided for @compound.
+  ///
+  /// In en, this message translates to:
+  /// **'Compound'**
+  String get compound;
+
+  /// No description provided for @isolation.
+  ///
+  /// In en, this message translates to:
+  /// **'Isolation'**
+  String get isolation;
+
+  /// No description provided for @push.
+  ///
+  /// In en, this message translates to:
+  /// **'Push'**
+  String get push;
+
+  /// No description provided for @pull.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull'**
+  String get pull;
+
+  /// No description provided for @unilateral.
+  ///
+  /// In en, this message translates to:
+  /// **'Unilateral'**
+  String get unilateral;
+
+  /// No description provided for @bilateral.
+  ///
+  /// In en, this message translates to:
+  /// **'Bilateral'**
+  String get bilateral;
+
+  /// No description provided for @stability.
+  ///
+  /// In en, this message translates to:
+  /// **'Stability'**
+  String get stability;
+
+  /// No description provided for @power.
+  ///
+  /// In en, this message translates to:
+  /// **'Power'**
+  String get power;
+
+  /// No description provided for @hypertrophy.
+  ///
+  /// In en, this message translates to:
+  /// **'Hypertrophy'**
+  String get hypertrophy;
+
+  /// No description provided for @rest.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest'**
+  String get rest;
+
+  /// No description provided for @selectWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a Workout'**
+  String get selectWorkout;
+
+  /// No description provided for @workoutComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Complete'**
+  String get workoutComplete;
+
+  /// No description provided for @exerciseBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Breakdown'**
+  String get exerciseBreakdown;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

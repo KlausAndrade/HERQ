@@ -1534,4 +1534,242 @@ class SEs extends S {
 
   @override
   String get sharedTemplates => 'Plantillas Compartidas';
+
+  @override
+  String get workoutOptions => 'Opciones de Entrenamiento';
+
+  @override
+  String get repeatWorkout => 'Repetir Entrenamiento';
+
+  @override
+  String get editNotes => 'Editar Notas';
+
+  @override
+  String get deleteWorkout => 'Eliminar Entrenamiento';
+
+  @override
+  String get addWorkoutNotes => 'Agregar notas del entrenamiento...';
+
+  @override
+  String get unknownExercise => 'Ejercicio Desconocido';
+
+  @override
+  String get exerciseNotFound => 'Ejercicio No Encontrado';
+
+  @override
+  String get exerciseNotFoundMessage => 'Ejercicio no encontrado';
+
+  @override
+  String get removeFromFavorites => 'Quitar de favoritos';
+
+  @override
+  String get addToFavorites => 'Agregar a favoritos';
+
+  @override
+  String get primary => 'Principal';
+
+  @override
+  String get quickWorkout => 'Entrenamiento Rápido';
+
+  @override
+  String get addToWorkout => 'Agregar al Entrenamiento';
+
+  @override
+  String get displayName => 'Nombre para Mostrar';
+
+  @override
+  String get enterDisplayName => 'Ingresa tu nombre para mostrar';
+
+  @override
+  String get pleaseEnterDisplayName =>
+      'Por favor, ingresa un nombre para mostrar';
+
+  @override
+  String get nameAtLeast2Chars => 'El nombre debe tener al menos 2 caracteres';
+
+  @override
+  String get bio => 'Biografía';
+
+  @override
+  String get tellUsAboutYourself => 'Cuéntanos sobre ti';
+
+  @override
+  String get bioMaxLength => 'La biografía debe tener menos de 200 caracteres';
+
+  @override
+  String get privateAccount => 'Cuenta Privada';
+
+  @override
+  String get privateAccountDescription =>
+      'Cuando tu cuenta es privada, solo los seguidores pueden ver tus publicaciones';
+
+  @override
+  String get emailCannotBeChanged =>
+      'Tu correo electrónico no se puede cambiar. Contacta con soporte si necesitas ayuda.';
+
+  @override
+  String get profileUpdated => 'Perfil actualizado';
+
+  @override
+  String get profileUpdatedSuccessfully => '¡Perfil actualizado correctamente!';
+
+  @override
+  String get profileUpdateFailed => 'Error al actualizar el perfil';
+
+  @override
+  String get errorUpdatingProfile => 'Error al actualizar el perfil';
+
+  @override
+  String get editExerciseTitle => 'Editar Ejercicio';
+
+  @override
+  String get exerciseNameRequired => 'Nombre del Ejercicio *';
+
+  @override
+  String get exerciseNameHint => 'ej: Press de Banca con Barra';
+
+  @override
+  String get pleaseEnterExerciseName =>
+      'Por favor, ingresa un nombre para el ejercicio';
+
+  @override
+  String get nameAtLeast3Chars => 'El nombre debe tener al menos 3 caracteres';
+
+  @override
+  String get primaryMuscleGroup => 'Grupo Muscular Principal *';
+
+  @override
+  String get secondaryMuscleGroups => 'Grupos Musculares Secundarios';
+
+  @override
+  String get equipmentRequired => 'Equipamiento *';
+
+  @override
+  String get bodyweightExercise => 'Ejercicio con Peso Corporal';
+
+  @override
+  String get exerciseTypeRequired => 'Tipo de Ejercicio *';
+
+  @override
+  String get difficultyRequired => 'Dificultad *';
+
+  @override
+  String get categoryRequired => 'Categoría *';
+
+  @override
+  String get isThisVariant => '¿Es una variante?';
+
+  @override
+  String get howToPerform => 'Cómo realizar este ejercicio...';
+
+  @override
+  String get validationError => 'Error de validación';
+
+  @override
+  String get pleaseFixErrors =>
+      'Por favor, corrige los errores antes de guardar';
+
+  @override
+  String get missingName => 'Falta el nombre';
+
+  @override
+  String get exerciseNameRequiredError =>
+      'El nombre del ejercicio es obligatorio';
+
+  @override
+  String get databaseNotAvailable => 'Base de datos no disponible';
+
+  @override
+  String get editPost => 'Editar Publicación';
+
+  @override
+  String get deletePost => 'Eliminar Publicación';
+
+  @override
+  String get deletePostConfirmation =>
+      '¿Estás seguro de que quieres eliminar esta publicación?';
+
+  @override
+  String get resend => 'Reenviar';
+
+  @override
+  String get chest => 'Pecho';
+
+  @override
+  String get shoulders => 'Hombros';
+
+  @override
+  String get arms => 'Brazos';
+
+  @override
+  String get legs => 'Piernas';
+
+  @override
+  String get glutes => 'Glúteos';
+
+  @override
+  String get calves => 'Pantorrillas';
+
+  @override
+  String get forearms => 'Antebrazos';
+
+  @override
+  String get traps => 'Trapecios';
+
+  @override
+  String get medicineBall => 'Balón Medicinal';
+
+  @override
+  String get strength => 'Fuerza';
+
+  @override
+  String get calisthenics => 'Calistenia';
+
+  @override
+  String get regression => 'Regresión';
+
+  @override
+  String get strict => 'Estricto';
+
+  @override
+  String get angle => 'Ángulo';
+
+  @override
+  String get compound => 'Compuesto';
+
+  @override
+  String get isolation => 'Aislamiento';
+
+  @override
+  String get push => 'Empuje';
+
+  @override
+  String get pull => 'Jalón';
+
+  @override
+  String get unilateral => 'Unilateral';
+
+  @override
+  String get bilateral => 'Bilateral';
+
+  @override
+  String get stability => 'Estabilidad';
+
+  @override
+  String get power => 'Potencia';
+
+  @override
+  String get hypertrophy => 'Hipertrofia';
+
+  @override
+  String get rest => 'Descanso';
+
+  @override
+  String get selectWorkout => 'Selecciona un Entrenamiento';
+
+  @override
+  String get workoutComplete => 'Entrenamiento Completo';
+
+  @override
+  String get exerciseBreakdown => 'Desglose de Ejercicios';
 }

@@ -7,6 +7,7 @@ import '../../../../providers/template_folder_provider.dart';
 import '../providers/template_providers.dart';
 import '../../../workouts/widgets/create_folder_dialog.dart';
 import 'package:gym_ai/src/core/services/notification_service.dart';
+import 'package:gym_ai/l10n/app_localizations.dart';
 
 /// Drag item type used to indicate what kind of object is being dragged.
 enum _DragItemType { exercise }
@@ -71,7 +72,7 @@ class _WorkoutTemplatesWithFoldersScreenState
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: Text(_isEditing ? 'Workout Templates' : 'Select a Workout'),
+        title: Text(_isEditing ? S.of(context)!.workoutTemplates : S.of(context)!.selectWorkout),
         actions: [
           IconButton(
             onPressed: () => context.push('/template-builder'),
@@ -142,7 +143,7 @@ class _WorkoutTemplatesWithFoldersScreenState
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _createNewFolder,
         icon: const Icon(Icons.folder_open),
-        label: const Text('New Folder'),
+        label: Text(S.of(context)!.newFolder),
       ),
     );
   }
