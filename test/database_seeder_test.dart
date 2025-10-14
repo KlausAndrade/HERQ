@@ -3,36 +3,51 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:herq/src/core/database/database.dart';
 
 void main() {
-  test('seeder inserts exercises and variant relationships', () async {
+  test('seeder inserts workout templates and folders', () async {
     final db = AppDatabase.forTesting(NativeDatabase.memory());
 
     // Call the method that inserts default data
     await db.seedDefaultData();
 
-    // Query for the newly added exercises
-    final tricep = await (db.select(db.exercises)
-          ..where((e) => e.id.equals('tricep_dips')))
-        .getSingleOrNull();
-    final dbsp = await (db.select(db.exercises)
-          ..where((e) => e.id.equals('dumbbell_shoulder_press')))
-        .getSingleOrNull();
-    final scr = await (db.select(db.exercises)
-          ..where((e) => e.id.equals('seated_cable_rows')))
-        .getSingleOrNull();
-
-    expect(tricep, isNot(null), reason: 'tricep_dips should be inserted');
+    // Verify that folders were seeded
+    final folders = await db.select(db.templateFolders).get();
     expect(
-      dbsp,
-      isNot(null),
-      reason: 'dumbbell_shoulder_press should be inserted',
+      folders.isNotEmpty,
+      true,
+      reason: 'Default folders should be seeded',
     );
-    expect(scr, isNot(null), reason: 'seated_cable_rows should be inserted');
 
-    // Check variant/parent relationships
-    // parentExerciseId is a nullable String column in the generated model
-    expect(tricep!.parentExerciseId, equals('chest_dips'));
-    expect(dbsp!.parentExerciseId, equals('overhead_press'));
-    expect(scr!.parentExerciseId, equals('barbell_rows'));
+    // Verify specific folders exist
+    final pplFolder = await (db.select(db.templateFolders)
+          ..where((f) => f.id.equals('fold_ppl')))
+        .getSingleOrNull();
+    expect(
+      pplFolder,
+      isNot(null),
+      reason: 'Push/Pull/Legs folder should be inserted',
+    );
+    expect(pplFolder!.name, equals('Push/Pull/Legs'));
+
+    // Verify that templates were seeded
+    final templates = await db.select(db.workoutTemplates).get();
+    expect(
+      templates.isNotEmpty,
+      true,
+      reason: 'Default templates should be seeded',
+    );
+
+    // Verify specific template exists
+    final pushTemplate = await (db.select(db.workoutTemplates)
+          ..where((t) => t.id.equals('ppl_push')))
+        .getSingleOrNull();
+    expect(
+      pushTemplate,
+      isNot(null),
+      reason: 'Push Day template should be inserted',
+    );
+    expect(pushTemplate!.name, equals('Push Day - Classic'));
+    expect(pushTemplate.folderId, equals('fold_ppl'));
+    expect(pushTemplate.isDefault, isTrue);
 
     await db.close();
   });
