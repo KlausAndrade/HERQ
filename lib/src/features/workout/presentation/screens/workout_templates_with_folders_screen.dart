@@ -6,8 +6,8 @@ import '../../../../core/database/database.dart';
 import '../../../../providers/template_folder_provider.dart';
 import '../providers/template_providers.dart';
 import '../../../workouts/widgets/create_folder_dialog.dart';
-import 'package:gym_ai/src/core/services/notification_service.dart';
-import 'package:gym_ai/l10n/app_localizations.dart';
+import 'package:herq/src/core/services/notification_service.dart';
+import 'package:herq/l10n/app_localizations.dart';
 
 /// Drag item type used to indicate what kind of object is being dragged.
 enum _DragItemType { exercise }

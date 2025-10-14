@@ -13,7 +13,7 @@
   "skip": "Skip",
   "confirm": "Confirm",
   "gotIt": "Got it",
-  "appTitle": "GymAI",
+  "appTitle": "HERQ",
   "description": "The title of the application",
   "home": "Home",
   "exercises": "Exercises",
@@ -604,5 +604,29 @@
   "selectWorkout": "Select a Workout",
   "workoutComplete": "Workout Complete",
   "exerciseBreakdown": "Exercise Breakdown",
-  "appTagline": "Your personal AI fitness coach"
+  "appTagline": "Smart Strength. Simplified.",
+  "brandStory": "Inspired by the spirit of Heracles — the original symbol of strength and perseverance — HERQ fuses ancient power with modern intelligence. Built for lifters, movers, and everyday heroes who believe strength isn't just physical — it's a mindset.",
+  "@brandStory": {
+    "description": "HERQ brand story"
+  },
+  "brandMission": "Whether you're chasing your first pull-up or your next PR, HERQ helps you train smarter, recover better, and rise stronger.",
+  "@brandMission": {
+    "description": "HERQ brand mission statement"
+  },
+  "colorTheme": "Color Theme",
+  "@colorTheme": {
+    "description": "Label for color theme selection"
+  },
+  "defaultTheme": "Default",
+  "@defaultTheme": {
+    "description": "Default color theme option"
+  },
+  "herqTheme": "HERQ",
+  "@herqTheme": {
+    "description": "HERQ color theme option"
+  },
+  "aboutHerq": "About HERQ",
+  "@aboutHerq": {
+    "description": "About HERQ menu item"
+  }
 }

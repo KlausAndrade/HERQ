@@ -1,8 +1,14 @@
-# 🏋️ GymAI - Mobile-First Workout Tracker
+# 💪 HERQ - Smart Strength. Simplified.
 
-[![CI/CD Pipeline](https://github.com/username/gym-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/username/gym-ai/actions/workflows/ci.yml)
+[![CI/CD Pipeline](https://github.com/username/herq/actions/workflows/ci.yml/badge.svg)](https://github.com/username/herq/actions/workflows/ci.yml)
 [![Flutter Version](https://img.shields.io/badge/flutter-3.13.0-blue.svg)](https://flutter.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**HERQ** - Smart strength training with AI coaching.
+
+Inspired by the spirit of Heracles — the original symbol of strength and perseverance — HERQ fuses ancient power with modern intelligence. Built for lifters, movers, and everyday heroes who believe strength isn't just physical — it's a mindset.
+
+Whether you're chasing your first pull-up or your next PR, HERQ helps you train smarter, recover better, and rise stronger.
 
 A production-ready, mobile-first workout tracker built with Flutter that runs seamlessly on iOS, Android, and Web. Designed to feel fast during workouts, flexible for power users, and ready to scale into social features and AI coaching.
 
@@ -160,8 +166,8 @@ lib/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/username/gym-ai.git
-   cd gym-ai
+   git clone https://github.com/username/herq.git
+   cd herq
    ```
 
 2. **Install Flutter dependencies**

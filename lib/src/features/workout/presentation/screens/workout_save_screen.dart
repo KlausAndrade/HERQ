@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../domain/models/workout_summary.dart';
-import 'package:gym_ai/l10n/app_localizations.dart';
+import 'package:herq/l10n/app_localizations.dart';
 
 /// Screen shown before saving a workout, allows user to add notes, photos, and post to social
 class WorkoutSaveScreen extends ConsumerStatefulWidget {

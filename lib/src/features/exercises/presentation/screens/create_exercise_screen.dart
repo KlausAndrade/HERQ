@@ -8,7 +8,7 @@ import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/constants/exercise_types.dart';
 import '../../../../core/utils/exercise_type_mapper.dart';
-import 'package:gym_ai/src/core/services/notification_service.dart';
+import 'package:herq/src/core/services/notification_service.dart';
 import '../providers/exercise_providers.dart';
 
 class CreateExerciseScreen extends ConsumerStatefulWidget {

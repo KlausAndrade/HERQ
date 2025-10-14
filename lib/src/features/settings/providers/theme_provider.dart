@@ -68,3 +68,41 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
     setThemeMode(newMode);
   }
 }
+
+/// Provider for theme variant selection (Default vs HERQ)
+final themeVariantProvider =
+    StateNotifierProvider<ThemeVariantNotifier, String>((ref) {
+  return ThemeVariantNotifier(ref);
+});
+
+class ThemeVariantNotifier extends StateNotifier<String> {
+  final Ref _ref;
+
+  ThemeVariantNotifier(this._ref) : super('herq') {
+    _loadThemeVariantFromPreferences();
+  }
+
+  void _loadThemeVariantFromPreferences() async {
+    try {
+      final preferences = await _ref.read(userPreferencesProvider.future);
+      final variant = preferences['themeVariant'] as String? ?? 'herq';
+      state = variant;
+    } catch (e) {
+      // If loading fails, keep the default HERQ theme
+      state = 'herq';
+    }
+  }
+
+  void setThemeVariant(String variant) async {
+    state = variant;
+
+    // Persist the theme variant choice
+    try {
+      final updateService = _ref.read(preferencesUpdateProvider);
+      await updateService.updatePreferences({'themeVariant': variant});
+    } catch (e) {
+      // If saving fails, the theme change is still applied locally
+      // The user will see the change but it won't persist across app restarts
+    }
+  }
+}

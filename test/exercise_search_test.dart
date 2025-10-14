@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:gym_ai/src/core/database/database.dart';
+import 'package:herq/src/core/database/database.dart';
 
 void main() {
   test('exercise search matches aliases and muscle group', () async {

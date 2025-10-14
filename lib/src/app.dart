@@ -8,7 +8,7 @@ import 'features/onboarding/presentation/splash_screen.dart';
 import 'core/theme/app_theme.dart';
 import 'features/settings/providers/theme_provider.dart';
 import 'features/settings/providers/locale_provider.dart';
-import 'package:gym_ai/l10n/app_localizations.dart';
+import 'package:herq/l10n/app_localizations.dart';
 import 'core/ui/notification_redesign/notification_overlay.dart';
 
 class GymAIApp extends ConsumerStatefulWidget {
@@ -55,13 +55,18 @@ class _GymAIAppState extends ConsumerState<GymAIApp> {
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final themeVariant = ref.watch(themeVariantProvider);
     final locale = ref.watch(localeProvider);
+
+    // Select theme based on variant (HERQ or Default)
+    final lightTheme = themeVariant == 'herq' ? AppTheme.herqLightTheme : AppTheme.lightTheme;
+    final darkTheme = themeVariant == 'herq' ? AppTheme.herqDarkTheme : AppTheme.darkTheme;
 
     if (_showSplash) {
       return MaterialApp(
-        title: 'GymAI - Workout Tracker',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
+        title: 'HERQ - Smart Strength Training',
+        theme: lightTheme,
+        darkTheme: darkTheme,
         themeMode: themeMode,
         locale: locale,
         localizationsDelegates: const [
@@ -85,9 +90,9 @@ class _GymAIAppState extends ConsumerState<GymAIApp> {
     }
 
     return MaterialApp.router(
-      title: 'GymAI - Workout Tracker',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      title: 'HERQ - Smart Strength Training',
+      theme: lightTheme,
+      darkTheme: darkTheme,
       themeMode: themeMode,
       locale: locale,
       routerConfig: router,

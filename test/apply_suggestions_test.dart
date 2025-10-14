@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:gym_ai/src/core/database/database.dart';
-import 'package:gym_ai/src/features/ai/presentation/providers/ai_providers.dart';
+import 'package:herq/src/core/database/database.dart';
+import 'package:herq/src/features/ai/presentation/providers/ai_providers.dart';
 
 void main() {
   group('Apply Suggestions Functionality Tests', () {

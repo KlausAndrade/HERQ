@@ -51,7 +51,7 @@ class SEn extends S {
   String get gotIt => 'Got it';
 
   @override
-  String get appTitle => 'GymAI';
+  String get appTitle => 'HERQ';
 
   @override
   String get description => 'The title of the application';
@@ -1759,5 +1759,25 @@ class SEn extends S {
   String get exerciseBreakdown => 'Exercise Breakdown';
 
   @override
-  String get appTagline => 'Your personal AI fitness coach';
+  String get appTagline => 'Smart Strength. Simplified.';
+
+  @override
+  String get brandStory =>
+      'Inspired by the spirit of Heracles — the original symbol of strength and perseverance — HERQ fuses ancient power with modern intelligence. Built for lifters, movers, and everyday heroes who believe strength isn\'t just physical — it\'s a mindset.';
+
+  @override
+  String get brandMission =>
+      'Whether you\'re chasing your first pull-up or your next PR, HERQ helps you train smarter, recover better, and rise stronger.';
+
+  @override
+  String get colorTheme => 'Color Theme';
+
+  @override
+  String get defaultTheme => 'Default';
+
+  @override
+  String get herqTheme => 'HERQ';
+
+  @override
+  String get aboutHerq => 'About HERQ';
 }

@@ -8,7 +8,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:gym_ai/src/app.dart';
+import 'package:herq/src/app.dart';
 
 void main() {
   testWidgets('App loads without error', (WidgetTester tester) async {

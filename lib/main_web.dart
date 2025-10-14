@@ -44,14 +44,14 @@ class GymAIWebApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
-      title: 'GymAI - Workout Tracker',
+      title: 'HERQ - Smart Strength Training',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
+          seedColor: const Color(0xFF00BFA6), // HERQ Teal
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFF0A0A0A),
+        scaffoldBackgroundColor: const Color(0xFF141516), // HERQ Charcoal
       ),
       routerConfig: _router,
       debugShowCheckedModeBanner: false,

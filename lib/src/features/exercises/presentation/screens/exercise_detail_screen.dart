@@ -7,7 +7,7 @@ import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
-import 'package:gym_ai/src/core/services/notification_service.dart';
+import 'package:herq/src/core/services/notification_service.dart';
 import '../providers/exercise_providers.dart';
 import '../providers/exercise_favorites_provider.dart';
 

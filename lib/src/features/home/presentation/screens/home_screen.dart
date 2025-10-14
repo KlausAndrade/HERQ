@@ -7,7 +7,7 @@ import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/app_animations.dart';
 import '../../../../core/services/haptic_service.dart';
-import 'package:gym_ai/l10n/app_localizations.dart';
+import 'package:herq/l10n/app_localizations.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
 import '../../../workout/presentation/providers/active_workout_provider.dart';
 import '../../../workout/presentation/providers/workout_checkpoint_provider.dart';

@@ -51,7 +51,7 @@ class SEs extends S {
   String get gotIt => 'Entendido';
 
   @override
-  String get appTitle => 'GymAI';
+  String get appTitle => 'HERQ';
 
   @override
   String get description => 'The title of the application';
@@ -1774,5 +1774,25 @@ class SEs extends S {
   String get exerciseBreakdown => 'Desglose de Ejercicios';
 
   @override
-  String get appTagline => 'Tu entrenador personal de fitness con IA';
+  String get appTagline => 'Smart Strength. Simplified.';
+
+  @override
+  String get brandStory =>
+      'Inspirado en el espíritu de Heracles — el símbolo original de fuerza y perseverancia — HERQ fusiona el poder ancestral con la inteligencia moderna. Construido para levantadores, practicantes y héroes cotidianos que creen que la fuerza no es solo física — es una mentalidad.';
+
+  @override
+  String get brandMission =>
+      'Ya sea que estés persiguiendo tu primera dominada o tu próximo récord personal, HERQ te ayuda a entrenar más inteligentemente, recuperarte mejor y crecer más fuerte.';
+
+  @override
+  String get colorTheme => 'Tema de Colores';
+
+  @override
+  String get defaultTheme => 'Predeterminado';
+
+  @override
+  String get herqTheme => 'HERQ';
+
+  @override
+  String get aboutHerq => 'Acerca de HERQ';
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/models/active_workout.dart';
-import 'package:gym_ai/l10n/app_localizations.dart';
+import 'package:herq/l10n/app_localizations.dart';
 
 /// Dialog to prompt user to resume an incomplete workout
 class ResumeWorkoutDialog extends StatelessWidget {
