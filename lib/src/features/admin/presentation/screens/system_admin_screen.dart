@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../data/providers/admin_data_provider.dart';
 
 class SystemAdminScreen extends ConsumerStatefulWidget {
   const SystemAdminScreen({super.key});
@@ -26,9 +29,15 @@ class _SystemAdminScreenState extends ConsumerState<SystemAdminScreen>
 
   @override
   Widget build(BuildContext context) {
+    final systemHealth = ref.watch(systemHealthProvider);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('System Administration'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/admin'),
+        ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         bottom: TabBar(
@@ -42,18 +51,36 @@ class _SystemAdminScreenState extends ConsumerState<SystemAdminScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _refreshSystem,
+            onPressed: () => ref.refresh(systemHealthProvider),
             tooltip: 'Refresh',
           ),
         ],
       ),
-      body: TabBarView(
+      body: systemHealth.when(
+        data: (data) => TabBarView(
         controller: _tabController,
-        children: [
-          _MonitoringTab(),
-          _ConfigurationTab(),
-          _MaintenanceTab(),
-        ],
+          children: [
+            _MonitoringTab(data: data),
+            _ConfigurationTab(data: data),
+            _MaintenanceTab(data: data),
+          ],
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Error loading system data: $error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.refresh(systemHealthProvider),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -64,6 +91,10 @@ class _SystemAdminScreenState extends ConsumerState<SystemAdminScreen>
 }
 
 class _MonitoringTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _MonitoringTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -105,27 +136,27 @@ class _MonitoringTab extends StatelessWidget {
                 Expanded(
                   child: _StatusCard(
                     title: 'Database',
-                    status: 'Online',
-                    color: Colors.green,
-                    uptime: '99.9%',
+                    status: data['databaseStatus'] ?? 'Unknown',
+                    color: (data['databaseStatus'] == 'Online') ? Colors.green : Colors.red,
+                    uptime: '${data['databaseUptime'] ?? '0'}%',
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _StatusCard(
-                    title: 'API Server',
-                    status: 'Online',
-                    color: Colors.green,
-                    uptime: '99.8%',
+                    title: 'Supabase',
+                    status: data['supabaseStatus'] ?? 'Unknown',
+                    color: (data['supabaseStatus'] == 'Online') ? Colors.green : Colors.red,
+                    uptime: '${data['supabaseUptime'] ?? '0'}%',
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _StatusCard(
                     title: 'Storage',
-                    status: 'Online',
-                    color: Colors.green,
-                    uptime: '99.7%',
+                    status: data['storageStatus'] ?? 'Unknown',
+                    color: (data['storageStatus'] == 'Online') ? Colors.green : Colors.red,
+                    uptime: '${data['storageUptime'] ?? '0'}%',
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -319,6 +350,10 @@ class _MonitoringTab extends StatelessWidget {
 }
 
 class _ConfigurationTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _ConfigurationTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -487,6 +522,10 @@ class _ConfigurationTab extends StatelessWidget {
 }
 
 class _MaintenanceTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _MaintenanceTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

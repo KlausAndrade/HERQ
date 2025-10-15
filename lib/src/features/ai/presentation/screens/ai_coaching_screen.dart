@@ -6,6 +6,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/services/user_context_service.dart';
 import '../../../workout/presentation/providers/template_providers.dart';
 import '../../domain/models/ai_models.dart';
 import '../providers/ai_providers.dart';
@@ -358,6 +359,7 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
       final templateId = 'ai_rec_${DateTime.now().millisecondsSinceEpoch}';
       final template = WorkoutTemplate(
         id: templateId,
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: recommendation.name,
         description: recommendation.description,
         category: 'AI Recommended',

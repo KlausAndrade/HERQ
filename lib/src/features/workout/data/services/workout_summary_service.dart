@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
+import '../../../../core/services/user_context_service.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
 
@@ -363,6 +364,7 @@ class WorkoutSummaryService {
     await database.into(database.personalRecords).insert(
           PersonalRecordsCompanion.insert(
             id: const Uuid().v4(),
+            userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
             exerciseId: exerciseId,
             recordType: recordType,
             value: value,

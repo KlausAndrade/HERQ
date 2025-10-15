@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/database/database.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
 
 class ExercisePickerDialog extends ConsumerStatefulWidget {
@@ -35,8 +36,10 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
     final categoriesAsync = ref.watch(exerciseCategoriesProvider);
 
     return Dialog(
+      insetPadding: const EdgeInsets.all(2),
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
+        width: MediaQuery.of(context).size.width * 0.90,
+        height: MediaQuery.of(context).size.height * 0.9,
         child: Column(
           children: [
             // Header
@@ -59,7 +62,7 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                   Row(
                     children: [
                       Text(
-                        'Add Exercise',
+                        S.of(context)!.addExercise,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -76,7 +79,7 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                   TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Search exercises...',
+                      hintText: S.of(context)!.searchExercises,
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -131,7 +134,7 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
               child: exercisesAsync.when(
                 data: (exercises) {
                   final filteredExercises =
-                      _selectedCategory == null || _selectedCategory == 'All'
+                      _selectedCategory == null || _selectedCategory == S.of(context)!.all
                           ? exercises
                           : exercises
                               .where(
@@ -142,8 +145,8 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                               .toList();
 
                   if (filteredExercises.isEmpty) {
-                    return const Center(
-                      child: Text('No exercises found'),
+                    return Center(
+                      child: Text(S.of(context)!.noExercisesFound),
                     );
                   }
 
@@ -197,7 +200,7 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stack) => Center(
-                  child: Text('Error loading exercises: $error'),
+                  child: Text('${S.of(context)!.errorLoadingExercises}: $error'),
                 ),
               ),
             ),
@@ -210,7 +213,7 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
+                      child: Text(S.of(context)!.cancel),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -226,7 +229,7 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                                 'isAssisted': _isAssisted,
                               });
                             },
-                      child: const Text('Add Exercise'),
+                      child: Text(S.of(context)!.add),
                     ),
                   ),
                 ],

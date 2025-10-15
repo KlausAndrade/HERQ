@@ -33,8 +33,6 @@ import '../../features/admin/presentation/screens/user_management_screen.dart';
 import '../../features/admin/presentation/screens/content_moderation_screen.dart';
 import '../../features/admin/presentation/screens/analytics_screen.dart';
 import '../../features/admin/presentation/screens/system_admin_screen.dart';
-import '../../features/admin/presentation/screens/safety_security_screen.dart';
-import '../../features/admin/presentation/screens/communication_screen.dart';
 import '../../features/admin/presentation/screens/data_operations_screen.dart';
 import '../../features/admin/presentation/screens/admin_settings_screen.dart';
 import '../widgets/page_transitions.dart';
@@ -352,24 +350,6 @@ final routerProvider = Provider<GoRouter>(
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
           const SystemAdminScreen(),
-          key: state.pageKey,
-        ),
-      ),
-      GoRoute(
-        path: '/admin/safety',
-        name: 'admin-safety',
-        pageBuilder: (context, state) =>
-            AppPageTransitions.slideRightTransition(
-          const SafetySecurityScreen(),
-          key: state.pageKey,
-        ),
-      ),
-      GoRoute(
-        path: '/admin/communication',
-        name: 'admin-communication',
-        pageBuilder: (context, state) =>
-            AppPageTransitions.slideRightTransition(
-          const CommunicationScreen(),
           key: state.pageKey,
         ),
       ),

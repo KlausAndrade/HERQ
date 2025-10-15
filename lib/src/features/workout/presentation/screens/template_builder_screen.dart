@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/services/user_context_service.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
 import '../providers/template_providers.dart';
 import '../widgets/multi_exercise_picker_dialog.dart';
@@ -456,6 +457,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
 
     final template = WorkoutTemplate(
       id: widget.templateId ?? const Uuid().v4(),
+      userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim().isEmpty
           ? null

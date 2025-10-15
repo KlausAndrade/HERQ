@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 class SetEntries extends Table {
   TextColumn get id => text()();
+  TextColumn get userId => text()(); // ✅ USER ISOLATION: Link to current user
   TextColumn get workoutSessionId => text()();
   TextColumn get exerciseId => text()();
   IntColumn get setNumber => integer()();

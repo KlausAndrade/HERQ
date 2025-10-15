@@ -8,6 +8,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/services/user_context_service.dart';
 import '../providers/exercise_favorites_provider.dart';
 import '../providers/exercise_providers.dart';
 
@@ -808,6 +809,7 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
       await database.into(database.workoutTemplates).insert(
             WorkoutTemplatesCompanion.insert(
               id: templateId,
+              userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
               name: 'Quick: ${exercise.name}',
               exerciseIds: Value([exercise.id]),
               tags: const [],

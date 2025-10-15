@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../data/providers/admin_data_provider.dart';
 
 class DataOperationsScreen extends ConsumerStatefulWidget {
   const DataOperationsScreen({super.key});
@@ -26,9 +29,15 @@ class _DataOperationsScreenState extends ConsumerState<DataOperationsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final systemHealth = ref.watch(systemHealthProvider);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Data Operations'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/admin'),
+        ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         bottom: TabBar(
@@ -39,20 +48,49 @@ class _DataOperationsScreenState extends ConsumerState<DataOperationsScreen>
             Tab(text: 'Import', icon: Icon(Icons.upload)),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _BackupTab(),
-          _ExportTab(),
-          _ImportTab(),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.refresh(systemHealthProvider),
+            tooltip: 'Refresh',
+          ),
         ],
+      ),
+      body: systemHealth.when(
+        data: (data) => TabBarView(
+          controller: _tabController,
+          children: [
+            _BackupTab(data: data),
+            _ExportTab(data: data),
+            _ImportTab(data: data),
+          ],
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Error loading data operations: $error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.refresh(systemHealthProvider),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
 class _BackupTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _BackupTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -302,6 +340,10 @@ class _BackupTab extends StatelessWidget {
 }
 
 class _ExportTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _ExportTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -495,6 +537,10 @@ class _ExportTab extends StatelessWidget {
 }
 
 class _ImportTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _ImportTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
