@@ -336,10 +336,10 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                         child: OutlinedButton(
                           onPressed: () => _showAddExerciseDialog(context),
                           style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(4, 4),
+                            minimumSize: const Size(0, 32),
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
+                              horizontal: 16,
+                              vertical: 12,
                             ),
                           ),
                           child: Row(
@@ -347,10 +347,10 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Icon(Icons.add, size: 20),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 8),
                               Flexible(
                                 child: Text(
-                                  S.of(context)!.addExercise,
+                                  S.of(context)!.add,
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -365,10 +365,10 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                         child: ElevatedButton(
                           onPressed: () => _showFinishWorkoutDialog(context),
                           style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(0, 48),
+                            minimumSize: const Size(0, 32),
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                              horizontal: 20,
+                              vertical: 16,
                             ),
                           ),
                           child: Text(
@@ -1319,13 +1319,13 @@ class _ExerciseCard extends ConsumerWidget {
                     // Add Set Button
                     SizedBox(
                       width: double.infinity,
-                      height: 36, // Fixed height for consistency
+                      height: 48, // Increased height for better touch target
                       child: OutlinedButton(
                         onPressed: onAddSet,
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                            horizontal: 16,
+                            vertical: 12,
                           ),
                         ),
                         child: const Row(
