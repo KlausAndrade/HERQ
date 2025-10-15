@@ -36,6 +36,7 @@ import '../../features/admin/presentation/screens/system_admin_screen.dart';
 import '../../features/admin/presentation/screens/safety_security_screen.dart';
 import '../../features/admin/presentation/screens/communication_screen.dart';
 import '../../features/admin/presentation/screens/data_operations_screen.dart';
+import '../../features/admin/presentation/screens/admin_settings_screen.dart';
 import '../widgets/page_transitions.dart';
 
 final routerProvider = Provider<GoRouter>(
@@ -378,6 +379,15 @@ final routerProvider = Provider<GoRouter>(
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
           const DataOperationsScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/admin/settings',
+        name: 'admin-settings',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const AdminSettingsScreen(),
           key: state.pageKey,
         ),
       ),

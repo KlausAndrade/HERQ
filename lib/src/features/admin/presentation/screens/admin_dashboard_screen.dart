@@ -106,6 +106,13 @@ class AdminDashboardScreen extends ConsumerWidget {
                 color: Colors.brown,
                 onTap: () => context.push('/admin/data'),
               ),
+              _FeatureCard(
+                title: 'Admin Settings',
+                subtitle: 'System configuration and feature flags',
+                icon: Icons.settings,
+                color: Colors.grey,
+                onTap: () => context.push('/admin/settings'),
+              ),
             ]),
             
             const SizedBox(height: 24),
