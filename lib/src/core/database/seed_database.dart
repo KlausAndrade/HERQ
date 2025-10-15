@@ -4,7 +4,6 @@
 import '../../features/workout/data/seed/acroyoga_exercises_seed.dart';
 import '../../features/workout/data/seed/additional_exercises_seed.dart';
 import '../../features/workout/data/seed/core_exercises_seed.dart';
-import '../../features/workout/data/seed/exercise_variants_seed.dart';
 import 'database.dart';
 
 Future<void> seedDatabase(AppDatabase database) async {
@@ -25,11 +24,7 @@ Future<void> seedDatabase(AppDatabase database) async {
   print('🧘 Seeding AcroYoga exercises...');
   await seedAcroYogaExercises(database);
 
-  // Seed exercise variants (progressions, regressions, etc.)
-  print('🔄 Seeding exercise variants...');
-  await seedExerciseVariants(database);
-
-  // Then seed templates and folders
+  // Then seed templates and folders (includes exercise variants)
   print('📝 Seeding templates and folders...');
   await database.seedDefaultData();
 
