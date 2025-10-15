@@ -79,6 +79,9 @@ dev_dependencies:
   drift_dev: ^2.14.1
   json_serializable: ^6.7.1
   
+  # App Icons
+  flutter_launcher_icons: ^0.13.1
+  
   # Testing
   mocktail: ^1.0.2
   golden_toolkit: ^0.15.0
@@ -91,3 +94,21 @@ flutter:
     - assets/images/
     - assets/icons/
     - .env
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/herq_logo.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/images/herq_logo.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/images/herq_logo.png"
+    icon_size: 48
+  macos:
+    generate: true
+    image_path: "assets/images/herq_logo.png"
