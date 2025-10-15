@@ -1,4 +1,4 @@
-package com.klausandrade.gym_ai
+package com.herq.app
 
 import io.flutter.embedding.android.FlutterActivity
 

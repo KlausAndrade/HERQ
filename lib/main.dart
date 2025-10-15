@@ -13,10 +13,14 @@ import 'src/core/services/notification_service.dart'
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
-  await dotenv.load();
+  // Load environment variables (gracefully handle missing .env file)
+  try {
+    await dotenv.load();
+  } catch (e) {
+    print('ℹ️ No .env file found, using empty Supabase config');
+  }
 
-  // Initialize Supabase
+  // Initialize Supabase (with empty config if .env is missing)
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL'] ?? '',
     anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
