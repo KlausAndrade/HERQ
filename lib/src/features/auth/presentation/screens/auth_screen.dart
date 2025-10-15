@@ -5,6 +5,7 @@ import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/utils/auth_error_handler.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -303,7 +304,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       final authService = ref.read(authServiceProvider);
 
       if (_isSignUp) {
-        await authService.signUpWithEmail(
+        await authService.signUpWithEmailSafe(
           email: _emailController.text.trim(),
           password: _passwordController.text,
           displayName: _nameController.text.trim().isNotEmpty
@@ -321,7 +322,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               .catchError((_) {});
         }
       } else {
-        await authService.signInWithEmail(
+        await authService.signInWithEmailSafe(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
@@ -356,18 +357,21 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     try {
       final authService = ref.read(authServiceProvider);
-      final success = await authService.signInWithGoogle();
+      final success = await authService.signInWithGoogleSafe();
 
       if (success && mounted) {
         context.go('/');
       }
     } catch (e) {
       if (mounted) {
+        final errorMessage = AuthErrorHandler.getErrorMessage(e);
+        final errorTitle = AuthErrorHandler.getErrorTitle(e);
+        
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Error',
-              body: e.toString(),
+              title: errorTitle,
+              body: errorMessage,
             )
             .catchError((_) {});
       }
@@ -387,18 +391,21 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     try {
       final authService = ref.read(authServiceProvider);
-      final success = await authService.signInWithApple();
+      final success = await authService.signInWithAppleSafe();
 
       if (success && mounted) {
         context.go('/');
       }
     } catch (e) {
       if (mounted) {
+        final errorMessage = AuthErrorHandler.getErrorMessage(e);
+        final errorTitle = AuthErrorHandler.getErrorTitle(e);
+        
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Error',
-              body: e.toString(),
+              title: errorTitle,
+              body: errorMessage,
             )
             .catchError((_) {});
       }
@@ -418,18 +425,21 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     try {
       final authService = ref.read(authServiceProvider);
-      final success = await authService.signInWithFacebook();
+      final success = await authService.signInWithFacebookSafe();
 
       if (success && mounted) {
         context.go('/');
       }
     } catch (e) {
       if (mounted) {
+        final errorMessage = AuthErrorHandler.getErrorMessage(e);
+        final errorTitle = AuthErrorHandler.getErrorTitle(e);
+        
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Error',
-              body: e.toString(),
+              title: errorTitle,
+              body: errorMessage,
             )
             .catchError((_) {});
       }
@@ -456,7 +466,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     try {
       final authService = ref.read(authServiceProvider);
-      await authService.resetPassword(_emailController.text.trim());
+      await authService.resetPasswordSafe(_emailController.text.trim());
 
       if (mounted) {
         NotificationService()
@@ -469,11 +479,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final errorMessage = AuthErrorHandler.getErrorMessage(e);
+        final errorTitle = AuthErrorHandler.getErrorTitle(e);
+        
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Error',
-              body: e.toString(),
+              title: errorTitle,
+              body: errorMessage,
             )
             .catchError((_) {});
       }

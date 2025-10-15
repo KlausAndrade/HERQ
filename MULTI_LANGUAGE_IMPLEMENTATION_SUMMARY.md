@@ -91,7 +91,7 @@
 ### Localization System
 - Uses Flutter's built-in `gen-l10n` system
 - Generated files location: `lib/l10n/`
-- Main class: `S` (imported from `package:gym_ai/l10n/app_localizations.dart`)
+- Main class: `S` (imported from `package:herq/l10n/app_localizations.dart`)
 - Usage pattern: `S.of(context).stringKey`
 
 ### File Structure
@@ -235,7 +235,7 @@ flutter pub run build_runner build --delete-conflicting-outputs
 
 4. Use in code:
 ```dart
-import 'package:gym_ai/l10n/app_localizations.dart';
+import 'package:herq/l10n/app_localizations.dart';
 
 // In widget
 Text(S.of(context).myNewString)

@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../utils/auth_error_handler.dart';
+
 // Supabase client provider
 final supabaseClientProvider =
     Provider<SupabaseClient>((ref) => Supabase.instance.client);
@@ -90,4 +92,80 @@ class AuthService {
 
   // Get current user
   User? get currentUser => _client.auth.currentUser;
+
+  // Enhanced error handling methods
+  Future<AuthResponse> signInWithEmailSafe({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      return await signInWithEmail(email: email, password: password);
+    } catch (e) {
+      throw AuthErrorHandler.getErrorMessage(e);
+    }
+  }
+
+  Future<AuthResponse> signUpWithEmailSafe({
+    required String email,
+    required String password,
+    String? displayName,
+  }) async {
+    try {
+      return await signUpWithEmail(
+        email: email,
+        password: password,
+        displayName: displayName,
+      );
+    } catch (e) {
+      throw AuthErrorHandler.getErrorMessage(e);
+    }
+  }
+
+  Future<bool> signInWithGoogleSafe() async {
+    try {
+      return await signInWithGoogle();
+    } catch (e) {
+      throw AuthErrorHandler.getErrorMessage(e);
+    }
+  }
+
+  Future<bool> signInWithAppleSafe() async {
+    try {
+      return await signInWithApple();
+    } catch (e) {
+      throw AuthErrorHandler.getErrorMessage(e);
+    }
+  }
+
+  Future<bool> signInWithFacebookSafe() async {
+    try {
+      return await signInWithFacebook();
+    } catch (e) {
+      throw AuthErrorHandler.getErrorMessage(e);
+    }
+  }
+
+  Future<void> resetPasswordSafe(String email) async {
+    try {
+      await resetPassword(email);
+    } catch (e) {
+      throw AuthErrorHandler.getErrorMessage(e);
+    }
+  }
+
+  Future<void> resendEmailVerificationSafe() async {
+    try {
+      await resendEmailVerification();
+    } catch (e) {
+      throw AuthErrorHandler.getErrorMessage(e);
+    }
+  }
+
+  Future<void> signOutSafe() async {
+    try {
+      await signOut();
+    } catch (e) {
+      throw AuthErrorHandler.getErrorMessage(e);
+    }
+  }
 }

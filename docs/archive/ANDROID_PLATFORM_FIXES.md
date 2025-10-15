@@ -83,11 +83,11 @@ flutter create --platforms android .
 **Proper Application ID & SDK Versions**:
 ```kotlin
 android {
-    namespace = "com.klausandrade.gym_ai"
+    namespace = "com.klausandrade.herq"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.klausandrade.gym_ai"
+        applicationId = "com.klausandrade.herq"
         minSdk = 21  // Required for modern plugins
         targetSdk = 34
         versionCode = flutter.versionCode
@@ -110,7 +110,7 @@ dependencies {
 
 **MainApplication.kt**:
 ```kotlin
-package com.klausandrade.gym_ai
+package com.klausandrade.herq
 
 import androidx.multidex.MultiDexApplication
 import io.flutter.app.FlutterApplication
@@ -127,14 +127,14 @@ class MainApplication : MultiDexApplication(), FlutterApplication {
 
 **Correct Package Hierarchy**:
 ```
-android/app/src/main/kotlin/com/klausandrade/gym_ai/
+android/app/src/main/kotlin/com/klausandrade/herq/
 ├── MainActivity.kt
 └── MainApplication.kt
 ```
 
 **MainActivity.kt**:
 ```kotlin
-package com.klausandrade.gym_ai
+package com.klausandrade.herq
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -244,11 +244,11 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  leading: const Icon(Icons.delete_outline),
-                  title: const Text('Delete Account'),
-                  subtitle: const Text('Permanently delete all data'),
+                  leading: const Icon(Icons.delete_forever),
+                  title: const Text('Delete All Data'),
+                  subtitle: const Text('Permanently delete all workout data'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showDeleteAccountDialog(context, ref),
+                  onTap: () => _showDeleteDataDialog(context, ref),
                 ),
               ],
             ),
@@ -832,31 +832,43 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
+  void _showDeleteDataDialog(BuildContext context, WidgetRef ref) {
     final confirmController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Account'),
+        title: const Text('Delete All Workout Data'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '⚠️ Warning: This action cannot be undone!',
+              '⚠️ Warning: This will permanently delete ALL your workout data!',
               style: TextStyle(
                 color: Colors.red,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 16),
-            const Text('This will permanently delete:'),
+            const Text(
+              'This will delete:',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 8),
             const Text('• All your workout history'),
             const Text('• All workout templates'),
             const Text('• All personal records'),
-            const Text('• All settings and preferences'),
+            const Text('• All exercise favorites'),
+            const Text('• All workout settings'),
+            const SizedBox(height: 16),
+            const Text(
+              'Note: This will NOT delete your account or sign you out. You will remain logged in.',
+              style: TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             const SizedBox(height: 24),
             const Text(
               'Type DELETE to confirm:',
@@ -896,8 +908,8 @@ class SettingsScreen extends ConsumerWidget {
                     NotificationService()
                         .showInAppNotification(
                           id: DateTime.now().millisecondsSinceEpoch.toString(),
-                          title: 'Deleted',
-                          body: 'Account data deleted',
+                          title: 'Data Deleted',
+                          body: 'All workout data has been permanently deleted',
                         )
                         .catchError((_) {});
                   }
@@ -924,7 +936,7 @@ class SettingsScreen extends ConsumerWidget {
               }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete Everything'),
+            child: const Text('Delete All Data'),
           ),
         ],
       ),

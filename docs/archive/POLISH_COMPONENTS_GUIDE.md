@@ -338,10 +338,10 @@ AnimationController(
 
 ### 1. Import Components
 ```dart
-import 'package:gym_ai/src/core/widgets/app_button.dart';
-import 'package:gym_ai/src/core/widgets/app_card.dart';
-import 'package:gym_ai/src/core/widgets/animated_fab.dart';
-import 'package:gym_ai/src/core/services/snackbar_service.dart';
+import 'package:herq/src/core/widgets/app_button.dart';
+import 'package:herq/src/core/widgets/app_card.dart';
+import 'package:herq/src/core/widgets/animated_fab.dart';
+import 'package:herq/src/core/services/snackbar_service.dart';
 ```
 
 ### 2. Replace Standard Widgets

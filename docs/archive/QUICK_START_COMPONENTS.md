@@ -10,18 +10,18 @@ Add these imports at the top of your screen file:
 
 ```dart
 // Core components
-import 'package:gym_ai/src/core/widgets/app_button.dart';
-import 'package:gym_ai/src/core/widgets/app_card.dart';
-import 'package:gym_ai/src/core/widgets/empty_state.dart';
-import 'package:gym_ai/src/core/widgets/skeleton_loader.dart';
+import 'package:herq/src/core/widgets/app_button.dart';
+import 'package:herq/src/core/widgets/app_card.dart';
+import 'package:herq/src/core/widgets/empty_state.dart';
+import 'package:herq/src/core/widgets/skeleton_loader.dart';
 
 // Micro-interactions
-import 'package:gym_ai/src/core/widgets/animated_fab.dart';
-import 'package:gym_ai/src/core/widgets/animated_switch.dart';
-import 'package:gym_ai/src/core/widgets/custom_refresh_indicator.dart';
+import 'package:herq/src/core/widgets/animated_fab.dart';
+import 'package:herq/src/core/widgets/animated_switch.dart';
+import 'package:herq/src/core/widgets/custom_refresh_indicator.dart';
 
 // Services
-import 'package:gym_ai/src/core/services/snackbar_service.dart';
+import 'package:herq/src/core/services/snackbar_service.dart';
 ```
 
 ## 2. Replace Standard Widgets

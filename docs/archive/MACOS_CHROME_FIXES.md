@@ -197,7 +197,7 @@ Future<void> initialize() async {
 ## 🧪 **Testing Results**:
 
 ### **macOS Platform**:
-- ✅ **App builds successfully**: "Built build/macos/Build/Products/Debug/gym_ai.app"
+- ✅ **App builds successfully**: "Built build/macos/Build/Products/Debug/herq.app"
 - ✅ **No database errors**: SQL null check operator issues resolved
 - ✅ **Supabase initialized**: Backend connectivity working
 - ✅ **Quick workout accessible**: Template loading no longer crashes

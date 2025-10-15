@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/utils/auth_error_handler.dart';
+
 class WebAuthScreen extends ConsumerStatefulWidget {
   const WebAuthScreen({super.key});
 
@@ -50,7 +52,7 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
       }
     } catch (e) {
       setState(() {
-        _error = e.toString();
+        _error = AuthErrorHandler.getErrorMessage(e);
       });
     } finally {
       setState(() {

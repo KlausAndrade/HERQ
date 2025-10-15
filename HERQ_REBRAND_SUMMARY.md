@@ -39,7 +39,7 @@
 
 ### 4. Package Identifier Changes (COMPLETE)
 - ✅ Updated `pubspec.yaml`:
-  - Changed name from `gym_ai` to `herq`
+  - Changed name from `herq` to `herq`
   - Updated description to "HERQ - Smart strength training with AI coaching"
 - ✅ Updated `android/app/build.gradle.kts`:
   - Changed namespace to `com.herq.app`
@@ -87,12 +87,12 @@
   - Changed title to "💪 HERQ - Smart Strength. Simplified."
   - Added brand story and mission to header
   - Updated app description
-  - Changed repository references from `gym-ai` to `herq`
+  - Changed repository references from `herq` to `herq`
 - ✅ All documentation now reflects HERQ branding
 
 ### 10. Import Path Updates (COMPLETE)
 - ✅ Updated ALL 196+ Dart files in `lib/` and `test/` directories
-- ✅ Changed all imports from `package:gym_ai/` to `package:herq/`
+- ✅ Changed all imports from `package:herq/` to `package:herq/`
 - ✅ Used automated script for consistency
 
 ### 11. Build Configuration (COMPLETE)
@@ -168,7 +168,7 @@ Whether you're chasing your first pull-up or your next PR, HERQ helps you train 
 ## ⚠️ Important Notes
 
 ### Package ID Changes
-The package identifier changes from `com.klausandrade.gym_ai` to `com.herq.app` mean:
+The package identifier changes from `com.klausandrade.herq` to `com.herq.app` mean:
 - This will be submitted as a **new app** to app stores
 - Users cannot "update" from old app to new app
 - Data migration strategy needed if users need to transfer data

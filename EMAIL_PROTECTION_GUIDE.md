@@ -221,7 +221,7 @@ Don't write custom sanitization logic. Use the existing utility.
 ### **Rule #3: Check New Features**
 When adding features that display user names, import and use:
 ```dart
-import 'package:gym_ai/src/core/utils/display_name_sanitizer.dart';
+import 'package:herq/src/core/utils/display_name_sanitizer.dart';
 ```
 
 ### **Rule #4: Test with Edge Cases**

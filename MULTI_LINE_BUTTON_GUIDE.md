@@ -48,7 +48,7 @@ OutlinedButton(
 For consistency across the app, use the pre-built `AdaptiveButton`:
 
 ```dart
-import 'package:gym_ai/src/core/widgets/adaptive_button.dart';
+import 'package:herq/src/core/widgets/adaptive_button.dart';
 
 AdaptiveButton(
   onPressed: onTap,

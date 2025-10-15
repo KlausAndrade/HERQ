@@ -174,7 +174,7 @@ print('Actions: ${androidActions.map((a) => a.title).join(", ")}');
 adb shell dumpsys notification | grep GymAI
 
 # Check notification channels
-adb shell cmd notification list-channels com.example.gym_ai
+adb shell cmd notification list-channels com.example.herq
 ```
 
 ### Test on Different Devices
