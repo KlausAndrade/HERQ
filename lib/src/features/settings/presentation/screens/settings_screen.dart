@@ -363,15 +363,47 @@ class SettingsScreen extends ConsumerWidget {
           Card(
             child: Column(
               children: [
-                ListTile(
-                  leading: Icon(
-                    Icons.fitness_center,
-                    color: theme.colorScheme.primary,
-                  ),
-                  title: Text(S.of(context)!.aboutHerq),
-                  subtitle: Text(S.of(context)!.appTagline),
-                  trailing: const Icon(Icons.chevron_right),
+                InkWell(
                   onTap: () => context.push('/about-herq'),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      children: [
+                        Transform.translate(
+                          offset: const Offset(-4, 0),
+                          child: Image.asset(
+                            'assets/images/herq_logo.png',
+                            height: 32,
+                            width: 32,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                S.of(context)!.aboutHerq,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              Text(
+                                S.of(context)!.appTagline,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right),
+                      ],
+                    ),
+                  ),
                 ),
                 const Divider(height: 1),
                 const ListTile(

@@ -42,8 +42,7 @@ class AboutHerqScreen extends StatelessWidget {
                   // Logo Container (similar to splash screen)
                   Container(
                     decoration: BoxDecoration(
-                      color:
-                          theme.colorScheme.primaryContainer.withOpacity(0.5),
+                      color: theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
@@ -70,10 +69,11 @@ class AboutHerqScreen extends StatelessWidget {
                               return Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
-                                    Icons.fitness_center,
-                                    size: 72,
-                                    color: theme.colorScheme.primary,
+                                  Image.asset(
+                                    'assets/images/herq_logo.png',
+                                    height: 72,
+                                    width: 72,
+                                    fit: BoxFit.contain,
                                   ),
                                   const SizedBox(height: 12),
                                   Text(

@@ -36,7 +36,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Widget build(BuildContext context) => Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(12),
             child: Form(
               key: _formKey,
               child: Column(
@@ -45,12 +45,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   const SizedBox(height: 40),
 
                   // Logo and title
-                  Icon(
-                    Icons.fitness_center,
-                    size: 80,
-                    color: Theme.of(context).colorScheme.primary,
+                  Image.asset(
+                    'assets/images/herq_logo.png',
+                    height: 80,
+                    width: 80,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 24),
 
                   Text(
                     S.of(context)!.appTitle,
@@ -72,12 +72,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 28),
 
                   // Auth form
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(2),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -109,7 +109,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 6),
                           ],
 
                           // Email field
@@ -131,7 +131,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 6),
 
                           // Password field
                           TextFormField(
@@ -173,7 +173,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             ),
                             child: _isLoading
                                 ? const SizedBox(
-                                    height: 20,
+                                    height: 2,
                                     width: 20,
                                     child: CircularProgressIndicator(
                                         strokeWidth: 2),
@@ -181,7 +181,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 : Text(
                                     _isSignUp ? 'Create Account' : 'Sign In'),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
 
                           // Toggle sign up/sign in
                           TextButton(
@@ -208,12 +208,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 8),
 
                   // Social sign in
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(2),
                       child: Column(
                         children: [
                           Text(

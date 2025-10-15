@@ -51,7 +51,7 @@ class AppTheme {
       Color(0xFF141516); // Background - Professional contrast
   static const Color herqWhite = Color(0xFFF8F8FA); // Text - Clean typography
 
-  // HERQ Gradient
+  // HERQ GradientR
   static const LinearGradient herqGradient = LinearGradient(
     colors: [herqTeal, herqLime],
     begin: Alignment.topLeft,

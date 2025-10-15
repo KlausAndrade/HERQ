@@ -99,10 +99,11 @@ class WebComingSoonScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.fitness_center,
-                  size: 120,
-                  color: Colors.blue,
+                Image.asset(
+                  'assets/images/herq_logo.png',
+                  height: 120,
+                  width: 120,
+                  fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 32),
                 Text(
