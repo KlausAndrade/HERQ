@@ -12,7 +12,7 @@ class AdminDashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dashboardData = ref.watch(adminDashboardProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -41,73 +41,73 @@ class AdminDashboardScreen extends ConsumerWidget {
             children: [
               // Real Quick Stats
               _buildRealQuickStats(context, data),
-            const SizedBox(height: 24),
-            
-            // Admin Features
-            _buildFeatureGrid(context, [
-              _FeatureCard(
-                title: 'User Management',
-                subtitle: 'Manage users, roles, and accounts',
-                icon: Icons.people,
-                color: Colors.blue,
-                onTap: () => context.push('/admin/users'),
+              const SizedBox(height: 24),
+
+              // Admin Features
+              _buildFeatureGrid(context, [
+                _FeatureCard(
+                  title: 'User Management',
+                  subtitle: 'Manage users, roles, and accounts',
+                  icon: Icons.people,
+                  color: Colors.blue,
+                  onTap: () => context.push('/admin/users'),
+                ),
+                _FeatureCard(
+                  title: 'Content Moderation',
+                  subtitle: 'Review posts, comments, and reports',
+                  icon: Icons.shield,
+                  color: Colors.orange,
+                  onTap: () => context.push('/admin/content'),
+                ),
+                _FeatureCard(
+                  title: 'Analytics',
+                  subtitle: 'Platform metrics and insights',
+                  icon: Icons.analytics,
+                  color: Colors.green,
+                  onTap: () => context.push('/admin/analytics'),
+                ),
+                _FeatureCard(
+                  title: 'Data Operations',
+                  subtitle: 'Backup, export, and data management',
+                  icon: Icons.storage,
+                  color: Colors.brown,
+                  onTap: () => context.push('/admin/data'),
+                ),
+                _FeatureCard(
+                  title: 'Admin Settings',
+                  subtitle: 'System configuration and feature flags',
+                  icon: Icons.settings,
+                  color: Colors.grey,
+                  onTap: () => context.push('/admin/settings'),
+                ),
+              ]),
+
+              const SizedBox(height: 24),
+
+              // Real Recent Activity
+              _buildRealRecentActivity(context, data),
+            ],
+          ),
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Error loading admin data: $error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.refresh(adminDashboardProvider),
+                child: const Text('Retry'),
               ),
-              _FeatureCard(
-                title: 'Content Moderation',
-                subtitle: 'Review posts, comments, and reports',
-                icon: Icons.shield,
-                color: Colors.orange,
-                onTap: () => context.push('/admin/content'),
-              ),
-              _FeatureCard(
-                title: 'Analytics',
-                subtitle: 'Platform metrics and insights',
-                icon: Icons.analytics,
-                color: Colors.green,
-                onTap: () => context.push('/admin/analytics'),
-              ),
-              _FeatureCard(
-                title: 'Data Operations',
-                subtitle: 'Backup, export, and data management',
-                icon: Icons.storage,
-                color: Colors.brown,
-                onTap: () => context.push('/admin/data'),
-              ),
-              _FeatureCard(
-                title: 'Admin Settings',
-                subtitle: 'System configuration and feature flags',
-                icon: Icons.settings,
-                color: Colors.grey,
-                onTap: () => context.push('/admin/settings'),
-              ),
-            ]),
-            
-            const SizedBox(height: 24),
-            
-            // Real Recent Activity
-            _buildRealRecentActivity(context, data),
-          ],
+            ],
+          ),
         ),
       ),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            Text('Error loading admin data: $error'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => ref.refresh(adminDashboardProvider),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildRealQuickStats(BuildContext context, Map<String, dynamic> data) {
     return LayoutBuilder(
@@ -252,7 +252,8 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRealRecentActivity(BuildContext context, Map<String, dynamic> data) {
+  Widget _buildRealRecentActivity(
+      BuildContext context, Map<String, dynamic> data) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -266,8 +267,8 @@ class AdminDashboardScreen extends ConsumerWidget {
                 Text(
                   'Recent Activity',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -301,7 +302,8 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActivityItem(BuildContext context, String title, String subtitle, IconData icon, Color color) {
+  Widget _buildActivityItem(BuildContext context, String title, String subtitle,
+      IconData icon, Color color) {
     return Row(
       children: [
         Icon(icon, color: color, size: 20),
@@ -313,14 +315,14 @@ class AdminDashboardScreen extends ConsumerWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
             ],
           ),
@@ -335,7 +337,7 @@ class AdminDashboardScreen extends ConsumerWidget {
       final date = DateTime.parse(lastUpdated);
       final now = DateTime.now();
       final difference = now.difference(date);
-      
+
       if (difference.inMinutes < 1) {
         return 'Just now';
       } else if (difference.inMinutes < 60) {
@@ -457,7 +459,6 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-
   Widget _buildFeatureGrid(BuildContext context, List<_FeatureCard> features) {
     return GridView.builder(
       shrinkWrap: true,
@@ -483,8 +484,8 @@ class AdminDashboardScreen extends ConsumerWidget {
             Text(
               'Recent Activity',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 12),
             _ActivityItem(
@@ -558,19 +559,19 @@ class _StatCard extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-                fontSize: 18,
-              ),
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                    fontSize: 18,
+                  ),
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 2),
             Text(
               change,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: change.startsWith('+') ? Colors.green : Colors.red,
-                fontWeight: FontWeight.w500,
-              ),
+                    color: change.startsWith('+') ? Colors.green : Colors.red,
+                    fontWeight: FontWeight.w500,
+                  ),
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -611,16 +612,19 @@ class _FeatureCard extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                ),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.7),
+                    ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -661,14 +665,17 @@ class _ActivityItem extends StatelessWidget {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
                 Text(
                   subtitle,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                  ),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
+                      ),
                 ),
               ],
             ),
@@ -676,8 +683,9 @@ class _ActivityItem extends StatelessWidget {
           Text(
             time,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-            ),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                ),
           ),
         ],
       ),

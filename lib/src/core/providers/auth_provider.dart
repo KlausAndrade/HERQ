@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import '../utils/auth_error_handler.dart';
 
@@ -55,16 +56,41 @@ class AuthService {
       );
 
   // Sign in with Google
-  Future<bool> signInWithGoogle() async =>
-      _client.auth.signInWithOAuth(OAuthProvider.google);
+  Future<bool> signInWithGoogle() async => _client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'herq://login-callback/',
+      );
 
   // Sign in with Apple
-  Future<bool> signInWithApple() async =>
-      _client.auth.signInWithOAuth(OAuthProvider.apple);
+  Future<bool> signInWithApple() async => _client.auth.signInWithOAuth(
+        OAuthProvider.apple,
+        redirectTo: 'herq://login-callback/',
+      );
 
   // Sign in with Facebook
-  Future<bool> signInWithFacebook() async =>
-      _client.auth.signInWithOAuth(OAuthProvider.facebook);
+  Future<bool> signInWithFacebook() async {
+    try {
+      // Use native Facebook SDK for better user experience
+      final LoginResult result = await FacebookAuth.instance.login();
+
+      if (result.status == LoginStatus.success) {
+        // Get Facebook access token
+        final AccessToken accessToken = result.accessToken!;
+
+        // Sign in to Supabase with Facebook token
+        final AuthResponse response = await _client.auth.signInWithIdToken(
+          provider: OAuthProvider.facebook,
+          idToken: accessToken.token,
+        );
+
+        return response.session != null;
+      }
+
+      return false;
+    } catch (e) {
+      throw AuthErrorHandler.getErrorMessage(e);
+    }
+  }
 
   // Sign out
   Future<void> signOut() async {

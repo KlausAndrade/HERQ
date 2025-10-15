@@ -34,6 +34,9 @@ dependencies:
   supabase_flutter: ^2.10.2
   connectivity_plus: ^5.0.2
   
+  # Social Authentication
+  flutter_facebook_auth: ^6.0.4
+  
   # Charts & Visualization
   fl_chart: ^0.65.0
   

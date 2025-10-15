@@ -38,7 +38,8 @@ const coreExercises = [
     'primaryMuscleGroup': 'shoulders',
     'secondaryMuscleGroups': ['triceps', 'core'],
     'equipment': 'barbell',
-    'instructions': 'Stand with feet hip-width apart, press bar from shoulders to overhead',
+    'instructions':
+        'Stand with feet hip-width apart, press bar from shoulders to overhead',
     'tags': ['compound', 'upper_body', 'shoulders'],
     'isBodyweight': false,
     'exerciseType': 'weight_reps',
@@ -51,7 +52,8 @@ const coreExercises = [
     'primaryMuscleGroup': 'shoulders',
     'secondaryMuscleGroups': [],
     'equipment': 'dumbbell',
-    'instructions': 'Stand with dumbbells at sides, raise arms to shoulder height',
+    'instructions':
+        'Stand with dumbbells at sides, raise arms to shoulder height',
     'tags': ['isolation', 'upper_body', 'shoulders'],
     'isBodyweight': false,
     'exerciseType': 'weight_reps',
@@ -64,7 +66,8 @@ const coreExercises = [
     'primaryMuscleGroup': 'triceps',
     'secondaryMuscleGroups': ['chest', 'shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'On parallel bars or bench, lower body by bending elbows, push back up',
+    'instructions':
+        'On parallel bars or bench, lower body by bending elbows, push back up',
     'tags': ['compound', 'upper_body', 'triceps'],
     'isBodyweight': true,
     'exerciseType': 'body_weight_reps',
@@ -172,7 +175,8 @@ const coreExercises = [
     'primaryMuscleGroup': 'legs',
     'secondaryMuscleGroups': ['glutes', 'core'],
     'equipment': 'barbell',
-    'instructions': 'Stand with feet shoulder-width apart, squat down keeping chest up',
+    'instructions':
+        'Stand with feet shoulder-width apart, squat down keeping chest up',
     'tags': ['compound', 'lower_body', 'legs'],
     'isBodyweight': false,
     'exerciseType': 'weight_reps',
@@ -185,7 +189,8 @@ const coreExercises = [
     'primaryMuscleGroup': 'hamstrings',
     'secondaryMuscleGroups': ['glutes', 'back'],
     'equipment': 'barbell',
-    'instructions': 'Hinge at hips, lower bar while keeping legs straighter than conventional deadlift',
+    'instructions':
+        'Hinge at hips, lower bar while keeping legs straighter than conventional deadlift',
     'tags': ['compound', 'lower_body', 'hamstrings'],
     'isBodyweight': false,
     'exerciseType': 'weight_reps',
@@ -265,7 +270,8 @@ const coreExercises = [
     'primaryMuscleGroup': 'chest',
     'secondaryMuscleGroups': ['triceps', 'shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'Start in plank position, lower chest to ground, push back up',
+    'instructions':
+        'Start in plank position, lower chest to ground, push back up',
     'tags': ['compound', 'upper_body', 'chest'],
     'isBodyweight': true,
     'exerciseType': 'body_weight_reps',
@@ -278,28 +284,46 @@ const coreExercises = [
     'primaryMuscleGroup': 'full_body',
     'secondaryMuscleGroups': [],
     'equipment': 'bodyweight',
-    'instructions': 'Squat down, jump back to plank, do push up, jump feet back, jump up',
+    'instructions':
+        'Squat down, jump back to plank, do push up, jump feet back, jump up',
     'tags': ['compound', 'full_body', 'cardio'],
     'isBodyweight': true,
     'exerciseType': 'body_weight_reps',
     'category': 'cardio',
     'difficulty': 'intermediate',
   },
+
+  // Additional parent exercises for variants
+  {
+    'id': 'handstand',
+    'name': 'Handstand',
+    'primaryMuscleGroup': 'shoulders',
+    'secondaryMuscleGroups': ['core', 'arms'],
+    'equipment': 'bodyweight',
+    'instructions': 'Balance upside down on hands with legs extended upward',
+    'tags': ['compound', 'upper_body', 'shoulders', 'balance'],
+    'isBodyweight': true,
+    'exerciseType': 'duration',
+    'category': 'calisthenics',
+    'difficulty': 'advanced',
+  },
 ];
 
 Future<void> seedCoreExercises(AppDatabase database) async {
   print('💪 Seeding core strength exercises...');
-  
+
   int seededCount = 0;
-  
+
   for (final exerciseData in coreExercises) {
     try {
       final companion = ExercisesCompanion(
         id: Value(exerciseData['id']! as String),
         name: Value(exerciseData['name']! as String),
-        primaryMuscleGroup: Value(exerciseData['primaryMuscleGroup']! as String),
+        primaryMuscleGroup:
+            Value(exerciseData['primaryMuscleGroup']! as String),
         secondaryMuscleGroups: Value(
-          List<String>.from(exerciseData['secondaryMuscleGroups'] as List<dynamic>),
+          List<String>.from(
+              exerciseData['secondaryMuscleGroups'] as List<dynamic>),
         ),
         equipment: Value(exerciseData['equipment']! as String),
         instructions: Value(exerciseData['instructions']! as String),

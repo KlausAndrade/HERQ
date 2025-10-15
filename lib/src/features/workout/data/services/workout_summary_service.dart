@@ -364,7 +364,8 @@ class WorkoutSummaryService {
     await database.into(database.personalRecords).insert(
           PersonalRecordsCompanion.insert(
             id: const Uuid().v4(),
-            userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
+            userId: UserContextService.instance
+                .getCurrentUserId(), // ✅ USER ISOLATION
             exerciseId: exerciseId,
             recordType: recordType,
             value: value,

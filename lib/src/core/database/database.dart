@@ -85,7 +85,7 @@ class AppDatabase extends _$AppDatabase {
               await customStatement(
                 'ALTER TABLE personal_records ADD COLUMN user_id TEXT',
               );
-              
+
               // Set default userId for existing data (will be updated by current user)
               await customStatement(
                 "UPDATE workout_sessions SET user_id = 'default_user' WHERE user_id IS NULL",
@@ -103,7 +103,7 @@ class AppDatabase extends _$AppDatabase {
               print('Migration 16 error: $e');
             }
           }
-          
+
           if (to == 15) {
             try {
               // Add equipment_used and variant_type fields for exercise variants
@@ -197,6 +197,9 @@ class AppDatabase extends _$AppDatabase {
     // First, seed core exercises that templates reference
     await _seedCoreExercises();
 
+    // Seed exercise variants (progressions, regressions, etc.)
+    await _seedExerciseVariants();
+
     // Populate aliases for seeded exercises using raw SQL. We do this via
     // UPDATE statements so we don't need to re-run code generation for the
     // ExercisesCompanion to accept an `aliases` field yet keep the seeder idempotent.
@@ -289,7 +292,8 @@ class AppDatabase extends _$AppDatabase {
         'primaryMuscleGroup': 'chest',
         'secondaryMuscleGroups': ['shoulders', 'triceps'],
         'equipment': 'dumbbell',
-        'instructions': 'On inclined bench, press dumbbells from chest to overhead',
+        'instructions':
+            'On inclined bench, press dumbbells from chest to overhead',
         'tags': ['compound', 'upper_body', 'chest'],
         'isBodyweight': false,
         'exerciseType': 'weight_reps',
@@ -302,7 +306,8 @@ class AppDatabase extends _$AppDatabase {
         'primaryMuscleGroup': 'shoulders',
         'secondaryMuscleGroups': ['triceps', 'core'],
         'equipment': 'barbell',
-        'instructions': 'Stand with feet hip-width apart, press bar from shoulders to overhead',
+        'instructions':
+            'Stand with feet hip-width apart, press bar from shoulders to overhead',
         'tags': ['compound', 'upper_body', 'shoulders'],
         'isBodyweight': false,
         'exerciseType': 'weight_reps',
@@ -315,7 +320,8 @@ class AppDatabase extends _$AppDatabase {
         'primaryMuscleGroup': 'shoulders',
         'secondaryMuscleGroups': [],
         'equipment': 'dumbbell',
-        'instructions': 'Stand with dumbbells at sides, raise arms to shoulder height',
+        'instructions':
+            'Stand with dumbbells at sides, raise arms to shoulder height',
         'tags': ['isolation', 'upper_body', 'shoulders'],
         'isBodyweight': false,
         'exerciseType': 'weight_reps',
@@ -328,7 +334,8 @@ class AppDatabase extends _$AppDatabase {
         'primaryMuscleGroup': 'triceps',
         'secondaryMuscleGroups': ['chest', 'shoulders'],
         'equipment': 'bodyweight',
-        'instructions': 'On parallel bars or bench, lower body by bending elbows, push back up',
+        'instructions':
+            'On parallel bars or bench, lower body by bending elbows, push back up',
         'tags': ['compound', 'upper_body', 'triceps'],
         'isBodyweight': true,
         'exerciseType': 'body_weight_reps',
@@ -341,7 +348,8 @@ class AppDatabase extends _$AppDatabase {
         'primaryMuscleGroup': 'triceps',
         'secondaryMuscleGroups': ['chest', 'shoulders'],
         'equipment': 'barbell',
-        'instructions': 'Bench press with hands closer together to target triceps',
+        'instructions':
+            'Bench press with hands closer together to target triceps',
         'tags': ['compound', 'upper_body', 'triceps'],
         'isBodyweight': false,
         'exerciseType': 'weight_reps',
@@ -434,7 +442,8 @@ class AppDatabase extends _$AppDatabase {
         'primaryMuscleGroup': 'legs',
         'secondaryMuscleGroups': ['glutes', 'core'],
         'equipment': 'barbell',
-        'instructions': 'Stand with feet shoulder-width apart, squat down keeping chest up',
+        'instructions':
+            'Stand with feet shoulder-width apart, squat down keeping chest up',
         'tags': ['compound', 'lower_body', 'legs'],
         'isBodyweight': false,
         'exerciseType': 'weight_reps',
@@ -447,7 +456,8 @@ class AppDatabase extends _$AppDatabase {
         'primaryMuscleGroup': 'hamstrings',
         'secondaryMuscleGroups': ['glutes', 'back'],
         'equipment': 'barbell',
-        'instructions': 'Hinge at hips, lower bar while keeping legs straighter than conventional deadlift',
+        'instructions':
+            'Hinge at hips, lower bar while keeping legs straighter than conventional deadlift',
         'tags': ['compound', 'lower_body', 'hamstrings'],
         'isBodyweight': false,
         'exerciseType': 'weight_reps',
@@ -486,7 +496,8 @@ class AppDatabase extends _$AppDatabase {
         'primaryMuscleGroup': 'calves',
         'secondaryMuscleGroups': [],
         'equipment': 'bodyweight',
-        'instructions': 'Stand on edge of step, raise up on toes, lower below step',
+        'instructions':
+            'Stand on edge of step, raise up on toes, lower below step',
         'tags': ['isolation', 'lower_body', 'calves'],
         'isBodyweight': true,
         'exerciseType': 'body_weight_reps',
@@ -526,7 +537,8 @@ class AppDatabase extends _$AppDatabase {
         'primaryMuscleGroup': 'chest',
         'secondaryMuscleGroups': ['triceps', 'shoulders'],
         'equipment': 'bodyweight',
-        'instructions': 'Start in plank position, lower chest to ground, push back up',
+        'instructions':
+            'Start in plank position, lower chest to ground, push back up',
         'tags': ['compound', 'upper_body', 'chest'],
         'isBodyweight': true,
         'exerciseType': 'body_weight_reps',
@@ -539,7 +551,8 @@ class AppDatabase extends _$AppDatabase {
         'primaryMuscleGroup': 'full_body',
         'secondaryMuscleGroups': [],
         'equipment': 'bodyweight',
-        'instructions': 'Squat down, jump back to plank, do push up, jump feet back, jump up',
+        'instructions':
+            'Squat down, jump back to plank, do push up, jump feet back, jump up',
         'tags': ['compound', 'full_body', 'cardio'],
         'isBodyweight': true,
         'exerciseType': 'body_weight_reps',
@@ -553,9 +566,11 @@ class AppDatabase extends _$AppDatabase {
         final companion = ExercisesCompanion(
           id: Value(exerciseData['id']! as String),
           name: Value(exerciseData['name']! as String),
-          primaryMuscleGroup: Value(exerciseData['primaryMuscleGroup']! as String),
+          primaryMuscleGroup:
+              Value(exerciseData['primaryMuscleGroup']! as String),
           secondaryMuscleGroups: Value(
-            List<String>.from(exerciseData['secondaryMuscleGroups'] as List<dynamic>),
+            List<String>.from(
+                exerciseData['secondaryMuscleGroups'] as List<dynamic>),
           ),
           equipment: Value(exerciseData['equipment']! as String),
           instructions: Value(exerciseData['instructions']! as String),
@@ -566,6 +581,340 @@ class AppDatabase extends _$AppDatabase {
           exerciseType: Value(exerciseData['exerciseType']! as String),
           category: Value(exerciseData['category']! as String),
           difficulty: Value(exerciseData['difficulty']! as String),
+        );
+
+        await into(exercises).insertOnConflictUpdate(companion);
+      } catch (e) {
+        // Non-fatal: if exercise already exists, ignore
+      }
+    }
+  }
+
+  /// Seed exercise variants for progressions
+  Future<void> _seedExerciseVariants() async {
+    const exerciseVariants = [
+      // Push Up Progressions
+      {
+        'id': 'knee_push_up',
+        'name': 'Knee Push Up',
+        'primaryMuscleGroup': 'chest',
+        'secondaryMuscleGroups': ['triceps', 'shoulders'],
+        'equipment': 'bodyweight',
+        'instructions': 'Start on knees, lower chest to ground, push back up',
+        'tags': ['compound', 'upper_body', 'chest', 'regression'],
+        'isBodyweight': true,
+        'exerciseType': 'body_weight_reps',
+        'category': 'calisthenics',
+        'difficulty': 'beginner',
+        'parentExerciseId': 'push_up',
+        'variantType': 'regression',
+      },
+      {
+        'id': 'incline_push_up',
+        'name': 'Incline Push Up',
+        'primaryMuscleGroup': 'chest',
+        'secondaryMuscleGroups': ['triceps', 'shoulders'],
+        'equipment': 'bodyweight',
+        'instructions':
+            'Hands on elevated surface, lower chest to surface, push back up',
+        'tags': ['compound', 'upper_body', 'chest', 'regression'],
+        'isBodyweight': true,
+        'exerciseType': 'body_weight_reps',
+        'category': 'calisthenics',
+        'difficulty': 'beginner',
+        'parentExerciseId': 'push_up',
+        'variantType': 'regression',
+      },
+      {
+        'id': 'decline_push_up',
+        'name': 'Decline Push Up',
+        'primaryMuscleGroup': 'chest',
+        'secondaryMuscleGroups': ['triceps', 'shoulders'],
+        'equipment': 'bodyweight',
+        'instructions':
+            'Feet on elevated surface, lower chest to ground, push back up',
+        'tags': ['compound', 'upper_body', 'chest', 'progression'],
+        'isBodyweight': true,
+        'exerciseType': 'body_weight_reps',
+        'category': 'calisthenics',
+        'difficulty': 'intermediate',
+        'parentExerciseId': 'push_up',
+        'variantType': 'progression',
+      },
+      {
+        'id': 'one_arm_pushup',
+        'name': 'One Arm Push Up',
+        'primaryMuscleGroup': 'chest',
+        'secondaryMuscleGroups': ['triceps', 'shoulders', 'core'],
+        'equipment': 'bodyweight',
+        'instructions': 'Single arm push up, maintaining body alignment',
+        'tags': ['compound', 'upper_body', 'chest', 'progression'],
+        'isBodyweight': true,
+        'exerciseType': 'body_weight_reps',
+        'category': 'calisthenics',
+        'difficulty': 'expert',
+        'parentExerciseId': 'push_up',
+        'variantType': 'progression',
+      },
+
+      // Pull Up Progressions
+      {
+        'id': 'assisted_pull_up',
+        'name': 'Assisted Pull Up',
+        'primaryMuscleGroup': 'back',
+        'secondaryMuscleGroups': ['biceps', 'forearms'],
+        'equipment': 'bodyweight',
+        'instructions': 'Use assistance band or machine to help with pull up',
+        'tags': ['compound', 'upper_body', 'back', 'regression'],
+        'isBodyweight': true,
+        'exerciseType': 'body_weight_reps',
+        'category': 'strength',
+        'difficulty': 'beginner',
+        'parentExerciseId': 'pull_up',
+        'variantType': 'regression',
+      },
+      {
+        'id': 'negative_pull_up',
+        'name': 'Negative Pull Up',
+        'primaryMuscleGroup': 'back',
+        'secondaryMuscleGroups': ['biceps', 'forearms'],
+        'equipment': 'bodyweight',
+        'instructions': 'Start at top position, slowly lower yourself down',
+        'tags': ['compound', 'upper_body', 'back', 'regression'],
+        'isBodyweight': true,
+        'exerciseType': 'body_weight_reps',
+        'category': 'strength',
+        'difficulty': 'beginner',
+        'parentExerciseId': 'pull_up',
+        'variantType': 'regression',
+      },
+      {
+        'id': 'weighted_pull_up',
+        'name': 'Weighted Pull Up',
+        'primaryMuscleGroup': 'back',
+        'secondaryMuscleGroups': ['biceps', 'forearms'],
+        'equipment': 'bodyweight',
+        'instructions':
+            'Add weight belt or hold weight between legs during pull up',
+        'tags': ['compound', 'upper_body', 'back', 'progression'],
+        'isBodyweight': true,
+        'exerciseType': 'body_weight_reps',
+        'category': 'strength',
+        'difficulty': 'advanced',
+        'parentExerciseId': 'pull_up',
+        'variantType': 'weighted',
+      },
+      {
+        'id': 'one_arm_pull_up',
+        'name': 'One Arm Pull Up',
+        'primaryMuscleGroup': 'back',
+        'secondaryMuscleGroups': ['biceps', 'forearms', 'core'],
+        'equipment': 'bodyweight',
+        'instructions': 'Single arm pull up, maintaining body control',
+        'tags': ['compound', 'upper_body', 'back', 'progression'],
+        'isBodyweight': true,
+        'exerciseType': 'body_weight_reps',
+        'category': 'calisthenics',
+        'difficulty': 'expert',
+        'parentExerciseId': 'pull_up',
+        'variantType': 'progression',
+      },
+
+      // Handstand Progressions
+      {
+        'id': 'handstand',
+        'name': 'Handstand',
+        'primaryMuscleGroup': 'shoulders',
+        'secondaryMuscleGroups': ['core', 'arms'],
+        'equipment': 'bodyweight',
+        'instructions':
+            'Balance upside down on hands with legs extended upward',
+        'tags': ['compound', 'upper_body', 'shoulders', 'balance'],
+        'isBodyweight': true,
+        'exerciseType': 'duration',
+        'category': 'calisthenics',
+        'difficulty': 'advanced',
+      },
+      {
+        'id': 'wall_handstand',
+        'name': 'Wall Handstand',
+        'primaryMuscleGroup': 'shoulders',
+        'secondaryMuscleGroups': ['core', 'arms'],
+        'equipment': 'bodyweight',
+        'instructions': 'Handstand against wall for balance support',
+        'tags': ['compound', 'upper_body', 'shoulders', 'regression'],
+        'isBodyweight': true,
+        'exerciseType': 'duration',
+        'category': 'calisthenics',
+        'difficulty': 'intermediate',
+        'parentExerciseId': 'handstand',
+        'variantType': 'regression',
+      },
+      {
+        'id': 'handstand_push_up',
+        'name': 'Handstand Push Up',
+        'primaryMuscleGroup': 'shoulders',
+        'secondaryMuscleGroups': ['triceps', 'core'],
+        'equipment': 'bodyweight',
+        'instructions': 'Push up while in handstand position',
+        'tags': ['compound', 'upper_body', 'shoulders', 'progression'],
+        'isBodyweight': true,
+        'exerciseType': 'body_weight_reps',
+        'category': 'calisthenics',
+        'difficulty': 'expert',
+        'parentExerciseId': 'handstand',
+        'variantType': 'progression',
+      },
+
+      // Squat Progressions
+      {
+        'id': 'box_squat',
+        'name': 'Box Squat',
+        'primaryMuscleGroup': 'legs',
+        'secondaryMuscleGroups': ['glutes', 'core'],
+        'equipment': 'barbell',
+        'instructions': 'Squat down to box, pause, then stand up',
+        'tags': ['compound', 'lower_body', 'legs', 'regression'],
+        'isBodyweight': false,
+        'exerciseType': 'weight_reps',
+        'category': 'strength',
+        'difficulty': 'beginner',
+        'parentExerciseId': 'squat',
+        'variantType': 'regression',
+      },
+      {
+        'id': 'front_squat',
+        'name': 'Front Squat',
+        'primaryMuscleGroup': 'legs',
+        'secondaryMuscleGroups': ['glutes', 'core', 'shoulders'],
+        'equipment': 'barbell',
+        'instructions': 'Squat with barbell in front rack position',
+        'tags': ['compound', 'lower_body', 'legs', 'progression'],
+        'isBodyweight': false,
+        'exerciseType': 'weight_reps',
+        'category': 'strength',
+        'difficulty': 'advanced',
+        'parentExerciseId': 'squat',
+        'variantType': 'progression',
+      },
+      {
+        'id': 'pistol_squat',
+        'name': 'Pistol Squat',
+        'primaryMuscleGroup': 'legs',
+        'secondaryMuscleGroups': ['glutes', 'core'],
+        'equipment': 'bodyweight',
+        'instructions': 'Single leg squat, other leg extended forward',
+        'tags': ['compound', 'lower_body', 'legs', 'progression'],
+        'isBodyweight': true,
+        'exerciseType': 'body_weight_reps',
+        'category': 'calisthenics',
+        'difficulty': 'expert',
+        'parentExerciseId': 'squat',
+        'variantType': 'progression',
+      },
+
+      // Bench Press Variations
+      {
+        'id': 'dumbbell_bench_press',
+        'name': 'Dumbbell Bench Press',
+        'primaryMuscleGroup': 'chest',
+        'secondaryMuscleGroups': ['shoulders', 'triceps'],
+        'equipment': 'dumbbell',
+        'instructions': 'Bench press with dumbbells instead of barbell',
+        'tags': ['compound', 'upper_body', 'chest', 'equipment'],
+        'isBodyweight': false,
+        'exerciseType': 'weight_reps',
+        'category': 'strength',
+        'difficulty': 'intermediate',
+        'parentExerciseId': 'bench_press',
+        'variantType': 'equipment',
+      },
+      {
+        'id': 'incline_bench_press',
+        'name': 'Incline Bench Press',
+        'primaryMuscleGroup': 'chest',
+        'secondaryMuscleGroups': ['shoulders', 'triceps'],
+        'equipment': 'barbell',
+        'instructions': 'Bench press on inclined bench, targeting upper chest',
+        'tags': ['compound', 'upper_body', 'chest', 'angle'],
+        'isBodyweight': false,
+        'exerciseType': 'weight_reps',
+        'category': 'strength',
+        'difficulty': 'intermediate',
+        'parentExerciseId': 'bench_press',
+        'variantType': 'angle',
+      },
+      {
+        'id': 'decline_bench_press',
+        'name': 'Decline Bench Press',
+        'primaryMuscleGroup': 'chest',
+        'secondaryMuscleGroups': ['shoulders', 'triceps'],
+        'equipment': 'barbell',
+        'instructions': 'Bench press on declined bench, targeting lower chest',
+        'tags': ['compound', 'upper_body', 'chest', 'angle'],
+        'isBodyweight': false,
+        'exerciseType': 'weight_reps',
+        'category': 'strength',
+        'difficulty': 'intermediate',
+        'parentExerciseId': 'bench_press',
+        'variantType': 'angle',
+      },
+
+      // Deadlift Variations
+      {
+        'id': 'sumo_deadlift',
+        'name': 'Sumo Deadlift',
+        'primaryMuscleGroup': 'back',
+        'secondaryMuscleGroups': ['legs', 'glutes', 'core'],
+        'equipment': 'barbell',
+        'instructions': 'Wide stance deadlift with toes pointed out',
+        'tags': ['compound', 'full_body', 'back', 'equipment'],
+        'isBodyweight': false,
+        'exerciseType': 'weight_reps',
+        'category': 'strength',
+        'difficulty': 'advanced',
+        'parentExerciseId': 'deadlift',
+        'variantType': 'equipment',
+      },
+      {
+        'id': 'trap_bar_deadlift',
+        'name': 'Trap Bar Deadlift',
+        'primaryMuscleGroup': 'back',
+        'secondaryMuscleGroups': ['legs', 'glutes', 'core'],
+        'equipment': 'trap_bar',
+        'instructions': 'Deadlift using trap/hex bar for more upright position',
+        'tags': ['compound', 'full_body', 'back', 'equipment'],
+        'isBodyweight': false,
+        'exerciseType': 'weight_reps',
+        'category': 'strength',
+        'difficulty': 'intermediate',
+        'parentExerciseId': 'deadlift',
+        'variantType': 'equipment',
+      },
+    ];
+
+    for (final variantData in exerciseVariants) {
+      try {
+        final companion = ExercisesCompanion(
+          id: Value(variantData['id']! as String),
+          name: Value(variantData['name']! as String),
+          primaryMuscleGroup:
+              Value(variantData['primaryMuscleGroup']! as String),
+          secondaryMuscleGroups: Value(
+            List<String>.from(
+                variantData['secondaryMuscleGroups'] as List<dynamic>),
+          ),
+          equipment: Value(variantData['equipment']! as String),
+          instructions: Value(variantData['instructions']! as String),
+          tags: Value(
+            List<String>.from(variantData['tags'] as List<dynamic>),
+          ),
+          isBodyweight: Value(variantData['isBodyweight']! as bool),
+          exerciseType: Value(variantData['exerciseType']! as String),
+          category: Value(variantData['category']! as String),
+          difficulty: Value(variantData['difficulty']! as String),
+          parentExerciseId: Value(variantData['parentExerciseId'] as String?),
+          variantType: Value(variantData['variantType'] as String?),
         );
 
         await into(exercises).insertOnConflictUpdate(companion);

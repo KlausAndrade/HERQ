@@ -457,7 +457,8 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
 
     final template = WorkoutTemplate(
       id: widget.templateId ?? const Uuid().v4(),
-      userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
+      userId:
+          UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim().isEmpty
           ? null

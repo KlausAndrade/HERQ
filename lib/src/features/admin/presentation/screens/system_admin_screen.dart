@@ -30,7 +30,7 @@ class _SystemAdminScreenState extends ConsumerState<SystemAdminScreen>
   @override
   Widget build(BuildContext context) {
     final systemHealth = ref.watch(systemHealthProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('System Administration'),
@@ -58,7 +58,7 @@ class _SystemAdminScreenState extends ConsumerState<SystemAdminScreen>
       ),
       body: systemHealth.when(
         data: (data) => TabBarView(
-        controller: _tabController,
+          controller: _tabController,
           children: [
             _MonitoringTab(data: data),
             _ConfigurationTab(data: data),
@@ -92,9 +92,9 @@ class _SystemAdminScreenState extends ConsumerState<SystemAdminScreen>
 
 class _MonitoringTab extends StatelessWidget {
   final Map<String, dynamic> data;
-  
+
   const _MonitoringTab({required this.data});
-  
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -105,11 +105,11 @@ class _MonitoringTab extends StatelessWidget {
           // System Status
           _buildSystemStatus(context),
           const SizedBox(height: 24),
-          
+
           // Performance Metrics
           _buildPerformanceMetrics(context),
           const SizedBox(height: 24),
-          
+
           // Recent Logs
           _buildRecentLogs(context),
         ],
@@ -127,8 +127,8 @@ class _MonitoringTab extends StatelessWidget {
             Text(
               'System Status',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -137,7 +137,9 @@ class _MonitoringTab extends StatelessWidget {
                   child: _StatusCard(
                     title: 'Database',
                     status: data['databaseStatus'] ?? 'Unknown',
-                    color: (data['databaseStatus'] == 'Online') ? Colors.green : Colors.red,
+                    color: (data['databaseStatus'] == 'Online')
+                        ? Colors.green
+                        : Colors.red,
                     uptime: '${data['databaseUptime'] ?? '0'}%',
                   ),
                 ),
@@ -146,7 +148,9 @@ class _MonitoringTab extends StatelessWidget {
                   child: _StatusCard(
                     title: 'Supabase',
                     status: data['supabaseStatus'] ?? 'Unknown',
-                    color: (data['supabaseStatus'] == 'Online') ? Colors.green : Colors.red,
+                    color: (data['supabaseStatus'] == 'Online')
+                        ? Colors.green
+                        : Colors.red,
                     uptime: '${data['supabaseUptime'] ?? '0'}%',
                   ),
                 ),
@@ -155,7 +159,9 @@ class _MonitoringTab extends StatelessWidget {
                   child: _StatusCard(
                     title: 'Storage',
                     status: data['storageStatus'] ?? 'Unknown',
-                    color: (data['storageStatus'] == 'Online') ? Colors.green : Colors.red,
+                    color: (data['storageStatus'] == 'Online')
+                        ? Colors.green
+                        : Colors.red,
                     uptime: '${data['storageUptime'] ?? '0'}%',
                   ),
                 ),
@@ -186,8 +192,8 @@ class _MonitoringTab extends StatelessWidget {
             Text(
               'Performance Metrics',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             LayoutBuilder(
@@ -304,8 +310,8 @@ class _MonitoringTab extends StatelessWidget {
                 Text(
                   'Recent Logs',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 TextButton(
                   onPressed: _viewAllLogs,
@@ -351,9 +357,9 @@ class _MonitoringTab extends StatelessWidget {
 
 class _ConfigurationTab extends StatelessWidget {
   final Map<String, dynamic> data;
-  
+
   const _ConfigurationTab({required this.data});
-  
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -364,11 +370,11 @@ class _ConfigurationTab extends StatelessWidget {
           // App Settings
           _buildAppSettings(context),
           const SizedBox(height: 24),
-          
+
           // Feature Flags
           _buildFeatureFlags(context),
           const SizedBox(height: 24),
-          
+
           // Environment Variables
           _buildEnvironmentVariables(context),
         ],
@@ -386,8 +392,8 @@ class _ConfigurationTab extends StatelessWidget {
             Text(
               'App Settings',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _SettingItem(
@@ -438,8 +444,8 @@ class _ConfigurationTab extends StatelessWidget {
             Text(
               'Feature Flags',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _FeatureFlag(
@@ -490,8 +496,8 @@ class _ConfigurationTab extends StatelessWidget {
             Text(
               'Environment Variables',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _EnvVariable(
@@ -523,9 +529,9 @@ class _ConfigurationTab extends StatelessWidget {
 
 class _MaintenanceTab extends StatelessWidget {
   final Map<String, dynamic> data;
-  
+
   const _MaintenanceTab({required this.data});
-  
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -536,11 +542,11 @@ class _MaintenanceTab extends StatelessWidget {
           // Maintenance Actions
           _buildMaintenanceActions(context),
           const SizedBox(height: 24),
-          
+
           // Database Operations
           _buildDatabaseOperations(context),
           const SizedBox(height: 24),
-          
+
           // System Health
           _buildSystemHealth(context),
         ],
@@ -558,8 +564,8 @@ class _MaintenanceTab extends StatelessWidget {
             Text(
               'Maintenance Actions',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _MaintenanceAction(
@@ -606,8 +612,8 @@ class _MaintenanceTab extends StatelessWidget {
             Text(
               'Database Operations',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _DatabaseOperation(
@@ -646,8 +652,8 @@ class _MaintenanceTab extends StatelessWidget {
             Text(
               'System Health',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _HealthCheck(
@@ -855,8 +861,8 @@ class _StatusCard extends StatelessWidget {
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
               ],
@@ -918,9 +924,9 @@ class _MetricCard extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
             ),
           ],
         ),
@@ -975,8 +981,9 @@ class _LogItem extends StatelessWidget {
           Text(
             timestamp,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-            ),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                ),
           ),
         ],
       ),

@@ -13,7 +13,8 @@ class ExercisePickerDialogFullscreen extends ConsumerStatefulWidget {
       _ExercisePickerDialogFullscreenState();
 }
 
-class _ExercisePickerDialogFullscreenState extends ConsumerState<ExercisePickerDialogFullscreen> {
+class _ExercisePickerDialogFullscreenState
+    extends ConsumerState<ExercisePickerDialogFullscreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
   String? _selectedCategory;
@@ -122,16 +123,16 @@ class _ExercisePickerDialogFullscreenState extends ConsumerState<ExercisePickerD
           Expanded(
             child: exercisesAsync.when(
               data: (exercises) {
-                final filteredExercises =
-                    _selectedCategory == null || _selectedCategory == S.of(context)!.all
-                        ? exercises
-                        : exercises
-                            .where(
-                              (e) =>
-                                  e.category.toLowerCase() ==
-                                  _selectedCategory!.toLowerCase(),
-                            )
-                            .toList();
+                final filteredExercises = _selectedCategory == null ||
+                        _selectedCategory == S.of(context)!.all
+                    ? exercises
+                    : exercises
+                        .where(
+                          (e) =>
+                              e.category.toLowerCase() ==
+                              _selectedCategory!.toLowerCase(),
+                        )
+                        .toList();
 
                 if (filteredExercises.isEmpty) {
                   return Center(
@@ -168,9 +169,8 @@ class _ExercisePickerDialogFullscreenState extends ConsumerState<ExercisePickerD
                       title: Text(
                         exercise.name,
                         style: TextStyle(
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.normal,
                         ),
                       ),
                       subtitle: Text(

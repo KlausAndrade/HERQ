@@ -21,9 +21,18 @@ Future<void> main() async {
   }
 
   // Initialize Supabase (with empty config if .env is missing)
+  final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+
+  if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+    print('⚠️ Supabase configuration missing. App will run in offline mode.');
+  } else {
+    print('✅ Supabase configured: ${supabaseUrl.substring(0, 20)}...');
+  }
+
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL'] ?? '',
-    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
 
   // Initialize notifications (only on native platforms)

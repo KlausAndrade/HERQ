@@ -8,7 +8,8 @@ class DataOperationsScreen extends ConsumerStatefulWidget {
   const DataOperationsScreen({super.key});
 
   @override
-  ConsumerState<DataOperationsScreen> createState() => _DataOperationsScreenState();
+  ConsumerState<DataOperationsScreen> createState() =>
+      _DataOperationsScreenState();
 }
 
 class _DataOperationsScreenState extends ConsumerState<DataOperationsScreen>
@@ -30,7 +31,7 @@ class _DataOperationsScreenState extends ConsumerState<DataOperationsScreen>
   @override
   Widget build(BuildContext context) {
     final systemHealth = ref.watch(systemHealthProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Data Operations'),
@@ -88,9 +89,9 @@ class _DataOperationsScreenState extends ConsumerState<DataOperationsScreen>
 
 class _BackupTab extends StatelessWidget {
   final Map<String, dynamic> data;
-  
+
   const _BackupTab({required this.data});
-  
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -101,11 +102,11 @@ class _BackupTab extends StatelessWidget {
           // Backup Status
           _buildBackupStatus(context),
           const SizedBox(height: 24),
-          
+
           // Backup Actions
           _buildBackupActions(context),
           const SizedBox(height: 24),
-          
+
           // Recent Backups
           _buildRecentBackups(context),
         ],
@@ -123,8 +124,8 @@ class _BackupTab extends StatelessWidget {
             Text(
               'Backup Status',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -182,8 +183,8 @@ class _BackupTab extends StatelessWidget {
             Text(
               'Backup Actions',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _BackupAction(
@@ -230,8 +231,8 @@ class _BackupTab extends StatelessWidget {
             Text(
               'Recent Backups',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _BackupItem(
@@ -341,9 +342,9 @@ class _BackupTab extends StatelessWidget {
 
 class _ExportTab extends StatelessWidget {
   final Map<String, dynamic> data;
-  
+
   const _ExportTab({required this.data});
-  
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -354,7 +355,7 @@ class _ExportTab extends StatelessWidget {
           // Export Options
           _buildExportOptions(context),
           const SizedBox(height: 24),
-          
+
           // Export History
           _buildExportHistory(context),
         ],
@@ -372,8 +373,8 @@ class _ExportTab extends StatelessWidget {
             Text(
               'Export Options',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _ExportOption(
@@ -420,8 +421,8 @@ class _ExportTab extends StatelessWidget {
             Text(
               'Export History',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _ExportItem(
@@ -538,9 +539,9 @@ class _ExportTab extends StatelessWidget {
 
 class _ImportTab extends StatelessWidget {
   final Map<String, dynamic> data;
-  
+
   const _ImportTab({required this.data});
-  
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -551,7 +552,7 @@ class _ImportTab extends StatelessWidget {
           // Import Options
           _buildImportOptions(context),
           const SizedBox(height: 24),
-          
+
           // Import History
           _buildImportHistory(context),
         ],
@@ -569,8 +570,8 @@ class _ImportTab extends StatelessWidget {
             Text(
               'Import Options',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _ImportOption(
@@ -617,8 +618,8 @@ class _ImportTab extends StatelessWidget {
             Text(
               'Import History',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             _ImportItem(
@@ -716,9 +717,9 @@ class _StatusCard extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
             ),
           ],
         ),
@@ -772,7 +773,7 @@ class _BackupItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(status);
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: ListTile(
@@ -780,7 +781,8 @@ class _BackupItem extends StatelessWidget {
           backgroundColor: _getTypeColor(type),
           child: Text(
             type[0],
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
         title: Text(name),
@@ -916,7 +918,7 @@ class _ExportItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(status);
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: ListTile(
@@ -1036,7 +1038,7 @@ class _ImportItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(status);
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: ListTile(
@@ -1190,7 +1192,8 @@ class _RestoreBackupDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Restore from Backup'),
-      content: const Text('Select a backup to restore from. This will replace all current data.'),
+      content: const Text(
+          'Select a backup to restore from. This will replace all current data.'),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),

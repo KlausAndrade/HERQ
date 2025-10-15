@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- Allow HTTPS connections to Supabase -->
+        <domain includeSubdomains="true">supabase.co</domain>
+        <domain includeSubdomains="true">supabase.com</domain>
+        <domain includeSubdomains="true">supabase.in</domain>
+        
+        <!-- Allow HTTPS connections to other required services -->
+        <domain includeSubdomains="true">googleapis.com</domain>
+        <domain includeSubdomains="true">google.com</domain>
+        <domain includeSubdomains="true">apple.com</domain>
+        <domain includeSubdomains="true">facebook.com</domain>
+        <domain includeSubdomains="true">github.com</domain>
+        
+        <!-- Allow HTTPS connections to AI services -->
+        <domain includeSubdomains="true">groq.com</domain>
+        <domain includeSubdomains="true">openai.com</domain>
+    </domain-config>
+    
+    <!-- Allow cleartext traffic for localhost during development -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+</network-security-config>

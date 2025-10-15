@@ -79,7 +79,7 @@ class AppDatabase extends _$AppDatabase {
               await customStatement(
                 'ALTER TABLE personal_records ADD COLUMN user_id TEXT',
               );
-              
+
               // Set default userId for existing data (will be updated by current user)
               await customStatement(
                 "UPDATE workout_sessions SET user_id = 'default_user' WHERE user_id IS NULL",
@@ -97,7 +97,7 @@ class AppDatabase extends _$AppDatabase {
               print('Migration 16 error: $e');
             }
           }
-          
+
           if (to == 13) {
             try {
               await customStatement(

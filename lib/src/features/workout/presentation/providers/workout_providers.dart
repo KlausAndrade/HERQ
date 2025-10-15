@@ -34,7 +34,8 @@ final workoutSessionsProvider =
           await database.into(database.workoutSessions).insertOnConflictUpdate(
                 WorkoutSession(
                   id: session['id'],
-                  userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
+                  userId: UserContextService.instance
+                      .getCurrentUserId(), // ✅ USER ISOLATION
                   templateId: session['template_id'],
                   name: session['name'],
                   notes: session['notes'],
@@ -86,7 +87,8 @@ final workoutSessionByIdProvider =
 
   final currentUserId = UserContextService.instance.getCurrentUserId();
   final results = await (database.select(database.workoutSessions)
-        ..where((tbl) => tbl.id.equals(sessionId) & tbl.userId.equals(currentUserId)))
+        ..where((tbl) =>
+            tbl.id.equals(sessionId) & tbl.userId.equals(currentUserId)))
       .get();
 
   return results.isNotEmpty ? results.first : null;

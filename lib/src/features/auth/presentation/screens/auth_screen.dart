@@ -366,7 +366,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       if (mounted) {
         final errorMessage = AuthErrorHandler.getErrorMessage(e);
         final errorTitle = AuthErrorHandler.getErrorTitle(e);
-        
+
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -400,7 +400,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       if (mounted) {
         final errorMessage = AuthErrorHandler.getErrorMessage(e);
         final errorTitle = AuthErrorHandler.getErrorTitle(e);
-        
+
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -434,7 +434,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       if (mounted) {
         final errorMessage = AuthErrorHandler.getErrorMessage(e);
         final errorTitle = AuthErrorHandler.getErrorTitle(e);
-        
+
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -481,7 +481,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       if (mounted) {
         final errorMessage = AuthErrorHandler.getErrorMessage(e);
         final errorTitle = AuthErrorHandler.getErrorTitle(e);
-        
+
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),

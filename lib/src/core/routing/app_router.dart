@@ -3,7 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/ai/presentation/screens/ai_coaching_screen.dart';
-import '../../features/analytics/presentation/screens/analytics_screen.dart' as user_analytics;
+import '../../features/analytics/presentation/screens/analytics_screen.dart'
+    as user_analytics;
 import '../../features/auth/presentation/screens/auth_screen.dart';
 import '../../features/exercises/presentation/screens/create_exercise_screen.dart';
 import '../../features/exercises/presentation/screens/exercise_detail_screen.dart';

@@ -9,19 +9,32 @@ class ContentModerationScreen extends ConsumerStatefulWidget {
   const ContentModerationScreen({super.key});
 
   @override
-  ConsumerState<ContentModerationScreen> createState() => _ContentModerationScreenState();
+  ConsumerState<ContentModerationScreen> createState() =>
+      _ContentModerationScreenState();
 }
 
-class _ContentModerationScreenState extends ConsumerState<ContentModerationScreen> {
+class _ContentModerationScreenState
+    extends ConsumerState<ContentModerationScreen> {
   final _searchController = TextEditingController();
   String _selectedFilter = 'All';
   String _selectedType = 'All';
   String _sortBy = 'Created Date';
   bool _sortAscending = false;
 
-  final List<String> _filterOptions = ['All', 'Pending', 'Approved', 'Rejected', 'Flagged'];
+  final List<String> _filterOptions = [
+    'All',
+    'Pending',
+    'Approved',
+    'Rejected',
+    'Flagged'
+  ];
   final List<String> _typeOptions = ['All', 'Posts', 'Comments', 'Reports'];
-  final List<String> _sortOptions = ['Created Date', 'Updated Date', 'Author', 'Content'];
+  final List<String> _sortOptions = [
+    'Created Date',
+    'Updated Date',
+    'Author',
+    'Content'
+  ];
 
   @override
   void dispose() {
@@ -91,7 +104,8 @@ class _ContentModerationScreenState extends ConsumerState<ContentModerationScree
                           decoration: const InputDecoration(
                             labelText: 'Status',
                             border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
                           ),
                           items: _filterOptions.map((option) {
                             return DropdownMenuItem(
@@ -115,7 +129,8 @@ class _ContentModerationScreenState extends ConsumerState<ContentModerationScree
                           decoration: const InputDecoration(
                             labelText: 'Type',
                             border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
                           ),
                           items: _typeOptions.map((option) {
                             return DropdownMenuItem(
@@ -147,7 +162,8 @@ class _ContentModerationScreenState extends ConsumerState<ContentModerationScree
                           decoration: const InputDecoration(
                             labelText: 'Sort by',
                             border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
                           ),
                           items: _sortOptions.map((option) {
                             return DropdownMenuItem(
@@ -165,13 +181,17 @@ class _ContentModerationScreenState extends ConsumerState<ContentModerationScree
 
                       // Sort Direction
                       IconButton(
-                        icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                        icon: Icon(_sortAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward),
                         onPressed: () {
                           setState(() {
                             _sortAscending = !_sortAscending;
                           });
                         },
-                        tooltip: _sortAscending ? 'Sort Ascending' : 'Sort Descending',
+                        tooltip: _sortAscending
+                            ? 'Sort Ascending'
+                            : 'Sort Descending',
                       ),
                     ],
                   ),
@@ -275,16 +295,23 @@ class _ContentList extends ConsumerWidget {
     );
   }
 
-  List<Map<String, dynamic>> _filterContent(List<Map<String, dynamic>> content) {
+  List<Map<String, dynamic>> _filterContent(
+      List<Map<String, dynamic>> content) {
     var filtered = content;
 
     // Apply search filter
     if (searchQuery.isNotEmpty) {
       filtered = filtered.where((item) {
         final searchLower = searchQuery.toLowerCase();
-        return (item['content']?.toString().toLowerCase().contains(searchLower) ?? false) ||
-               (item['author']?.toString().toLowerCase().contains(searchLower) ?? false) ||
-               (item['id']?.toString().toLowerCase().contains(searchLower) ?? false);
+        return (item['content']
+                    ?.toString()
+                    .toLowerCase()
+                    .contains(searchLower) ??
+                false) ||
+            (item['author']?.toString().toLowerCase().contains(searchLower) ??
+                false) ||
+            (item['id']?.toString().toLowerCase().contains(searchLower) ??
+                false);
       }).toList();
     }
 
@@ -327,16 +354,19 @@ class _ContentList extends ConsumerWidget {
       int comparison = 0;
       switch (sortBy) {
         case 'Created Date':
-          comparison = (a['createdAt'] as String).compareTo(b['createdAt'] as String);
+          comparison =
+              (a['createdAt'] as String).compareTo(b['createdAt'] as String);
           break;
         case 'Updated Date':
-          comparison = (a['updatedAt'] as String).compareTo(b['updatedAt'] as String);
+          comparison =
+              (a['updatedAt'] as String).compareTo(b['updatedAt'] as String);
           break;
         case 'Author':
           comparison = (a['author'] as String).compareTo(b['author'] as String);
           break;
         case 'Content':
-          comparison = (a['content'] as String).compareTo(b['content'] as String);
+          comparison =
+              (a['content'] as String).compareTo(b['content'] as String);
           break;
       }
       return sortAscending ? comparison : -comparison;
@@ -345,7 +375,8 @@ class _ContentList extends ConsumerWidget {
     return filtered;
   }
 
-  void _approveContent(BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
+  void _approveContent(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
     // TODO: Implement approve content functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Approved ${content['type']} ${content['id']}')),
@@ -353,7 +384,8 @@ class _ContentList extends ConsumerWidget {
     ref.refresh(contentModerationProvider);
   }
 
-  void _rejectContent(BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
+  void _rejectContent(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
     // TODO: Implement reject content functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Rejected ${content['type']} ${content['id']}')),
@@ -361,7 +393,8 @@ class _ContentList extends ConsumerWidget {
     ref.refresh(contentModerationProvider);
   }
 
-  void _flagContent(BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
+  void _flagContent(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
     // TODO: Implement flag content functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Flagged ${content['type']} ${content['id']}')),
@@ -369,7 +402,8 @@ class _ContentList extends ConsumerWidget {
     ref.refresh(contentModerationProvider);
   }
 
-  void _deleteContent(BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
+  void _deleteContent(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
     // TODO: Implement delete content functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Deleted ${content['type']} ${content['id']}')),
@@ -414,7 +448,8 @@ class ContentCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: _getTypeColor(type).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -431,7 +466,8 @@ class ContentCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: _getStatusColor(status).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -449,7 +485,8 @@ class ContentCard extends StatelessWidget {
                 if (isFlagged) ...[
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.red.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -469,8 +506,8 @@ class ContentCard extends StatelessWidget {
                 Text(
                   _formatDate(createdAt),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                        color: Colors.grey[600],
+                      ),
                 ),
               ],
             ),
@@ -484,8 +521,8 @@ class ContentCard extends StatelessWidget {
                 Text(
                   'Author: $author',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ],
             ),

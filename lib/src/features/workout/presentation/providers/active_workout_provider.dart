@@ -1102,7 +1102,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         await db.into(db.workoutSessions).insert(
               WorkoutSessionsCompanion.insert(
                 id: sessionId,
-                userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
+                userId: UserContextService.instance
+                    .getCurrentUserId(), // ✅ USER ISOLATION
                 name: workout.name,
                 startedAt: now.subtract(workout.elapsedTime),
                 completedAt: Value(now),
@@ -1129,7 +1130,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             await db.into(db.setEntries).insert(
                   SetEntriesCompanion.insert(
                     id: const Uuid().v4(),
-                    userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
+                    userId: UserContextService.instance
+                        .getCurrentUserId(), // ✅ USER ISOLATION
                     workoutSessionId: sessionId,
                     exerciseId: exercise.id,
                     setNumber: set.number,

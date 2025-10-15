@@ -8,7 +8,8 @@ class UserManagementScreen extends ConsumerStatefulWidget {
   const UserManagementScreen({super.key});
 
   @override
-  ConsumerState<UserManagementScreen> createState() => _UserManagementScreenState();
+  ConsumerState<UserManagementScreen> createState() =>
+      _UserManagementScreenState();
 }
 
 class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
@@ -18,7 +19,12 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   bool _sortAscending = false;
 
   final List<String> _filterOptions = ['All', 'Active', 'Suspended', 'Banned'];
-  final List<String> _sortOptions = ['Created Date', 'Last Active', 'Name', 'Email'];
+  final List<String> _sortOptions = [
+    'Created Date',
+    'Last Active',
+    'Name',
+    'Email'
+  ];
 
   @override
   void dispose() {
@@ -95,12 +101,14 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                                     decoration: const InputDecoration(
                                       labelText: 'Filter',
                                       border: OutlineInputBorder(),
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                      contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 6),
                                     ),
                                     items: _filterOptions.map((option) {
                                       return DropdownMenuItem(
                                         value: option,
-                                        child: Text(option, overflow: TextOverflow.ellipsis),
+                                        child: Text(option,
+                                            overflow: TextOverflow.ellipsis),
                                       );
                                     }).toList(),
                                     onChanged: (value) {
@@ -117,12 +125,14 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                                     decoration: const InputDecoration(
                                       labelText: 'Sort by',
                                       border: OutlineInputBorder(),
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                      contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 6),
                                     ),
                                     items: _sortOptions.map((option) {
                                       return DropdownMenuItem(
                                         value: option,
-                                        child: Text(option, overflow: TextOverflow.ellipsis),
+                                        child: Text(option,
+                                            overflow: TextOverflow.ellipsis),
                                       );
                                     }).toList(),
                                     onChanged: (value) {
@@ -139,13 +149,17 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 IconButton(
-                                  icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                                  icon: Icon(_sortAscending
+                                      ? Icons.arrow_upward
+                                      : Icons.arrow_downward),
                                   onPressed: () {
                                     setState(() {
                                       _sortAscending = !_sortAscending;
                                     });
                                   },
-                                  tooltip: _sortAscending ? 'Sort Ascending' : 'Sort Descending',
+                                  tooltip: _sortAscending
+                                      ? 'Sort Ascending'
+                                      : 'Sort Descending',
                                 ),
                               ],
                             ),
@@ -161,7 +175,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                                 decoration: const InputDecoration(
                                   labelText: 'Filter',
                                   border: OutlineInputBorder(),
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 8),
                                 ),
                                 items: _filterOptions.map((option) {
                                   return DropdownMenuItem(
@@ -177,14 +192,14 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                               ),
                             ),
                             const SizedBox(width: 8),
-
                             Expanded(
                               child: DropdownButtonFormField<String>(
                                 value: _sortBy,
                                 decoration: const InputDecoration(
                                   labelText: 'Sort by',
                                   border: OutlineInputBorder(),
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 8),
                                 ),
                                 items: _sortOptions.map((option) {
                                   return DropdownMenuItem(
@@ -200,15 +215,18 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                               ),
                             ),
                             const SizedBox(width: 8),
-
                             IconButton(
-                              icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                              icon: Icon(_sortAscending
+                                  ? Icons.arrow_upward
+                                  : Icons.arrow_downward),
                               onPressed: () {
                                 setState(() {
                                   _sortAscending = !_sortAscending;
                                 });
                               },
-                              tooltip: _sortAscending ? 'Sort Ascending' : 'Sort Descending',
+                              tooltip: _sortAscending
+                                  ? 'Sort Ascending'
+                                  : 'Sort Descending',
                             ),
                           ],
                         );
@@ -284,7 +302,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   void _suspendUser(BuildContext context, Map<String, dynamic> user) {
     // TODO: Implement user suspend functionality
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Suspend user ${user['displayName']} coming soon')),
+      SnackBar(
+          content: Text('Suspend user ${user['displayName']} coming soon')),
     );
   }
 
@@ -327,7 +346,6 @@ class _UserList extends ConsumerWidget {
     required this.onDelete,
   });
 
-
   List<Map<String, dynamic>> _filterUsers(List<Map<String, dynamic>> users) {
     var filtered = users;
 
@@ -335,9 +353,18 @@ class _UserList extends ConsumerWidget {
     if (searchQuery.isNotEmpty) {
       final searchLower = searchQuery.toLowerCase();
       filtered = filtered.where((user) {
-        return (user['email']?.toString().toLowerCase().contains(searchLower) ?? false) ||
-               (user['displayName']?.toString().toLowerCase().contains(searchLower) ?? false) ||
-               (user['id']?.toString().toLowerCase().contains(searchLower) ?? false);
+        return (user['email']
+                    ?.toString()
+                    .toLowerCase()
+                    .contains(searchLower) ??
+                false) ||
+            (user['displayName']
+                    ?.toString()
+                    .toLowerCase()
+                    .contains(searchLower) ??
+                false) ||
+            (user['id']?.toString().toLowerCase().contains(searchLower) ??
+                false);
       }).toList();
     }
 
@@ -362,18 +389,24 @@ class _UserList extends ConsumerWidget {
       int comparison = 0;
       switch (sortBy) {
         case 'Created Date':
-          comparison = (a['createdAt'] as String).compareTo(b['createdAt'] as String);
+          comparison =
+              (a['createdAt'] as String).compareTo(b['createdAt'] as String);
           break;
         case 'Last Active':
           final aLastSignIn = a['lastSignInAt'] as String?;
           final bLastSignIn = b['lastSignInAt'] as String?;
-          if (aLastSignIn == null && bLastSignIn == null) comparison = 0;
-          else if (aLastSignIn == null) comparison = -1;
-          else if (bLastSignIn == null) comparison = 1;
-          else comparison = aLastSignIn.compareTo(bLastSignIn);
+          if (aLastSignIn == null && bLastSignIn == null)
+            comparison = 0;
+          else if (aLastSignIn == null)
+            comparison = -1;
+          else if (bLastSignIn == null)
+            comparison = 1;
+          else
+            comparison = aLastSignIn.compareTo(bLastSignIn);
           break;
         case 'Name':
-          comparison = (a['displayName'] as String).compareTo(b['displayName'] as String);
+          comparison = (a['displayName'] as String)
+              .compareTo(b['displayName'] as String);
           break;
         case 'Email':
           comparison = (a['email'] as String).compareTo(b['email'] as String);
@@ -454,13 +487,16 @@ class UserCard extends StatelessWidget {
           children: [
             Text(user['email']),
             if (isSuspended)
-              const Text('Status: Suspended', style: TextStyle(color: Colors.orange)),
+              const Text('Status: Suspended',
+                  style: TextStyle(color: Colors.orange)),
             if (isBanned)
-              Text('Status: Banned until ${DateTime.parse(user['bannedUntil']).toLocal().toShortDate()}',
+              Text(
+                  'Status: Banned until ${DateTime.parse(user['bannedUntil']).toLocal().toShortDate()}',
                   style: const TextStyle(color: Colors.red)),
             Text('Workouts: ${user['workoutCount'] ?? 0}'),
             if (user['lastWorkoutAt'] != null)
-              Text('Last Workout: ${DateTime.parse(user['lastWorkoutAt']).toLocal().toShortDate()}'),
+              Text(
+                  'Last Workout: ${DateTime.parse(user['lastWorkoutAt']).toLocal().toShortDate()}'),
           ],
         ),
         trailing: PopupMenuButton<String>(
@@ -533,7 +569,9 @@ class _AddUserDialogState extends ConsumerState<_AddUserDialog> {
       if (response.user != null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('User ${_displayNameController.text} added successfully!')),
+            SnackBar(
+                content: Text(
+                    'User ${_displayNameController.text} added successfully!')),
           );
           Navigator.of(context).pop();
           ref.refresh(userManagementProvider); // Refresh user list

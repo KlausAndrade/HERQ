@@ -133,16 +133,16 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
             Expanded(
               child: exercisesAsync.when(
                 data: (exercises) {
-                  final filteredExercises =
-                      _selectedCategory == null || _selectedCategory == S.of(context)!.all
-                          ? exercises
-                          : exercises
-                              .where(
-                                (e) =>
-                                    e.category.toLowerCase() ==
-                                    _selectedCategory!.toLowerCase(),
-                              )
-                              .toList();
+                  final filteredExercises = _selectedCategory == null ||
+                          _selectedCategory == S.of(context)!.all
+                      ? exercises
+                      : exercises
+                          .where(
+                            (e) =>
+                                e.category.toLowerCase() ==
+                                _selectedCategory!.toLowerCase(),
+                          )
+                          .toList();
 
                   if (filteredExercises.isEmpty) {
                     return Center(
@@ -200,7 +200,8 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stack) => Center(
-                  child: Text('${S.of(context)!.errorLoadingExercises}: $error'),
+                  child:
+                      Text('${S.of(context)!.errorLoadingExercises}: $error'),
                 ),
               ),
             ),

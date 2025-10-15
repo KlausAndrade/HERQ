@@ -359,7 +359,8 @@ class WorkoutRecommendationsTab extends HookConsumerWidget {
       final templateId = 'ai_rec_${DateTime.now().millisecondsSinceEpoch}';
       final template = WorkoutTemplate(
         id: templateId,
-        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
+        userId:
+            UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: recommendation.name,
         description: recommendation.description,
         category: 'AI Recommended',
