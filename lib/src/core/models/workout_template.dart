@@ -3,6 +3,7 @@ import '../converters/json_converters.dart';
 
 class WorkoutTemplates extends Table {
   TextColumn get id => text()();
+  TextColumn get userId => text()(); // ✅ USER ISOLATION: Link to current user
   TextColumn get name => text()();
   TextColumn get description => text().nullable()();
   TextColumn get category => text().withDefault(const Constant('Custom'))();

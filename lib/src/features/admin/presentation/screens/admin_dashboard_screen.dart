@@ -43,9 +43,7 @@ class AdminDashboardScreen extends ConsumerWidget {
               _buildRealQuickStats(context, data),
             const SizedBox(height: 24),
             
-            // Phase 1: Critical Features
-            _buildSectionHeader(context, 'Phase 1: Critical Features', Colors.red),
-            const SizedBox(height: 12),
+            // Admin Features
             _buildFeatureGrid(context, [
               _FeatureCard(
                 title: 'User Management',
@@ -67,50 +65,6 @@ class AdminDashboardScreen extends ConsumerWidget {
                 icon: Icons.analytics,
                 color: Colors.green,
                 onTap: () => context.push('/admin/analytics'),
-              ),
-            ]),
-            
-            const SizedBox(height: 24),
-            
-            // Phase 2: Important Features
-            _buildSectionHeader(context, 'Phase 2: Important Features', Colors.orange),
-            const SizedBox(height: 12),
-            _buildFeatureGrid(context, [
-              _FeatureCard(
-                title: 'Exercise Library',
-                subtitle: 'Manage exercise database',
-                icon: Icons.fitness_center,
-                color: Colors.purple,
-                onTap: () => context.push('/admin/exercises'),
-              ),
-              _FeatureCard(
-                title: 'System Monitoring',
-                subtitle: 'Platform health and performance',
-                icon: Icons.monitor,
-                color: Colors.teal,
-                onTap: () => context.push('/admin/system'),
-              ),
-              _FeatureCard(
-                title: 'Communication',
-                subtitle: 'User announcements and messaging',
-                icon: Icons.message,
-                color: Colors.indigo,
-                onTap: () => context.push('/admin/communication'),
-              ),
-            ]),
-            
-            const SizedBox(height: 24),
-            
-            // Phase 3: Advanced Features
-            _buildSectionHeader(context, 'Phase 3: Advanced Features', Colors.green),
-            const SizedBox(height: 12),
-            _buildFeatureGrid(context, [
-              _FeatureCard(
-                title: 'Safety & Security',
-                subtitle: 'Content safety and security monitoring',
-                icon: Icons.security,
-                color: Colors.red,
-                onTap: () => context.push('/admin/safety'),
               ),
               _FeatureCard(
                 title: 'Data Operations',
@@ -503,53 +457,19 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title, Color color) {
-    return Row(
-      children: [
-        Container(
-          width: 4,
-          height: 24,
-          color: color,
-        ),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildFeatureGrid(BuildContext context, List<_FeatureCard> features) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        int crossAxisCount = 2;
-        double childAspectRatio = 1.2;
-        
-        if (constraints.maxWidth < 400) {
-          crossAxisCount = 1;
-          childAspectRatio = 1.5;
-        } else if (constraints.maxWidth > 800) {
-          crossAxisCount = 3;
-          childAspectRatio = 1.1;
-        }
-        
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            childAspectRatio: childAspectRatio,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-          ),
-          itemCount: features.length,
-          itemBuilder: (context, index) => features[index],
-        );
-      },
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1.0, // Square cards
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: features.length,
+      itemBuilder: (context, index) => features[index],
     );
   }
 

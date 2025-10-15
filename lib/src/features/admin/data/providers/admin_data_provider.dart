@@ -387,63 +387,14 @@ final contentModerationProvider = FutureProvider<Map<String, dynamic>>((ref) asy
   print('🔍 Content Moderation Debug:');
   
   try {
-    // For now, return mock data since we don't have social features implemented yet
-    // This would be replaced with real data when social features are added
-    final mockPosts = [
-      {
-        'id': 'post_1',
-        'type': 'post',
-        'content': 'Great workout today! Feeling stronger every day.',
-        'author': 'John Doe',
-        'createdAt': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
-        'updatedAt': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
-        'status': 'pending',
-        'flagged': false,
-      },
-      {
-        'id': 'post_2',
-        'type': 'post',
-        'content': 'Need advice on proper squat form. Any tips?',
-        'author': 'Jane Smith',
-        'createdAt': DateTime.now().subtract(const Duration(hours: 5)).toIso8601String(),
-        'updatedAt': DateTime.now().subtract(const Duration(hours: 5)).toIso8601String(),
-        'status': 'approved',
-        'flagged': false,
-      },
-    ];
-
-    final mockComments = [
-      {
-        'id': 'comment_1',
-        'type': 'comment',
-        'content': 'Keep your back straight and go deep!',
-        'author': 'Mike Johnson',
-        'createdAt': DateTime.now().subtract(const Duration(hours: 1)).toIso8601String(),
-        'updatedAt': DateTime.now().subtract(const Duration(hours: 1)).toIso8601String(),
-        'status': 'pending',
-        'flagged': false,
-      },
-    ];
-
-    final mockReports = [
-      {
-        'id': 'report_1',
-        'type': 'report',
-        'content': 'Inappropriate content reported by user',
-        'author': 'System',
-        'createdAt': DateTime.now().subtract(const Duration(minutes: 30)).toIso8601String(),
-        'updatedAt': DateTime.now().subtract(const Duration(minutes: 30)).toIso8601String(),
-        'status': 'pending',
-        'flagged': true,
-      },
-    ];
-
-    print('  Found ${mockPosts.length} posts, ${mockComments.length} comments, ${mockReports.length} reports');
+    // Since we don't have social features implemented yet, return empty data
+    // This will show "No content found" message instead of fake data
+    print('  No social features implemented yet - returning empty data');
     
     return {
-      'posts': mockPosts,
-      'comments': mockComments,
-      'reports': mockReports,
+      'posts': [],
+      'comments': [],
+      'reports': [],
     };
   } catch (e) {
     print('  Error fetching content: $e');

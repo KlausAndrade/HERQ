@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:drift/drift.dart';
 
 import '../../../../core/database/database.dart';
+import '../../../../core/services/user_context_service.dart';
 import '../../domain/models/analytics_models.dart';
 
 /// Service for calculating advanced analytics and PR predictions
@@ -217,12 +218,15 @@ class AnalyticsService {
         FROM set_entries se
         JOIN workout_sessions ws ON se.workout_session_id = ws.id
         WHERE se.exercise_id = ? AND ws.completed_at >= ? AND se.completed_at IS NOT NULL
+        AND se.user_id = ? AND ws.user_id = ?
         ORDER BY se.weight DESC, se.reps DESC
         LIMIT 10
         ''',
         variables: [
           Variable.withString(exercise.id),
           Variable.withDateTime(thirtyDaysAgo),
+          Variable.withString(UserContextService.instance.getCurrentUserId()),
+          Variable.withString(UserContextService.instance.getCurrentUserId()),
         ],
         readsFrom: {database.setEntries, database.workoutSessions},
       ).get();
@@ -487,11 +491,14 @@ class AnalyticsService {
         JOIN workout_sessions ws ON se.workout_session_id = ws.id
         JOIN exercises e ON se.exercise_id = e.id
         WHERE ws.completed_at >= ? AND ws.completed_at < ? AND se.completed_at IS NOT NULL
+        AND se.user_id = ? AND ws.user_id = ?
         GROUP BY e.primary_muscle_group
         ''',
         variables: [
           Variable.withDateTime(weekStart),
           Variable.withDateTime(weekEnd),
+          Variable.withString(UserContextService.instance.getCurrentUserId()),
+          Variable.withString(UserContextService.instance.getCurrentUserId()),
         ],
         readsFrom: {
           database.setEntries,
@@ -545,10 +552,15 @@ class AnalyticsService {
         SELECT se.*, ws.completed_at
         FROM set_entries se
         JOIN workout_sessions ws ON se.workout_session_id = ws.id
-        WHERE se.exercise_id = ? AND se.completed_at IS NOT NULL
+        WHERE se.exercise_id = ? AND se.completed_at IS NOT NULL 
+        AND se.user_id = ? AND ws.user_id = ?
         ORDER BY ws.completed_at ASC
         ''',
-        variables: [Variable.withString(exercise.id)],
+        variables: [
+          Variable.withString(exercise.id),
+          Variable.withString(UserContextService.instance.getCurrentUserId()),
+          Variable.withString(UserContextService.instance.getCurrentUserId()),
+        ],
         readsFrom: {database.setEntries, database.workoutSessions},
       ).get();
 
@@ -754,9 +766,14 @@ class AnalyticsService {
       JOIN workout_sessions ws ON se.workout_session_id = ws.id
       JOIN exercises e ON se.exercise_id = e.id
       WHERE ws.completed_at >= ? AND se.completed_at IS NOT NULL
+      AND se.user_id = ? AND ws.user_id = ?
       GROUP BY e.primary_muscle_group
       ''',
-      variables: [Variable.withDateTime(thirtyDaysAgo)],
+      variables: [
+        Variable.withDateTime(thirtyDaysAgo),
+        Variable.withString(UserContextService.instance.getCurrentUserId()),
+        Variable.withString(UserContextService.instance.getCurrentUserId()),
+      ],
       readsFrom: {
         database.setEntries,
         database.workoutSessions,

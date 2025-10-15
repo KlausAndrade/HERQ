@@ -1,6 +1,6 @@
-# 📚 GymAI Documentation
+# 📚 HERQ Documentation
 
-Welcome to the GymAI documentation! This guide will help you understand, use, and contribute to GymAI.
+Welcome to the HERQ documentation! This guide will help you understand, use, and contribute to HERQ.
 
 ## 📖 Table of Contents
 
@@ -32,6 +32,17 @@ Welcome to the GymAI documentation! This guide will help you understand, use, an
 - **[Supabase Setup](api/supabase-setup.md)** - Backend configuration
 - **[Groq AI Setup](api/groq-ai-setup.md)** - AI coaching integration
 
+### Database & Migrations
+- **[SQL Files](sql/README.md)** - All database migration and setup files
+- **[User Isolation Setup](guides/USER_ISOLATION_SETUP_GUIDE.md)** - Multi-user data isolation
+- **[User Isolation Testing](guides/USER_ISOLATION_TESTING_GUIDE.md)** - Testing procedures
+
+### Setup & Configuration
+- **[Multi-Language Setup](guides/MULTI_LANGUAGE_IMPLEMENTATION_SUMMARY.md)** - Internationalization
+- **[Translation Testing](guides/TRANSLATION_TESTING_GUIDE.md)** - Translation testing
+- **[Exercise Variant System](guides/EXERCISE_VARIANT_SYSTEM.md)** - Exercise management
+- **[Email Protection](guides/EMAIL_PROTECTION_GUIDE.md)** - Privacy and security
+
 ## 🚀 Quick Links
 
 - [Main README](../README.md) - Project overview
@@ -41,13 +52,16 @@ Welcome to the GymAI documentation! This guide will help you understand, use, an
 ## 📦 Project Structure
 
 ```
-GymAI/
+HERQ/
 ├── lib/src/
 │   ├── core/              # Shared functionality
 │   ├── features/          # Feature modules
 │   └── generated/         # Generated code
 ├── test/                  # Tests
 ├── docs/                  # This documentation
+│   ├── sql/              # SQL migration files
+│   ├── guides/           # Setup and usage guides
+│   └── archive/          # Archived documentation
 └── README.md             # Project overview
 ```
 

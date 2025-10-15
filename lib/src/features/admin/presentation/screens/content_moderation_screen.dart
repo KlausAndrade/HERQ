@@ -78,11 +78,14 @@ class _ContentModerationScreenState extends ConsumerState<ContentModerationScree
                   ),
                   const SizedBox(height: 12),
 
-                  // Filter Controls
-                  Row(
+                  // Filter Controls - Use Wrap to prevent overflow
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
                     children: [
                       // Status Filter
-                      Expanded(
+                      SizedBox(
+                        width: 150,
                         child: DropdownButtonFormField<String>(
                           value: _selectedFilter,
                           decoration: const InputDecoration(
@@ -103,10 +106,10 @@ class _ContentModerationScreenState extends ConsumerState<ContentModerationScree
                           },
                         ),
                       ),
-                      const SizedBox(width: 12),
 
                       // Type Filter
-                      Expanded(
+                      SizedBox(
+                        width: 150,
                         child: DropdownButtonFormField<String>(
                           value: _selectedType,
                           decoration: const InputDecoration(
@@ -131,11 +134,14 @@ class _ContentModerationScreenState extends ConsumerState<ContentModerationScree
                   ),
                   const SizedBox(height: 12),
 
-                  // Sort Controls
-                  Row(
+                  // Sort Controls - Use Wrap to prevent overflow
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
                     children: [
                       // Sort Dropdown
-                      Expanded(
+                      SizedBox(
+                        width: 150,
                         child: DropdownButtonFormField<String>(
                           value: _sortBy,
                           decoration: const InputDecoration(
@@ -156,7 +162,6 @@ class _ContentModerationScreenState extends ConsumerState<ContentModerationScree
                           },
                         ),
                       ),
-                      const SizedBox(width: 12),
 
                       // Sort Direction
                       IconButton(
@@ -504,9 +509,11 @@ class ContentCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Actions
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            // Actions - Use Wrap to prevent overflow
+            Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 _ActionButton(
                   icon: Icons.check,

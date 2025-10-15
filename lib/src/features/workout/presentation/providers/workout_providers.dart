@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/services/user_context_service.dart';
 
 // Provider for all workout sessions (with cloud sync)
 final workoutSessionsProvider =
@@ -33,6 +34,7 @@ final workoutSessionsProvider =
           await database.into(database.workoutSessions).insertOnConflictUpdate(
                 WorkoutSession(
                   id: session['id'],
+                  userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
                   templateId: session['template_id'],
                   name: session['name'],
                   notes: session['notes'],
@@ -64,8 +66,10 @@ final workoutSessionsProvider =
     print('⚠️ Cloud sync failed, using local data: $e');
   }
 
-  // Return merged local + cloud data
+  // Return merged local + cloud data - FILTER BY CURRENT USER
+  final currentUserId = UserContextService.instance.getCurrentUserId();
   final sessions = await (database.select(database.workoutSessions)
+        ..where((tbl) => tbl.userId.equals(currentUserId))
         ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)]))
       .get();
 
@@ -80,8 +84,9 @@ final workoutSessionByIdProvider =
     return null;
   }
 
+  final currentUserId = UserContextService.instance.getCurrentUserId();
   final results = await (database.select(database.workoutSessions)
-        ..where((tbl) => tbl.id.equals(sessionId)))
+        ..where((tbl) => tbl.id.equals(sessionId) & tbl.userId.equals(currentUserId)))
       .get();
 
   return results.isNotEmpty ? results.first : null;

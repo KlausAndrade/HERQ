@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 class WorkoutSessions extends Table {
   TextColumn get id => text()();
+  TextColumn get userId => text()(); // ✅ USER ISOLATION: Link to current user
   TextColumn get templateId => text().nullable()();
   TextColumn get name => text()();
   TextColumn get notes => text().nullable()();
