@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/utils/auth_error_handler.dart';
 
@@ -58,6 +59,28 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _downloadApk() async {
+    try {
+      final uri = Uri.parse('/herq-release.apk');
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        // Fallback: try to trigger download directly
+        final downloadUrl = Uri.parse('${Uri.base.origin}/herq-release.apk');
+        await launchUrl(downloadUrl, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to download APK: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -141,6 +164,23 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
                         _isSignUp
                             ? 'Already have an account? Sign In'
                             : 'Don\'t have an account? Sign Up',
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Divider(),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Prefer the mobile app?',
+                      style: Theme.of(context).textTheme.titleSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _downloadApk,
+                      icon: const Icon(Icons.download),
+                      label: const Text('Download Android APK'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ],
