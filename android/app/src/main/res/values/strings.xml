@@ -4,7 +4,7 @@
     
     <!-- Facebook Configuration -->
     <!-- These will be loaded from .env at build time -->
-    <string name="facebook_app_id">your_facebook_app_id_here</string>
-    <string name="facebook_client_token">your_facebook_client_token_here</string>
-    <string name="fb_login_protocol_scheme">fbyour_facebook_app_id_here</string>
+    <string name="facebook_app_id">763767083324283</string>
+    <string name="facebook_client_token">35ff7e58ab93ccacbdb17a5da2e6d95f</string>
+    <string name="fb_login_protocol_scheme">fb763767083324283</string>
 </resources>

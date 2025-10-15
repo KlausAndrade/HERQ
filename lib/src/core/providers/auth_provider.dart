@@ -70,24 +70,37 @@ class AuthService {
   // Sign in with Facebook
   Future<bool> signInWithFacebook() async {
     try {
+      print('🔍 Starting Facebook login...');
+      
       // Use native Facebook SDK for better user experience
       final LoginResult result = await FacebookAuth.instance.login();
+      
+      print('🔍 Facebook login result: ${result.status}');
+      print('🔍 Facebook login message: ${result.message}');
 
       if (result.status == LoginStatus.success) {
+        print('✅ Facebook login successful');
+        
         // Get Facebook access token
         final AccessToken accessToken = result.accessToken!;
+        print('🔍 Facebook access token received');
 
         // Sign in to Supabase with Facebook token
+        print('🔍 Signing in to Supabase with Facebook token...');
         final AuthResponse response = await _client.auth.signInWithIdToken(
           provider: OAuthProvider.facebook,
           idToken: accessToken.token,
         );
 
+        print('🔍 Supabase response: ${response.session != null ? "Success" : "Failed"}');
         return response.session != null;
+      } else {
+        print('❌ Facebook login failed: ${result.message}');
       }
 
       return false;
     } catch (e) {
+      print('❌ Facebook login error: $e');
       throw AuthErrorHandler.getErrorMessage(e);
     }
   }

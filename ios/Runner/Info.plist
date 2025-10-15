@@ -58,14 +58,14 @@
 			<string>Facebook</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fbyour_facebook_app_id_here</string>
+				<string>fb763767083324283</string>
 			</array>
 		</dict>
 	</array>
 	<key>FacebookAppID</key>
-	<string>your_facebook_app_id_here</string>
+	<string>763767083324283</string>
 	<key>FacebookClientToken</key>
-	<string>your_facebook_client_token_here</string>
+	<string>35ff7e58ab93ccacbdb17a5da2e6d95f</string>
 	<key>FacebookDisplayName</key>
 	<string>HERQ</string>
 </dict>
