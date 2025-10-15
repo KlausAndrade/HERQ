@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../data/providers/admin_data_provider.dart';
+
 class UserManagementScreen extends ConsumerStatefulWidget {
   const UserManagementScreen({super.key});
 
@@ -26,6 +28,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final usersData = ref.watch(userManagementProvider);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Management'),
@@ -39,22 +43,23 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _refreshUsers,
+            onPressed: () => ref.refresh(userManagementProvider),
             tooltip: 'Refresh',
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Search and Filter Bar
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: Theme.of(context).colorScheme.surface,
-            child: Column(
-              children: [
-                // Search Bar
-                TextField(
-                  controller: _searchController,
+      body: usersData.when(
+        data: (users) => Column(
+          children: [
+            // Search and Filter Bar
+            Container(
+              padding: const EdgeInsets.all(16),
+              color: Theme.of(context).colorScheme.surface,
+              child: Column(
+                children: [
+                  // Search Bar
+                  TextField(
+                    controller: _searchController,
                   decoration: InputDecoration(
                     hintText: 'Search users by name, email, or ID...',
                     prefixIcon: const Icon(Icons.search),
@@ -145,6 +150,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
           // User List
           Expanded(
             child: _UserList(
+              users: users,
               searchQuery: _searchController.text,
               filter: _selectedFilter,
               sortBy: _sortBy,
@@ -152,6 +158,23 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
             ),
           ),
         ],
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Error loading users: $error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.refresh(userManagementProvider),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addUser,
@@ -159,7 +182,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         tooltip: 'Add User',
       ),
     );
-  }
+}
 
   void _exportUsers() {
     // TODO: Implement user export functionality
@@ -181,12 +204,14 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 }
 
 class _UserList extends ConsumerWidget {
+  final List<Map<String, dynamic>> users;
   final String searchQuery;
   final String filter;
   final String sortBy;
   final bool sortAscending;
 
   const _UserList({
+    required this.users,
     required this.searchQuery,
     required this.filter,
     required this.sortBy,
@@ -195,33 +220,7 @@ class _UserList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: _fetchUsers(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error, size: 64, color: Colors.red),
-                const SizedBox(height: 16),
-                Text('Error loading users: ${snapshot.error}'),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => _fetchUsers(),
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          );
-        }
-
-        final users = snapshot.data ?? [];
-        final filteredUsers = _filterUsers(users);
+    final filteredUsers = _filterUsers(users);
 
         if (filteredUsers.isEmpty) {
           return Center(
@@ -255,8 +254,6 @@ class _UserList extends ConsumerWidget {
             );
           },
         );
-      },
-    );
   }
 
   Future<List<Map<String, dynamic>>> _fetchUsers() async {
@@ -306,7 +303,7 @@ class _UserList extends ConsumerWidget {
       filtered = filtered.where((user) {
         final searchLower = searchQuery.toLowerCase();
         return (user['email']?.toString().toLowerCase().contains(searchLower) ?? false) ||
-               (user['display_name']?.toString().toLowerCase().contains(searchLower) ?? false) ||
+               (user['displayName']?.toString().toLowerCase().contains(searchLower) ?? false) ||
                (user['id']?.toString().toLowerCase().contains(searchLower) ?? false);
       }).toList();
     }
@@ -316,13 +313,11 @@ class _UserList extends ConsumerWidget {
       filtered = filtered.where((user) {
         switch (filter) {
           case 'Active':
-            return user['banned_until'] == null;
+            return user['bannedUntil'] == null;
           case 'Suspended':
-            return user['banned_until'] != null && 
-                   DateTime.parse(user['banned_until']).isAfter(DateTime.now());
+            return user['status'] == 'suspended';
           case 'Banned':
-            return user['banned_until'] != null && 
-                   DateTime.parse(user['banned_until']).isBefore(DateTime.now());
+            return user['bannedUntil'] != null;
           default:
             return true;
         }

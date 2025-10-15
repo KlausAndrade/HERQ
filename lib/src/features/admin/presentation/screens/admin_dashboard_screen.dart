@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/providers/admin_data_provider.dart';
+
 // Admin screens will be imported when needed
 
 class AdminDashboardScreen extends ConsumerWidget {
@@ -9,25 +11,36 @@ class AdminDashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final dashboardData = ref.watch(adminDashboardProvider);
+    
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/settings'),
+        ),
         title: const Text('Admin Dashboard'),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.refresh(adminDashboardProvider),
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => context.push('/admin/settings'),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Quick Stats Cards
-            _buildQuickStats(context),
+      body: dashboardData.when(
+        data: (data) => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Real Quick Stats
+              _buildRealQuickStats(context, data),
             const SizedBox(height: 24),
             
             // Phase 1: Critical Features
@@ -117,12 +130,270 @@ class AdminDashboardScreen extends ConsumerWidget {
             
             const SizedBox(height: 24),
             
-            // Recent Activity
-            _buildRecentActivity(context),
+            // Real Recent Activity
+            _buildRealRecentActivity(context, data),
+          ],
+        ),
+      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text('Error loading admin data: $error'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => ref.refresh(adminDashboardProvider),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+  Widget _buildRealQuickStats(BuildContext context, Map<String, dynamic> data) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 400) {
+          // Very small screens: Single column
+          return Column(
+            children: [
+              _StatCard(
+                title: 'Total Users',
+                value: '${data['totalUsers'] ?? 0}',
+                change: '+${data['activeUsers'] ?? 0} active',
+                icon: Icons.people,
+                color: Colors.blue,
+              ),
+              const SizedBox(height: 4),
+              _StatCard(
+                title: 'Total Workouts',
+                value: '${data['totalWorkouts'] ?? 0}',
+                change: '+${data['recentWorkouts'] ?? 0} recent',
+                icon: Icons.fitness_center,
+                color: Colors.green,
+              ),
+              const SizedBox(height: 4),
+              _StatCard(
+                title: 'Templates',
+                value: '${data['totalTemplates'] ?? 0}',
+                change: '${data['totalExercises'] ?? 0} exercises',
+                icon: Icons.list_alt,
+                color: Colors.orange,
+              ),
+              const SizedBox(height: 4),
+              _StatCard(
+                title: 'Last Updated',
+                value: _formatLastUpdated(data['lastUpdated']),
+                change: 'Live data',
+                icon: Icons.update,
+                color: Colors.purple,
+              ),
+            ],
+          );
+        } else if (constraints.maxWidth < 600) {
+          // Mobile: 2x2 grid
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: _StatCard(
+                      title: 'Total Users',
+                      value: '${data['totalUsers'] ?? 0}',
+                      change: '+${data['activeUsers'] ?? 0} active',
+                      icon: Icons.people,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: _StatCard(
+                      title: 'Total Workouts',
+                      value: '${data['totalWorkouts'] ?? 0}',
+                      change: '+${data['recentWorkouts'] ?? 0} recent',
+                      icon: Icons.fitness_center,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Expanded(
+                    child: _StatCard(
+                      title: 'Templates',
+                      value: '${data['totalTemplates'] ?? 0}',
+                      change: '${data['totalExercises'] ?? 0} exercises',
+                      icon: Icons.list_alt,
+                      color: Colors.orange,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: _StatCard(
+                      title: 'Last Updated',
+                      value: _formatLastUpdated(data['lastUpdated']),
+                      change: 'Live data',
+                      icon: Icons.update,
+                      color: Colors.purple,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        } else {
+          // Desktop: 4 columns
+          return Row(
+            children: [
+              Expanded(
+                child: _StatCard(
+                  title: 'Total Users',
+                  value: '${data['totalUsers'] ?? 0}',
+                  change: '+${data['activeUsers'] ?? 0} active',
+                  icon: Icons.people,
+                  color: Colors.blue,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StatCard(
+                  title: 'Total Workouts',
+                  value: '${data['totalWorkouts'] ?? 0}',
+                  change: '+${data['recentWorkouts'] ?? 0} recent',
+                  icon: Icons.fitness_center,
+                  color: Colors.green,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StatCard(
+                  title: 'Templates',
+                  value: '${data['totalTemplates'] ?? 0}',
+                  change: '${data['totalExercises'] ?? 0} exercises',
+                  icon: Icons.list_alt,
+                  color: Colors.orange,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StatCard(
+                  title: 'Last Updated',
+                  value: _formatLastUpdated(data['lastUpdated']),
+                  change: 'Live data',
+                  icon: Icons.update,
+                  color: Colors.purple,
+                ),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildRealRecentActivity(BuildContext context, Map<String, dynamic> data) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.timeline, color: Colors.blue),
+                const SizedBox(width: 8),
+                Text(
+                  'Recent Activity',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildActivityItem(
+              context,
+              'Recent Workouts',
+              '${data['recentWorkouts'] ?? 0} workouts completed in the last 7 days',
+              Icons.fitness_center,
+              Colors.green,
+            ),
+            const SizedBox(height: 8),
+            _buildActivityItem(
+              context,
+              'Active Users',
+              '${data['activeUsers'] ?? 0} users have been active recently',
+              Icons.people,
+              Colors.blue,
+            ),
+            const SizedBox(height: 8),
+            _buildActivityItem(
+              context,
+              'Database Status',
+              'All systems operational - ${data['totalUsers'] ?? 0} users, ${data['totalWorkouts'] ?? 0} workouts',
+              Icons.check_circle,
+              Colors.green,
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildActivityItem(BuildContext context, String title, String subtitle, IconData icon, Color color) {
+    return Row(
+      children: [
+        Icon(icon, color: color, size: 20),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatLastUpdated(String? lastUpdated) {
+    if (lastUpdated == null) return 'Never';
+    try {
+      final date = DateTime.parse(lastUpdated);
+      final now = DateTime.now();
+      final difference = now.difference(date);
+      
+      if (difference.inMinutes < 1) {
+        return 'Just now';
+      } else if (difference.inMinutes < 60) {
+        return '${difference.inMinutes}m ago';
+      } else if (difference.inHours < 24) {
+        return '${difference.inHours}h ago';
+      } else {
+        return '${difference.inDays}d ago';
+      }
+    } catch (e) {
+      return 'Unknown';
+    }
   }
 
   Widget _buildQuickStats(BuildContext context) {
