@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/services/user_context_service.dart';
 
 // Provider for all workout templates grouped by category (with cloud sync)
 final workoutTemplatesProvider =
@@ -36,6 +37,7 @@ final workoutTemplatesProvider =
           await database.into(database.workoutTemplates).insertOnConflictUpdate(
                 WorkoutTemplate(
                   id: template['id'],
+                  userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
                   name: template['name'],
                   description: template['description'],
                   category: template['folder_id'] ?? 'Custom',
@@ -260,6 +262,7 @@ class TemplateActions {
 
       final duplicate = WorkoutTemplate(
         id: const Uuid().v4(),
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: newName,
         description: original.description,
         category: original.category,
@@ -461,6 +464,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       // Push Pull Legs (3-day, 6-day)
       WorkoutTemplate(
         id: 'ppl_push',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Push Day',
         description: 'Chest, shoulders, and triceps focused workout',
         category: 'Push Pull Legs',
@@ -481,6 +485,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'ppl_pull',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Pull Day',
         description: 'Back and biceps focused workout',
         category: 'Push Pull Legs',
@@ -502,6 +507,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'ppl_legs',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Leg Day',
         description: 'Lower body and core focused workout',
         category: 'Push Pull Legs',
@@ -525,6 +531,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       // Full Body Programs (2-day, 3-day)
       WorkoutTemplate(
         id: 'full_body_a',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Full Body A',
         description: 'Complete full body workout with compound movements',
         category: 'Full Body',
@@ -545,6 +552,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'full_body_b',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Full Body B',
         description:
             'Alternative full body workout with different exercise selection',
@@ -566,6 +574,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'full_body_c',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Full Body C',
         description: 'Third variation for full body routine',
         category: 'Full Body',
@@ -588,6 +597,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       // Upper Lower Split (4-day)
       WorkoutTemplate(
         id: 'upper_lower_upper',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Upper Body',
         description: 'Upper body focused workout for upper/lower split',
         category: 'Upper Lower',
@@ -609,6 +619,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'upper_lower_lower',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Lower Body',
         description: 'Lower body focused workout for upper/lower split',
         category: 'Upper Lower',
@@ -633,6 +644,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       // PHUL (Power Hypertrophy Upper Lower)
       WorkoutTemplate(
         id: 'phul_upper_power',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Upper Power',
         description:
             'Upper body power training with heavy weights and low reps',
@@ -654,6 +666,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'phul_lower_power',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Lower Power',
         description:
             'Lower body power training with heavy weights and low reps',
@@ -674,6 +687,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'phul_upper_hypertrophy',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Upper Hypertrophy',
         description:
             'Upper body hypertrophy training with moderate weights and higher reps',
@@ -697,6 +711,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'phul_lower_hypertrophy',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Lower Hypertrophy',
         description:
             'Lower body hypertrophy training with moderate weights and higher reps',
@@ -721,6 +736,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       // Strength Programs (5/3/1 style)
       WorkoutTemplate(
         id: 'strength_squat_day',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Squat Focus',
         description: 'Strength training focused on squat progression',
         category: 'Strength',
@@ -741,6 +757,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'strength_bench_day',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Bench Focus',
         description: 'Strength training focused on bench press progression',
         category: 'Strength',
@@ -760,6 +777,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'strength_deadlift_day',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Deadlift Focus',
         description: 'Strength training focused on deadlift progression',
         category: 'Strength',
@@ -779,6 +797,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'strength_press_day',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Press Focus',
         description: 'Strength training focused on overhead press progression',
         category: 'Strength',
@@ -800,6 +819,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       // Bodybuilding Programs
       WorkoutTemplate(
         id: 'bb_chest_triceps',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Chest & Triceps',
         description: 'Bodybuilding focused chest and triceps workout',
         category: 'Bodybuilding',
@@ -821,6 +841,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'bb_back_biceps',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Back & Biceps',
         description: 'Bodybuilding focused back and biceps workout',
         category: 'Bodybuilding',
@@ -843,6 +864,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'bb_shoulders',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Shoulders',
         description: 'Bodybuilding focused shoulder workout',
         category: 'Bodybuilding',
@@ -863,6 +885,7 @@ List<WorkoutTemplate> _getDefaultTemplates() => [
       ),
       WorkoutTemplate(
         id: 'bb_legs_glutes',
+        userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
         name: 'Legs & Glutes',
         description: 'Bodybuilding focused legs and glutes workout',
         category: 'Bodybuilding',

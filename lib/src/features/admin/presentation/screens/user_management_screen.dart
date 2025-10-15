@@ -29,7 +29,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   @override
   Widget build(BuildContext context) {
     final usersData = ref.watch(userManagementProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Management'),
@@ -60,104 +60,180 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                   // Search Bar
                   TextField(
                     controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search users by name, email, or ID...',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() {});
-                            },
-                          )
-                        : null,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    decoration: InputDecoration(
+                      hintText: 'Search users by name, email, or ID...',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {});
+                              },
+                            )
+                          : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
+                    onChanged: (value) => setState(() {}),
                   ),
-                  onChanged: (value) => setState(() {}),
-                ),
-                const SizedBox(height: 12),
-                
-                // Filter and Sort Controls
-                Row(
-                  children: [
-                    // Filter Dropdown
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: _selectedFilter,
-                        decoration: const InputDecoration(
-                          labelText: 'Filter',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        ),
-                        items: _filterOptions.map((option) {
-                          return DropdownMenuItem(
-                            value: option,
-                            child: Text(option),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedFilter = value!;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    
-                    // Sort Dropdown
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: _sortBy,
-                        decoration: const InputDecoration(
-                          labelText: 'Sort by',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        ),
-                        items: _sortOptions.map((option) {
-                          return DropdownMenuItem(
-                            value: option,
-                            child: Text(option),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _sortBy = value!;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    
-                    // Sort Direction
-                    IconButton(
-                      icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
-                      onPressed: () {
-                        setState(() {
-                          _sortAscending = !_sortAscending;
-                        });
-                      },
-                      tooltip: _sortAscending ? 'Sort Ascending' : 'Sort Descending',
-                    ),
-                  ],
-                ),
-              ],
+                  const SizedBox(height: 12),
+
+                  // Filter and Sort Controls
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      if (constraints.maxWidth < 600) {
+                        // Mobile: Stack vertically
+                        return Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: DropdownButtonFormField<String>(
+                                    value: _selectedFilter,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Filter',
+                                      border: OutlineInputBorder(),
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                    ),
+                                    items: _filterOptions.map((option) {
+                                      return DropdownMenuItem(
+                                        value: option,
+                                        child: Text(option, overflow: TextOverflow.ellipsis),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedFilter = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: DropdownButtonFormField<String>(
+                                    value: _sortBy,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Sort by',
+                                      border: OutlineInputBorder(),
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                    ),
+                                    items: _sortOptions.map((option) {
+                                      return DropdownMenuItem(
+                                        value: option,
+                                        child: Text(option, overflow: TextOverflow.ellipsis),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _sortBy = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                                  onPressed: () {
+                                    setState(() {
+                                      _sortAscending = !_sortAscending;
+                                    });
+                                  },
+                                  tooltip: _sortAscending ? 'Sort Ascending' : 'Sort Descending',
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      } else {
+                        // Desktop: Horizontal layout
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                value: _selectedFilter,
+                                decoration: const InputDecoration(
+                                  labelText: 'Filter',
+                                  border: OutlineInputBorder(),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                ),
+                                items: _filterOptions.map((option) {
+                                  return DropdownMenuItem(
+                                    value: option,
+                                    child: Text(option),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedFilter = value!;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                value: _sortBy,
+                                decoration: const InputDecoration(
+                                  labelText: 'Sort by',
+                                  border: OutlineInputBorder(),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                ),
+                                items: _sortOptions.map((option) {
+                                  return DropdownMenuItem(
+                                    value: option,
+                                    child: Text(option),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _sortBy = value!;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+
+                            IconButton(
+                              icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                              onPressed: () {
+                                setState(() {
+                                  _sortAscending = !_sortAscending;
+                                });
+                              },
+                              tooltip: _sortAscending ? 'Sort Ascending' : 'Sort Descending',
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-          
-          // User List
-          Expanded(
-            child: _UserList(
-              users: users,
-              searchQuery: _searchController.text,
-              filter: _selectedFilter,
-              sortBy: _sortBy,
-              sortAscending: _sortAscending,
+
+            // User List
+            Expanded(
+              child: _UserList(
+                users: users,
+                searchQuery: _searchController.text,
+                filter: _selectedFilter,
+                sortBy: _sortBy,
+                sortAscending: _sortAscending,
+                onEdit: _editUser,
+                onSuspend: _suspendUser,
+                onBan: _banUser,
+                onDelete: _deleteUser,
+              ),
             ),
-          ),
-        ],
+          ],
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
@@ -182,7 +258,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         tooltip: 'Add User',
       ),
     );
-}
+  }
 
   void _exportUsers() {
     // TODO: Implement user export functionality
@@ -191,14 +267,38 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     );
   }
 
-  void _refreshUsers() {
-    setState(() {});
-  }
-
   void _addUser() {
     showDialog(
       context: context,
       builder: (context) => _AddUserDialog(),
+    );
+  }
+
+  void _editUser(BuildContext context, Map<String, dynamic> user) {
+    // TODO: Implement user edit functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Edit user ${user['displayName']} coming soon')),
+    );
+  }
+
+  void _suspendUser(BuildContext context, Map<String, dynamic> user) {
+    // TODO: Implement user suspend functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Suspend user ${user['displayName']} coming soon')),
+    );
+  }
+
+  void _banUser(BuildContext context, Map<String, dynamic> user) {
+    // TODO: Implement user ban functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Ban user ${user['displayName']} coming soon')),
+    );
+  }
+
+  void _deleteUser(BuildContext context, Map<String, dynamic> user) {
+    // TODO: Implement user delete functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Delete user ${user['displayName']} coming soon')),
     );
   }
 }
@@ -209,99 +309,32 @@ class _UserList extends ConsumerWidget {
   final String filter;
   final String sortBy;
   final bool sortAscending;
+  final Function(BuildContext, Map<String, dynamic>) onEdit;
+  final Function(BuildContext, Map<String, dynamic>) onSuspend;
+  final Function(BuildContext, Map<String, dynamic>) onBan;
+  final Function(BuildContext, Map<String, dynamic>) onDelete;
 
   const _UserList({
+    super.key,
     required this.users,
     required this.searchQuery,
     required this.filter,
     required this.sortBy,
     required this.sortAscending,
+    required this.onEdit,
+    required this.onSuspend,
+    required this.onBan,
+    required this.onDelete,
   });
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final filteredUsers = _filterUsers(users);
-
-        if (filteredUsers.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.people_outline, size: 64, color: Colors.grey),
-                const SizedBox(height: 16),
-                Text(
-                  searchQuery.isNotEmpty
-                      ? 'No users found matching "$searchQuery"'
-                      : 'No users found',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
-            ),
-          );
-        }
-
-        return ListView.builder(
-          itemCount: filteredUsers.length,
-          itemBuilder: (context, index) {
-            final user = filteredUsers[index];
-            return _UserCard(
-              user: user,
-              onTap: () => _showUserDetails(context, user),
-              onEdit: () => _editUser(context, user),
-              onSuspend: () => _suspendUser(context, user),
-              onBan: () => _banUser(context, user),
-              onDelete: () => _deleteUser(context, user),
-            );
-          },
-        );
-  }
-
-  Future<List<Map<String, dynamic>>> _fetchUsers() async {
-    try {
-      final supabase = Supabase.instance.client;
-      
-      // Fetch users from auth.users table
-      final response = await supabase
-          .from('auth.users')
-          .select('*')
-          .order('created_at', ascending: false);
-      
-      // Also fetch profiles for additional info
-      final profiles = await supabase
-          .from('profiles')
-          .select('*');
-      
-      // Combine user data with profile data
-      final users = <Map<String, dynamic>>[];
-      for (final user in response) {
-        final profile = profiles.firstWhere(
-          (p) => p['id'] == user['id'],
-          orElse: () => <String, dynamic>{},
-        );
-        
-        users.add({
-          ...user,
-          'display_name': profile['display_name'] ?? user['email']?.split('@')[0],
-          'bio': profile['bio'],
-          'avatar_url': profile['avatar_url'],
-          'is_private': profile['is_private'] ?? false,
-        });
-      }
-      
-      return users;
-    } catch (e) {
-      // Fallback to mock data for development
-      return _getMockUsers();
-    }
-  }
 
   List<Map<String, dynamic>> _filterUsers(List<Map<String, dynamic>> users) {
     var filtered = users;
 
     // Apply search filter
     if (searchQuery.isNotEmpty) {
+      final searchLower = searchQuery.toLowerCase();
       filtered = filtered.where((user) {
-        final searchLower = searchQuery.toLowerCase();
         return (user['email']?.toString().toLowerCase().contains(searchLower) ?? false) ||
                (user['displayName']?.toString().toLowerCase().contains(searchLower) ?? false) ||
                (user['id']?.toString().toLowerCase().contains(searchLower) ?? false);
@@ -329,18 +362,21 @@ class _UserList extends ConsumerWidget {
       int comparison = 0;
       switch (sortBy) {
         case 'Created Date':
-          comparison = DateTime.parse(a['created_at'] ?? '')
-              .compareTo(DateTime.parse(b['created_at'] ?? ''));
+          comparison = (a['createdAt'] as String).compareTo(b['createdAt'] as String);
           break;
         case 'Last Active':
-          comparison = DateTime.parse(a['last_sign_in_at'] ?? '')
-              .compareTo(DateTime.parse(b['last_sign_in_at'] ?? ''));
+          final aLastSignIn = a['lastSignInAt'] as String?;
+          final bLastSignIn = b['lastSignInAt'] as String?;
+          if (aLastSignIn == null && bLastSignIn == null) comparison = 0;
+          else if (aLastSignIn == null) comparison = -1;
+          else if (bLastSignIn == null) comparison = 1;
+          else comparison = aLastSignIn.compareTo(bLastSignIn);
           break;
         case 'Name':
-          comparison = (a['display_name'] ?? '').compareTo(b['display_name'] ?? '');
+          comparison = (a['displayName'] as String).compareTo(b['displayName'] as String);
           break;
         case 'Email':
-          comparison = (a['email'] ?? '').compareTo(b['email'] ?? '');
+          comparison = (a['email'] as String).compareTo(b['email'] as String);
           break;
       }
       return sortAscending ? comparison : -comparison;
@@ -349,150 +385,52 @@ class _UserList extends ConsumerWidget {
     return filtered;
   }
 
-  void _showUserDetails(BuildContext context, Map<String, dynamic> user) {
-    showDialog(
-      context: context,
-      builder: (context) => _UserDetailsDialog(user: user),
-    );
-  }
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filteredUsers = _filterUsers(users);
 
-  void _editUser(BuildContext context, Map<String, dynamic> user) {
-    showDialog(
-      context: context,
-      builder: (context) => _EditUserDialog(user: user),
-    );
-  }
+    if (filteredUsers.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.info_outline, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            Text(
+              'No users found matching your criteria.',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ],
+        ),
+      );
+    }
 
-  void _suspendUser(BuildContext context, Map<String, dynamic> user) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Suspend User'),
-        content: Text('Are you sure you want to suspend ${user['display_name'] ?? user['email']}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              // TODO: Implement suspend user
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('User suspended')),
-              );
-            },
-            child: const Text('Suspend'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _banUser(BuildContext context, Map<String, dynamic> user) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Ban User'),
-        content: Text('Are you sure you want to ban ${user['display_name'] ?? user['email']}? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              // TODO: Implement ban user
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('User banned')),
-              );
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Ban'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _deleteUser(BuildContext context, Map<String, dynamic> user) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete User'),
-        content: Text('Are you sure you want to permanently delete ${user['display_name'] ?? user['email']}? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              // TODO: Implement delete user
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('User deleted')),
-              );
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  List<Map<String, dynamic>> _getMockUsers() {
-    return [
-      {
-        'id': '1',
-        'email': 'john.doe@example.com',
-        'display_name': 'John Doe',
-        'bio': 'Fitness enthusiast',
-        'avatar_url': null,
-        'created_at': DateTime.now().subtract(const Duration(days: 30)).toIso8601String(),
-        'last_sign_in_at': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
-        'banned_until': null,
-        'is_private': false,
+    return ListView.builder(
+      itemCount: filteredUsers.length,
+      itemBuilder: (context, index) {
+        final user = filteredUsers[index];
+        return UserCard(
+          user: user,
+          onEdit: () => onEdit(context, user),
+          onSuspend: () => onSuspend(context, user),
+          onBan: () => onBan(context, user),
+          onDelete: () => onDelete(context, user),
+        );
       },
-      {
-        'id': '2',
-        'email': 'jane.smith@example.com',
-        'display_name': 'Jane Smith',
-        'bio': 'Personal trainer',
-        'avatar_url': null,
-        'created_at': DateTime.now().subtract(const Duration(days: 15)).toIso8601String(),
-        'last_sign_in_at': DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
-        'banned_until': null,
-        'is_private': true,
-      },
-      {
-        'id': '3',
-        'email': 'bob.wilson@example.com',
-        'display_name': 'Bob Wilson',
-        'bio': 'Gym owner',
-        'avatar_url': null,
-        'created_at': DateTime.now().subtract(const Duration(days: 7)).toIso8601String(),
-        'last_sign_in_at': DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
-        'banned_until': DateTime.now().add(const Duration(days: 7)).toIso8601String(),
-        'is_private': false,
-      },
-    ];
+    );
   }
 }
 
-class _UserCard extends StatelessWidget {
+class UserCard extends StatelessWidget {
   final Map<String, dynamic> user;
-  final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onSuspend;
   final VoidCallback onBan;
   final VoidCallback onDelete;
 
-  const _UserCard({
+  const UserCard({
+    super.key,
     required this.user,
-    required this.onTap,
     required this.onEdit,
     required this.onSuspend,
     required this.onBan,
@@ -501,62 +439,28 @@ class _UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isBanned = user['banned_until'] != null;
-    
+    final isBanned = user['bannedUntil'] != null;
+    final isSuspended = user['status'] == 'suspended';
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundImage: user['avatar_url'] != null 
-              ? NetworkImage(user['avatar_url']) 
-              : null,
-          child: user['avatar_url'] == null 
-              ? Text((user['display_name'] ?? user['email'] ?? 'U')[0].toUpperCase())
-              : null,
+          child: Text(user['displayName'][0]),
         ),
-        title: Text(
-          user['display_name'] ?? user['email'] ?? 'Unknown User',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: isBanned ? Colors.red : null,
-          ),
-        ),
+        title: Text(user['displayName']),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(user['email'] ?? 'No email'),
-            if (user['bio'] != null) Text(user['bio']),
-            Row(
-              children: [
-                Icon(
-                  isBanned ? Icons.block : Icons.check_circle,
-                  size: 16,
-                  color: isBanned ? Colors.red : Colors.green,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  isBanned ? 'Banned' : 'Active',
-                  style: TextStyle(
-                    color: isBanned ? Colors.red : Colors.green,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Icon(
-                  user['is_private'] ? Icons.lock : Icons.public,
-                  size: 16,
-                  color: Colors.grey,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  user['is_private'] ? 'Private' : 'Public',
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
+            Text(user['email']),
+            if (isSuspended)
+              const Text('Status: Suspended', style: TextStyle(color: Colors.orange)),
+            if (isBanned)
+              Text('Status: Banned until ${DateTime.parse(user['bannedUntil']).toLocal().toShortDate()}',
+                  style: const TextStyle(color: Colors.red)),
+            Text('Workouts: ${user['workoutCount'] ?? 0}'),
+            if (user['lastWorkoutAt'] != null)
+              Text('Last Workout: ${DateTime.parse(user['lastWorkoutAt']).toLocal().toShortDate()}'),
           ],
         ),
         trailing: PopupMenuButton<String>(
@@ -577,160 +481,156 @@ class _UserCard extends StatelessWidget {
             }
           },
           itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'edit',
-              child: Row(
-                children: [
-                  Icon(Icons.edit, size: 20),
-                  SizedBox(width: 8),
-                  Text('Edit'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'suspend',
-              child: Row(
-                children: [
-                  Icon(Icons.pause, size: 20),
-                  SizedBox(width: 8),
-                  Text('Suspend'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'ban',
-              child: Row(
-                children: [
-                  Icon(Icons.block, size: 20, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Ban', style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete, size: 20, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Delete', style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
+            const PopupMenuItem(value: 'edit', child: Text('Edit')),
+            PopupMenuItem(
+                value: 'suspend',
+                child: Text(isSuspended ? 'Unsuspend' : 'Suspend')),
+            PopupMenuItem(
+                value: 'ban', child: Text(isBanned ? 'Unban' : 'Ban')),
+            const PopupMenuItem(value: 'delete', child: Text('Delete')),
           ],
         ),
-        onTap: onTap,
       ),
     );
   }
 }
 
-class _AddUserDialog extends StatelessWidget {
+class _AddUserDialog extends ConsumerStatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Add User'),
-      content: const Text('Add user functionality coming soon'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
-        ),
-      ],
-    );
-  }
+  ConsumerState<_AddUserDialog> createState() => _AddUserDialogState();
 }
 
-class _UserDetailsDialog extends StatelessWidget {
-  final Map<String, dynamic> user;
-
-  const _UserDetailsDialog({required this.user});
+class _AddUserDialogState extends ConsumerState<_AddUserDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _displayNameController = TextEditingController();
+  bool _isLoading = false;
 
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(user['display_name'] ?? user['email'] ?? 'User Details'),
-      content: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _DetailRow('ID', user['id'] ?? 'N/A'),
-            _DetailRow('Email', user['email'] ?? 'N/A'),
-            _DetailRow('Display Name', user['display_name'] ?? 'N/A'),
-            _DetailRow('Bio', user['bio'] ?? 'N/A'),
-            _DetailRow('Created', _formatDate(user['created_at'])),
-            _DetailRow('Last Sign In', _formatDate(user['last_sign_in_at'])),
-            _DetailRow('Status', user['banned_until'] != null ? 'Banned' : 'Active'),
-            _DetailRow('Privacy', user['is_private'] ? 'Private' : 'Public'),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
-        ),
-      ],
-    );
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _displayNameController.dispose();
+    super.dispose();
   }
 
-  String _formatDate(String? dateString) {
-    if (dateString == null) return 'N/A';
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
-      final date = DateTime.parse(dateString);
-      return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+      final supabase = Supabase.instance.client;
+      final response = await supabase.auth.signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        data: {'displayName': _displayNameController.text.trim()},
+      );
+
+      if (response.user != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('User ${_displayNameController.text} added successfully!')),
+          );
+          Navigator.of(context).pop();
+          ref.refresh(userManagementProvider); // Refresh user list
+        }
+      } else {
+        throw Exception('Failed to add user: No user returned');
+      }
     } catch (e) {
-      return 'Invalid date';
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error adding user: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
-}
-
-class _DetailRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _DetailRow(this.label, this.value);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              '$label:',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            child: Text(value),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _EditUserDialog extends StatelessWidget {
-  final Map<String, dynamic> user;
-
-  const _EditUserDialog({required this.user});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit User'),
-      content: const Text('Edit user functionality coming soon'),
+      title: const Text('Add New User'),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: _displayNameController,
+              decoration: const InputDecoration(labelText: 'Display Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a display name';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter an email';
+                }
+                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                  return 'Please enter a valid email';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a password';
+                }
+                if (value.length < 6) {
+                  return 'Password must be at least 6 characters';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _isLoading ? null : _submit,
+          child: _isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : const Text('Add User'),
         ),
       ],
     );
+  }
+}
+
+extension on DateTime {
+  String toShortDate() {
+    return '${month.toString().padLeft(2, '0')}/${day.toString().padLeft(2, '0')}/${year.toString().substring(2)}';
   }
 }

@@ -122,6 +122,7 @@ void main() {
         final sessionId = const Uuid().v4();
         final session = WorkoutSessionsCompanion.insert(
           id: sessionId,
+          userId: 'test_user', // ✅ USER ISOLATION
           name: 'Test Workout',
           startedAt: DateTime.now(),
           completedAt: Value(DateTime.now().add(const Duration(hours: 1))),
@@ -150,6 +151,7 @@ void main() {
         await database.into(database.workoutSessions).insert(
               WorkoutSessionsCompanion.insert(
                 id: sessionId,
+                userId: 'test_user', // ✅ USER ISOLATION
                 name: 'Progressive Workout',
                 startedAt: DateTime.now(),
               ),
@@ -195,6 +197,7 @@ void main() {
         await database.into(database.workoutSessions).insert(
               WorkoutSessionsCompanion.insert(
                 id: sessionId,
+                userId: 'test_user', // ✅ USER ISOLATION
                 name: 'Chest Day',
                 startedAt: DateTime.now(),
               ),
@@ -247,6 +250,7 @@ void main() {
         await database.into(database.personalRecords).insert(
               PersonalRecordsCompanion.insert(
                 id: prId,
+                userId: 'test_user', // ✅ USER ISOLATION
                 exerciseId: exerciseId,
                 recordType: '1rm',
                 value: 225,
@@ -385,6 +389,7 @@ void main() {
         await database.into(database.workoutTemplates).insert(
               WorkoutTemplatesCompanion.insert(
                 id: templateId,
+                userId: 'test_user', // ✅ USER ISOLATION
                 name: 'Push Day Template',
                 exerciseIds: const Value([]),
                 tags: const ['push', 'strength'],
@@ -407,6 +412,7 @@ void main() {
         await database.into(database.workoutTemplates).insert(
               WorkoutTemplatesCompanion.insert(
                 id: templateId,
+                userId: 'test_user', // ✅ USER ISOLATION
                 name: 'Original Template',
                 exerciseIds: const Value([]),
                 tags: const [],

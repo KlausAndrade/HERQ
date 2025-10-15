@@ -52,7 +52,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 16;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -64,6 +64,40 @@ class AppDatabase extends _$AppDatabase {
           await _insertDefaultData();
         },
         onUpgrade: (migrator, from, to) async {
+          if (to == 16) {
+            try {
+              // Add userId columns for user isolation
+              await customStatement(
+                'ALTER TABLE workout_sessions ADD COLUMN user_id TEXT',
+              );
+              await customStatement(
+                'ALTER TABLE set_entries ADD COLUMN user_id TEXT',
+              );
+              await customStatement(
+                'ALTER TABLE workout_templates ADD COLUMN user_id TEXT',
+              );
+              await customStatement(
+                'ALTER TABLE personal_records ADD COLUMN user_id TEXT',
+              );
+              
+              // Set default userId for existing data (will be updated by current user)
+              await customStatement(
+                "UPDATE workout_sessions SET user_id = 'default_user' WHERE user_id IS NULL",
+              );
+              await customStatement(
+                "UPDATE set_entries SET user_id = 'default_user' WHERE user_id IS NULL",
+              );
+              await customStatement(
+                "UPDATE workout_templates SET user_id = 'default_user' WHERE user_id IS NULL",
+              );
+              await customStatement(
+                "UPDATE personal_records SET user_id = 'default_user' WHERE user_id IS NULL",
+              );
+            } catch (e) {
+              print('Migration 16 error: $e');
+            }
+          }
+          
           if (to == 13) {
             try {
               await customStatement(

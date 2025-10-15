@@ -36,6 +36,7 @@ void main() {
       // Test template creation structure
       final templateData = WorkoutTemplate(
         id: 'ai_rec_test_123',
+        userId: 'test_user', // ✅ USER ISOLATION
         name: 'AI Upper Body Power',
         description: 'AI generated upper body workout',
         category: 'AI Recommended',

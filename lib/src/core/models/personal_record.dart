@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 class PersonalRecords extends Table {
   TextColumn get id => text()();
+  TextColumn get userId => text()(); // ✅ USER ISOLATION: Link to current user
   TextColumn get exerciseId => text()();
   TextColumn get recordType => text()(); // '1rm', 'volume', 'reps', 'time'
   RealColumn get value => real()();

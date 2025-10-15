@@ -8,6 +8,7 @@ import '../../../../core/database/database.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/sync_provider.dart';
+import '../../../../core/services/user_context_service.dart';
 import '../../../../core/services/live_activity_service.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/workout_foreground_service.dart';
@@ -1101,6 +1102,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         await db.into(db.workoutSessions).insert(
               WorkoutSessionsCompanion.insert(
                 id: sessionId,
+                userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
                 name: workout.name,
                 startedAt: now.subtract(workout.elapsedTime),
                 completedAt: Value(now),
@@ -1127,6 +1129,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             await db.into(db.setEntries).insert(
                   SetEntriesCompanion.insert(
                     id: const Uuid().v4(),
+                    userId: UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
                     workoutSessionId: sessionId,
                     exerciseId: exercise.id,
                     setNumber: set.number,

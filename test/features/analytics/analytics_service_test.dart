@@ -16,6 +16,7 @@ void main() {
       await db.into(db.workoutSessions).insert(
             WorkoutSessionsCompanion.insert(
               id: sessionId,
+              userId: 'test_user', // ✅ USER ISOLATION
               name: 'Test Session',
               startedAt: now,
               completedAt: Value(now),
@@ -26,6 +27,7 @@ void main() {
       await db.into(db.setEntries).insert(
             SetEntriesCompanion.insert(
               id: const Uuid().v4(),
+              userId: 'test_user', // ✅ USER ISOLATION
               workoutSessionId: sessionId,
               exerciseId: 'bench_press',
               setNumber: 1,
@@ -38,6 +40,7 @@ void main() {
       await db.into(db.setEntries).insert(
             SetEntriesCompanion.insert(
               id: const Uuid().v4(),
+              userId: 'test_user', // ✅ USER ISOLATION
               workoutSessionId: sessionId,
               exerciseId: 'bench_press',
               setNumber: 2,
