@@ -210,7 +210,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                       color: Colors.blue,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 2),
                   Expanded(
                     child: _StatCard(
                       title: 'Total Workouts',
@@ -234,7 +234,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                       color: Colors.orange,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 2),
                   Expanded(
                     child: _StatCard(
                       title: 'Last Updated',
@@ -617,7 +617,7 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -634,21 +634,24 @@ class _StatCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               value,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: color,
+                fontSize: 18,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               change,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: change.startsWith('+') ? Colors.green : Colors.red,
                 fontWeight: FontWeight.w500,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../data/providers/admin_data_provider.dart';
 
 class CommunicationScreen extends ConsumerStatefulWidget {
   const CommunicationScreen({super.key});
@@ -26,9 +29,15 @@ class _CommunicationScreenState extends ConsumerState<CommunicationScreen>
 
   @override
   Widget build(BuildContext context) {
+    final contentModeration = ref.watch(contentModerationProvider);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Communication'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/admin'),
+        ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         bottom: TabBar(
@@ -39,20 +48,49 @@ class _CommunicationScreenState extends ConsumerState<CommunicationScreen>
             Tab(text: 'Feedback', icon: Icon(Icons.feedback)),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _AnnouncementsTab(),
-          _MessagesTab(),
-          _FeedbackTab(),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.refresh(contentModerationProvider),
+            tooltip: 'Refresh',
+          ),
         ],
+      ),
+      body: contentModeration.when(
+        data: (data) => TabBarView(
+          controller: _tabController,
+          children: [
+            _AnnouncementsTab(data: data),
+            _MessagesTab(data: data),
+            _FeedbackTab(data: data),
+          ],
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Error loading communication data: $error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.refresh(contentModerationProvider),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
 class _AnnouncementsTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _AnnouncementsTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -169,6 +207,10 @@ class _AnnouncementsTab extends StatelessWidget {
 }
 
 class _MessagesTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _MessagesTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return const Center(
@@ -185,6 +227,10 @@ class _MessagesTab extends StatelessWidget {
 }
 
 class _FeedbackTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _FeedbackTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return const Center(

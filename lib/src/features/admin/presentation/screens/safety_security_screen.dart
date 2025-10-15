@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../data/providers/admin_data_provider.dart';
 
 class SafetySecurityScreen extends ConsumerStatefulWidget {
   const SafetySecurityScreen({super.key});
@@ -26,9 +29,15 @@ class _SafetySecurityScreenState extends ConsumerState<SafetySecurityScreen>
 
   @override
   Widget build(BuildContext context) {
+    final contentModeration = ref.watch(contentModerationProvider);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Safety & Security'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/admin'),
+        ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         bottom: TabBar(
@@ -39,20 +48,49 @@ class _SafetySecurityScreenState extends ConsumerState<SafetySecurityScreen>
             Tab(text: 'Reports', icon: Icon(Icons.flag)),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _ContentSafetyTab(),
-          _SecurityTab(),
-          _ReportsTab(),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.refresh(contentModerationProvider),
+            tooltip: 'Refresh',
+          ),
         ],
+      ),
+      body: contentModeration.when(
+        data: (data) => TabBarView(
+          controller: _tabController,
+          children: [
+            _ContentSafetyTab(data: data),
+            _SecurityTab(data: data),
+            _ReportsTab(data: data),
+          ],
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Error loading safety data: $error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.refresh(contentModerationProvider),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
 class _ContentSafetyTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _ContentSafetyTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -233,6 +271,10 @@ class _ContentSafetyTab extends StatelessWidget {
 }
 
 class _SecurityTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _SecurityTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -410,6 +452,10 @@ class _SecurityTab extends StatelessWidget {
 }
 
 class _ReportsTab extends StatelessWidget {
+  final Map<String, dynamic> data;
+  
+  const _ReportsTab({required this.data});
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
