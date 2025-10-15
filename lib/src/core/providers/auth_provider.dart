@@ -88,7 +88,6 @@ class AuthService {
         // Get Facebook access token
         final AccessToken accessToken = result.accessToken!;
         print('🔍 Facebook access token received');
-        print('🔍 Token source: ${accessToken.source}'); // Will show if native or web
 
         // Sign in to Supabase with Facebook token
         print('🔍 Signing in to Supabase with Facebook token...');
