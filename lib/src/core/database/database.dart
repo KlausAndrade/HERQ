@@ -245,6 +245,8 @@ class AppDatabase extends _$AppDatabase {
       for (final t in templatesData) {
         var companion = WorkoutTemplatesCompanion(
           id: Value(t['id']! as String),
+          userId: const Value(
+              'system'), // Use 'system' as userId for default templates
           name: Value(t['name']! as String),
           description: Value(t['description'] as String?),
           folderId: Value(t['folderId'] as String?),
