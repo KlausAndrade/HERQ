@@ -27,10 +27,10 @@ jobs:
       - name: Generate code
         run: flutter packages pub run build_runner build --delete-conflicting-outputs
       
-      - name: Build Web
+      - name: Build Web for Custom Domain
         run: |
           flutter build web --release \
-            --base-href "/HERQ-web/" \
+            --base-href "/" \
             --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
       
