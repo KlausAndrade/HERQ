@@ -32,11 +32,11 @@ Future<void> main() async {
       defaultValue: '',
     );
 
-    final url = supabaseUrl.isNotEmpty 
-        ? supabaseUrl 
+    final url = supabaseUrl.isNotEmpty
+        ? supabaseUrl
         : (dotenv.env['SUPABASE_URL'] ?? '');
-    final anonKey = supabaseAnonKey.isNotEmpty 
-        ? supabaseAnonKey 
+    final anonKey = supabaseAnonKey.isNotEmpty
+        ? supabaseAnonKey
         : (dotenv.env['SUPABASE_ANON_KEY'] ?? '');
 
     // Initialize Supabase for web
