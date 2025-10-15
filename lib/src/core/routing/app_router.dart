@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/ai/presentation/screens/ai_coaching_screen.dart';
-import '../../features/analytics/presentation/screens/analytics_screen.dart';
+import '../../features/analytics/presentation/screens/analytics_screen.dart' as user_analytics;
 import '../../features/auth/presentation/screens/auth_screen.dart';
 import '../../features/exercises/presentation/screens/create_exercise_screen.dart';
 import '../../features/exercises/presentation/screens/exercise_detail_screen.dart';
@@ -28,6 +28,14 @@ import '../../features/workout/presentation/screens/workout_detail_screen.dart';
 import '../../features/workout/presentation/screens/workout_history_screen.dart';
 import '../../features/workout/presentation/screens/workout_summary_screen.dart';
 import '../../features/workout/presentation/screens/workout_templates_with_folders_screen.dart';
+import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
+import '../../features/admin/presentation/screens/user_management_screen.dart';
+import '../../features/admin/presentation/screens/content_moderation_screen.dart';
+import '../../features/admin/presentation/screens/analytics_screen.dart';
+import '../../features/admin/presentation/screens/system_admin_screen.dart';
+import '../../features/admin/presentation/screens/safety_security_screen.dart';
+import '../../features/admin/presentation/screens/communication_screen.dart';
+import '../../features/admin/presentation/screens/data_operations_screen.dart';
 import '../widgets/page_transitions.dart';
 
 final routerProvider = Provider<GoRouter>(
@@ -180,7 +188,7 @@ final routerProvider = Provider<GoRouter>(
         path: '/analytics',
         name: 'analytics',
         pageBuilder: (context, state) => AppPageTransitions.fadeTransition(
-          const AnalyticsScreen(),
+          const user_analytics.AnalyticsScreen(),
           key: state.pageKey,
         ),
       ),
@@ -297,6 +305,79 @@ final routerProvider = Provider<GoRouter>(
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
           const GamificationScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      // Admin Routes
+      GoRoute(
+        path: '/admin',
+        name: 'admin-dashboard',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const AdminDashboardScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/admin/users',
+        name: 'admin-users',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const UserManagementScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/admin/content',
+        name: 'admin-content',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const ContentModerationScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/admin/analytics',
+        name: 'admin-analytics',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const AnalyticsScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/admin/system',
+        name: 'admin-system',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const SystemAdminScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/admin/safety',
+        name: 'admin-safety',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const SafetySecurityScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/admin/communication',
+        name: 'admin-communication',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const CommunicationScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/admin/data',
+        name: 'admin-data',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const DataOperationsScreen(),
           key: state.pageKey,
         ),
       ),

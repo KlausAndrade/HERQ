@@ -1,5 +1,5 @@
 -- ================================================
--- GymAI Database Migration - Privacy & Updates
+-- HERQ Database Migration - Privacy & Updates
 -- ================================================
 -- Run this in your Supabase SQL Editor
 -- ================================================

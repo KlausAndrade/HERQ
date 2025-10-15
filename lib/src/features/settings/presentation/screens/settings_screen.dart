@@ -291,6 +291,14 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const Divider(height: 1),
                 ListTile(
+                  leading: const Icon(Icons.admin_panel_settings, color: Colors.red),
+                  title: const Text('Admin Dashboard'),
+                  subtitle: const Text('Access admin panel for platform management'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.go('/admin'),
+                ),
+                const Divider(height: 1),
+                ListTile(
                   leading: const Icon(Icons.cloud_upload, color: Colors.indigo),
                   title: const Text('Sync to Supabase'),
                   subtitle: const Text(

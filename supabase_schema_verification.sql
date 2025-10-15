@@ -274,5 +274,5 @@ ORDER BY tablename;
 
 -- ============================================
 -- SETUP COMPLETE! 
--- Your Supabase database is now ready for GymAI social features
+-- Your Supabase database is now ready for HERQ social features
 -- ============================================

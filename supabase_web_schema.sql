@@ -1,4 +1,4 @@
--- GymAI Supabase Schema for Web
+-- HERQ Supabase Schema for Web
 -- Run this in your Supabase SQL Editor
 
 -- Enable UUID extension
