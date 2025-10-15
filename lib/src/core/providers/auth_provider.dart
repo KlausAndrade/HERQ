@@ -72,11 +72,15 @@ class AuthService {
     try {
       print('🔍 Starting Facebook login...');
       
-      // Use native Facebook SDK for better user experience
-      final LoginResult result = await FacebookAuth.instance.login();
+      // Use native Facebook SDK with login behavior preference
+      final LoginResult result = await FacebookAuth.instance.login(
+        permissions: ['email', 'public_profile'],
+        loginBehavior: LoginBehavior.nativeWithFallback, // Prefer native SSO
+      );
       
       print('🔍 Facebook login result: ${result.status}');
       print('🔍 Facebook login message: ${result.message}');
+      print('🔍 Facebook login method: ${result.accessToken?.graphDomain}');
 
       if (result.status == LoginStatus.success) {
         print('✅ Facebook login successful');
@@ -84,6 +88,7 @@ class AuthService {
         // Get Facebook access token
         final AccessToken accessToken = result.accessToken!;
         print('🔍 Facebook access token received');
+        print('🔍 Token source: ${accessToken.source}'); // Will show if native or web
 
         // Sign in to Supabase with Facebook token
         print('🔍 Signing in to Supabase with Facebook token...');

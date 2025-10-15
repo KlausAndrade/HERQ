@@ -208,6 +208,7 @@ void main() {
           await database.into(database.setEntries).insert(
                 SetEntriesCompanion.insert(
                   id: const Uuid().v4(),
+                  userId: 'test_user',
                   workoutSessionId: sessionId,
                   exerciseId: exerciseId,
                   setNumber: i,
