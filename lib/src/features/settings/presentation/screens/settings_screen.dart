@@ -268,9 +268,9 @@ class SettingsScreen extends ConsumerWidget {
           // Admin Dashboard Link (only visible to admins)
           Consumer(
             builder: (context, ref, child) {
-              final showMaintenance = ref.watch(showMaintenanceProvider);
+              final isAdmin = ref.watch(isAdminProvider);
               
-              if (!showMaintenance) {
+              if (!isAdmin) {
                 return const SizedBox.shrink(); // Hide for non-admins
               }
               
@@ -283,6 +283,31 @@ class SettingsScreen extends ConsumerWidget {
                           fontWeight: FontWeight.w600,
                           color: Colors.red,
                         ),
+                  ),
+                  const SizedBox(height: 8),
+                  
+                  // Admin Mode Toggle
+                  Card(
+                    color: Colors.red.withOpacity(0.1),
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        final adminMode = ref.watch(adminModeProvider);
+                        final isAdmin = ref.watch(isAdminProvider);
+                        
+                        return ListTile(
+                          leading: const Icon(Icons.admin_panel_settings, color: Colors.red),
+                          title: const Text('Enable Admin Mode'),
+                          subtitle: const Text('Toggle admin features and system-wide access'),
+                          trailing: Switch(
+                            value: adminMode,
+                            onChanged: isAdmin ? (value) {
+                              ref.read(adminModeProvider.notifier).setAdminMode(value);
+                            } : null,
+                            activeColor: Colors.red,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   const SizedBox(height: 8),
                   

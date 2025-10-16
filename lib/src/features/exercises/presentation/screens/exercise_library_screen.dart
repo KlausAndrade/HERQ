@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
+import '../../../../core/providers/admin_provider.dart';
 import '../../../../core/widgets/animated_fab.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -26,23 +27,12 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
   final String _searchQuery = '';
   bool _showVariants = false;
   bool _showOnlyFavorites = false;
-  bool _isAdminMode = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Check if we're in admin mode from URL parameters
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final uri = GoRouterState.of(context).uri;
-      _isAdminMode = uri.queryParameters['admin'] == 'true';
-      if (mounted) setState(() {});
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final muscleGroupsAsync = ref.watch(muscleGroupsProvider);
     final categoriesAsync = ref.watch(exerciseCategoriesProvider);
+    final isAdminMode = ref.watch(currentAdminModeProvider);
 
     final exercisesAsync = _getFilteredExercises();
 
@@ -54,8 +44,10 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
         ),
         title: Row(
           children: [
-            Text(S.of(context)!.exerciseLibrary),
-            if (_isAdminMode) ...[
+            Expanded(
+              child: Text(S.of(context)!.exerciseLibrary),
+            ),
+            if (isAdminMode) ...[
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -244,11 +236,11 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                     return _ExerciseCard(
                       exercise: exercise,
                       onTap: () => context.go('/exercise/${exercise.id}'),
-                      onEdit: _isAdminMode || exercise.id.startsWith('custom_')
+                      onEdit: isAdminMode || exercise.id.startsWith('custom_')
                           ? () => context
-                              .push('/exercises/create?id=${exercise.id}${_isAdminMode ? '&admin=true' : ''}')
+                              .push('/exercises/create?id=${exercise.id}')
                           : null,
-                      isAdminMode: _isAdminMode,
+                      isAdminMode: isAdminMode,
                     );
                   },
                 );
@@ -286,7 +278,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
       ),
       floatingActionButton: AnimatedFAB(
         icon: Icons.add,
-        onPressed: () => context.push('/exercises/create${_isAdminMode ? '?admin=true' : ''}'),
+        onPressed: () => context.push('/exercises/create'),
         tooltip: S.of(context)!.createExercise,
       ),
       bottomNavigationBar: _buildBottomNavigation(context),

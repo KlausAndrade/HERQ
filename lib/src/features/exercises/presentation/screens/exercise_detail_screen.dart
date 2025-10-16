@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
+import '../../../../core/providers/admin_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/user_context_service.dart';
@@ -24,6 +25,7 @@ class ExerciseDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final exerciseAsync = ref.watch(exerciseByIdProvider(exerciseId));
     final isFavoritedAsync = ref.watch(isExerciseFavorited(exerciseId));
+    final isAdminMode = ref.watch(currentAdminModeProvider);
 
     return exerciseAsync.when(
       data: (exercise) {
@@ -44,7 +46,31 @@ class ExerciseDetailScreen extends ConsumerWidget {
               icon: const Icon(Icons.arrow_back),
               onPressed: () => context.go('/exercises'),
             ),
-            title: Text(exercise.name),
+            title: Row(
+              children: [
+                Expanded(
+                  child: Text(exercise.name),
+                ),
+                if (isAdminMode) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'ADMIN',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
             actions: [
               isFavoritedAsync.when(
                 data: (isFavorited) => IconButton(
@@ -70,13 +96,15 @@ class ExerciseDetailScreen extends ConsumerWidget {
                   icon: Icon(Icons.favorite_border),
                 ),
               ),
-              // Edit button for custom exercises
-              if (exercise.id.startsWith('custom_'))
+              // Edit button for custom exercises or admin mode
+              if (exercise.id.startsWith('custom_') || isAdminMode)
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () =>
                       context.push('/exercises/create?id=${exercise.id}'),
-                  tooltip: S.of(context)!.editExercise,
+                  tooltip: isAdminMode 
+                      ? 'Edit exercise (Admin)' 
+                      : S.of(context)!.editExercise,
                 ),
             ],
           ),

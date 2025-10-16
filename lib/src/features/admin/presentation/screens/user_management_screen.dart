@@ -97,7 +97,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                               children: [
                                 Expanded(
                                   child: DropdownButtonFormField<String>(
-                                    value: _selectedFilter,
+                                    initialValue: _selectedFilter,
                                     decoration: const InputDecoration(
                                       labelText: 'Filter',
                                       border: OutlineInputBorder(),
@@ -121,7 +121,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: DropdownButtonFormField<String>(
-                                    value: _sortBy,
+                                    initialValue: _sortBy,
                                     decoration: const InputDecoration(
                                       labelText: 'Sort by',
                                       border: OutlineInputBorder(),
@@ -171,7 +171,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                           children: [
                             Expanded(
                               child: DropdownButtonFormField<String>(
-                                value: _selectedFilter,
+                                initialValue: _selectedFilter,
                                 decoration: const InputDecoration(
                                   labelText: 'Filter',
                                   border: OutlineInputBorder(),
@@ -194,7 +194,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: DropdownButtonFormField<String>(
-                                value: _sortBy,
+                                initialValue: _sortBy,
                                 decoration: const InputDecoration(
                                   labelText: 'Sort by',
                                   border: OutlineInputBorder(),

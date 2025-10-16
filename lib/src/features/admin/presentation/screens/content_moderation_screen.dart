@@ -100,7 +100,7 @@ class _ContentModerationScreenState
                       SizedBox(
                         width: 150,
                         child: DropdownButtonFormField<String>(
-                          value: _selectedFilter,
+                          initialValue: _selectedFilter,
                           decoration: const InputDecoration(
                             labelText: 'Status',
                             border: OutlineInputBorder(),
@@ -125,7 +125,7 @@ class _ContentModerationScreenState
                       SizedBox(
                         width: 150,
                         child: DropdownButtonFormField<String>(
-                          value: _selectedType,
+                          initialValue: _selectedType,
                           decoration: const InputDecoration(
                             labelText: 'Type',
                             border: OutlineInputBorder(),
@@ -158,7 +158,7 @@ class _ContentModerationScreenState
                       SizedBox(
                         width: 150,
                         child: DropdownButtonFormField<String>(
-                          value: _sortBy,
+                          initialValue: _sortBy,
                           decoration: const InputDecoration(
                             labelText: 'Sort by',
                             border: OutlineInputBorder(),

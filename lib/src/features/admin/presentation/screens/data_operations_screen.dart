@@ -1130,7 +1130,7 @@ class _ScheduleBackupDialogState extends State<_ScheduleBackupDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonFormField<String>(
-            value: _selectedFrequency,
+            initialValue: _selectedFrequency,
             decoration: const InputDecoration(
               labelText: 'Frequency',
               border: OutlineInputBorder(),

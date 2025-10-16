@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/exercise_types.dart';
 import '../../../../core/database/database.dart';
+import '../../../../core/providers/admin_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/notification_service.dart';
@@ -51,7 +52,6 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
   String? _variantType;
 
   bool _isLoading = false;
-  bool _isAdminMode = false;
 
   // Muscle groups
   final List<String> _muscleGroups = [
@@ -130,12 +130,6 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
   @override
   void initState() {
     super.initState();
-    // Check if we're in admin mode from URL parameters
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final uri = GoRouterState.of(context).uri;
-      _isAdminMode = uri.queryParameters['admin'] == 'true';
-      if (mounted) setState(() {});
-    });
     if (widget.exerciseId != null) {
       _loadExercise();
     }
@@ -154,12 +148,22 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
         setState(() {
           _nameController.text = exercise.name;
           _instructionsController.text = exercise.instructions;
-          _selectedMuscleGroup = exercise.primaryMuscleGroup;
+          _selectedMuscleGroup = _muscleGroups.contains(exercise.primaryMuscleGroup) 
+              ? exercise.primaryMuscleGroup 
+              : 'Chest'; // Fallback to ensure valid value
           _selectedSecondaryMuscles.addAll(exercise.secondaryMuscleGroups);
-          _selectedEquipment = exercise.equipment;
-          _selectedCategory = exercise.category;
-          _selectedDifficulty = exercise.difficulty;
-          _selectedExerciseType = exercise.exerciseType;
+          _selectedEquipment = _equipmentOptions.contains(exercise.equipment) 
+              ? exercise.equipment 
+              : 'Barbell'; // Fallback
+          _selectedCategory = _categories.contains(exercise.category) 
+              ? exercise.category 
+              : 'strength'; // Fallback
+          _selectedDifficulty = _difficulties.contains(exercise.difficulty) 
+              ? exercise.difficulty 
+              : 'intermediate'; // Fallback
+          _selectedExerciseType = _exerciseTypeConfigs.any((config) => config.type.value == exercise.exerciseType)
+              ? exercise.exerciseType 
+              : 'weight_reps'; // Fallback
           _isBodyweight = exercise.isBodyweight;
           _selectedTags.addAll(exercise.tags);
           if (exercise.parentExerciseId != null) {
@@ -228,14 +232,15 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
       }
 
       final isEdit = widget.exerciseId != null;
+      final isAdminMode = ref.read(currentAdminModeProvider);
       final exerciseId = isEdit 
           ? widget.exerciseId! 
-          : _isAdminMode 
+          : isAdminMode 
               ? const Uuid().v4() // Admin exercises get system IDs
               : 'custom_${const Uuid().v4()}'; // User exercises get custom_ prefix
 
       // Get current user ID for user isolation (null for admin mode = system-wide)
-      final currentUserId = _isAdminMode ? null : ref.read(currentUserProvider)?.id;
+      final currentUserId = isAdminMode ? null : ref.read(currentUserProvider)?.id;
       
       final companion = ExercisesCompanion.insert(
         id: exerciseId,
@@ -306,7 +311,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
         title: Row(
           children: [
             Text(isEdit ? 'Edit Exercise' : 'Create Exercise'),
-            if (_isAdminMode) ...[
+            if (ref.watch(currentAdminModeProvider)) ...[
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

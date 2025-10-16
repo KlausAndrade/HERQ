@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
+import '../../../../core/providers/admin_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/user_context_service.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
@@ -41,17 +42,10 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
   int? _estimatedDuration;
 
   bool _isLoading = false;
-  bool _isAdminMode = false;
 
   @override
   void initState() {
     super.initState();
-    // Check if we're in admin mode from URL parameters
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final uri = GoRouterState.of(context).uri;
-      _isAdminMode = uri.queryParameters['admin'] == 'true';
-      if (mounted) setState(() {});
-    });
     if (widget.templateId != null) {
       _loadTemplate();
     }
@@ -164,7 +158,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
             Text(
               widget.templateId == null ? 'Create Template' : 'Edit Template',
             ),
-            if (_isAdminMode) ...[
+            if (ref.watch(currentAdminModeProvider)) ...[
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -529,7 +523,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
 
     final template = WorkoutTemplate(
       id: widget.templateId ?? const Uuid().v4(),
-      userId: _isAdminMode 
+      userId: ref.read(currentAdminModeProvider)
           ? null // Admin templates are system-wide
           : UserContextService.instance.getCurrentUserId() ?? 'default_user', // ✅ USER ISOLATION
       name: _nameController.text.trim(),

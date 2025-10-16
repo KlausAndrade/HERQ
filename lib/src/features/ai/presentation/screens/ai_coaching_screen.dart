@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
+import '../../../../core/providers/admin_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/user_context_service.dart';
@@ -22,9 +23,8 @@ class AICoachingScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Check if we're in admin mode from URL parameters
-    final uri = GoRouterState.of(context).uri;
-    final isAdminMode = uri.queryParameters['admin'] == 'true';
+    // Check if we're in admin mode from provider
+    final isAdminMode = ref.watch(currentAdminModeProvider);
     
     return DefaultTabController(
         length: 2,
