@@ -55,7 +55,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 18;
+  int get schemaVersion => 19;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -70,6 +70,38 @@ class AppDatabase extends _$AppDatabase {
         onUpgrade: (migrator, from, to) async {
           // Apply lightweight per-version migrations. Keep in sync with
           // native implementation in `database_native.dart`.
+          if (to == 19) {
+            try {
+              // Ensure all tables have user_id column for user isolation
+              final tables = [
+                'exercises',
+                'workout_sessions', 
+                'set_entries',
+                'personal_records',
+                'user_stats',
+                'exercise_favorites',
+                'user_achievements'
+              ];
+              
+              for (final table in tables) {
+                try {
+                  await customStatement('ALTER TABLE $table ADD COLUMN user_id TEXT');
+                  print('✅ Added user_id column to $table');
+                } catch (e) {
+                  // Column may already exist, which is fine
+                  print('ℹ️ user_id column may already exist in $table: $e');
+                }
+              }
+              
+              // Set all existing exercises to global (NULL user_id)
+              await customStatement('UPDATE exercises SET user_id = NULL WHERE user_id IS NULL');
+              
+              print('✅ Migration 19: Ensured all tables have user_id column');
+            } catch (e) {
+              print('Migration 19 error: $e');
+            }
+          }
+
           if (to == 18) {
             try {
               // Make userId column nullable in workout_templates table for admin templates

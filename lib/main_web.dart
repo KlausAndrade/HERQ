@@ -47,6 +47,16 @@ Future<void> main() async {
 
     print('✅ Web platform initialized with Supabase');
     print('   URL: ${url.isNotEmpty ? "configured" : "NOT SET"}');
+    print('   Anon Key: ${anonKey.isNotEmpty ? "configured" : "NOT SET"}');
+    
+    // Test Supabase connection
+    try {
+      final client = Supabase.instance.client;
+      final session = client.auth.currentSession;
+      print('   Current session: ${session != null ? "Active" : "None"}');
+    } catch (e) {
+      print('   ⚠️ Supabase connection test failed: $e');
+    }
   } catch (e) {
     print('⚠️ Web initialization error: $e');
     // Continue anyway - app should handle missing env gracefully

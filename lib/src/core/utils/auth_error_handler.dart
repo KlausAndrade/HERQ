@@ -109,6 +109,14 @@ class AuthErrorHandler {
   static String _getGenericExceptionMessage(Exception error) {
     final message = error.toString().toLowerCase();
 
+    // Web-specific JSON decoding errors
+    if (message.contains('format exception') || 
+        message.contains('unexpected character') ||
+        message.contains('json') ||
+        message.contains('type error')) {
+      return 'Response format error. Please refresh the page and try again.';
+    }
+
     if (message.contains('network') || message.contains('connection')) {
       return 'Network connection failed. Please check your internet connection.';
     }
@@ -132,6 +140,11 @@ class AuthErrorHandler {
 
     if (message.contains('forbidden')) {
       return 'Access denied. Please contact support if this continues.';
+    }
+
+    // Web-specific CORS errors
+    if (message.contains('cors') || message.contains('cross-origin')) {
+      return 'Cross-origin request blocked. Please refresh the page and try again.';
     }
 
     return 'An unexpected error occurred. Please try again.';
