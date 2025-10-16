@@ -39,7 +39,7 @@ class SPt extends S {
   String get next => 'Próximo';
 
   @override
-  String get back => 'Costas';
+  String get back => 'Voltar';
 
   @override
   String get skip => 'Pular';
@@ -1951,4 +1951,42 @@ class SPt extends S {
 
   @override
   String get drop => 'Queda';
+
+  @override
+  String get howItWorks => 'Como funciona:';
+
+  @override
+  String get selectFolderToOptimize => 'Selecione pasta para otimizar';
+
+  @override
+  String get cancelBtn => 'Cancelar';
+
+  @override
+  String get analyzingAndOptimizing => 'Analisando e otimizando...';
+
+  @override
+  String get generatingWorkout => 'Gerando treino';
+
+  @override
+  String get generatePersonalizedWorkout =>
+      'Gere um treino personalizado baseado no seu histórico de treinamento';
+
+  @override
+  String get buildWorkoutInstructions =>
+      '1. A IA analisa suas últimas 14 sessões de treino\n2. Identifica padrões de treinamento e progressão\n3. Gera um plano de treino personalizado\n4. Salve como modelo ou inicie imediatamente';
+
+  @override
+  String get generatingPersonalizedWorkout =>
+      'Gerando seu treino personalizado...';
+
+  @override
+  String get aiPoweredOptimization =>
+      'Otimização impulsionada por IA das suas rotinas de treino existentes';
+
+  @override
+  String get optimizeWorkoutInstructions =>
+      '1. Selecione uma pasta de treino dos seus modelos\n2. A IA analisa todos os modelos na pasta\n3. Obtenha versões otimizadas com melhorias\n4. Salve como novos modelos ou substitua os originais';
+
+  @override
+  String get failedToOptimizeFolder => 'Falha ao otimizar pasta';
 }

@@ -39,7 +39,7 @@ class SEs extends S {
   String get next => 'Siguiente';
 
   @override
-  String get back => 'Espalda';
+  String get back => 'Volver';
 
   @override
   String get skip => 'Saltar';
@@ -682,13 +682,13 @@ class SEs extends S {
   String get all => 'Todos';
 
   @override
-  String get weightReps => 'Peso y Repeticiones';
+  String get weightReps => 'Peso y Reps';
 
   @override
-  String get bodyweightReps => 'Repeticiones de Peso Corporal';
+  String get bodyweightReps => 'Reps con Peso Corporal';
 
   @override
-  String get weightedBodyweight => 'Peso Corporal con Peso';
+  String get weightedBodyweight => 'Peso Corporal con Carga';
 
   @override
   String get assistedBodyweight => 'Peso Corporal Asistido';
@@ -1744,7 +1744,7 @@ class SEs extends S {
   String get push => 'Empuje';
 
   @override
-  String get pull => 'Tirón';
+  String get pull => 'Jalón';
 
   @override
   String get unilateral => 'Unilateral';
@@ -1960,4 +1960,42 @@ class SEs extends S {
 
   @override
   String get drop => 'Caída';
+
+  @override
+  String get howItWorks => 'Cómo funciona:';
+
+  @override
+  String get selectFolderToOptimize => 'Selecciona carpeta para optimizar';
+
+  @override
+  String get cancelBtn => 'Cancelar';
+
+  @override
+  String get analyzingAndOptimizing => 'Analizando y optimizando...';
+
+  @override
+  String get generatingWorkout => 'Generando entrenamiento';
+
+  @override
+  String get generatePersonalizedWorkout =>
+      'Genera un entrenamiento personalizado basado en tu historial de entrenamiento';
+
+  @override
+  String get buildWorkoutInstructions =>
+      '1. La IA analiza tus últimas 14 sesiones de entrenamiento\n2. Identifica patrones de entrenamiento y progresión\n3. Genera un plan de entrenamiento personalizado\n4. Guarda como plantilla o inicia inmediatamente';
+
+  @override
+  String get generatingPersonalizedWorkout =>
+      'Generando tu entrenamiento personalizado...';
+
+  @override
+  String get aiPoweredOptimization =>
+      'Optimización impulsada por IA de tus rutinas de entrenamiento existentes';
+
+  @override
+  String get optimizeWorkoutInstructions =>
+      '1. Selecciona una carpeta de entrenamiento de tus plantillas\n2. La IA analiza todas las plantillas en la carpeta\n3. Obtén versiones optimizadas con mejoras\n4. Guarda como nuevas plantillas o reemplaza las originales';
+
+  @override
+  String get failedToOptimizeFolder => 'Error al optimizar carpeta';
 }

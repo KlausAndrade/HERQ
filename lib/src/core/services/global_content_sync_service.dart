@@ -79,7 +79,7 @@ class GlobalContentSyncService {
           // Convert to local format and insert/update
           final companion = WorkoutTemplatesCompanion.insert(
             id: template['id'] ?? 'unknown_template_${DateTime.now().millisecondsSinceEpoch}',
-            userId: '00000000-0000-0000-0000-000000000000', // System UUID for global templates
+            userId: const Value('00000000-0000-0000-0000-000000000000'), // System UUID for global templates
             name: template['name'] ?? 'Unknown Template',
             description: Value(template['description']),
             folderId: Value(template['folder_id']),

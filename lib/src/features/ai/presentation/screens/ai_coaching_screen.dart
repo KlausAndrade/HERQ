@@ -21,7 +21,12 @@ class AICoachingScreen extends HookConsumerWidget {
   const AICoachingScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => DefaultTabController(
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Check if we're in admin mode from URL parameters
+    final uri = GoRouterState.of(context).uri;
+    final isAdminMode = uri.queryParameters['admin'] == 'true';
+    
+    return DefaultTabController(
         length: 2,
         child: Scaffold(
           appBar: AppBar(
@@ -29,7 +34,29 @@ class AICoachingScreen extends HookConsumerWidget {
               icon: const Icon(Icons.arrow_back),
               onPressed: () => context.go('/'),
             ),
-            title: Text(S.of(context)!.aiCoach),
+            title: Row(
+              children: [
+                Text(S.of(context)!.aiCoach),
+                if (isAdminMode) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'ADMIN',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
             bottom: TabBar(
               isScrollable: true,
               tabs: [
@@ -44,19 +71,22 @@ class AICoachingScreen extends HookConsumerWidget {
               ],
             ),
           ),
-          body: const TabBarView(
+          body: TabBarView(
             children: [
-              BuildNextWorkoutTab(),
-              OptimizeWorkoutsTab(),
+              BuildNextWorkoutTab(isAdminMode: isAdminMode),
+              OptimizeWorkoutsTab(isAdminMode: isAdminMode),
             ],
           ),
         ),
       );
+  }
 }
 
 /// Tab for building next workout based on user history
 class BuildNextWorkoutTab extends HookConsumerWidget {
-  const BuildNextWorkoutTab({super.key});
+  const BuildNextWorkoutTab({super.key, this.isAdminMode = false});
+  
+  final bool isAdminMode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -92,7 +122,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Generate a personalized workout based on your training history',
+                              S.of(context)!.generatePersonalizedWorkout,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
@@ -131,17 +161,14 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'How it works:',
+                    S.of(context)!.howItWorks,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    '1. AI analyzes your last 14 workout sessions\n'
-                    '2. Identifies training patterns and progression\n'
-                    '3. Generates a personalized workout plan\n'
-                    '4. Save as template or start immediately',
+                  Text(
+                    S.of(context)!.buildWorkoutInstructions,
                   ),
                 ],
               ),
@@ -166,11 +193,11 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
             children: [
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
-              const Text('Generating your personalized workout...'),
+              Text(S.of(context)!.generatingPersonalizedWorkout),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
+                child: Text(S.of(context)!.cancelBtn),
               ),
             ],
           ),
@@ -180,7 +207,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
 
     try {
       // Trigger the API call
-      final workoutData = await ref.read(generateNextWorkoutProvider.future);
+      final workoutData = await ref.read(generateNextWorkoutProvider(isAdminMode).future);
       
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading dialog
@@ -232,9 +259,10 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
                       child: SingleChildScrollView(
                         child: GeneratedWorkoutCard(
                           workoutData: workoutData,
+                          isAdminMode: isAdminMode,
                           onSave: () {
                             Navigator.of(context).pop();
-                            ref.invalidate(generateNextWorkoutProvider);
+                            ref.invalidate(generateNextWorkoutProvider(isAdminMode));
                           },
                           onStart: () {
                             Navigator.of(context).pop();
@@ -259,18 +287,18 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
           context: context,
           builder: (context) => AlertDialog(
             title: Text(S.of(context)!.failedToGenerateWorkout),
-            content: Text('Error: ${e.toString()}'),
+            content: Text('${S.of(context)!.error}: ${e.toString()}'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
+                child: Text(S.of(context)!.ok),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                   _generateWorkout(context, ref);
                 },
-                child: const Text('Try Again'),
+                child: Text(S.of(context)!.tryAgain),
               ),
             ],
           ),
@@ -282,7 +310,9 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
 
 /// Tab for optimizing workout folders
 class OptimizeWorkoutsTab extends HookConsumerWidget {
-  const OptimizeWorkoutsTab({super.key});
+  const OptimizeWorkoutsTab({super.key, this.isAdminMode = false});
+  
+  final bool isAdminMode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -318,7 +348,7 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'AI-powered optimization of your existing workout routines',
+                              S.of(context)!.aiPoweredOptimization,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
@@ -340,7 +370,7 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
             child: ElevatedButton.icon(
               onPressed: () => _showFolderSelectionDialog(context, ref),
               icon: const Icon(Icons.folder_open),
-              label: const Text('Select Folder to Optimize'),
+              label: Text(S.of(context)!.selectFolderToOptimize),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -357,17 +387,14 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'How it works:',
+                    S.of(context)!.howItWorks,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    '1. Select a workout folder from your templates\n'
-                    '2. AI analyzes all templates in the folder\n'
-                    '3. Get optimized versions with improvements\n'
-                    '4. Save as new templates or replace originals',
+                  Text(
+                    S.of(context)!.optimizeWorkoutInstructions,
                   ),
                 ],
               ),
@@ -450,13 +477,13 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                           ref.invalidate(optimizeFolderProvider(folderId));
                         },
                       ),
-                      loading: () => const Center(
+                      loading: () => Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CircularProgressIndicator(),
-                            SizedBox(height: 16),
-                            Text('Analyzing and optimizing your workouts...'),
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16),
+                            Text(S.of(context)!.analyzingAndOptimizing),
                           ],
                         ),
                       ),
@@ -471,7 +498,7 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Failed to optimize folder',
+                              S.of(context)!.failedToOptimizeFolder,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
@@ -485,7 +512,7 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                                 Navigator.of(context).pop();
                                 ref.invalidate(optimizeFolderProvider(folderId));
                               },
-                              child: const Text('Try Again'),
+                              child: Text(S.of(context)!.tryAgain),
                             ),
                           ],
                         ),

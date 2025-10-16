@@ -883,7 +883,7 @@ class SEn extends S {
   String get somethingWentWrong => 'Something went wrong';
 
   @override
-  String get tryAgain => 'Try again';
+  String get tryAgain => 'Try Again';
 
   @override
   String get noInternetConnection => 'No internet connection';
@@ -1942,4 +1942,42 @@ class SEn extends S {
 
   @override
   String get drop => 'Drop';
+
+  @override
+  String get howItWorks => 'How it works:';
+
+  @override
+  String get selectFolderToOptimize => 'Select folder to optimize';
+
+  @override
+  String get cancelBtn => 'Cancel';
+
+  @override
+  String get analyzingAndOptimizing => 'Analyzing and optimizing...';
+
+  @override
+  String get generatingWorkout => 'Generating workout';
+
+  @override
+  String get generatePersonalizedWorkout =>
+      'Generate a personalized workout based on your training history';
+
+  @override
+  String get buildWorkoutInstructions =>
+      '1. AI analyzes your last 14 workout sessions\n2. Identifies training patterns and progression\n3. Generates a personalized workout plan\n4. Save as template or start immediately';
+
+  @override
+  String get generatingPersonalizedWorkout =>
+      'Generating your personalized workout...';
+
+  @override
+  String get aiPoweredOptimization =>
+      'AI-powered optimization of your existing workout routines';
+
+  @override
+  String get optimizeWorkoutInstructions =>
+      '1. Select a workout folder from your templates\n2. AI analyzes all templates in the folder\n3. Get optimized versions with improvements\n4. Save as new templates or replace originals';
+
+  @override
+  String get failedToOptimizeFolder => 'Failed to optimize folder';
 }

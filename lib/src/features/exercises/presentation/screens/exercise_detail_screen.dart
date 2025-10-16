@@ -809,8 +809,8 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
       await database.into(database.workoutTemplates).insert(
             WorkoutTemplatesCompanion.insert(
               id: templateId,
-              userId: UserContextService.instance
-                  .getCurrentUserId(), // ✅ USER ISOLATION
+              userId: Value(UserContextService.instance
+                  .getCurrentUserId()), // ✅ USER ISOLATION
               name: 'Quick: ${exercise.name}',
               exerciseIds: Value([exercise.id]),
               tags: const [],

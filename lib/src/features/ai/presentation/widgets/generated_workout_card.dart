@@ -15,11 +15,13 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
     required this.workoutData,
     this.onSave,
     this.onStart,
+    this.isAdminMode = false,
   });
 
   final Map<String, dynamic> workoutData;
   final VoidCallback? onSave;
   final VoidCallback? onStart;
+  final bool isAdminMode;
 
   /// Safely parse an integer from dynamic value
   int? _parseInt(dynamic value) {
@@ -410,7 +412,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
       
       final template = WorkoutTemplate(
         id: templateId,
-        userId: 'default_user', // TODO: Replace with actual user ID
+        userId: isAdminMode ? null : 'default_user', // Admin mode = system-wide, User mode = user-specific
         name: workoutData['name'] as String? ?? S.of(context)!.aiGeneratedWorkoutCreated,
         description: workoutData['description'] as String? ?? '',
         category: workoutData['category'] as String? ?? S.of(context)!.aiGenerated,
@@ -517,7 +519,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
       
       final template = WorkoutTemplate(
         id: templateId,
-        userId: 'default_user', // TODO: Replace with actual user ID
+        userId: isAdminMode ? null : 'default_user', // Admin mode = system-wide, User mode = user-specific
         name: workoutData['name'] as String? ?? S.of(context)!.aiGeneratedWorkoutCreated,
         description: workoutData['description'] as String? ?? '',
         category: workoutData['category'] as String? ?? S.of(context)!.aiGenerated,

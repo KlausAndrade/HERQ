@@ -51,6 +51,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
   String? _variantType;
 
   bool _isLoading = false;
+  bool _isAdminMode = false;
 
   // Muscle groups
   final List<String> _muscleGroups = [
@@ -129,6 +130,12 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
   @override
   void initState() {
     super.initState();
+    // Check if we're in admin mode from URL parameters
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final uri = GoRouterState.of(context).uri;
+      _isAdminMode = uri.queryParameters['admin'] == 'true';
+      if (mounted) setState(() {});
+    });
     if (widget.exerciseId != null) {
       _loadExercise();
     }
@@ -221,15 +228,18 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
       }
 
       final isEdit = widget.exerciseId != null;
-      final exerciseId =
-          isEdit ? widget.exerciseId! : 'custom_${const Uuid().v4()}';
+      final exerciseId = isEdit 
+          ? widget.exerciseId! 
+          : _isAdminMode 
+              ? const Uuid().v4() // Admin exercises get system IDs
+              : 'custom_${const Uuid().v4()}'; // User exercises get custom_ prefix
 
-      // Get current user ID for user isolation
-      final currentUserId = ref.read(currentUserProvider)?.id;
+      // Get current user ID for user isolation (null for admin mode = system-wide)
+      final currentUserId = _isAdminMode ? null : ref.read(currentUserProvider)?.id;
       
       final companion = ExercisesCompanion.insert(
         id: exerciseId,
-        userId: Value(currentUserId), // ✅ USER ISOLATION: Link to current user
+        userId: Value(currentUserId), // ✅ USER ISOLATION: Link to current user (null = admin/system-wide)
         name: _nameController.text.trim(),
         primaryMuscleGroup: _selectedMuscleGroup,
         secondaryMuscleGroups: _selectedSecondaryMuscles,
@@ -293,7 +303,29 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEdit ? 'Edit Exercise' : 'Create Exercise'),
+        title: Row(
+          children: [
+            Text(isEdit ? 'Edit Exercise' : 'Create Exercise'),
+            if (_isAdminMode) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'ADMIN',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
         actions: [
           if (_isLoading)
             const Center(

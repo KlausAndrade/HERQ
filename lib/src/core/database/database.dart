@@ -55,7 +55,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 17;
+  int get schemaVersion => 18;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -70,6 +70,44 @@ class AppDatabase extends _$AppDatabase {
         onUpgrade: (migrator, from, to) async {
           // Apply lightweight per-version migrations. Keep in sync with
           // native implementation in `database_native.dart`.
+          if (to == 18) {
+            try {
+              // Make userId column nullable in workout_templates table for admin templates
+              // SQLite doesn't support ALTER COLUMN, so we need to recreate the table
+              await customStatement('''
+                CREATE TABLE workout_templates_new (
+                  id TEXT NOT NULL PRIMARY KEY,
+                  user_id TEXT,
+                  name TEXT NOT NULL,
+                  description TEXT,
+                  category TEXT NOT NULL DEFAULT 'Custom',
+                  folder_id TEXT,
+                  sort_order INTEGER NOT NULL DEFAULT 0,
+                  exercise_ids TEXT NOT NULL DEFAULT '',
+                  tags TEXT NOT NULL DEFAULT '',
+                  estimated_duration_minutes INTEGER,
+                  is_default INTEGER NOT NULL DEFAULT 0,
+                  created_at INTEGER NOT NULL,
+                  updated_at INTEGER NOT NULL
+                )
+              ''');
+              
+              // Copy data from old table to new table
+              await customStatement('''
+                INSERT INTO workout_templates_new 
+                SELECT id, user_id, name, description, category, folder_id, sort_order, 
+                       exercise_ids, tags, estimated_duration_minutes, is_default, created_at, updated_at
+                FROM workout_templates
+              ''');
+              
+              // Drop old table and rename new table
+              await customStatement('DROP TABLE workout_templates');
+              await customStatement('ALTER TABLE workout_templates_new RENAME TO workout_templates');
+            } catch (e) {
+              print('Migration 18 error: $e');
+            }
+          }
+
           if (to == 17) {
             try {
               // Add userId column to exercises table for user isolation

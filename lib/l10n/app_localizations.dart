@@ -1806,7 +1806,7 @@ abstract class S {
   /// No description provided for @tryAgain.
   ///
   /// In en, this message translates to:
-  /// **'Try again'**
+  /// **'Try Again'**
   String get tryAgain;
 
   /// No description provided for @noInternetConnection.
@@ -3842,6 +3842,72 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Drop'**
   String get drop;
+
+  /// No description provided for @howItWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'How it works:'**
+  String get howItWorks;
+
+  /// No description provided for @selectFolderToOptimize.
+  ///
+  /// In en, this message translates to:
+  /// **'Select folder to optimize'**
+  String get selectFolderToOptimize;
+
+  /// No description provided for @cancelBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelBtn;
+
+  /// No description provided for @analyzingAndOptimizing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing and optimizing...'**
+  String get analyzingAndOptimizing;
+
+  /// No description provided for @generatingWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating workout'**
+  String get generatingWorkout;
+
+  /// No description provided for @generatePersonalizedWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate a personalized workout based on your training history'**
+  String get generatePersonalizedWorkout;
+
+  /// No description provided for @buildWorkoutInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'1. AI analyzes your last 14 workout sessions\n2. Identifies training patterns and progression\n3. Generates a personalized workout plan\n4. Save as template or start immediately'**
+  String get buildWorkoutInstructions;
+
+  /// No description provided for @generatingPersonalizedWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating your personalized workout...'**
+  String get generatingPersonalizedWorkout;
+
+  /// No description provided for @aiPoweredOptimization.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-powered optimization of your existing workout routines'**
+  String get aiPoweredOptimization;
+
+  /// No description provided for @optimizeWorkoutInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Select a workout folder from your templates\n2. AI analyzes all templates in the folder\n3. Get optimized versions with improvements\n4. Save as new templates or replace originals'**
+  String get optimizeWorkoutInstructions;
+
+  /// No description provided for @failedToOptimizeFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to optimize folder'**
+  String get failedToOptimizeFolder;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -260,13 +260,13 @@ final workoutPatternAnalysisProvider =
 });
 
 // Generate next workout provider (fallback to mock if Groq fails)
-final generateNextWorkoutProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) async {
-  const userId = 'default_user'; // TODO: Replace with actual user ID when auth implemented
+final generateNextWorkoutProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, bool>((ref, isAdminMode) async {
+  final userId = isAdminMode ? null : 'default_user'; // Admin mode = system-wide, User mode = user-specific
   
   try {
     final aiService = ref.read(groqAICoachingServiceProvider);
     if (aiService != null) {
-      final result = await aiService.generateNextWorkout(userId);
+      final result = await aiService.generateNextWorkout(userId ?? 'default_user');
       print('✅ Groq next workout generated (Real API)');
       return result;
     }

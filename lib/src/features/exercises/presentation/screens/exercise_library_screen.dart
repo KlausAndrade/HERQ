@@ -244,10 +244,11 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                     return _ExerciseCard(
                       exercise: exercise,
                       onTap: () => context.go('/exercise/${exercise.id}'),
-                      onEdit: exercise.id.startsWith('custom_')
+                      onEdit: _isAdminMode || exercise.id.startsWith('custom_')
                           ? () => context
-                              .push('/exercises/create?id=${exercise.id}')
+                              .push('/exercises/create?id=${exercise.id}${_isAdminMode ? '&admin=true' : ''}')
                           : null,
+                      isAdminMode: _isAdminMode,
                     );
                   },
                 );
@@ -285,7 +286,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
       ),
       floatingActionButton: AnimatedFAB(
         icon: Icons.add,
-        onPressed: () => context.push('/exercises/create'),
+        onPressed: () => context.push('/exercises/create${_isAdminMode ? '?admin=true' : ''}'),
         tooltip: S.of(context)!.createExercise,
       ),
       bottomNavigationBar: _buildBottomNavigation(context),
@@ -507,11 +508,13 @@ class _ExerciseCard extends ConsumerWidget {
     required this.exercise,
     required this.onTap,
     this.onEdit,
+    this.isAdminMode = false,
   });
 
   final Exercise exercise;
   final VoidCallback onTap;
   final VoidCallback? onEdit;
+  final bool isAdminMode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -546,22 +549,44 @@ class _ExerciseCard extends ConsumerWidget {
               ),
             ),
             if (exercise.parentExerciseId != null) ...[
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: _getVariantColor(context, exercise.variantType),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  exercise.variantType?.toUpperCase() ?? 'VARIANT',
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              const SizedBox(width: 4),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: _getVariantColor(context, exercise.variantType),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+                  child: Text(
+                    exercise.variantType?.toUpperCase() ?? 'VARIANT',
+                    style: const TextStyle(
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+              ),
+            ],
+            if (isAdminMode && !exercise.id.startsWith('custom_')) ...[
+              const SizedBox(width: 4),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    'ADMIN',
+                    style: TextStyle(
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -643,12 +668,14 @@ class _ExerciseCard extends ConsumerWidget {
               ),
               error: (_, __) => const SizedBox.shrink(),
             ),
-            // Edit button (for custom exercises) or chevron
+            // Edit button (for custom exercises or admin mode) or chevron
             if (onEdit != null)
               IconButton(
                 icon: const Icon(Icons.edit, size: 20),
                 onPressed: onEdit,
-                tooltip: 'Edit exercise',
+                tooltip: isAdminMode 
+                    ? 'Edit exercise (Admin)' 
+                    : 'Edit custom exercise',
               )
             else
               const Icon(Icons.chevron_right),

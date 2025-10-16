@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
@@ -40,10 +41,17 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
   int? _estimatedDuration;
 
   bool _isLoading = false;
+  bool _isAdminMode = false;
 
   @override
   void initState() {
     super.initState();
+    // Check if we're in admin mode from URL parameters
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final uri = GoRouterState.of(context).uri;
+      _isAdminMode = uri.queryParameters['admin'] == 'true';
+      if (mounted) setState(() {});
+    });
     if (widget.templateId != null) {
       _loadTemplate();
     }
@@ -151,8 +159,30 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.templateId == null ? 'Create Template' : 'Edit Template',
+        title: Row(
+          children: [
+            Text(
+              widget.templateId == null ? 'Create Template' : 'Edit Template',
+            ),
+            if (_isAdminMode) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'ADMIN',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
         actions: [
           if (widget.templateId != null && _canDeleteTemplate()) ...[
@@ -499,8 +529,9 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
 
     final template = WorkoutTemplate(
       id: widget.templateId ?? const Uuid().v4(),
-      userId:
-          UserContextService.instance.getCurrentUserId(), // ✅ USER ISOLATION
+      userId: _isAdminMode 
+          ? null // Admin templates are system-wide
+          : UserContextService.instance.getCurrentUserId() ?? 'default_user', // ✅ USER ISOLATION
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim().isEmpty
           ? null
