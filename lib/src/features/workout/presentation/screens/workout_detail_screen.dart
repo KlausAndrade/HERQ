@@ -302,7 +302,8 @@ class WorkoutDetailScreen extends ConsumerWidget {
                 if (database == null) return;
 
                 try {
-                  // Gather distinct exercise IDs used in this workout session
+                  // Get all exercises that were in this workout session
+                  // This includes exercises with completed sets AND exercises that were added but never completed
                   final entries = await (database.select(database.setEntries)
                         ..where(
                           (tbl) =>
@@ -310,8 +311,28 @@ class WorkoutDetailScreen extends ConsumerWidget {
                         ))
                       .get();
 
-                  final exerciseIds =
-                      entries.map((e) => e.exerciseId).toSet().toList();
+                  // Get exercise IDs from set entries (completed sets)
+                  final completedExerciseIds = entries.map((e) => e.exerciseId).toSet();
+                  
+                  // If this workout was from a template, get all exercises from the template
+                  List<String> exerciseIds;
+                  if (workoutSession.templateId != null && workoutSession.templateId!.isNotEmpty) {
+                    final template = await (database.select(database.workoutTemplates)
+                          ..where((tbl) => tbl.id.equals(workoutSession.templateId!)))
+                        .getSingleOrNull();
+                    
+                    if (template != null) {
+                      // Use template exercises (includes all exercises, even those without completed sets)
+                      exerciseIds = template.exerciseIds;
+                    } else {
+                      // Fallback to completed exercises only
+                      exerciseIds = completedExerciseIds.toList();
+                    }
+                  } else {
+                    // For custom workouts, we can only use exercises with set entries
+                    // This is a limitation - custom workouts without completed sets can't be fully repeated
+                    exerciseIds = completedExerciseIds.toList();
+                  }
 
                   // Start workout directly from exercise IDs (no DB template)
                   await ref

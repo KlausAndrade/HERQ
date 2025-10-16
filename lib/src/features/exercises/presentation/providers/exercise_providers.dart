@@ -2,17 +2,35 @@ import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/database/database.dart';
+import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/global_content_sync_provider.dart';
 
-// Provider for all exercises
+// Provider for all exercises (global + user's custom exercises)
 final exercisesProvider = FutureProvider<List<Exercise>>((ref) async {
   final database = ref.read(databaseProvider);
   if (database == null) {
     return []; // Return empty list for web
   }
 
-  final exercises = await database.select(database.exercises).get();
-  print('DEBUG: Found ${exercises.length} exercises in database');
+  // Check if global content sync is needed and trigger it
+  final needsSync = await ref.read(needsGlobalContentSyncProvider.future);
+  if (needsSync) {
+    print('🌍 Global content updates available, syncing...');
+    await ref.read(globalContentSyncTriggerProvider.notifier).syncGlobalContent();
+  }
+
+  final currentUserId = ref.read(currentUserProvider)?.id;
+  
+  // Get global exercises (userId = NULL) + user's custom exercises (userId = currentUserId)
+  final exercises = await (database.select(database.exercises)
+        ..where((tbl) => 
+          tbl.userId.isNull() | 
+          (currentUserId != null ? tbl.userId.equals(currentUserId) : const Constant(false))
+        ))
+      .get();
+  
+  print('DEBUG: Found ${exercises.length} exercises in database (global + user custom)');
   return exercises;
 });
 
@@ -24,13 +42,23 @@ final exercisesByMuscleGroupProvider =
     return []; // Return empty list for web
   }
 
+  final currentUserId = ref.read(currentUserProvider)?.id;
+
   if (muscleGroup == null || muscleGroup.isEmpty || muscleGroup == 'All') {
-    return database.select(database.exercises).get();
+    // Get global exercises (userId = NULL) + user's custom exercises (userId = currentUserId)
+    return (database.select(database.exercises)
+          ..where((tbl) => 
+            tbl.userId.isNull() | 
+            (currentUserId != null ? tbl.userId.equals(currentUserId) : const Constant(false))
+          ))
+        .get();
   }
 
   return (database.select(database.exercises)
-        ..where(
-          (tbl) => tbl.primaryMuscleGroup.equals(muscleGroup.toLowerCase()),
+        ..where((tbl) => 
+          tbl.primaryMuscleGroup.equals(muscleGroup.toLowerCase()) &
+          (tbl.userId.isNull() | 
+           (currentUserId != null ? tbl.userId.equals(currentUserId) : const Constant(false)))
         ))
       .get();
 });
@@ -43,22 +71,34 @@ final exerciseSearchProvider =
     return []; // Return empty list for web
   }
 
+  final currentUserId = ref.read(currentUserProvider)?.id;
+
   if (query.isEmpty) {
-    return database.select(database.exercises).get();
+    // Get global exercises (userId = NULL) + user's custom exercises (userId = currentUserId)
+    return (database.select(database.exercises)
+          ..where((tbl) => 
+            tbl.userId.isNull() | 
+            (currentUserId != null ? tbl.userId.equals(currentUserId) : const Constant(false))
+          ))
+        .get();
   }
 
   // Use SQL LIKE operator across name, aliases, tags and primary muscle group.
   // aliases and tags are stored as comma-separated strings via StringListConverter.
   final q = '%${query.toLowerCase()}%';
 
+  // Build user filter condition
+  final userFilter = currentUserId != null 
+    ? 'user_id IS NULL OR user_id = ?'
+    : 'user_id IS NULL';
+  
+  final variables = currentUserId != null 
+    ? [Variable<String>(q), Variable<String>(q), Variable<String>(q), Variable<String>(q), Variable<String>(currentUserId)]
+    : [Variable<String>(q), Variable<String>(q), Variable<String>(q), Variable<String>(q)];
+
   final rows = await database.customSelect(
-    'SELECT * FROM exercises WHERE LOWER(name) LIKE ? OR LOWER(primary_muscle_group) LIKE ? OR (aliases IS NOT NULL AND LOWER(aliases) LIKE ?) OR (tags IS NOT NULL AND LOWER(tags) LIKE ?) COLLATE NOCASE',
-    variables: [
-      Variable<String>(q),
-      Variable<String>(q),
-      Variable<String>(q),
-      Variable<String>(q),
-    ],
+    'SELECT * FROM exercises WHERE (LOWER(name) LIKE ? OR LOWER(primary_muscle_group) LIKE ? OR (aliases IS NOT NULL AND LOWER(aliases) LIKE ?) OR (tags IS NOT NULL AND LOWER(tags) LIKE ?)) AND ($userFilter) COLLATE NOCASE',
+    variables: variables,
   ).get();
 
   // Map rows to Exercise data objects using database mapping

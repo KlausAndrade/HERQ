@@ -253,22 +253,97 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                       return ReorderableDelayedDragStartListener(
                         key: ValueKey('exercise-${exercise.id}-$index'),
                         index: index,
-                        child: _ExerciseCard(
-                          key: _exerciseKeys[index],
-                          exercise: exercise,
-                          exerciseIndex: index,
-                          isExpanded: _expandedExercises.contains(index),
-                          showDragHandle:
-                              true, // Show drag handle during workout
-                          onTap: () {
-                            setState(() {
-                              if (_expandedExercises.contains(index)) {
-                                _expandedExercises.remove(index);
-                              } else {
-                                _expandedExercises.add(index);
-                              }
-                            });
+                        child: Dismissible(
+                          key: Key('exercise-dismissible-${exercise.id}-$index'),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20),
+                            color: Theme.of(context).colorScheme.error,
+                            child: Icon(
+                              Icons.delete,
+                              color: Theme.of(context).colorScheme.onError,
+                              size: 28,
+                            ),
+                          ),
+                          confirmDismiss: (direction) async {
+                            // Show confirmation dialog
+                            return await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Remove Exercise?'),
+                                    content: Text(
+                                      'Are you sure you want to remove "${exercise.name}" from this workout?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      FilledButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .error,
+                                        ),
+                                        child: const Text('Remove'),
+                                      ),
+                                    ],
+                                  ),
+                                ) ??
+                                false;
                           },
+                          onDismissed: (direction) {
+                            // Remove the exercise
+                            ref
+                                .read(activeWorkoutProvider.notifier)
+                                .removeExercise(index);
+
+                            // Show in-app notification with undo option
+                            NotificationService()
+                                .showInAppNotification(
+                                  id: DateTime.now()
+                                      .millisecondsSinceEpoch
+                                      .toString(),
+                                  title: 'Exercise removed',
+                                  body: '${exercise.name} removed from workout',
+                                  primaryActionLabel: 'Undo',
+                                  onPrimaryAction: () {
+                                    // Simple undo: re-add the exercise at the same position
+                                    ref
+                                        .read(activeWorkoutProvider.notifier)
+                                        .addExerciseAtPosition(
+                                          exercise.id,
+                                          index,
+                                          initialWeight: exercise.sets.isNotEmpty 
+                                              ? exercise.sets.first.weight 
+                                              : null,
+                                          restTimerSeconds: exercise.restTimerSeconds,
+                                          isAssisted: exercise.variantType == 'assisted',
+                                        );
+                                  },
+                                )
+                                .catchError((_) {});
+                          },
+                          child: _ExerciseCard(
+                            key: _exerciseKeys[index],
+                            exercise: exercise,
+                            exerciseIndex: index,
+                            isExpanded: _expandedExercises.contains(index),
+                            showDragHandle:
+                                true, // Show drag handle during workout
+                            onTap: () {
+                              setState(() {
+                                if (_expandedExercises.contains(index)) {
+                                  _expandedExercises.remove(index);
+                                } else {
+                                  _expandedExercises.add(index);
+                                }
+                              });
+                            },
                           onSetChanged: (setIndex, updatedSet) async {
                             final oldSet = exercise.sets[setIndex];
 
@@ -324,7 +399,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                                 .addSet(index);
                           },
                         ),
-                      );
+                      ),
+                    );
                     },
                   ),
                 ),
@@ -982,6 +1058,11 @@ class _ExerciseCard extends ConsumerWidget {
     }
   }
 
+  bool _isExerciseCompleted(ActiveExercise exercise) {
+    if (exercise.sets.isEmpty) return false;
+    return exercise.sets.every((set) => set.isCompleted);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) => Card(
         margin: const EdgeInsets.only(bottom: 4),
@@ -996,15 +1077,21 @@ class _ExerciseCard extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.1),
+                        color: _isExerciseCompleted(exercise)
+                            ? Colors.lime.withOpacity(0.2)
+                            : Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Icon(
-                        Icons.fitness_center,
-                        color: Theme.of(context).colorScheme.primary,
+                        _isExerciseCompleted(exercise)
+                            ? Icons.check_circle
+                            : Icons.fitness_center,
+                        color: _isExerciseCompleted(exercise)
+                            ? Colors.lime.shade600
+                            : Theme.of(context).colorScheme.primary,
                         size: 18,
                       ),
                     ),

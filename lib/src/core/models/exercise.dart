@@ -3,6 +3,7 @@ import '../converters/json_converters.dart';
 
 class Exercises extends Table {
   TextColumn get id => text()();
+  TextColumn get userId => text().nullable()(); // ✅ USER ISOLATION: Link to user (null = global/admin)
   TextColumn get name => text()();
   TextColumn get primaryMuscleGroup => text()();
   TextColumn get secondaryMuscleGroups =>

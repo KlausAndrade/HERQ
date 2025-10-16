@@ -52,7 +52,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 16;
+  int get schemaVersion => 17;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -64,6 +64,24 @@ class AppDatabase extends _$AppDatabase {
           await _insertDefaultData();
         },
         onUpgrade: (migrator, from, to) async {
+          if (to == 17) {
+            try {
+              // Add userId column to exercises table for user isolation
+              await customStatement(
+                'ALTER TABLE exercises ADD COLUMN user_id TEXT',
+              );
+              
+              // All existing exercises are global (admin-created), so set userId to NULL
+              // This means they'll be visible to all users
+              await customStatement(
+                "UPDATE exercises SET user_id = NULL WHERE user_id IS NULL",
+              );
+            } catch (e) {
+              // Column may already exist, ignore error
+              print('Migration 17 error (may be expected): $e');
+            }
+          }
+
           if (to == 16) {
             try {
               // Add userId columns for user isolation

@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart' hide Column;
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,8 +8,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/fix_display_names.dart';
 import '../../../../core/database/seed_database.dart';
+import '../../../../core/providers/admin_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/global_content_sync_provider.dart';
 import '../../../../core/providers/sync_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/widgets/animated_switch.dart';
@@ -24,7 +27,6 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final themeMode = ref.watch(themeModeProvider);
     final themeVariant = ref.watch(themeVariantProvider);
     final locale = ref.watch(localeProvider);
@@ -236,6 +238,14 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const Divider(height: 1),
                 ListTile(
+                  leading: const Icon(Icons.update, color: Colors.blue),
+                  title: const Text('Update Content'),
+                  subtitle: const Text('Get latest exercises and templates from admin'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showUpdateContentDialog(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
                   leading: const Icon(Icons.download_outlined),
                   title: const Text('Export Data'),
                   subtitle: const Text('Download your workout data'),
@@ -255,100 +265,42 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
 
-          // Maintenance Section
-          Text(
-            'Maintenance',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.bug_report, color: Colors.purple),
-                  title: const Text('Debug Exercise Types'),
-                  subtitle: const Text('Show all exercises and their types'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showDebugExerciseTypesDialog(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.leaderboard, color: Colors.green),
-                  title: const Text('Refresh Leaderboard Stats'),
-                  subtitle: const Text('Recalculate stats from all workouts'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _refreshLeaderboardStats(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.visibility, color: Colors.blue),
-                  title: const Text('Debug: Show User Stats'),
-                  subtitle: const Text('View raw user_stats table data'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showUserStatsDebug(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading:
-                      const Icon(Icons.admin_panel_settings, color: Colors.red),
-                  title: const Text('Admin Dashboard'),
-                  subtitle:
-                      const Text('Access admin panel for platform management'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.go('/admin'),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.cloud_upload, color: Colors.indigo),
-                  title: const Text('Sync to Supabase'),
-                  subtitle: const Text(
-                    'Upload stats to cloud for multi-user leaderboards',
+          // Admin Dashboard Link (only visible to admins)
+          Consumer(
+            builder: (context, ref, child) {
+              final showMaintenance = ref.watch(showMaintenanceProvider);
+              
+              if (!showMaintenance) {
+                return const SizedBox.shrink(); // Hide for non-admins
+              }
+              
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Admin Access',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),
                   ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _syncToSupabase(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading:
-                      const Icon(Icons.cleaning_services, color: Colors.red),
-                  title: const Text('Clean Duplicate Stats'),
-                  subtitle:
-                      const Text('Remove duplicate local user_stats entries'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _cleanDuplicateStats(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading:
-                      const Icon(Icons.person_remove, color: Colors.purple),
-                  title: const Text('Fix Display Names'),
-                  subtitle: const Text('Remove emails from display names'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _fixDisplayNames(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading:
-                      const Icon(Icons.build_outlined, color: Colors.orange),
-                  title: const Text('Update Exercise Types'),
-                  subtitle:
-                      const Text('Reassign exercise types to all exercises'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showMigrateExerciseTypesDialog(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.refresh, color: Colors.blue),
-                  title: const Text('Reload Templates & Exercises'),
-                  subtitle:
-                      const Text('Load new workout templates and exercises'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showReloadTemplatesDialog(context, ref),
-                ),
-              ],
-            ),
+                  const SizedBox(height: 8),
+                  
+                  // Admin Dashboard
+                  Card(
+                    color: Colors.red.withOpacity(0.1),
+                    child: ListTile(
+                      leading: const Icon(Icons.admin_panel_settings, color: Colors.red),
+                      title: const Text('Admin Dashboard'),
+                      subtitle: const Text('Manage global content, system maintenance, and debug tools'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.go('/admin'),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 24),
 
@@ -1724,6 +1676,133 @@ By using HERQ, you agree to these terms.''',
           duration: const Duration(seconds: 5),
         ),
       );
+    }
+  }
+
+
+  /// Show dialog for updating content (normal users)
+  Future<void> _showUpdateContentDialog(BuildContext context, WidgetRef ref) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Update Content'),
+        content: const Text(
+          'This will check for and download the latest exercises and templates from the admin.\n\n'
+          'You\'ll get:\n'
+          '• New exercises added by admin\n'
+          '• Updated exercise information\n'
+          '• New workout templates\n'
+          '• Template improvements\n\n'
+          'Your personal data will not be affected.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              
+              // Use a different approach - show loading in a separate overlay
+              _showUpdateContentLoading(context, ref);
+            },
+            child: const Text('Update Now'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Show loading overlay for content update with robust context handling
+  void _showUpdateContentLoading(BuildContext context, WidgetRef ref) {
+    // Create an overlay entry that will persist
+    late OverlayEntry overlayEntry;
+    
+    overlayEntry = OverlayEntry(
+      builder: (context) => Material(
+        color: Colors.black.withOpacity(0.5),
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            margin: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Updating content...'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Insert the overlay
+    Overlay.of(context).insert(overlayEntry);
+
+    // Add timeout fallback
+    Timer(const Duration(seconds: 35), () {
+      try {
+        overlayEntry.remove();
+        print('⏰ Loading overlay removed by timeout fallback');
+      } catch (e) {
+        print('⚠️ Could not remove overlay by timeout: $e');
+      }
+    });
+
+    // Perform the sync operation
+    _performContentUpdate(overlayEntry, ref);
+  }
+
+  /// Perform the actual content update
+  Future<void> _performContentUpdate(OverlayEntry overlayEntry, WidgetRef ref) async {
+    try {
+      print('🔄 Starting content update...');
+      // Trigger global content sync
+      await ref.read(globalContentSyncTriggerProvider.notifier).syncGlobalContent();
+      print('✅ Content update completed');
+      
+      // Remove the overlay
+      try {
+        overlayEntry.remove();
+        print('✅ Loading overlay removed');
+        
+        // Show success notification
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Content Updated',
+              body: 'Latest exercises and templates have been downloaded',
+            )
+            .catchError((_) {});
+      } catch (e) {
+        print('⚠️ Could not remove overlay: $e');
+      }
+    } catch (e) {
+      print('❌ Content update failed: $e');
+      
+      // Remove the overlay
+      try {
+        overlayEntry.remove();
+        print('✅ Loading overlay removed after error');
+        
+        // Show error notification
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Update Failed',
+              body: 'Could not update content: $e',
+            )
+            .catchError((_) {});
+      } catch (e) {
+        print('⚠️ Could not remove overlay after error: $e');
+      }
     }
   }
 }

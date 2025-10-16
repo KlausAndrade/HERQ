@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../data/providers/admin_data_provider.dart';
 
-// Admin screens will be imported when needed
-
 class AdminDashboardScreen extends ConsumerWidget {
   const AdminDashboardScreen({super.key});
 
@@ -35,43 +33,50 @@ class AdminDashboardScreen extends ConsumerWidget {
       ),
       body: dashboardData.when(
         data: (data) => SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(6),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Real Quick Stats
               _buildRealQuickStats(context, data),
-              const SizedBox(height: 24),
+              const SizedBox(height: 2),
 
               // Admin Features
               _buildFeatureGrid(context, [
                 _FeatureCard(
+                  title: 'Global Content Management',
+                  subtitle: 'Manage exercises and templates for all users',
+                  icon: Icons.fitness_center,
+                  color: Colors.blue,
+                  onTap: () => _showGlobalContentManagement(context, ref),
+                ),
+                _FeatureCard(
+                  title: 'System Maintenance',
+                  subtitle: 'Database cleanup and system operations',
+                  icon: Icons.build,
+                  color: Colors.orange,
+                  onTap: () => _showSystemMaintenance(context, ref),
+                ),
+                _FeatureCard(
+                  title: 'Debug Tools',
+                  subtitle: 'Development and debugging utilities',
+                  icon: Icons.bug_report,
+                  color: Colors.purple,
+                  onTap: () => _showDebugTools(context, ref),
+                ),
+                _FeatureCard(
                   title: 'User Management',
                   subtitle: 'Manage users, roles, and accounts',
                   icon: Icons.people,
-                  color: Colors.blue,
+                  color: Colors.green,
                   onTap: () => context.push('/admin/users'),
-                ),
-                _FeatureCard(
-                  title: 'Content Moderation',
-                  subtitle: 'Review posts, comments, and reports',
-                  icon: Icons.shield,
-                  color: Colors.orange,
-                  onTap: () => context.push('/admin/content'),
                 ),
                 _FeatureCard(
                   title: 'Analytics',
                   subtitle: 'Platform metrics and insights',
                   icon: Icons.analytics,
-                  color: Colors.green,
+                  color: Colors.indigo,
                   onTap: () => context.push('/admin/analytics'),
-                ),
-                _FeatureCard(
-                  title: 'Data Operations',
-                  subtitle: 'Backup, export, and data management',
-                  icon: Icons.storage,
-                  color: Colors.brown,
-                  onTap: () => context.push('/admin/data'),
                 ),
                 _FeatureCard(
                   title: 'Admin Settings',
@@ -82,10 +87,6 @@ class AdminDashboardScreen extends ConsumerWidget {
                 ),
               ]),
 
-              const SizedBox(height: 24),
-
-              // Real Recent Activity
-              _buildRealRecentActivity(context, data),
             ],
           ),
         ),
@@ -95,9 +96,9 @@ class AdminDashboardScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.error, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
+              const SizedBox(height: 4),
               Text('Error loading admin data: $error'),
-              const SizedBox(height: 16),
+              const SizedBox(height: 4),
               ElevatedButton(
                 onPressed: () => ref.refresh(adminDashboardProvider),
                 child: const Text('Retry'),
@@ -112,408 +113,179 @@ class AdminDashboardScreen extends ConsumerWidget {
   Widget _buildRealQuickStats(BuildContext context, Map<String, dynamic> data) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 400) {
-          // Very small screens: Single column
-          return Column(
-            children: [
-              _StatCard(
-                title: 'Total Users',
-                value: '${data['totalUsers'] ?? 0}',
-                change: '+${data['activeUsers'] ?? 0} active',
-                icon: Icons.people,
-                color: Colors.blue,
-              ),
-              const SizedBox(height: 4),
-              _StatCard(
-                title: 'Total Workouts',
-                value: '${data['totalWorkouts'] ?? 0}',
-                change: '+${data['recentWorkouts'] ?? 0} recent',
-                icon: Icons.fitness_center,
-                color: Colors.green,
-              ),
-              const SizedBox(height: 4),
-              _StatCard(
-                title: 'Templates',
-                value: '${data['totalTemplates'] ?? 0}',
-                change: '${data['totalExercises'] ?? 0} exercises',
-                icon: Icons.list_alt,
-                color: Colors.orange,
-              ),
-              const SizedBox(height: 4),
-              _StatCard(
-                title: 'Last Updated',
-                value: _formatLastUpdated(data['lastUpdated']),
-                change: 'Live data',
-                icon: Icons.update,
-                color: Colors.purple,
-              ),
-            ],
-          );
-        } else if (constraints.maxWidth < 600) {
-          // Mobile: 2x2 grid
-          return Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Total Users',
-                      value: '${data['totalUsers'] ?? 0}',
-                      change: '+${data['activeUsers'] ?? 0} active',
-                      icon: Icons.people,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Total Workouts',
-                      value: '${data['totalWorkouts'] ?? 0}',
-                      change: '+${data['recentWorkouts'] ?? 0} recent',
-                      icon: Icons.fitness_center,
-                      color: Colors.green,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Templates',
-                      value: '${data['totalTemplates'] ?? 0}',
-                      change: '${data['totalExercises'] ?? 0} exercises',
-                      icon: Icons.list_alt,
-                      color: Colors.orange,
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Last Updated',
-                      value: _formatLastUpdated(data['lastUpdated']),
-                      change: 'Live data',
-                      icon: Icons.update,
-                      color: Colors.purple,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        } else {
-          // Desktop: 4 columns
           return Row(
             children: [
               Expanded(
-                child: _StatCard(
-                  title: 'Total Users',
-                  value: '${data['totalUsers'] ?? 0}',
-                  change: '+${data['activeUsers'] ?? 0} active',
-                  icon: Icons.people,
-                  color: Colors.blue,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: _StatCard(
+                    title: 'Total Users',
+                    value: '${data['totalUsers'] ?? 0}',
+                    change: '+${data['activeUsers'] ?? 0} active',
+                    color: Colors.blue,
+                    isPositive: true,
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
               Expanded(
-                child: _StatCard(
-                  title: 'Total Workouts',
-                  value: '${data['totalWorkouts'] ?? 0}',
-                  change: '+${data['recentWorkouts'] ?? 0} recent',
-                  icon: Icons.fitness_center,
-                  color: Colors.green,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: _StatCard(
+                    title: 'Total Workouts',
+                    value: '${data['totalWorkouts'] ?? 0}',
+                    change: '+${data['recentWorkouts'] ?? 0} recent',
+                    color: Colors.green,
+                    isPositive: true,
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
               Expanded(
-                child: _StatCard(
-                  title: 'Templates',
-                  value: '${data['totalTemplates'] ?? 0}',
-                  change: '${data['totalExercises'] ?? 0} exercises',
-                  icon: Icons.list_alt,
-                  color: Colors.orange,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  title: 'Last Updated',
-                  value: _formatLastUpdated(data['lastUpdated']),
-                  change: 'Live data',
-                  icon: Icons.update,
-                  color: Colors.purple,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: _StatCard(
+                    title: 'Templates',
+                    value: '${data['totalTemplates'] ?? 0}',
+                    change: '${data['totalExercises'] ?? 0} exercises',
+                    color: Colors.orange,
+                    isPositive: true,
+                  ),
                 ),
               ),
             ],
           );
         }
-      },
-    );
-  }
-
-  Widget _buildRealRecentActivity(
-      BuildContext context, Map<String, dynamic> data) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.timeline, color: Colors.blue),
-                const SizedBox(width: 8),
-                Text(
-                  'Recent Activity',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildActivityItem(
-              context,
-              'Recent Workouts',
-              '${data['recentWorkouts'] ?? 0} workouts completed in the last 7 days',
-              Icons.fitness_center,
-              Colors.green,
-            ),
-            const SizedBox(height: 8),
-            _buildActivityItem(
-              context,
-              'Active Users',
-              '${data['activeUsers'] ?? 0} users have been active recently',
-              Icons.people,
-              Colors.blue,
-            ),
-            const SizedBox(height: 8),
-            _buildActivityItem(
-              context,
-              'Database Status',
-              'All systems operational - ${data['totalUsers'] ?? 0} users, ${data['totalWorkouts'] ?? 0} workouts',
-              Icons.check_circle,
-              Colors.green,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActivityItem(BuildContext context, String title, String subtitle,
-      IconData icon, Color color) {
-    return Row(
-      children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _formatLastUpdated(String? lastUpdated) {
-    if (lastUpdated == null) return 'Never';
-    try {
-      final date = DateTime.parse(lastUpdated);
-      final now = DateTime.now();
-      final difference = now.difference(date);
-
-      if (difference.inMinutes < 1) {
-        return 'Just now';
-      } else if (difference.inMinutes < 60) {
-        return '${difference.inMinutes}m ago';
-      } else if (difference.inHours < 24) {
-        return '${difference.inHours}h ago';
-      } else {
-        return '${difference.inDays}d ago';
-      }
-    } catch (e) {
-      return 'Unknown';
-    }
-  }
-
-  Widget _buildQuickStats(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Use different layouts based on screen width
-        if (constraints.maxWidth < 600) {
-          // Mobile: 2x2 grid
-          return Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Total Users',
-                      value: '1,234',
-                      change: '+12%',
-                      icon: Icons.people,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Active Today',
-                      value: '456',
-                      change: '+8%',
-                      icon: Icons.trending_up,
-                      color: Colors.green,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Posts Today',
-                      value: '89',
-                      change: '+15%',
-                      icon: Icons.post_add,
-                      color: Colors.orange,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Reports',
-                      value: '3',
-                      change: '-2',
-                      icon: Icons.flag,
-                      color: Colors.red,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        } else {
-          // Desktop: 4 columns
-          return Row(
-            children: [
-              Expanded(
-                child: _StatCard(
-                  title: 'Total Users',
-                  value: '1,234',
-                  change: '+12%',
-                  icon: Icons.people,
-                  color: Colors.blue,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  title: 'Active Today',
-                  value: '456',
-                  change: '+8%',
-                  icon: Icons.trending_up,
-                  color: Colors.green,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  title: 'Posts Today',
-                  value: '89',
-                  change: '+15%',
-                  icon: Icons.post_add,
-                  color: Colors.orange,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  title: 'Reports',
-                  value: '3',
-                  change: '-2',
-                  icon: Icons.flag,
-                  color: Colors.red,
-                ),
-              ),
-            ],
-          );
-        }
-      },
     );
   }
 
   Widget _buildFeatureGrid(BuildContext context, List<_FeatureCard> features) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 1.0, // Square cards
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemCount: features.length,
-      itemBuilder: (context, index) => features[index],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Responsive grid based on screen width
+        int crossAxisCount;
+        double childAspectRatio;
+        
+        if (constraints.maxWidth < 400) {
+          // Very small screens: Single column
+          crossAxisCount = 1;
+          childAspectRatio = 1.5;
+        } else if (constraints.maxWidth < 600) {
+          // Small screens: 2 columns
+          crossAxisCount = 2;
+          childAspectRatio = 1.3;
+        } else if (constraints.maxWidth < 900) {
+          // Medium screens: 2 columns with better ratio
+          crossAxisCount = 2;
+          childAspectRatio = 1.2;
+        } else {
+          // Large screens: 3 columns
+          crossAxisCount = 3;
+          childAspectRatio = 1.1;
+        }
+        
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            childAspectRatio: childAspectRatio,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+          ),
+          itemCount: features.length,
+          itemBuilder: (context, index) => features[index],
+        );
+      },
     );
   }
 
-  Widget _buildRecentActivity(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Recent Activity',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 12),
-            _ActivityItem(
-              icon: Icons.person_add,
-              title: 'New user registered',
-              subtitle: 'john.doe@example.com',
-              time: '2 minutes ago',
-            ),
-            _ActivityItem(
-              icon: Icons.flag,
-              title: 'Content reported',
-              subtitle: 'Post by user_123',
-              time: '5 minutes ago',
-            ),
-            _ActivityItem(
-              icon: Icons.fitness_center,
-              title: 'Workout completed',
-              subtitle: 'User completed "Push Day"',
-              time: '8 minutes ago',
-            ),
-            _ActivityItem(
-              icon: Icons.post_add,
-              title: 'New post created',
-              subtitle: 'User shared workout progress',
-              time: '12 minutes ago',
-            ),
-          ],
+  /// Show Global Content Management dialog
+  void _showGlobalContentManagement(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Global Content Management'),
+        content: const Text(
+          'Manage exercises and templates that are available to all users.\n\n'
+          'Changes will affect all users immediately.',
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Navigate to exercise library with admin mode
+              context.go('/exercises?admin=true');
+            },
+            child: const Text('Manage Exercises'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Navigate to templates list with admin mode (for editing existing templates)
+              context.go('/workout-templates?admin=true');
+            },
+            child: const Text('Manage Templates'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Show System Maintenance dialog
+  void _showSystemMaintenance(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('System Maintenance'),
+        content: const Text(
+          'Database cleanup and system operations.\n\n'
+          'Use with caution - these operations affect the entire system.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Navigate to system admin screen
+              context.go('/admin/system');
+            },
+            child: const Text('Open Maintenance'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Show Debug Tools dialog
+  void _showDebugTools(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Debug Tools'),
+        content: const Text(
+          'Development and debugging utilities.\n\n'
+          'These tools are for development and troubleshooting purposes.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Navigate to debug tools screen
+              context.go('/admin/debug');
+            },
+            child: const Text('Open Debug Tools'),
+          ),
+        ],
       ),
     );
   }
@@ -523,55 +295,72 @@ class _StatCard extends StatelessWidget {
   final String title;
   final String value;
   final String change;
-  final IconData icon;
   final Color color;
+  final bool isPositive;
 
   const _StatCard({
     required this.title,
     required this.value,
     required this.change,
-    required this.icon,
     required this.color,
+    this.isPositive = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final theme = Theme.of(context);
+    
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withOpacity(0.08),
+            color.withOpacity(0.03),
+          ],
+        ),
+        border: Border.all(
+          color: color.withOpacity(0.15),
+          width: 1,
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              children: [
-                Icon(icon, color: color, size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodySmall,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
+            // Title
             Text(
-              value,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                    fontSize: 18,
-                  ),
+              title,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                fontWeight: FontWeight.w500,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 8),
+            
+            // Main value
+            Text(
+              value,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            
+            // Change indicator
             Text(
               change,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: change.startsWith('+') ? Colors.green : Colors.red,
-                    fontWeight: FontWeight.w500,
-                  ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: isPositive ? Colors.green : Colors.red,
+                fontWeight: FontWeight.w500,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -603,7 +392,7 @@ class _FeatureCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(4),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -612,9 +401,11 @@ class _FeatureCard extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
               Text(
@@ -626,68 +417,12 @@ class _FeatureCard extends StatelessWidget {
                           .withOpacity(0.7),
                     ),
                 textAlign: TextAlign.center,
-                maxLines: 2,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ActivityItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final String time;
-
-  const _ActivityItem({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.time,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                ),
-                Text(
-                  subtitle,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.7),
-                      ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            time,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                ),
-          ),
-        ],
       ),
     );
   }

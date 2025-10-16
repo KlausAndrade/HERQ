@@ -4,12 +4,13 @@ import 'package:drift/drift.dart';
 
 import '../../../../core/database/database.dart' as db;
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/supabase_admin_provider.dart';
 
 // Admin Dashboard Data Provider
 final adminDashboardProvider =
     FutureProvider<Map<String, dynamic>>((ref) async {
   final database = ref.read(databaseProvider);
-  final supabase = Supabase.instance.client;
+  final supabase = ref.read(supabaseAdminProvider);
 
   if (database == null) {
     throw Exception('Database not available');
@@ -19,7 +20,7 @@ final adminDashboardProvider =
   print('🔍 Admin Dashboard Debug:');
 
   try {
-    // Get users from Supabase Auth
+    // Get users from Supabase Auth (requires admin permissions)
     final authUsers = await supabase.auth.admin.listUsers();
     final userCount = authUsers.length;
     print('  Supabase Users: $userCount');
@@ -65,42 +66,18 @@ final adminDashboardProvider =
     };
   } catch (e) {
     print('  Error fetching Supabase users: $e');
-    print('  Falling back to local data only');
-
-    // Fallback to local data only
-    final users = await database.select(database.users).get();
-    final workouts = await database.select(database.workoutSessions).get();
-    final templates = await database.select(database.workoutTemplates).get();
-    final exercises = await database.select(database.exercises).get();
-
-    final userCount = users.length;
-    final workoutCount = workouts.length;
-    final templateCount = templates.length;
-    final exerciseCount = exercises.length;
-
-    print('  Local Users: $userCount');
-    print('  Local Workouts: $workoutCount');
-    print('  Local Templates: $templateCount');
-    print('  Local Exercises: $exerciseCount');
-
-    // Get recent activity (last 7 days)
-    final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7));
-    final recentWorkouts = workouts
-        .where((w) =>
-            w.completedAt != null && w.completedAt!.isAfter(sevenDaysAgo))
-        .toList();
-
-    // For local users, assume all are active
-    final activeUsers = userCount;
-
+    print('  Supabase admin access required - no fallback to local users');
+    
+    // Return empty data when Supabase admin access fails
     return {
-      'totalUsers': userCount,
-      'activeUsers': activeUsers,
-      'totalWorkouts': workoutCount,
-      'totalTemplates': templateCount,
-      'totalExercises': exerciseCount,
-      'recentWorkouts': recentWorkouts.length,
+      'totalUsers': 0,
+      'activeUsers': 0,
+      'totalWorkouts': 0,
+      'totalTemplates': 0,
+      'totalExercises': 0,
+      'recentWorkouts': 0,
       'lastUpdated': DateTime.now().toIso8601String(),
+      'error': 'Supabase admin access required',
     };
   }
 });
@@ -109,7 +86,7 @@ final adminDashboardProvider =
 final userManagementProvider =
     FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final database = ref.read(databaseProvider);
-  final supabase = Supabase.instance.client;
+  final supabase = ref.read(supabaseAdminProvider);
 
   if (database == null) {
     throw Exception('Database not available');
@@ -179,46 +156,17 @@ final userManagementProvider =
     return users;
   } catch (e) {
     print('  Error fetching Supabase users: $e');
-    print('  Falling back to local users only');
-
-    // Fallback to local users only
-    final localUsers = await database.select(database.users).get();
-    final List<Map<String, dynamic>> users = [];
-
-    for (final user in localUsers) {
-      // NOTE: Current schema doesn't support user-specific workout tracking
-      // This would require schema changes to add userId to workout sessions
-      int workoutCount = 0;
-      DateTime? lastWorkoutAt;
-
-      users.add({
-        'id': user.id,
-        'email': user.email,
-        'displayName': user.displayName,
-        'createdAt': user.createdAt.toIso8601String(),
-        'lastSignInAt': user.lastSyncAt?.toIso8601String(),
-        'role': 'user',
-        'status': 'active',
-        'bannedUntil': null,
-        'emailConfirmed': true,
-        'workoutCount': workoutCount,
-        'lastWorkoutAt': lastWorkoutAt?.toIso8601String(),
-        'provider': 'local',
-        'avatarUrl': null,
-      });
-
-      print(
-          '    - ${user.displayName} (${user.email}) - ${workoutCount} workouts');
-    }
-
-    return users;
+    print('  Supabase admin access required - no fallback to local users');
+    
+    // Return empty list when Supabase admin access fails
+    return [];
   }
 });
 
 // Analytics Data Provider
 final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   final database = ref.read(databaseProvider);
-  final supabase = Supabase.instance.client;
+  final supabase = ref.read(supabaseAdminProvider);
 
   if (database == null) {
     throw Exception('Database not available');
@@ -292,65 +240,21 @@ final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
       'lastUpdated': DateTime.now().toIso8601String(),
     };
   } catch (e) {
-    print('🔍 Analytics Debug (Fallback):');
+    print('🔍 Analytics Debug:');
     print('  Error fetching Supabase users: $e');
-
-    // Fallback to local data only
-    final allWorkouts = await database.select(database.workoutSessions).get();
-    final allUsers = await database.select(database.users).get();
-
-    final totalWorkouts = allWorkouts.length;
-    final totalUsers = allUsers.length;
-    final activeUsers = totalUsers; // Assume all users are active
-
-    // Get workouts by day (last 30 days)
-    final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
-    final recentWorkouts = allWorkouts
-        .where((w) =>
-            w.completedAt != null && w.completedAt!.isAfter(thirtyDaysAgo))
-        .toList();
-
-    // Calculate daily workout counts
-    final Map<String, int> dailyWorkouts = {};
-    for (final workout in recentWorkouts) {
-      final date = workout.completedAt!.toIso8601String().split('T')[0];
-      dailyWorkouts[date] = (dailyWorkouts[date] ?? 0) + 1;
-    }
-
-    // Get most popular exercises
-    final exerciseStats = <String, int>{};
-    final allSets = await database.select(database.setEntries).get();
-    final allExercises = await database.select(database.exercises).get();
-
-    for (final set in allSets) {
-      final exercise = allExercises.firstWhere(
-        (e) => e.id == set.exerciseId,
-        orElse: () => allExercises.first, // Fallback
-      );
-
-      exerciseStats[exercise.name] = (exerciseStats[exercise.name] ?? 0) + 1;
-    }
-
-    final topExercises = exerciseStats.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value))
-      ..take(5);
-
-    print('  Local Users: $totalUsers');
-    print('  Local Workouts: $totalWorkouts');
-    print('  Recent Workouts: ${recentWorkouts.length}');
-
+    print('  Supabase admin access required - no fallback to local users');
+    
+    // Return empty data when Supabase admin access fails
     return {
-      'totalUsers': totalUsers,
-      'activeUsers': activeUsers,
-      'totalWorkouts': totalWorkouts,
-      'recentWorkouts': recentWorkouts.length,
-      'dailyWorkouts': dailyWorkouts,
-      'topExercises':
-          topExercises.map((e) => {'name': e.key, 'count': e.value}).toList(),
-      'averageWorkoutsPerUser': totalUsers > 0
-          ? (totalWorkouts / totalUsers).toStringAsFixed(1)
-          : '0',
+      'totalUsers': 0,
+      'activeUsers': 0,
+      'totalWorkouts': 0,
+      'recentWorkouts': 0,
+      'dailyWorkouts': {},
+      'topExercises': [],
+      'averageWorkoutsPerUser': '0',
       'lastUpdated': DateTime.now().toIso8601String(),
+      'error': 'Supabase admin access required',
     };
   }
 });

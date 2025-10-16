@@ -16,6 +16,7 @@ import '../../../gamification/data/providers/gamification_provider.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
 import 'exercise_timer_preferences_provider.dart';
+import 'exercise_variant_preferences_provider.dart';
 import 'pr_detection_provider.dart';
 import 'workout_checkpoint_provider.dart';
 import 'workout_providers.dart';
@@ -210,6 +211,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Get timer preferences
       final timerPrefs = _ref.read(exerciseTimerPreferencesProvider);
+      
+      // Get variant preferences
+      final variantPrefs = _ref.read(exerciseVariantPreferencesProvider);
 
       // Create active exercises in template order (skip missing exercises)
       final activeExercises = <ActiveExercise>[];
@@ -223,6 +227,11 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
         // Load saved timer preference or use default (90s)
         final savedTimer = timerPrefs[exercise.id] ?? 90;
+        
+        // Load saved variant preference or use exercise defaults
+        final savedVariant = variantPrefs[exercise.id];
+        final equipmentUsed = savedVariant?.equipmentUsed ?? exercise.equipment;
+        final variantType = savedVariant?.variantType;
 
         // Try to fetch last completed set for this exercise from DB and prefill
         final lastSet = await (db.select(db.setEntries)
@@ -288,8 +297,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
               ),
             ],
             restTimerSeconds: savedTimer,
-            equipmentUsed:
-                exercise.equipment, // Use default equipment from exercise
+            equipmentUsed: equipmentUsed, // Use saved preference or default
+            variantType: variantType, // Use saved variant preference
           ),
         );
       }
@@ -375,12 +384,20 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Get timer preferences
       final timerPrefs = _ref.read(exerciseTimerPreferencesProvider);
+      
+      // Get variant preferences
+      final variantPrefs = _ref.read(exerciseVariantPreferencesProvider);
 
       // Create active exercises in provided order
       final activeExercises = <ActiveExercise>[];
       for (final id in exerciseIds.where(exerciseMap.containsKey)) {
         final exercise = exerciseMap[id]!;
         final savedTimer = timerPrefs[exercise.id] ?? 90;
+        
+        // Load saved variant preference or use exercise defaults
+        final savedVariant = variantPrefs[exercise.id];
+        final equipmentUsed = savedVariant?.equipmentUsed ?? exercise.equipment;
+        final variantType = savedVariant?.variantType;
 
         final lastSet = await (db.select(db.setEntries)
               ..where((tbl) => tbl.exerciseId.equals(exercise.id))
@@ -443,8 +460,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
               ),
             ],
             restTimerSeconds: savedTimer,
-            equipmentUsed:
-                exercise.equipment, // Use default equipment from exercise
+            equipmentUsed: equipmentUsed, // Use saved preference or default
+            variantType: variantType, // Use saved variant preference
           ),
         );
       }
@@ -964,6 +981,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalVolume: state!.totalVolume,
       );
 
+      // Save variant preference for this exercise
+      if (equipmentUsed != null) {
+        _ref.read(exerciseVariantPreferencesProvider.notifier).setVariantForExercise(
+          exercise.id,
+          equipmentUsed,
+          variantType,
+        );
+      }
+
       // Mark as modified
       _ref.read(workoutModificationsProvider.notifier).markAsModified();
 
@@ -1390,6 +1416,113 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       // Still clear state even if save failed
       state = null;
       rethrow;
+    }
+  }
+
+  /// Remove an exercise from the active workout
+  void removeExercise(int exerciseIndex) {
+    if (state != null && exerciseIndex >= 0 && exerciseIndex < state!.exercises.length) {
+      final exercises = List<ActiveExercise>.from(state!.exercises);
+      exercises.removeAt(exerciseIndex);
+
+      // Update current exercise index if needed
+      int currentIndex = state!.currentExerciseIndex;
+      if (exerciseIndex == currentIndex) {
+        // If we removed the current exercise, move to the next one or previous one
+        if (exercises.isNotEmpty) {
+          currentIndex = currentIndex >= exercises.length ? exercises.length - 1 : currentIndex;
+        } else {
+          currentIndex = 0;
+        }
+      } else if (exerciseIndex < currentIndex) {
+        currentIndex--;
+      }
+
+      state = ActiveWorkout(
+        id: state!.id,
+        name: state!.name,
+        exercises: exercises,
+        currentExerciseIndex: currentIndex,
+        elapsedTime: state!.elapsedTime,
+        totalSets: _calculateTotalSets(exercises),
+        totalVolume: _calculateTotalVolume(exercises),
+      );
+
+      // Mark as modified
+      _ref.read(workoutModificationsProvider.notifier).markAsModified();
+    }
+  }
+
+  /// Add an exercise at a specific position in the workout
+  Future<void> addExerciseAtPosition(
+    String exerciseId,
+    int position, {
+    double? initialWeight,
+    int restTimerSeconds = 90,
+    bool isAssisted = false,
+  }) async {
+    final db = database;
+    if (state != null && db != null) {
+      try {
+        // Find exercise by ID
+        final exercise = await (db.select(db.exercises)
+              ..where((tbl) => tbl.id.equals(exerciseId)))
+            .getSingleOrNull();
+
+        if (exercise == null) {
+          print('❌ Exercise not found: $exerciseId');
+          return;
+        }
+
+        // Get the last completed set for this exercise to use as template
+        final lastSet = await (db.select(db.setEntries)
+              ..where((tbl) =>
+                  tbl.exerciseId.equals(exerciseId) &
+                  tbl.userId.equals(UserContextService.instance.getCurrentUserId()))
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.completedAt)])
+              ..limit(1))
+            .getSingleOrNull();
+
+        // Create initial set based on last completed set or defaults
+        final initialSet = ActiveSet(
+          number: 1,
+          weight: initialWeight ?? lastSet?.weight,
+          reps: lastSet?.reps ?? 0,
+          durationSeconds: lastSet?.durationSeconds,
+          distance: lastSet?.distance,
+          assistanceWeight: isAssisted ? (lastSet?.assistanceWeight ?? -10.0) : null,
+          addedWeight: lastSet?.addedWeight,
+        );
+
+        final newActiveExercise = ActiveExercise(
+          id: exercise.id,
+          name: exercise.name,
+          sets: [initialSet],
+          restTimerSeconds: restTimerSeconds,
+          exerciseType: exercise.exerciseType,
+          equipmentUsed: exercise.equipment,
+          variantType: isAssisted ? 'assisted' : null,
+        );
+
+        // Insert at the specified position
+        final exercises = List<ActiveExercise>.from(state!.exercises);
+        exercises.insert(position, newActiveExercise);
+
+        state = ActiveWorkout(
+          id: state!.id,
+          name: state!.name,
+          exercises: exercises,
+          currentExerciseIndex: state!.currentExerciseIndex,
+          elapsedTime: state!.elapsedTime,
+          totalSets: _calculateTotalSets(exercises),
+          totalVolume: _calculateTotalVolume(exercises),
+        );
+
+        // Mark as modified
+        _ref.read(workoutModificationsProvider.notifier).markAsModified();
+      } catch (e) {
+        print('❌ Error adding exercise: $e');
+      }
     }
   }
 }

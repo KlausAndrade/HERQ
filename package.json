@@ -1,0 +1,43 @@
+{
+  "name": "herq",
+  "version": "1.0.0",
+  "description": "HERQ - AI-Powered Workout Tracker",
+  "scripts": {
+    "dev": "./build.sh dev",
+    "emulator": "./build.sh emulator",
+    "apk": "./build.sh apk",
+    "android": "./build.sh android", 
+    "ios": "./build.sh ios",
+    "apple": "./build.sh apple",
+    "web": "./build.sh web",
+    "gh-pages": "./build.sh gh-pages",
+    "deploy": "./build.sh deploy",
+    "publish": "./build.sh publish",
+    "help": "./build.sh",
+    "start": "./run_dev.sh",
+    "build": "./build_apk.sh",
+    "build:ios": "./build_ios.sh",
+    "build:web": "./build_web.sh",
+    "deploy:web": "./deploy_web.sh"
+  },
+  "keywords": [
+    "flutter",
+    "workout",
+    "fitness",
+    "ai",
+    "supabase",
+    "admin"
+  ],
+  "author": "Klaus Andrade",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KlausAndrade/HERQ"
+  },
+  "engines": {
+    "flutter": ">=3.0.0"
+  },
+  "devDependencies": {
+    "flutter": "latest"
+  }
+}

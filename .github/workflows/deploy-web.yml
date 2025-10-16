@@ -32,7 +32,12 @@ jobs:
           flutter build web --release \
             --base-href "/" \
             --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+            --dart-define=SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      
+      - name: Create CNAME file
+        run: |
+          echo "herq.app" > build/web/CNAME
       
       - name: Deploy to public repo
         uses: peaceiris/actions-gh-pages@v3

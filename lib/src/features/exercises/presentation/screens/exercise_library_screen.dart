@@ -26,6 +26,18 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
   final String _searchQuery = '';
   bool _showVariants = false;
   bool _showOnlyFavorites = false;
+  bool _isAdminMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if we're in admin mode from URL parameters
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final uri = GoRouterState.of(context).uri;
+      _isAdminMode = uri.queryParameters['admin'] == 'true';
+      if (mounted) setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +52,29 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: Text(S.of(context)!.exerciseLibrary),
+        title: Row(
+          children: [
+            Text(S.of(context)!.exerciseLibrary),
+            if (_isAdminMode) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'ADMIN',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
         actions: [
           IconButton(
             onPressed: () {

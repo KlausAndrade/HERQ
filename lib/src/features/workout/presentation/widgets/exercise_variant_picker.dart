@@ -125,6 +125,8 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
     'weighted',
     'tempo',
     'pause',
+    'strict',
+    'explosive',
   ];
 
   @override
@@ -225,6 +227,41 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                   );
                 }).toList(),
               ),
+              
+              // Help text for tempo and pause
+              if (selectedVariant == 'tempo' || selectedVariant == 'pause')
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: theme.colorScheme.primary.withOpacity(0.3),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        selectedVariant == 'tempo' ? 'Tempo Training' : 'Pause Training',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        selectedVariant == 'tempo' 
+                          ? 'Control the speed of your movement (e.g., 3-1-2-1: 3s down, 1s pause, 2s up, 1s pause)'
+                          : 'Hold at the most difficult part of the movement to increase time under tension',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
               const SizedBox(height: 16),
             ],

@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/exercise_types.dart';
 import '../../../../core/database/database.dart';
+import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/utils/exercise_type_mapper.dart';
@@ -223,8 +224,12 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
       final exerciseId =
           isEdit ? widget.exerciseId! : 'custom_${const Uuid().v4()}';
 
+      // Get current user ID for user isolation
+      final currentUserId = ref.read(currentUserProvider)?.id;
+      
       final companion = ExercisesCompanion.insert(
         id: exerciseId,
+        userId: Value(currentUserId), // ✅ USER ISOLATION: Link to current user
         name: _nameController.text.trim(),
         primaryMuscleGroup: _selectedMuscleGroup,
         secondaryMuscleGroups: _selectedSecondaryMuscles,

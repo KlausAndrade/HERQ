@@ -1,43 +1,41 @@
 #!/bin/bash
-# Script to manually deploy Flutter web to GitHub Pages
 
-echo "🚀 Deploying Flutter Web to GitHub Pages..."
+# 🚀 Deploy Web to GitHub Pages
+# Usage: ./deploy_web.sh
 
-# Build the web app
-echo "📦 Building web app..."
-flutter build web --release --base-href "/HERQ/"
+echo "🚀 Deploying to GitHub Pages..."
 
-# Check if build was successful
-if [ $? -ne 0 ]; then
-    echo "❌ Build failed!"
-    exit 1
+# Load environment variables from .env file
+export $(cat .env | grep -v '^#' | xargs)
+
+# Build Web
+flutter build web --release \
+  --base-href "/" \
+  --dart-define=SUPABASE_URL=$SUPABASE_URL \
+  --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+  --dart-define=SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
+
+# Create CNAME file for custom domain
+echo "herq.app" > build/web/CNAME
+
+# Deploy to GitHub Pages using peaceiris/actions-gh-pages
+# Note: This requires GITHUB_TOKEN to be set in your environment
+if [ -z "$GITHUB_TOKEN" ]; then
+  echo "❌ GITHUB_TOKEN not found. Please set it in your environment:"
+  echo "   export GITHUB_TOKEN=your_github_token"
+  echo "   Or add it to your .env file"
+  exit 1
 fi
 
-# Create or checkout gh-pages branch
-echo "📝 Preparing gh-pages branch..."
-if git show-ref --verify --quiet refs/heads/gh-pages; then
-    git checkout gh-pages
-else
-    git checkout --orphan gh-pages
-fi
+# Use npx to run the GitHub Pages action locally
+npx @peaceiris/actions-gh-pages@v3 \
+  --token $GITHUB_TOKEN \
+  --repo KlausAndrade/HERQ-web \
+  --branch main \
+  --dir build/web \
+  --user-name "github-actions[bot]" \
+  --user-email "github-actions[bot]@users.noreply.github.com" \
+  --message "Deploy web app with admin support"
 
-# Remove all files except build/web
-git rm -rf . 2>/dev/null || true
-
-# Copy web build to root
-cp -r build/web/* .
-
-# Add .nojekyll to prevent GitHub from processing with Jekyll
-touch .nojekyll
-
-# Commit and push
-git add .
-git commit -m "Deploy Flutter web app to GitHub Pages"
-git push origin gh-pages --force
-
-# Return to main branch
-git checkout main
-
-echo "✅ Deployment complete!"
-echo "🌐 Your app will be available at: https://klausandrade.github.io/HERQ/"
-
+echo "✅ Deployed to GitHub Pages successfully!"
+echo "🌐 Your app is live at: https://herq.app"

@@ -51,11 +51,18 @@ class _WorkoutTemplatesWithFoldersScreenState
     extends ConsumerState<WorkoutTemplatesWithFoldersScreen> {
   late bool _isEditing;
   final Set<String> _expandedFolders = {};
+  bool _isAdminMode = false;
 
   @override
   void initState() {
     super.initState();
     _isEditing = widget.isEditing;
+    // Check if we're in admin mode from URL parameters
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final uri = GoRouterState.of(context).uri;
+      _isAdminMode = uri.queryParameters['admin'] == 'true';
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -79,10 +86,32 @@ class _WorkoutTemplatesWithFoldersScreenState
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: Text(
-          _isEditing
-              ? S.of(context)!.workoutTemplates
-              : S.of(context)!.selectWorkout,
+        title: Row(
+          children: [
+            Text(
+              _isEditing
+                  ? S.of(context)!.workoutTemplates
+                  : S.of(context)!.selectWorkout,
+            ),
+            if (_isAdminMode) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'ADMIN',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
         actions: [
           IconButton(

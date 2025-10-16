@@ -4,10 +4,10 @@ library;
 /// Enum representing different exercise types
 enum ExerciseType {
   weightReps('weight_reps'),
-  bodyweightReps('bodyweight_reps'),
+  bodyweightReps('reps'), // Pure bodyweight - reps only
   weightedBodyweight('weighted_bodyweight'),
   assistedBodyweight('assisted_bodyweight'),
-  duration('duration'),
+  duration('timer'), // Time-based exercises
   durationWeight('duration_weight'),
   distanceDuration('distance_duration'),
   weightDistance('weight_distance');
@@ -63,7 +63,7 @@ class ExerciseTypeConfig {
       type: ExerciseType.bodyweightReps,
       requiredFields: [ExerciseField.reps],
       displayName: 'Bodyweight Reps',
-      description: 'Bodyweight exercise with repetitions only',
+      description: 'Pure bodyweight exercise - reps only (no weight)',
     ),
     ExerciseType.weightedBodyweight: const ExerciseTypeConfig(
       type: ExerciseType.weightedBodyweight,
@@ -81,7 +81,7 @@ class ExerciseTypeConfig {
       type: ExerciseType.duration,
       requiredFields: [ExerciseField.duration],
       displayName: 'Duration',
-      description: 'Time-based exercise (holds, planks, etc.)',
+      description: 'Time-based exercise (holds, planks, isometric exercises)',
     ),
     ExerciseType.durationWeight: const ExerciseTypeConfig(
       type: ExerciseType.durationWeight,

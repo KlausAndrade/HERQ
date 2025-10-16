@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/global_content_sync_provider.dart';
 import '../../../../core/services/user_context_service.dart';
 
 // Provider for all workout templates grouped by category (with cloud sync)
@@ -16,6 +17,13 @@ final workoutTemplatesProvider =
 
   if (database == null) {
     return _getDefaultTemplatesByCategory();
+  }
+
+  // 🌍 SYNC: Check for global content updates first
+  final needsGlobalSync = await ref.read(needsGlobalContentSyncProvider.future);
+  if (needsGlobalSync) {
+    print('🌍 Global content updates available, syncing...');
+    await ref.read(globalContentSyncTriggerProvider.notifier).syncGlobalContent();
   }
 
   // 🌩️ SYNC: Fetch templates from Supabase
