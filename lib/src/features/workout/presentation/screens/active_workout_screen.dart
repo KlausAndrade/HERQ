@@ -162,9 +162,11 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
         context.go('/');
         break;
       case 'discard':
-        // Force cleanup and exit - navigate first to avoid "no active workout" flash
-        context.go('/');
+        // Force cleanup first, then navigate if still mounted
         await ref.read(activeWorkoutProvider.notifier).forceCleanup();
+        if (mounted) {
+          context.go('/');
+        }
         break;
       case 'cancel':
       default:
@@ -583,10 +585,12 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     );
 
     if (confirmed ?? false && mounted) {
-      // Navigate to home first
-      context.go('/');
-      // Then force cleanup in the background
+      // Force cleanup first
       await ref.read(activeWorkoutProvider.notifier).forceCleanup();
+      // Then navigate to home if still mounted
+      if (mounted) {
+        context.go('/');
+      }
     }
   }
 
@@ -1309,6 +1313,7 @@ class _ExerciseCard extends ConsumerWidget {
                             variantType: exercise.variantType,
                             totalSets: exercise.sets.length,
                             isFirstSet: index == 0,
+                            previousSet: exercise.previousSet,
                             onChanged: (updatedSet) {
                               onSetChanged(index, updatedSet);
                             },

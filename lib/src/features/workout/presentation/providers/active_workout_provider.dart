@@ -239,6 +239,22 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         final initialWeight = lastSet?.weight;
         final initialReps = lastSet?.reps ?? 0;
 
+        // Convert lastSet to ActiveSet for previous data display
+        ActiveSet? previousSet;
+        if (lastSet != null) {
+          previousSet = ActiveSet(
+            number: lastSet.setNumber,
+            weight: lastSet.weight,
+            reps: lastSet.reps,
+            durationSeconds: lastSet.durationSeconds,
+            distance: lastSet.distance,
+            assistanceWeight: lastSet.assistanceWeight,
+            addedWeight: lastSet.addedWeight,
+            rpe: lastSet.rpe,
+            isCompleted: true, // Previous set was completed
+          );
+        }
+
         // Start with 3 prefilled sets using last completed values (if any)
         // Prefill based on exercise type
         final isDuration = exercise.exerciseType == 'duration';
@@ -250,6 +266,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             id: exercise.id,
             name: exercise.name,
             exerciseType: exercise.exerciseType,
+            previousSet: previousSet,
             sets: [
               ActiveSet(
                 number: 1,
@@ -379,6 +396,22 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         final initialWeight = lastSet?.weight;
         final initialReps = lastSet?.reps ?? 0;
 
+        // Convert lastSet to ActiveSet for previous data display
+        ActiveSet? previousSet;
+        if (lastSet != null) {
+          previousSet = ActiveSet(
+            number: lastSet.setNumber,
+            weight: lastSet.weight,
+            reps: lastSet.reps,
+            durationSeconds: lastSet.durationSeconds,
+            distance: lastSet.distance,
+            assistanceWeight: lastSet.assistanceWeight,
+            addedWeight: lastSet.addedWeight,
+            rpe: lastSet.rpe,
+            isCompleted: true, // Previous set was completed
+          );
+        }
+
         final isDuration = exercise.exerciseType == 'duration';
         final initialDuration =
             isDuration ? (lastSet?.durationSeconds ?? 30) : null;
@@ -388,6 +421,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             id: exercise.id,
             name: exercise.name,
             exerciseType: exercise.exerciseType,
+            previousSet: previousSet,
             sets: [
               ActiveSet(
                 number: 1,

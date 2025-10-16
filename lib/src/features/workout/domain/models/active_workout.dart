@@ -79,6 +79,7 @@ class ActiveExercise {
     this.exerciseType = 'reps',
     this.equipmentUsed,
     this.variantType,
+    this.previousSet, // Previous workout's set data for comparison
   });
 
   factory ActiveExercise.fromJson(Map<String, dynamic> json) => ActiveExercise(
@@ -91,6 +92,9 @@ class ActiveExercise {
         exerciseType: json['exerciseType'] as String? ?? 'reps',
         equipmentUsed: json['equipmentUsed'] as String?,
         variantType: json['variantType'] as String?,
+        previousSet: json['previousSet'] != null
+            ? ActiveSet.fromJson(json['previousSet'] as Map<String, dynamic>)
+            : null,
       );
   final String id;
   final String name;
@@ -100,6 +104,7 @@ class ActiveExercise {
   final String?
       equipmentUsed; // 'barbell' | 'dumbbell' | 'cable' | 'machine' | etc.
   final String? variantType;
+  final ActiveSet? previousSet; // Previous workout's set data for comparison
 
   // JSON serialization
   Map<String, dynamic> toJson() => {
@@ -110,6 +115,7 @@ class ActiveExercise {
         'exerciseType': exerciseType,
         'equipmentUsed': equipmentUsed,
         'variantType': variantType,
+        'previousSet': previousSet?.toJson(),
       };
 }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
@@ -493,7 +492,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
               body: '',
             )
             .catchError((_) {});
-        context.pop();
+        Navigator.of(context).pop();
       } else {
         NotificationService()
             .showInAppNotification(

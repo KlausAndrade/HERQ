@@ -124,11 +124,18 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context)!.saveWorkout),
         leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: _showDiscardDialog,
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+          tooltip: 'Back to Progress',
         ),
+        title: Text(S.of(context)!.saveWorkout),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: _showDiscardDialog,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

@@ -415,7 +415,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                             style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w500,
                               color: colorScheme.onSurface
-                                  .withAlpha((0.7 * 255).round()),
+                                  .withAlpha((0.5 * 255).round()),
                               fontSize: 13,
                             ),
                             textAlign: TextAlign.center,
@@ -714,7 +714,14 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
       }
     }
 
-    return parts.join(' × ');
+    // Create 2-line layout with "x" centered between weight and reps
+    if (parts.length == 2) {
+      return '${parts[0]} ×\n${parts[1]}';
+    } else if (parts.length == 1) {
+      return parts[0];
+    } else {
+      return parts.join(' × ');
+    }
   }
 
   void _startRestTimer() {

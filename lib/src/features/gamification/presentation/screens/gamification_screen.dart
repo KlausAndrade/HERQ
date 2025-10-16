@@ -85,8 +85,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                       workouts: completedWorkouts,
                       onWorkoutTap: (workout) {
                         Navigator.of(context).pop();
-                        Navigator.of(context)
-                            .pushNamed('/workout/${workout.id}');
+                        context.go('/workout/${workout.id}');
                       },
                     )
                   : Center(child: Text(S.of(context)!.noWorkoutHistory));
