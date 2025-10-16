@@ -4,14 +4,14 @@ class MockDataConfig {
   static const List<Map<String, dynamic>> mockWorkoutTemplates = [
     {
       'id': 'upper_power',
-      'name': 'Upper Body Power',
+      'name': 'Upper Body Power MOCKED',
       'description': 'Focus on compound movements for upper body strength',
       'difficulty': 'intermediate',
       'estimatedDurationMinutes': 60,
     },
     {
       'id': 'lower_hypertrophy',
-      'name': 'Lower Body Hypertrophy',
+      'name': 'Lower Body Hypertrophy MOCKED',
       'description': 'High volume leg training for muscle growth',
       'difficulty': 'advanced',
       'estimatedDurationMinutes': 75,

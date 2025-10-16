@@ -18,7 +18,9 @@
     "build": "./build_apk.sh",
     "build:ios": "./build_ios.sh",
     "build:web": "./build_web.sh",
-    "deploy:web": "./deploy_web.sh"
+    "deploy:web": "./deploy_web.sh",
+    "fix": "./scripts/fix_ios.sh",
+    "fix:ios": "./scripts/fix_ios.sh"
   },
   "keywords": [
     "flutter",

@@ -27,6 +27,10 @@ case "$1" in
     echo "🚀 Deploying to GitHub Pages..."
     ./deploy_web.sh
     ;;
+  "fix"|"fix:ios")
+    echo "🔧 Fixing iOS deployment issues..."
+    ./scripts/fix_ios.sh
+    ;;
   *)
     echo "Usage: ./build.sh [option]"
     echo ""
@@ -36,10 +40,12 @@ case "$1" in
     echo "  ios, apple       - Build iOS"
     echo "  web, gh-pages    - Build Web"
     echo "  deploy, publish  - Deploy to GitHub Pages"
+    echo "  fix, fix:ios     - Fix iOS deployment issues"
     echo ""
     echo "Examples:"
     echo "  ./build.sh dev      # Run on emulator"
     echo "  ./build.sh apk      # Build Android APK"
-    echo "  ./build.sh deploy   # Deploy to GitHub Pages"
+    echo "  ./build.sh fix      # Fix iOS deployment issues"
+    echo "  ./build.sh deploy    # Deploy to GitHub Pages"
     ;;
 esac

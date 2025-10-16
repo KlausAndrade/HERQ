@@ -392,4 +392,252 @@ class AICoachingService {
       ),
     ];
   }
+
+  /// Mock implementation for generating next workout
+  Future<Map<String, dynamic>> generateNextWorkout(String userId) async {
+    // Simulate API delay
+    await Future.delayed(const Duration(seconds: 2));
+    
+    print('🔧 Using MOCK service for generateNextWorkout');
+    
+    return {
+      'name': 'AI Generated Upper Body',
+      'description': 'Personalized upper body workout based on your training history',
+      'category': 'Hypertrophy',
+      'estimatedDuration': 65,
+      'difficulty': 'intermediate',
+      'targetMuscleGroups': ['chest', 'shoulders', 'triceps', 'back'],
+      'reasoning': 'Based on your recent bench press progression and pull-up performance, I\'ve designed a balanced upper body routine focusing on compound movements with progressive overload. The workout includes your preferred exercises while introducing new variations to prevent plateaus.',
+      'confidence': 0.87,
+      'exercises': [
+        {
+          'id': 'bench_press_1',
+          'name': 'Barbell Bench Press',
+          'exerciseType': 'weightReps',
+          'equipmentUsed': 'barbell',
+          'variantType': 'standard',
+          'restTimerSeconds': 180,
+          'notes': 'Focus on controlled movement',
+          'sets': [
+            {
+              'number': 1,
+              'weight': 135,
+              'reps': 8,
+              'rpe': 7,
+              'durationSeconds': 0,
+              'distance': 0,
+              'assistanceWeight': 0,
+              'addedWeight': 0,
+              'restDurationSeconds': 180,
+              'isWarmup': true,
+              'isDropSet': false,
+              'isFailure': false,
+              'setType': 'warmup',
+              'equipmentUsed': 'barbell',
+              'variantType': 'standard',
+              'notes': 'Warm-up set',
+            },
+            {
+              'number': 2,
+              'weight': 185,
+              'reps': 6,
+              'rpe': 8,
+              'durationSeconds': 0,
+              'distance': 0,
+              'assistanceWeight': 0,
+              'addedWeight': 0,
+              'restDurationSeconds': 180,
+              'isWarmup': false,
+              'isDropSet': false,
+              'isFailure': false,
+              'setType': 'working',
+              'equipmentUsed': 'barbell',
+              'variantType': 'standard',
+              'notes': 'Working set',
+            },
+          ],
+        },
+            {
+              'id': 'pull_ups_1',
+              'name': 'Pull-ups',
+              'exerciseType': 'bodyweightReps',
+              'equipmentUsed': 'bodyweight',
+              'variantType': 'standard',
+              'restTimerSeconds': 120,
+              'notes': 'Full range of motion',
+              'sets': [
+                {
+                  'number': 1,
+                  'weight': 0,
+                  'reps': 8,
+                  'rpe': 7,
+                  'durationSeconds': 0,
+                  'distance': 0,
+                  'assistanceWeight': 0,
+                  'addedWeight': 0,
+                  'restDurationSeconds': 120,
+                  'isWarmup': false,
+                  'isDropSet': false,
+                  'isFailure': false,
+                  'setType': 'working',
+                  'equipmentUsed': 'bodyweight',
+                  'variantType': 'standard',
+                  'notes': 'Bodyweight pull-ups',
+                },
+              ],
+            },
+            {
+              'id': 'overhead_press_1',
+              'name': 'Overhead Press',
+              'exerciseType': 'weightReps',
+              'equipmentUsed': 'barbell',
+              'variantType': 'standard',
+              'restTimerSeconds': 150,
+              'notes': 'Keep core tight throughout',
+              'sets': [
+                {
+                  'number': 1,
+                  'weight': 95,
+                  'reps': 6,
+                  'rpe': 8,
+                  'durationSeconds': 0,
+                  'distance': 0,
+                  'assistanceWeight': 0,
+                  'addedWeight': 0,
+                  'restDurationSeconds': 150,
+                  'isWarmup': false,
+                  'isDropSet': false,
+                  'isFailure': false,
+                  'setType': 'working',
+                  'equipmentUsed': 'barbell',
+                  'variantType': 'standard',
+                  'notes': 'Working set',
+                },
+              ],
+            },
+            {
+              'id': 'dips_1',
+              'name': 'Dips',
+              'exerciseType': 'bodyweightReps',
+              'equipmentUsed': 'bodyweight',
+              'variantType': 'standard',
+              'restTimerSeconds': 90,
+              'notes': 'Control the descent',
+              'sets': [
+                {
+                  'number': 1,
+                  'weight': 0,
+                  'reps': 10,
+                  'rpe': 7,
+                  'durationSeconds': 0,
+                  'distance': 0,
+                  'assistanceWeight': 0,
+                  'addedWeight': 0,
+                  'restDurationSeconds': 90,
+                  'isWarmup': false,
+                  'isDropSet': false,
+                  'isFailure': false,
+                  'setType': 'working',
+                  'equipmentUsed': 'bodyweight',
+                  'variantType': 'standard',
+                  'notes': 'Bodyweight dips',
+                },
+              ],
+            },
+            {
+              'id': 'rows_1',
+              'name': 'Bent-Over Rows',
+              'exerciseType': 'weightReps',
+              'equipmentUsed': 'barbell',
+              'variantType': 'standard',
+              'restTimerSeconds': 120,
+              'notes': 'Squeeze shoulder blades together',
+              'sets': [
+                {
+                  'number': 1,
+                  'weight': 135,
+                  'reps': 8,
+                  'rpe': 7,
+                  'durationSeconds': 0,
+                  'distance': 0,
+                  'assistanceWeight': 0,
+                  'addedWeight': 0,
+                  'restDurationSeconds': 120,
+                  'isWarmup': false,
+                  'isDropSet': false,
+                  'isFailure': false,
+                  'setType': 'working',
+                  'equipmentUsed': 'barbell',
+                  'variantType': 'standard',
+                  'notes': 'Working set',
+                },
+              ],
+            },
+          ],
+      'tags': ['upper-body', 'hypertrophy', 'ai-generated'],
+    };
+  }
+
+  /// Mock implementation for optimizing workout folder
+  Future<Map<String, dynamic>> optimizeWorkoutFolder(String folderId) async {
+    // Simulate API delay
+    await Future.delayed(const Duration(seconds: 3));
+    
+    return {
+      'folder': {
+        'id': folderId,
+        'name': 'Optimized Push Day',
+        'description': 'AI-optimized push day routine',
+        'color': '#FF5722',
+        'templates': [
+          {
+            'id': 'optimized_template_1',
+            'name': 'Optimized Heavy Push',
+            'description': 'Improved heavy push workout with better exercise selection',
+            'category': 'Strength',
+            'estimatedDurationMinutes': 75,
+            'tags': ['push', 'strength', 'optimized'],
+            'exerciseIds': ['bench_press', 'overhead_press', 'dips'],
+            'exercises': [
+              {
+                'id': 'bench_press',
+                'name': 'Barbell Bench Press',
+                'exerciseType': 'weightReps',
+                'primaryMuscleGroup': 'chest',
+                'secondaryMuscleGroups': ['triceps', 'shoulders'],
+                'equipment': 'barbell',
+                'instructions': 'Lower bar to chest, press up explosively',
+                'tags': ['compound', 'strength'],
+                'isBodyweight': false,
+                'category': 'strength',
+                'difficulty': 'intermediate',
+                'variantType': 'standard',
+                'sets': [
+                  {
+                    'number': 1,
+                    'weight': 185,
+                    'reps': 5,
+                    'rpe': 8,
+                    'durationSeconds': 0,
+                    'distance': 0,
+                    'assistanceWeight': 0,
+                    'addedWeight': 0,
+                    'restDurationSeconds': 180,
+                    'isWarmup': false,
+                    'isDropSet': false,
+                    'isFailure': false,
+                    'setType': 'working',
+                    'equipmentUsed': 'barbell',
+                    'variantType': 'standard',
+                    'notes': 'Heavy working set'
+                  }
+                ]
+              }
+            ],
+            'reasoning': 'Improved exercise selection and progression. Added more volume for better hypertrophy while maintaining strength focus.'
+          }
+        ]
+      }
+    };
+  }
 }

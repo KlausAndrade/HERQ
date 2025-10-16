@@ -73,7 +73,7 @@ class WorkoutTemplatesScreen extends ConsumerWidget {
           ],
         ),
         body: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(6),
           children: [
             // Default Templates Section
             Text(

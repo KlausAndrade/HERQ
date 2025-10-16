@@ -32,6 +32,7 @@
 | **Development** | `./npm.sh dev` | `./build.sh dev` | `./run_dev.sh` | Run on emulator |
 | **Android APK** | `./npm.sh apk` | `./build.sh apk` | `./build_apk.sh` | Build Android APK |
 | **iOS Build** | `./npm.sh ios` | `./build.sh ios` | `./build_ios.sh` | Build iOS |
+| **iOS Fix** | `./npm.sh fix` | `./build.sh fix` | `./scripts/fix_ios.sh` | Fix iOS deployment issues |
 | **Web Build** | `./npm.sh web` | `./build.sh web` | `./build_web.sh` | Build Web |
 | **Deploy** | `./npm.sh deploy` | `./build.sh deploy` | `./deploy_web.sh` | Deploy to GitHub Pages |
 
@@ -44,6 +45,9 @@
 
 # Build Android
 ./npm.sh apk           # or ./build.sh apk or ./build_apk.sh
+
+# Fix iOS Issues
+./npm.sh fix           # or ./build.sh fix or ./scripts/fix_ios.sh
 
 # Deploy Web
 ./npm.sh deploy        # or ./build.sh deploy or ./deploy_web.sh
@@ -82,6 +86,23 @@ HERQ/
 ├── deploy_web.sh         # Deployment script
 └── .env                 # Environment variables
 ```
+
+## 🔧 **iOS Fix Command**
+
+If you encounter iOS deployment issues, use the fix command:
+
+```bash
+# Fix iOS deployment issues
+./npm.sh fix           # or ./build.sh fix or ./scripts/fix_ios.sh
+```
+
+This comprehensive fix script will:
+- Clean Flutter and iOS build artifacts
+- Update Flutter packages and CocoaPods
+- Set iOS deployment target to 12.0
+- Fix file permissions
+- Clear Xcode derived data
+- Verify build configuration
 
 ## 🎉 **Choose Your Style!**
 

@@ -170,28 +170,39 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   }
 
   Future<void> startWorkoutFromTemplate(String templateId) async {
+    print('🔍 startWorkoutFromTemplate - Starting with templateId: $templateId');
+    
     // First, clear any existing workout
     await _clearActiveWorkout();
 
     final db = database;
     if (db == null) {
+      print('🔍 startWorkoutFromTemplate - Database not available');
       throw Exception('Database not available');
     }
 
     try {
+      print('🔍 startWorkoutFromTemplate - Fetching template from database');
       // Fetch template from database
       final template = await (db.select(db.workoutTemplates)
             ..where((tbl) => tbl.id.equals(templateId)))
           .getSingleOrNull();
 
       if (template == null) {
+        print('🔍 startWorkoutFromTemplate - Template not found: $templateId');
         throw Exception('Template not found: $templateId');
       }
+      
+      print('🔍 startWorkoutFromTemplate - Template found: ${template.name}');
+      print('🔍 startWorkoutFromTemplate - Template exerciseIds: ${template.exerciseIds}');
 
       // Fetch all exercises for this template
       final exercisesList = await (db.select(db.exercises)
             ..where((tbl) => tbl.id.isIn(template.exerciseIds)))
           .get();
+
+      print('🔍 startWorkoutFromTemplate - Found ${exercisesList.length} exercises');
+      print('🔍 startWorkoutFromTemplate - Exercise IDs: ${exercisesList.map((e) => e.id).toList()}');
 
       // Create exercise map for ordering
       final exerciseMap = {for (final ex in exercisesList) ex.id: ex};
@@ -310,6 +321,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         totalSets: activeExercises.length * 3,
       );
 
+      print('🔍 startWorkoutFromTemplate - Workout state set successfully');
+      print('🔍 startWorkoutFromTemplate - Workout name: ${state?.name}');
+      print('🔍 startWorkoutFromTemplate - Exercise count: ${state?.exercises.length}');
       print('🏁 New workout created: ${template.name}');
 
       // Start the workout duration timer
@@ -330,6 +344,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         checkpointService.startAutoSave(state!);
       }
     } catch (e) {
+      print('🔍 startWorkoutFromTemplate - Error occurred: $e');
+      print('🔍 startWorkoutFromTemplate - Error type: ${e.runtimeType}');
+      
       // Fallback to empty workout if template fetch fails
       state = ActiveWorkout(
         id: 'workout_${DateTime.now().millisecondsSinceEpoch}',

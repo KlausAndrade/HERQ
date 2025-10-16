@@ -69,27 +69,52 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
   Future<void> _loadTemplate() async {
     setState(() => _isLoading = true);
 
-    final templatesAsync = ref.read(workoutTemplatesProvider);
-    templatesAsync.whenData((templatesByCategory) {
-      for (final templates in templatesByCategory.values) {
-        final template =
-            templates.where((t) => t.id == widget.templateId).firstOrNull;
-        if (template != null) {
-          _nameController.text = template.name;
-          _descriptionController.text = template.description ?? '';
-          // Normalize category from stored template to avoid issues with
-          // differing capitalization/whitespace (e.g., 'YOGA' vs 'Yoga').
-          _selectedCategory = template.category.trim();
-          _selectedExerciseIds.addAll(template.exerciseIds);
-          _tags.addAll(template.tags);
-          _estimatedDuration = template.estimatedDurationMinutes;
-          setState(() {});
-          break;
-        }
+    try {
+      final templatesAsync = ref.read(workoutTemplatesProvider);
+      await templatesAsync.when(
+        data: (templatesByCategory) async {
+          for (final templates in templatesByCategory.values) {
+            final template =
+                templates.where((t) => t.id == widget.templateId).firstOrNull;
+            if (template != null) {
+              print('🔍 TemplateBuilder - Loading template: ${template.name}');
+              print('🔍 TemplateBuilder - Template exerciseIds: ${template.exerciseIds}');
+              print('🔍 TemplateBuilder - Template exerciseIds count: ${template.exerciseIds.length}');
+              
+              _nameController.text = template.name;
+              _descriptionController.text = template.description ?? '';
+              // Normalize category from stored template to avoid issues with
+              // differing capitalization/whitespace (e.g., 'YOGA' vs 'Yoga').
+              _selectedCategory = template.category.trim();
+              _selectedExerciseIds.addAll(template.exerciseIds);
+              _tags.addAll(template.tags);
+              _estimatedDuration = template.estimatedDurationMinutes;
+              
+              print('🔍 TemplateBuilder - Loaded exerciseIds: $_selectedExerciseIds');
+              print('🔍 TemplateBuilder - Loaded exerciseIds count: ${_selectedExerciseIds.length}');
+              
+              if (mounted) setState(() {});
+              break;
+            }
+          }
+        },
+        loading: () async {
+          // Wait a bit and try again
+          await Future.delayed(const Duration(milliseconds: 500));
+          await _loadTemplate();
+          return;
+        },
+        error: (error, stack) async {
+          print('Error loading template: $error');
+        },
+      );
+    } catch (e) {
+      print('Error in _loadTemplate: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
-    });
-
-    setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _showExercisePickerDialog() async {
@@ -112,6 +137,17 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
   @override
   Widget build(BuildContext context) {
     final exercisesAsync = ref.watch(exercisesProvider);
+    
+    // Debug: Print exercises state
+    exercisesAsync.when(
+      data: (exercises) {
+        print('🔍 TemplateBuilder - Available exercises count: ${exercises.length}');
+        print('🔍 TemplateBuilder - Selected exerciseIds: $_selectedExerciseIds');
+        print('🔍 TemplateBuilder - Selected exerciseIds count: ${_selectedExerciseIds.length}');
+      },
+      loading: () => print('🔍 TemplateBuilder - Loading exercises...'),
+      error: (error, stack) => print('🔍 TemplateBuilder - Error loading exercises: $error'),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -119,6 +155,13 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
           widget.templateId == null ? 'Create Template' : 'Edit Template',
         ),
         actions: [
+          if (widget.templateId != null && _canDeleteTemplate()) ...[
+            IconButton(
+              onPressed: _isLoading ? null : _showDeleteConfirmation,
+              icon: const Icon(Icons.delete, color: Colors.red),
+              tooltip: 'Delete Template',
+            ),
+          ],
           TextButton(
             onPressed: _isLoading ? null : _saveTemplate,
             child: const Text('Save'),
@@ -503,5 +546,107 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
             .catchError((_) {});
       }
     }
+  }
+
+  void _showDeleteConfirmation() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Template'),
+        content: Text(
+          'Are you sure you want to delete "${_nameController.text}"? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              Navigator.of(context).pop();
+              _deleteTemplate();
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteTemplate() async {
+    if (widget.templateId == null) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final actions = ref.read(templateActionsProvider);
+      final success = await actions.deleteTemplate(widget.templateId!);
+
+      if (success) {
+        if (mounted) {
+          NotificationService()
+              .showInAppNotification(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: 'Template deleted',
+                body: 'Template deleted successfully',
+              )
+              .catchError((_) {});
+          Navigator.of(context).pop();
+        }
+      } else {
+        if (mounted) {
+          NotificationService()
+              .showInAppNotification(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: 'Failed to delete template',
+                body: '',
+              )
+              .catchError((_) {});
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Error deleting template',
+              body: e.toString(),
+            )
+            .catchError((_) {});
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  bool _canDeleteTemplate() {
+    if (widget.templateId == null) return false;
+    
+    // System template IDs that should not be deletable
+    const systemTemplateIds = {
+      'ppl_push', 'ppl_pull', 'ppl_legs',
+      'phul_upper_power', 'phul_lower_power', 'phul_upper_hyp', 'phul_lower_hyp',
+      'full_body_beginner', 'full_body_intermediate', 'full_body_advanced',
+      'upper_lower_upper', 'upper_lower_lower',
+      'strength_beginner', 'strength_intermediate', 'strength_advanced',
+      'bodybuilding_chest', 'bodybuilding_back', 'bodybuilding_legs', 'bodybuilding_arms',
+    };
+    
+    // Don't allow deletion of system templates
+    if (systemTemplateIds.contains(widget.templateId)) {
+      return false;
+    }
+    
+    // Allow deletion of AI-generated templates (start with 'ai_gen_')
+    if (widget.templateId!.startsWith('ai_gen_')) {
+      return true;
+    }
+    
+    // Allow deletion of user-created templates (not system templates)
+    // This is a fallback for any other user-created templates
+    return true;
   }
 }

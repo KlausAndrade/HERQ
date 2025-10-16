@@ -816,6 +816,12 @@ class _WorkoutTemplatesWithFoldersScreenState
                     ],
                   ),
                 ),
+                if (_isEditing)
+                  IconButton(
+                    onPressed: () => _showTemplateMenu(context, template),
+                    icon: const Icon(Icons.more_vert),
+                    iconSize: 20,
+                  ),
               ],
             ),
           ),
@@ -953,7 +959,8 @@ class _WorkoutTemplatesWithFoldersScreenState
         ],
       ),
     );
-    if (confirmed ?? false && mounted) {
+    
+    if (confirmed == true && mounted) {
       try {
         await ref
             .read(templateFolderNotifierProvider.notifier)
@@ -1056,5 +1063,286 @@ class _WorkoutTemplatesWithFoldersScreenState
       default:
         return Icons.folder_outlined;
     }
+  }
+
+  void _showTemplateMenu(BuildContext context, WorkoutTemplate template) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(width: 40),
+                Text(
+                  'Template Options',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text('Edit Template'),
+            onTap: () {
+              Navigator.of(context).pop();
+              context.push('/template-builder?templateId=${template.id}');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.text_fields),
+            title: const Text('Rename'),
+            onTap: () {
+              Navigator.of(context).pop();
+              _showRenameDialog(context, template);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.copy),
+            title: const Text('Duplicate'),
+            onTap: () {
+              Navigator.of(context).pop();
+              _showDuplicateDialog(context, template);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.folder),
+            title: const Text('Move to Folder'),
+            onTap: () {
+              Navigator.of(context).pop();
+              _showMoveToFolderDialog(context, template);
+            },
+          ),
+          if (_canDeleteTemplate(template))
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.of(context).pop();
+                _showDeleteConfirmation(context, template);
+              },
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showRenameDialog(BuildContext context, WorkoutTemplate template) {
+    final controller = TextEditingController(text: template.name);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Rename Template'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Template Name',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (controller.text.trim().isNotEmpty) {
+                _renameTemplate(template.id, controller.text.trim());
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Rename'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDuplicateDialog(BuildContext context, WorkoutTemplate template) {
+    final controller = TextEditingController(text: '${template.name} (Copy)');
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Duplicate Template'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'New Template Name',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (controller.text.trim().isNotEmpty) {
+                _duplicateTemplate(template.id, controller.text.trim());
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Duplicate'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMoveToFolderDialog(BuildContext context, WorkoutTemplate template) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Move Template'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Uncategorized'),
+              onTap: () {
+                Navigator.pop(context);
+                _moveTemplate(template.id, null);
+              },
+            ),
+            ...ref.read(templateFoldersProvider).when(
+              data: (folders) => folders.map((folder) => ListTile(
+                title: Text(folder.name),
+                onTap: () {
+                  Navigator.pop(context);
+                  _moveTemplate(template.id, folder);
+                },
+              )),
+              loading: () => [const ListTile(title: Text('Loading...'))],
+              error: (_, __) => [const ListTile(title: Text('Error loading folders'))],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, WorkoutTemplate template) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Template'),
+        content: Text(
+          'Are you sure you want to delete "${template.name}"? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              _deleteTemplate(template.id);
+              Navigator.of(context).pop();
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _renameTemplate(String templateId, String newName) async {
+    final actions = ref.read(templateActionsProvider);
+    final success = await actions.renameTemplate(templateId, newName);
+
+    if (success) {
+      ref.invalidate(workoutTemplatesProvider);
+      if (mounted) {
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Renamed',
+              body: 'Template renamed successfully',
+            )
+            .catchError((_) {});
+      }
+    }
+  }
+
+  Future<void> _duplicateTemplate(String templateId, String newName) async {
+    final actions = ref.read(templateActionsProvider);
+    final success = await actions.duplicateTemplate(templateId, newName);
+
+    if (success) {
+      ref.invalidate(workoutTemplatesProvider);
+      if (mounted) {
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Duplicated',
+              body: 'Template duplicated successfully',
+            )
+            .catchError((_) {});
+      }
+    }
+  }
+
+  Future<void> _deleteTemplate(String templateId) async {
+    final actions = ref.read(templateActionsProvider);
+    final success = await actions.deleteTemplate(templateId);
+
+    if (success) {
+      ref.invalidate(workoutTemplatesProvider);
+      if (mounted) {
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Deleted',
+              body: 'Template deleted successfully',
+            )
+            .catchError((_) {});
+      }
+    }
+  }
+
+  bool _canDeleteTemplate(WorkoutTemplate template) {
+    // System template IDs that should not be deletable
+    const systemTemplateIds = {
+      'ppl_push', 'ppl_pull', 'ppl_legs',
+      'phul_upper_power', 'phul_lower_power', 'phul_upper_hyp', 'phul_lower_hyp',
+      'full_body_beginner', 'full_body_intermediate', 'full_body_advanced',
+      'upper_lower_upper', 'upper_lower_lower',
+      'strength_beginner', 'strength_intermediate', 'strength_advanced',
+      'bodybuilding_chest', 'bodybuilding_back', 'bodybuilding_legs', 'bodybuilding_arms',
+    };
+    
+    // Don't allow deletion of system templates
+    if (systemTemplateIds.contains(template.id)) {
+      return false;
+    }
+    
+    // Allow deletion of AI-generated templates (start with 'ai_gen_')
+    if (template.id.startsWith('ai_gen_')) {
+      return true;
+    }
+    
+    // Allow deletion of user-created templates (not system templates)
+    // This is a fallback for any other user-created templates
+    return true;
   }
 }

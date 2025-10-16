@@ -239,6 +239,72 @@ final workoutPatternAnalysisProvider =
   return aiService.analyzeWorkoutPatterns(userId);
 });
 
+// Generate next workout provider (fallback to mock if Groq fails)
+final generateNextWorkoutProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) async {
+  const userId = 'default_user'; // TODO: Replace with actual user ID when auth implemented
+  
+  try {
+    final aiService = ref.read(groqAICoachingServiceProvider);
+    if (aiService != null) {
+      final result = await aiService.generateNextWorkout(userId);
+      print('✅ Groq next workout generated (Real API)');
+      return result;
+    }
+    throw Exception('Groq service unavailable');
+  } catch (e) {
+    print('❌ Groq failed: $e');
+    
+    // Provide user-friendly error messages
+    String errorMessage = e.toString();
+    if (errorMessage.contains('Rate limit exceeded')) {
+      errorMessage = 'AI service is busy. Please wait a moment and try again.';
+    } else if (errorMessage.contains('Failed to parse AI response')) {
+      errorMessage = 'AI returned invalid data. Please try again.';
+    } else if (errorMessage.contains('Invalid API key')) {
+      errorMessage = 'AI service configuration error. Please contact support.';
+    } else if (errorMessage.contains('Request timed out')) {
+      errorMessage = 'Request timed out. Please try again.';
+    } else if (errorMessage.contains('No workout history')) {
+      errorMessage = 'No workout history found. Please complete some workouts first.';
+    }
+    
+    throw Exception(errorMessage);
+  }
+});
+
+// Optimize workout folder provider (NO fallback to mock - show real errors)
+final optimizeFolderProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, String>((ref, folderId) async {
+  try {
+    final aiService = ref.read(groqAICoachingServiceProvider);
+    if (aiService != null) {
+      final result = await aiService.optimizeWorkoutFolder(folderId);
+      print('✅ Groq folder optimized (Real API)');
+      return result;
+    }
+    throw Exception('Groq service unavailable');
+  } catch (e) {
+    print('❌ Groq failed: $e');
+    
+    // Provide user-friendly error messages
+    String errorMessage = e.toString();
+    if (errorMessage.contains('Rate limit exceeded')) {
+      errorMessage = 'AI service is busy. Please wait a moment and try again.';
+    } else if (errorMessage.contains('Failed to parse AI response')) {
+      errorMessage = 'AI returned invalid data. Please try again.';
+    } else if (errorMessage.contains('Invalid API key')) {
+      errorMessage = 'AI service configuration error. Please contact support.';
+    } else if (errorMessage.contains('Request timed out')) {
+      errorMessage = 'Request timed out. Please try again.';
+    } else if (errorMessage.contains('Folder not found')) {
+      errorMessage = 'Workout folder not found. Please refresh and try again.';
+    } else if (errorMessage.contains('No templates found')) {
+      errorMessage = 'No workout templates found in this folder.';
+    }
+    
+    throw Exception(errorMessage);
+  }
+});
+
 // AI actions provider for user interactions (with Groq fallback)
 final aiActionsProvider = Provider<AIActions>(
   (ref) => AIActions(

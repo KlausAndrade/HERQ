@@ -10,11 +10,8 @@ final databaseProvider = Provider<AppDatabase?>((ref) {
     return null;
   }
 
-  final executor = createInMemoryExecutor();
-  // ignore: unnecessary_null_comparison
-  if (executor == null) return null;
-
-  final db = AppDatabase.forTesting(executor);
+  // Use production database, not testing database
+  final db = AppDatabase();
   ref.onDispose(() async {
     try {
       await db.close();
