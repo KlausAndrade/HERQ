@@ -588,9 +588,9 @@ Provide optimized versions of all templates with clear explanations of improveme
       );
 
       // Validate and parse JSON response
+      String cleanResponse = response.trim();
       try {
         // Clean the response string more thoroughly
-        String cleanResponse = response.trim();
         
         // Remove markdown code blocks
         if (cleanResponse.startsWith('```json')) {

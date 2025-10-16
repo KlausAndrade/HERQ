@@ -33,13 +33,13 @@ class AICoachingScreen extends HookConsumerWidget {
             bottom: TabBar(
               isScrollable: true,
               tabs: [
-                const Tab(
-                  text: 'Build Workout',
-                  icon: Icon(Icons.add_circle_outline),
+                Tab(
+                  text: S.of(context)!.buildWorkout,
+                  icon: const Icon(Icons.add_circle_outline),
                 ),
-                const Tab(
-                  text: 'Optimize',
-                  icon: Icon(Icons.auto_fix_high),
+                Tab(
+                  text: S.of(context)!.optimizeWorkouts,
+                  icon: const Icon(Icons.auto_fix_high),
                 ),
               ],
             ),
@@ -85,7 +85,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Build My Next Workout',
+                              S.of(context)!.buildMyNextWorkout,
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -114,7 +114,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
             child: ElevatedButton.icon(
               onPressed: () => _generateWorkout(context, ref),
               icon: const Icon(Icons.auto_awesome),
-              label: const Text('Generate My Next Workout'),
+              label: Text(S.of(context)!.generateMyNextWorkout),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -210,7 +210,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
                         const SizedBox(width: 2),
                         Expanded(
                           child: Text(
-                            'Generated Workout',
+                            S.of(context)!.generatedWorkout,
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -258,7 +258,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Failed to Generate Workout'),
+            title: Text(S.of(context)!.failedToGenerateWorkout),
             content: Text('Error: ${e.toString()}'),
             actions: [
               TextButton(
@@ -311,7 +311,7 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Optimize My Workouts',
+                              S.of(context)!.optimizeMyWorkouts,
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -417,7 +417,7 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Optimized Workout Folder',
+                        S.of(context)!.optimizedWorkoutFolder,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),

@@ -6,6 +6,26 @@ import '../../data/services/ai_coaching_service.dart';
 import '../../data/services/groq_ai_coaching_service.dart';
 import '../../domain/models/ai_models.dart';
 
+/// Helper function to get user-friendly error messages
+String getAiErrorMessage(String error) {
+  if (error.contains('Rate limit exceeded')) {
+    return 'AI service is busy. Please wait a moment and try again.';
+  } else if (error.contains('Failed to parse AI response')) {
+    return 'AI returned invalid data. Please try again.';
+  } else if (error.contains('Invalid API key')) {
+    return 'AI service configuration error. Please contact support.';
+  } else if (error.contains('Request timed out')) {
+    return 'Request timed out. Please try again.';
+  } else if (error.contains('No workout history')) {
+    return 'No workout history found. Please complete some workouts first.';
+  } else if (error.contains('Folder not found')) {
+    return 'Workout folder not found. Please refresh and try again.';
+  } else if (error.contains('No templates found')) {
+    return 'No workout templates found in this folder.';
+  }
+  return error; // Return original error if no match
+}
+
 // State management for applied and dismissed suggestions
 final appliedSuggestionsProvider = StateProvider<Set<String>>((ref) => {});
 final dismissedSuggestionsProvider = StateProvider<Set<String>>((ref) => {});
@@ -253,22 +273,7 @@ final generateNextWorkoutProvider = FutureProvider.autoDispose<Map<String, dynam
     throw Exception('Groq service unavailable');
   } catch (e) {
     print('❌ Groq failed: $e');
-    
-    // Provide user-friendly error messages
-    String errorMessage = e.toString();
-    if (errorMessage.contains('Rate limit exceeded')) {
-      errorMessage = 'AI service is busy. Please wait a moment and try again.';
-    } else if (errorMessage.contains('Failed to parse AI response')) {
-      errorMessage = 'AI returned invalid data. Please try again.';
-    } else if (errorMessage.contains('Invalid API key')) {
-      errorMessage = 'AI service configuration error. Please contact support.';
-    } else if (errorMessage.contains('Request timed out')) {
-      errorMessage = 'Request timed out. Please try again.';
-    } else if (errorMessage.contains('No workout history')) {
-      errorMessage = 'No workout history found. Please complete some workouts first.';
-    }
-    
-    throw Exception(errorMessage);
+    throw Exception(getAiErrorMessage(e.toString()));
   }
 });
 
@@ -284,24 +289,7 @@ final optimizeFolderProvider = FutureProvider.autoDispose.family<Map<String, dyn
     throw Exception('Groq service unavailable');
   } catch (e) {
     print('❌ Groq failed: $e');
-    
-    // Provide user-friendly error messages
-    String errorMessage = e.toString();
-    if (errorMessage.contains('Rate limit exceeded')) {
-      errorMessage = 'AI service is busy. Please wait a moment and try again.';
-    } else if (errorMessage.contains('Failed to parse AI response')) {
-      errorMessage = 'AI returned invalid data. Please try again.';
-    } else if (errorMessage.contains('Invalid API key')) {
-      errorMessage = 'AI service configuration error. Please contact support.';
-    } else if (errorMessage.contains('Request timed out')) {
-      errorMessage = 'Request timed out. Please try again.';
-    } else if (errorMessage.contains('Folder not found')) {
-      errorMessage = 'Workout folder not found. Please refresh and try again.';
-    } else if (errorMessage.contains('No templates found')) {
-      errorMessage = 'No workout templates found in this folder.';
-    }
-    
-    throw Exception(errorMessage);
+    throw Exception(getAiErrorMessage(e.toString()));
   }
 });
 

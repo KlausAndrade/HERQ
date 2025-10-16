@@ -1802,4 +1802,144 @@ class SEn extends S {
   String optimizedForMobile(String appName) {
     return '$appName is optimized for mobile devices with full offline support and native features.';
   }
+
+  @override
+  String get buildWorkout => 'Build Workout';
+
+  @override
+  String get optimizeWorkouts => 'Optimize Workouts';
+
+  @override
+  String get buildMyNextWorkout => 'Build My Next Workout';
+
+  @override
+  String get generateMyNextWorkout => 'Generate My Next Workout';
+
+  @override
+  String get optimizeMyWorkouts => 'Optimize My Workouts';
+
+  @override
+  String get generatedWorkout => 'Generated Workout';
+
+  @override
+  String get optimizedWorkoutFolder => 'Optimized Workout Folder';
+
+  @override
+  String get failedToGenerateWorkout => 'Failed to Generate Workout';
+
+  @override
+  String get aiServiceBusy =>
+      'AI service is busy. Please wait a moment and try again.';
+
+  @override
+  String get aiReturnedInvalidData =>
+      'AI returned invalid data. Please try again.';
+
+  @override
+  String get aiServiceConfigurationError =>
+      'AI service configuration error. Please contact support.';
+
+  @override
+  String get requestTimedOut => 'Request timed out. Please try again.';
+
+  @override
+  String get noWorkoutHistoryFound =>
+      'No workout history found. Please complete some workouts first.';
+
+  @override
+  String get workoutFolderNotFound =>
+      'Workout folder not found. Please refresh and try again.';
+
+  @override
+  String get noTemplatesFoundInFolder =>
+      'No workout templates found in this folder.';
+
+  @override
+  String get failedToParseAiResponse =>
+      'Failed to parse AI response. The AI may have returned invalid JSON. Please try again.';
+
+  @override
+  String get failedToSaveTemplate => 'Failed to save template';
+
+  @override
+  String get failedToStartWorkout => 'Failed to start workout';
+
+  @override
+  String get failedToReplaceTemplate => 'Failed to replace template';
+
+  @override
+  String get pleaseTryAgain => 'Please try again.';
+
+  @override
+  String get startingAiGeneratedWorkout => 'Starting AI-generated workout...';
+
+  @override
+  String get aiGeneratedWorkoutCreated => 'AI Generated Workout was created';
+
+  @override
+  String get aiGeneratedWorkoutCreatedDescription =>
+      'Your personalized workout has been generated based on your training history.';
+
+  @override
+  String get saveAsTemplate => 'Save as Template';
+
+  @override
+  String get saveOptimizedTemplates => 'Save Optimized Templates';
+
+  @override
+  String get replaceOriginalTemplates => 'Replace Original Templates';
+
+  @override
+  String get aiReasoning => 'AI Reasoning';
+
+  @override
+  String get estimatedDuration => 'Estimated Duration';
+
+  @override
+  String get aiGenerated => 'AI Generated';
+
+  @override
+  String get endurance => 'Endurance';
+
+  @override
+  String get skill => 'Skill';
+
+  @override
+  String get mixed => 'Mixed';
+
+  @override
+  String get upper => 'Upper';
+
+  @override
+  String get lower => 'Lower';
+
+  @override
+  String get fullBody => 'Full Body';
+
+  @override
+  String get incline => 'Incline';
+
+  @override
+  String get deficit => 'Deficit';
+
+  @override
+  String get sumo => 'Sumo';
+
+  @override
+  String get neutralGrip => 'Neutral Grip';
+
+  @override
+  String get warmup => 'Warmup';
+
+  @override
+  String get working => 'Working';
+
+  @override
+  String get top => 'Top';
+
+  @override
+  String get backoff => 'Backoff';
+
+  @override
+  String get drop => 'Drop';
 }

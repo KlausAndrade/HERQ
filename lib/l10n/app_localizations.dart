@@ -3578,6 +3578,270 @@ abstract class S {
   /// In en, this message translates to:
   /// **'{appName} is optimized for mobile devices with full offline support and native features.'**
   String optimizedForMobile(String appName);
+
+  /// No description provided for @buildWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Build Workout'**
+  String get buildWorkout;
+
+  /// No description provided for @optimizeWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimize Workouts'**
+  String get optimizeWorkouts;
+
+  /// No description provided for @buildMyNextWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Build My Next Workout'**
+  String get buildMyNextWorkout;
+
+  /// No description provided for @generateMyNextWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate My Next Workout'**
+  String get generateMyNextWorkout;
+
+  /// No description provided for @optimizeMyWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimize My Workouts'**
+  String get optimizeMyWorkouts;
+
+  /// No description provided for @generatedWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated Workout'**
+  String get generatedWorkout;
+
+  /// No description provided for @optimizedWorkoutFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimized Workout Folder'**
+  String get optimizedWorkoutFolder;
+
+  /// No description provided for @failedToGenerateWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to Generate Workout'**
+  String get failedToGenerateWorkout;
+
+  /// No description provided for @aiServiceBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'AI service is busy. Please wait a moment and try again.'**
+  String get aiServiceBusy;
+
+  /// No description provided for @aiReturnedInvalidData.
+  ///
+  /// In en, this message translates to:
+  /// **'AI returned invalid data. Please try again.'**
+  String get aiReturnedInvalidData;
+
+  /// No description provided for @aiServiceConfigurationError.
+  ///
+  /// In en, this message translates to:
+  /// **'AI service configuration error. Please contact support.'**
+  String get aiServiceConfigurationError;
+
+  /// No description provided for @requestTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timed out. Please try again.'**
+  String get requestTimedOut;
+
+  /// No description provided for @noWorkoutHistoryFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No workout history found. Please complete some workouts first.'**
+  String get noWorkoutHistoryFound;
+
+  /// No description provided for @workoutFolderNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout folder not found. Please refresh and try again.'**
+  String get workoutFolderNotFound;
+
+  /// No description provided for @noTemplatesFoundInFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'No workout templates found in this folder.'**
+  String get noTemplatesFoundInFolder;
+
+  /// No description provided for @failedToParseAiResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to parse AI response. The AI may have returned invalid JSON. Please try again.'**
+  String get failedToParseAiResponse;
+
+  /// No description provided for @failedToSaveTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save template'**
+  String get failedToSaveTemplate;
+
+  /// No description provided for @failedToStartWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to start workout'**
+  String get failedToStartWorkout;
+
+  /// No description provided for @failedToReplaceTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to replace template'**
+  String get failedToReplaceTemplate;
+
+  /// No description provided for @pleaseTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Please try again.'**
+  String get pleaseTryAgain;
+
+  /// No description provided for @startingAiGeneratedWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting AI-generated workout...'**
+  String get startingAiGeneratedWorkout;
+
+  /// No description provided for @aiGeneratedWorkoutCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Generated Workout was created'**
+  String get aiGeneratedWorkoutCreated;
+
+  /// No description provided for @aiGeneratedWorkoutCreatedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your personalized workout has been generated based on your training history.'**
+  String get aiGeneratedWorkoutCreatedDescription;
+
+  /// No description provided for @saveAsTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as Template'**
+  String get saveAsTemplate;
+
+  /// No description provided for @saveOptimizedTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Optimized Templates'**
+  String get saveOptimizedTemplates;
+
+  /// No description provided for @replaceOriginalTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace Original Templates'**
+  String get replaceOriginalTemplates;
+
+  /// No description provided for @aiReasoning.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Reasoning'**
+  String get aiReasoning;
+
+  /// No description provided for @estimatedDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated Duration'**
+  String get estimatedDuration;
+
+  /// No description provided for @aiGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Generated'**
+  String get aiGenerated;
+
+  /// No description provided for @endurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Endurance'**
+  String get endurance;
+
+  /// No description provided for @skill.
+  ///
+  /// In en, this message translates to:
+  /// **'Skill'**
+  String get skill;
+
+  /// No description provided for @mixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed'**
+  String get mixed;
+
+  /// No description provided for @upper.
+  ///
+  /// In en, this message translates to:
+  /// **'Upper'**
+  String get upper;
+
+  /// No description provided for @lower.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower'**
+  String get lower;
+
+  /// No description provided for @fullBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Body'**
+  String get fullBody;
+
+  /// No description provided for @incline.
+  ///
+  /// In en, this message translates to:
+  /// **'Incline'**
+  String get incline;
+
+  /// No description provided for @deficit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deficit'**
+  String get deficit;
+
+  /// No description provided for @sumo.
+  ///
+  /// In en, this message translates to:
+  /// **'Sumo'**
+  String get sumo;
+
+  /// No description provided for @neutralGrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral Grip'**
+  String get neutralGrip;
+
+  /// No description provided for @warmup.
+  ///
+  /// In en, this message translates to:
+  /// **'Warmup'**
+  String get warmup;
+
+  /// No description provided for @working.
+  ///
+  /// In en, this message translates to:
+  /// **'Working'**
+  String get working;
+
+  /// No description provided for @top.
+  ///
+  /// In en, this message translates to:
+  /// **'Top'**
+  String get top;
+
+  /// No description provided for @backoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Backoff'**
+  String get backoff;
+
+  /// No description provided for @drop.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop'**
+  String get drop;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

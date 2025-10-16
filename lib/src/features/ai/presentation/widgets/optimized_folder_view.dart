@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../workout/presentation/providers/template_providers.dart';
 
 /// Widget to display optimized folder results with save/replace options
@@ -124,14 +125,14 @@ class OptimizedFolderView extends HookConsumerWidget {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => _saveAllAsNew(context, ref),
-                  child: const Text('Save All as New'),
+                  child: Text(S.of(context)!.saveOptimizedTemplates),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () => _replaceAll(context, ref),
-                  child: const Text('Replace All'),
+                  child: Text(S.of(context)!.replaceOriginalTemplates),
                 ),
               ),
             ],
@@ -284,14 +285,14 @@ class OptimizedFolderView extends HookConsumerWidget {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => _saveTemplateAsNew(context, ref, template),
-                    child: const Text('Save as New'),
+                    child: Text(S.of(context)!.saveAsTemplate),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => _replaceTemplate(context, ref, template),
-                    child: const Text('Replace'),
+                    child: Text(S.of(context)!.replaceOriginalTemplates),
                   ),
                 ),
               ],
@@ -390,8 +391,8 @@ class OptimizedFolderView extends HookConsumerWidget {
           NotificationService()
               .showInAppNotification(
                 id: DateTime.now().millisecondsSinceEpoch.toString(),
-                title: 'Failed to save template',
-                body: 'Please try again.',
+                title: S.of(context)!.failedToSaveTemplate,
+                body: S.of(context)!.pleaseTryAgain,
               )
               .catchError((_) {});
         }
@@ -427,8 +428,8 @@ class OptimizedFolderView extends HookConsumerWidget {
           NotificationService()
               .showInAppNotification(
                 id: DateTime.now().millisecondsSinceEpoch.toString(),
-                title: 'Failed to replace template',
-                body: 'Please try again.',
+                title: S.of(context)!.failedToReplaceTemplate,
+                body: S.of(context)!.pleaseTryAgain,
               )
               .catchError((_) {});
         }

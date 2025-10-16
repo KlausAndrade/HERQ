@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../workout/presentation/providers/template_providers.dart';
 
 /// Widget to display a generated workout with save and start actions
@@ -176,7 +177,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
-                    child: const Text('Save Template', style: TextStyle(fontSize: 12)),
+                    child: Text(S.of(context)!.saveAsTemplate, style: const TextStyle(fontSize: 12)),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -186,7 +187,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
-                    child: const Text('Start Workout', style: TextStyle(fontSize: 12)),
+                    child: Text(S.of(context)!.startWorkout, style: const TextStyle(fontSize: 12)),
                   ),
                 ),
               ],
@@ -410,9 +411,9 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
       final template = WorkoutTemplate(
         id: templateId,
         userId: 'default_user', // TODO: Replace with actual user ID
-        name: workoutData['name'] as String? ?? 'AI Generated Workout',
+        name: workoutData['name'] as String? ?? S.of(context)!.aiGeneratedWorkoutCreated,
         description: workoutData['description'] as String? ?? '',
-        category: workoutData['category'] as String? ?? 'AI Generated',
+        category: workoutData['category'] as String? ?? S.of(context)!.aiGenerated,
         sortOrder: 0,
         exerciseIds: uniqueExerciseIds,
         tags: ['ai_generated'],
@@ -440,8 +441,8 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Failed to save template',
-              body: 'Please try again.',
+              title: S.of(context)!.failedToSaveTemplate,
+              body: S.of(context)!.pleaseTryAgain,
             )
             .catchError((_) {});
       }
@@ -517,9 +518,9 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
       final template = WorkoutTemplate(
         id: templateId,
         userId: 'default_user', // TODO: Replace with actual user ID
-        name: workoutData['name'] as String? ?? 'AI Generated Workout',
+        name: workoutData['name'] as String? ?? S.of(context)!.aiGeneratedWorkoutCreated,
         description: workoutData['description'] as String? ?? '',
-        category: workoutData['category'] as String? ?? 'AI Generated',
+        category: workoutData['category'] as String? ?? S.of(context)!.aiGenerated,
         sortOrder: 0,
         exerciseIds: uniqueExerciseIds,
         tags: ['ai_generated'],
@@ -540,7 +541,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Starting AI-generated workout...',
+              title: S.of(context)!.startingAiGeneratedWorkout,
               body: '',
             )
             .catchError((_) {});
@@ -553,8 +554,8 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Failed to start workout',
-              body: 'Please try again.',
+              title: S.of(context)!.failedToStartWorkout,
+              body: S.of(context)!.pleaseTryAgain,
             )
             .catchError((_) {});
       }

@@ -39,7 +39,7 @@ class SEs extends S {
   String get next => 'Siguiente';
 
   @override
-  String get back => 'Volver';
+  String get back => 'Espalda';
 
   @override
   String get skip => 'Saltar';
@@ -682,13 +682,13 @@ class SEs extends S {
   String get all => 'Todos';
 
   @override
-  String get weightReps => 'Peso y Reps';
+  String get weightReps => 'Peso y Repeticiones';
 
   @override
-  String get bodyweightReps => 'Reps con Peso Corporal';
+  String get bodyweightReps => 'Repeticiones de Peso Corporal';
 
   @override
-  String get weightedBodyweight => 'Peso Corporal con Carga';
+  String get weightedBodyweight => 'Peso Corporal con Peso';
 
   @override
   String get assistedBodyweight => 'Peso Corporal Asistido';
@@ -978,7 +978,7 @@ class SEs extends S {
   String get tempo => 'Tempo';
 
   @override
-  String get pause => 'Pausar';
+  String get pause => 'Pausa';
 
   @override
   String get explore => 'Explorar';
@@ -1744,7 +1744,7 @@ class SEs extends S {
   String get push => 'Empuje';
 
   @override
-  String get pull => 'Jalón';
+  String get pull => 'Tirón';
 
   @override
   String get unilateral => 'Unilateral';
@@ -1817,4 +1817,147 @@ class SEs extends S {
   String optimizedForMobile(String appName) {
     return '$appName está optimizado para dispositivos móviles con soporte completo sin conexión y funciones nativas.';
   }
+
+  @override
+  String get buildWorkout => 'Crear Entrenamiento';
+
+  @override
+  String get optimizeWorkouts => 'Optimizar Entrenamientos';
+
+  @override
+  String get buildMyNextWorkout => 'Crear Mi Próximo Entrenamiento';
+
+  @override
+  String get generateMyNextWorkout => 'Generar Mi Próximo Entrenamiento';
+
+  @override
+  String get optimizeMyWorkouts => 'Optimizar Mis Entrenamientos';
+
+  @override
+  String get generatedWorkout => 'Entrenamiento Generado';
+
+  @override
+  String get optimizedWorkoutFolder => 'Carpeta de Entrenamientos Optimizada';
+
+  @override
+  String get failedToGenerateWorkout => 'Error al Generar Entrenamiento';
+
+  @override
+  String get aiServiceBusy =>
+      'El servicio de IA está ocupado. Por favor espera un momento e inténtalo de nuevo.';
+
+  @override
+  String get aiReturnedInvalidData =>
+      'La IA devolvió datos inválidos. Por favor inténtalo de nuevo.';
+
+  @override
+  String get aiServiceConfigurationError =>
+      'Error de configuración del servicio de IA. Por favor contacta soporte.';
+
+  @override
+  String get requestTimedOut =>
+      'La solicitud expiró. Por favor inténtalo de nuevo.';
+
+  @override
+  String get noWorkoutHistoryFound =>
+      'No se encontró historial de entrenamientos. Por favor completa algunos entrenamientos primero.';
+
+  @override
+  String get workoutFolderNotFound =>
+      'Carpeta de entrenamientos no encontrada. Por favor actualiza e inténtalo de nuevo.';
+
+  @override
+  String get noTemplatesFoundInFolder =>
+      'No se encontraron plantillas de entrenamiento en esta carpeta.';
+
+  @override
+  String get failedToParseAiResponse =>
+      'Error al analizar la respuesta de la IA. La IA puede haber devuelto JSON inválido. Por favor inténtalo de nuevo.';
+
+  @override
+  String get failedToSaveTemplate => 'Error al guardar plantilla';
+
+  @override
+  String get failedToStartWorkout => 'Error al iniciar entrenamiento';
+
+  @override
+  String get failedToReplaceTemplate => 'Error al reemplazar plantilla';
+
+  @override
+  String get pleaseTryAgain => 'Por favor inténtalo de nuevo.';
+
+  @override
+  String get startingAiGeneratedWorkout =>
+      'Iniciando entrenamiento generado por IA...';
+
+  @override
+  String get aiGeneratedWorkoutCreated =>
+      'Entrenamiento Generado por IA fue creado';
+
+  @override
+  String get aiGeneratedWorkoutCreatedDescription =>
+      'Tu entrenamiento personalizado ha sido generado basado en tu historial de entrenamiento.';
+
+  @override
+  String get saveAsTemplate => 'Guardar como Plantilla';
+
+  @override
+  String get saveOptimizedTemplates => 'Guardar Plantillas Optimizadas';
+
+  @override
+  String get replaceOriginalTemplates => 'Reemplazar Plantillas Originales';
+
+  @override
+  String get aiReasoning => 'Razonamiento de IA';
+
+  @override
+  String get estimatedDuration => 'Duración Estimada';
+
+  @override
+  String get aiGenerated => 'Generado por IA';
+
+  @override
+  String get endurance => 'Resistencia';
+
+  @override
+  String get skill => 'Habilidad';
+
+  @override
+  String get mixed => 'Mixto';
+
+  @override
+  String get upper => 'Superior';
+
+  @override
+  String get lower => 'Inferior';
+
+  @override
+  String get fullBody => 'Cuerpo Completo';
+
+  @override
+  String get incline => 'Inclinado';
+
+  @override
+  String get deficit => 'Déficit';
+
+  @override
+  String get sumo => 'Sumo';
+
+  @override
+  String get neutralGrip => 'Agarre Neutro';
+
+  @override
+  String get warmup => 'Calentamiento';
+
+  @override
+  String get working => 'Trabajo';
+
+  @override
+  String get top => 'Máximo';
+
+  @override
+  String get backoff => 'Reducción';
+
+  @override
+  String get drop => 'Caída';
 }
