@@ -17,6 +17,7 @@
     "start": "./run_dev.sh",
     "build": "./build_apk.sh",
     "build:ios": "./build_ios.sh",
+    "run:ios": "./run_ios_release.sh",
     "build:web": "./build_web.sh",
     "deploy:web": "./deploy_web.sh",
     "fix": "./scripts/fix_ios.sh",
