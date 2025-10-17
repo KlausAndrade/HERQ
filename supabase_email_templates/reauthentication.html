@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Re-authentication Required - HERQ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1B1D21;
+            background-color: #F8F8FA;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #F8F8FA;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 0 30px;
+            background: linear-gradient(135deg, #00BFA6 0%, #D4FF4D 100%);
+            border-radius: 16px 16px 0 0;
+            margin-bottom: 0;
+        }
+        
+        .logo {
+            font-family: 'Anton', 'Monument Extended', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: #1B1D21;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .tagline {
+            color: #1B1D21;
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        
+        .content {
+            background-color: #F8F8FA;
+            padding: 40px 30px;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 20px rgba(27, 29, 33, 0.1);
+        }
+        
+        .greeting {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1B1D21;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #1B1D21;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        
+        .security-notice {
+            background: linear-gradient(135deg, #1B1D21 0%, #141516 100%);
+            color: #F8F8FA;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 24px 0;
+            border-left: 4px solid #D4FF4D;
+        }
+        
+        .security-notice .icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+        
+        .security-notice p {
+            margin-bottom: 8px;
+        }
+        
+        .security-notice .highlight {
+            color: #D4FF4D;
+            font-weight: 600;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #00BFA6 0%, #D4FF4D 100%);
+            color: #1B1D21;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            margin: 24px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 191, 166, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 191, 166, 0.4);
+        }
+        
+        .reasons-list {
+            background: linear-gradient(135deg, #F8F8FA 0%, #E5E5E5 100%);
+            padding: 24px;
+            border-radius: 12px;
+            margin: 32px 0;
+            border: 2px solid #00BFA6;
+        }
+        
+        .reasons-list h3 {
+            color: #1B1D21;
+            font-size: 18px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .reasons-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .reasons-list li {
+            color: #1B1D21;
+            margin-bottom: 12px;
+            padding-left: 24px;
+            position: relative;
+        }
+        
+        .reasons-list li:before {
+            content: "🔒";
+            position: absolute;
+            left: 0;
+            font-size: 16px;
+        }
+        
+        .alternative-link {
+            margin-top: 24px;
+            padding: 20px;
+            background-color: #141516;
+            border-radius: 8px;
+            border-left: 4px solid #00BFA6;
+        }
+        
+        .alternative-link p {
+            color: #F8F8FA;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .alternative-link a {
+            color: #00BFA6;
+            word-break: break-all;
+            font-size: 12px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #E5E5E5;
+        }
+        
+        .footer p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .social-links {
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            color: #00BFA6;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        
+        .expiry-notice {
+            background: linear-gradient(135deg, #D4FF4D 0%, #00BFA6 100%);
+            color: #1B1D21;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 24px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .strength-quote {
+            background: linear-gradient(135deg, #1B1D21 0%, #141516 100%);
+            color: #F8F8FA;
+            padding: 24px;
+            border-radius: 12px;
+            margin: 32px 0;
+            text-align: center;
+            border-left: 4px solid #00BFA6;
+        }
+        
+        .strength-quote p {
+            font-style: italic;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .strength-quote .author {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .logo {
+                font-size: 28px;
+            }
+            
+            .greeting {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">HERQ</div>
+            <div class="tagline">Smart Strength. Simplified.</div>
+        </div>
+        
+        <div class="content">
+            <h1 class="greeting">Re-authentication Required 🔐</h1>
+            
+            <p class="message">
+                For your security, we need you to confirm your identity before proceeding with sensitive account actions. This helps protect your workout data and personal information.
+            </p>
+            
+            <div class="expiry-notice">
+                ⏰ This authentication link expires in 1 hour
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="{{ .ConfirmationURL }}" class="cta-button">Confirm My Identity</a>
+            </div>
+            
+            <div class="security-notice">
+                <p><span class="icon">🛡️</span><span class="highlight">Why Re-authentication?</span></p>
+                <p>We require re-authentication for sensitive operations like changing passwords, updating payment methods, or accessing account settings. This ensures only you can make these changes.</p>
+            </div>
+            
+            <div class="reasons-list">
+                <h3>When We Ask for Re-authentication</h3>
+                <ul>
+                    <li>Changing your password or email address</li>
+                    <li>Updating payment or billing information</li>
+                    <li>Accessing sensitive account settings</li>
+                    <li>After a period of inactivity for security</li>
+                    <li>When accessing from a new device or location</li>
+                </ul>
+            </div>
+            
+            <div class="strength-quote">
+                <p>"Security is strength. Protect what you've built."</p>
+                <div class="author">— HERQ Team</div>
+            </div>
+            
+            <div class="alternative-link">
+                <p><strong>Having trouble with the button?</strong> You can also use this direct link:</p>
+                <a href="{{ .ConfirmationURL }}">{{ .ConfirmationURL }}</a>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; margin-top: 24px;">
+                If you didn't request this action, please contact our support team immediately. Your account security is our top priority.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>HERQ</strong> - Smart Strength. Simplified.</p>
+            <p>Inspired by the spirit of Heracles — the original symbol of strength and perseverance.</p>
+            
+            <div class="social-links">
+                <a href="https://herq.app/privacy-policy.html">Privacy Policy</a> •
+                <a href="https://herq.app/terms-of-service.html">Terms of Service</a> •
+                <a href="https://herq.app/delete-data.html">Delete Data</a>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">
+                © 2026 HERQ. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

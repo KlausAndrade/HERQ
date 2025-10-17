@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your HERQ Magic Link - Secure Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1B1D21;
+            background-color: #F8F8FA;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #F8F8FA;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 0 30px;
+            background: linear-gradient(135deg, #00BFA6 0%, #D4FF4D 100%);
+            border-radius: 16px 16px 0 0;
+            margin-bottom: 0;
+        }
+        
+        .logo {
+            font-family: 'Anton', 'Monument Extended', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: #1B1D21;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .tagline {
+            color: #1B1D21;
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        
+        .content {
+            background-color: #F8F8FA;
+            padding: 40px 30px;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 20px rgba(27, 29, 33, 0.1);
+        }
+        
+        .greeting {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1B1D21;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #1B1D21;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        
+        .security-notice {
+            background: linear-gradient(135deg, #1B1D21 0%, #141516 100%);
+            color: #F8F8FA;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 24px 0;
+            border-left: 4px solid #00BFA6;
+        }
+        
+        .security-notice .icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+        
+        .security-notice p {
+            margin-bottom: 8px;
+        }
+        
+        .security-notice .highlight {
+            color: #00BFA6;
+            font-weight: 600;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #00BFA6 0%, #D4FF4D 100%);
+            color: #1B1D21;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            margin: 24px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 191, 166, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 191, 166, 0.4);
+        }
+        
+        .alternative-link {
+            margin-top: 24px;
+            padding: 20px;
+            background-color: #141516;
+            border-radius: 8px;
+            border-left: 4px solid #00BFA6;
+        }
+        
+        .alternative-link p {
+            color: #F8F8FA;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .alternative-link a {
+            color: #00BFA6;
+            word-break: break-all;
+            font-size: 12px;
+        }
+        
+        .benefits-list {
+            background: linear-gradient(135deg, #F8F8FA 0%, #E5E5E5 100%);
+            padding: 24px;
+            border-radius: 12px;
+            margin: 32px 0;
+            border: 2px solid #00BFA6;
+        }
+        
+        .benefits-list h3 {
+            color: #1B1D21;
+            font-size: 18px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .benefits-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .benefits-list li {
+            color: #1B1D21;
+            margin-bottom: 12px;
+            padding-left: 24px;
+            position: relative;
+        }
+        
+        .benefits-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00BFA6;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #E5E5E5;
+        }
+        
+        .footer p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .social-links {
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            color: #00BFA6;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        
+        .expiry-notice {
+            background: linear-gradient(135deg, #D4FF4D 0%, #00BFA6 100%);
+            color: #1B1D21;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 24px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .logo {
+                font-size: 28px;
+            }
+            
+            .greeting {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">HERQ</div>
+            <div class="tagline">Smart Strength. Simplified.</div>
+        </div>
+        
+        <div class="content">
+            <h1 class="greeting">Your Magic Link is Ready! ✨</h1>
+            
+            <p class="message">
+                Use the secure link below to sign in to your HERQ account. No password needed — just one click and you're in!
+            </p>
+            
+            <div class="expiry-notice">
+                ⏰ This link is valid for 1 hour for your security
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="{{ .ConfirmationURL }}" class="cta-button">Sign In to HERQ</a>
+            </div>
+            
+            <div class="security-notice">
+                <p><span class="icon">🔒</span><span class="highlight">Secure & Convenient</span></p>
+                <p>Magic links are more secure than passwords and easier to use. This link is unique to you and will expire automatically.</p>
+            </div>
+            
+            <div class="benefits-list">
+                <h3>Why Magic Links?</h3>
+                <ul>
+                    <li>No passwords to remember or forget</li>
+                    <li>More secure than traditional passwords</li>
+                    <li>Works across all your devices</li>
+                    <li>Automatic expiration for security</li>
+                </ul>
+            </div>
+            
+            <div class="alternative-link">
+                <p><strong>Having trouble with the button?</strong> You can also use this direct link:</p>
+                <a href="{{ .ConfirmationURL }}">{{ .ConfirmationURL }}</a>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; margin-top: 24px;">
+                If you didn't request this magic link, you can safely ignore this email. Your account remains secure.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>HERQ</strong> - Smart Strength. Simplified.</p>
+            <p>Inspired by the spirit of Heracles — the original symbol of strength and perseverance.</p>
+            
+            <div class="social-links">
+                <a href="https://herq.app/privacy-policy.html">Privacy Policy</a> •
+                <a href="https://herq.app/terms-of-service.html">Terms of Service</a> •
+                <a href="https://herq.app/delete-data.html">Delete Data</a>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">
+                © 2026 HERQ. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
