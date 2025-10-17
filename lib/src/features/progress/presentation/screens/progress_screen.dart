@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/providers/database_provider.dart';
+import '../../../../core/widgets/swipe_back_wrapper.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
 import '../providers/chart_providers.dart';
 import '../widgets/chart_widgets.dart';
@@ -18,21 +19,23 @@ class ProgressScreen extends ConsumerWidget {
     final weeklyVolume = ref.watch(weeklyVolumeProvider);
     final workoutFrequency = ref.watch(workoutFrequencyProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'),
-        ),
-        title: Text(S.of(context)!.progress),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.psychology),
-            onPressed: () => context.go('/analytics'),
-            tooltip: 'Advanced Analytics',
+    return SwipeBackWrapperWithFeedback(
+      onSwipeBack: () => context.go('/'),
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/'),
           ),
-        ],
-      ),
+          title: Text(S.of(context)!.progress),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.psychology),
+              onPressed: () => context.go('/analytics'),
+              tooltip: 'Advanced Analytics',
+            ),
+          ],
+        ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -341,6 +344,7 @@ class ProgressScreen extends ConsumerWidget {
         ],
       ),
       bottomNavigationBar: _buildBottomNavigation(context),
+      ),
     );
   }
 

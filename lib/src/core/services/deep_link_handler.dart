@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'snackbar_service.dart';
-import '../../l10n/app_localizations.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Handles deep link authentication for mobile apps
 class DeepLinkHandler {

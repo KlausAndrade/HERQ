@@ -507,6 +507,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
         
         if (invalidExerciseIds.isNotEmpty) {
           print('⚠️ _startWorkout - Some exercise IDs from AI do not exist in database!');
+          print('⚠️ Available exercise IDs: ${allExercises.map((e) => e.id).take(10).toList()}');
         }
         
         // Use only valid exercise IDs
@@ -514,6 +515,40 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
           uniqueExerciseIds.clear();
           uniqueExerciseIds.addAll(validExerciseIds);
           print('🔍 _startWorkout - Using only valid exerciseIds: $uniqueExerciseIds');
+        } else {
+          // If no valid exercise IDs, try to find similar exercises by name
+          print('🔍 _startWorkout - No valid exercise IDs found, trying to find similar exercises by name');
+          final fallbackExerciseIds = <String>[];
+          
+          for (final exercise in exercises) {
+            final exerciseName = exercise['name'] as String? ?? '';
+            if (exerciseName.isNotEmpty) {
+              // Try to find exercise by name (case insensitive)
+              final matchingExercise = allExercises.firstWhere(
+                (e) => e.name.toLowerCase() == exerciseName.toLowerCase(),
+                orElse: () => allExercises.first, // Fallback to first exercise
+              );
+              fallbackExerciseIds.add(matchingExercise.id);
+            }
+          }
+          
+          if (fallbackExerciseIds.isNotEmpty) {
+            uniqueExerciseIds.clear();
+            uniqueExerciseIds.addAll(fallbackExerciseIds);
+            print('🔍 _startWorkout - Using fallback exerciseIds: $uniqueExerciseIds');
+          } else {
+            // If still no valid exercise IDs, show error and return
+            if (context.mounted) {
+              NotificationService()
+                  .showInAppNotification(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: 'Invalid AI Workout',
+                    body: 'AI generated invalid exercise IDs. Please try again.',
+                  )
+                  .catchError((_) {});
+            }
+            return;
+          }
         }
       }
       
@@ -539,6 +574,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
       if (success && context.mounted) {
         print('🔍 _startWorkout - Template created successfully, navigating to active workout');
         print('🔍 _startWorkout - Template ID: $templateId');
+        print('🔍 _startWorkout - Valid exercise IDs: $uniqueExerciseIds');
         
         NotificationService()
             .showInAppNotification(

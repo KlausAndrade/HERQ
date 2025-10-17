@@ -27,20 +27,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   void initState() {
     super.initState();
-    // Listen for auth state changes to handle deep link authentication
-    _listenToAuthState();
-  }
-
-  void _listenToAuthState() {
-    // Watch for auth state changes
-    ref.listen(authStateProvider, (previous, next) {
-      next.whenData((authState) {
-        if (authState.session != null && mounted) {
-          print('✅ User authenticated via deep link, navigating to home');
-          context.go('/');
-        }
-      });
-    });
   }
 
   @override
@@ -52,7 +38,18 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    // Listen for auth state changes to handle deep link authentication
+    ref.listen(authStateProvider, (previous, next) {
+      next.whenData((authState) {
+        if (authState.session != null && mounted) {
+          print('✅ User authenticated via deep link, navigating to home');
+          context.go('/');
+        }
+      });
+    });
+
+    return Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(12),
@@ -311,6 +308,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           ),
         ),
       );
+  }
 
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;

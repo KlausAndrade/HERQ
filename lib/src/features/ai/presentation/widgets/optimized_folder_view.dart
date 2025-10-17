@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/database/database.dart';
+import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../workout/presentation/providers/template_providers.dart';
@@ -310,7 +311,7 @@ class OptimizedFolderView extends HookConsumerWidget {
       
       int savedCount = 0;
       for (final template in templates) {
-        final success = await _createTemplateFromOptimized(templateActions, template);
+        final success = await _createTemplateFromOptimized(ref, templateActions, template);
         if (success) savedCount++;
       }
 
@@ -345,7 +346,7 @@ class OptimizedFolderView extends HookConsumerWidget {
       
       int replacedCount = 0;
       for (final template in templates) {
-        final success = await _updateTemplateFromOptimized(templateActions, template);
+        final success = await _updateTemplateFromOptimized(ref, templateActions, template);
         if (success) replacedCount++;
       }
 
@@ -376,7 +377,7 @@ class OptimizedFolderView extends HookConsumerWidget {
   Future<void> _saveTemplateAsNew(BuildContext context, WidgetRef ref, Map<String, dynamic> template) async {
     try {
       final templateActions = ref.read(templateActionsProvider);
-      final success = await _createTemplateFromOptimized(templateActions, template);
+      final success = await _createTemplateFromOptimized(ref, templateActions, template);
 
       if (context.mounted) {
         if (success) {
@@ -413,7 +414,7 @@ class OptimizedFolderView extends HookConsumerWidget {
   Future<void> _replaceTemplate(BuildContext context, WidgetRef ref, Map<String, dynamic> template) async {
     try {
       final templateActions = ref.read(templateActionsProvider);
-      final success = await _updateTemplateFromOptimized(templateActions, template);
+      final success = await _updateTemplateFromOptimized(ref, templateActions, template);
 
       if (context.mounted) {
         if (success) {
@@ -447,12 +448,12 @@ class OptimizedFolderView extends HookConsumerWidget {
     }
   }
 
-  Future<bool> _createTemplateFromOptimized(dynamic templateActions, Map<String, dynamic> template) async {
+  Future<bool> _createTemplateFromOptimized(WidgetRef ref, dynamic templateActions, Map<String, dynamic> template) async {
     try {
       final templateId = 'ai_opt_${DateTime.now().millisecondsSinceEpoch}_${template['id']}';
       final workoutTemplate = WorkoutTemplate(
         id: templateId,
-        userId: 'default_user', // TODO: Replace with actual user ID
+        userId: _getCurrentUserId(ref),
         name: '${template['name']} (Optimized)',
         description: template['description'] as String? ?? '',
         category: 'AI Optimized',
@@ -475,14 +476,14 @@ class OptimizedFolderView extends HookConsumerWidget {
     }
   }
 
-  Future<bool> _updateTemplateFromOptimized(dynamic templateActions, Map<String, dynamic> template) async {
+  Future<bool> _updateTemplateFromOptimized(WidgetRef ref, dynamic templateActions, Map<String, dynamic> template) async {
     try {
       // This would require implementing an update method in templateActions
       // For now, we'll create a new template with the original ID
       final templateId = template['id'] as String? ?? 'unknown';
       final workoutTemplate = WorkoutTemplate(
         id: templateId,
-        userId: 'default_user', // TODO: Replace with actual user ID
+        userId: _getCurrentUserId(ref),
         name: template['name'] as String? ?? 'Optimized Template',
         description: template['description'] as String? ?? '',
         category: 'AI Optimized',
@@ -503,5 +504,20 @@ class OptimizedFolderView extends HookConsumerWidget {
     } catch (e) {
       return false;
     }
+  }
+
+  /// Get the current user ID from authentication
+  String _getCurrentUserId(WidgetRef ref) {
+    try {
+      final currentUser = ref.read(currentUserProvider);
+      if (currentUser != null) {
+        return currentUser.id;
+      }
+    } catch (e) {
+      print('⚠️ Error getting current user: $e');
+    }
+    
+    // Fallback to default user ID if authentication fails
+    return 'default_user';
   }
 }

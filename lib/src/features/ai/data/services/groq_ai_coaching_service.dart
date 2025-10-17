@@ -419,6 +419,13 @@ ${jsonEncode({'workoutHistory': workoutHistoryData})}
 AVAILABLE EXERCISES (use these exercise IDs and names):
 ${jsonEncode({'availableExercises': availableExercisesData})}
 
+CRITICAL REQUIREMENTS:
+1. Use ONLY exercises from the availableExercises list above
+2. Use the EXACT exercise IDs and names from that list
+3. Do NOT create new exercise IDs or names
+4. Each exercise must have a unique ID from the available list
+5. Do NOT repeat the same exercise multiple times
+
 Create a complete workout that builds on my training patterns and applies progressive overload principles. Use ONLY exercises from the available exercises list above. Use the exact exercise IDs and names provided.''';
 
       final response = await _groqService.chatJson(

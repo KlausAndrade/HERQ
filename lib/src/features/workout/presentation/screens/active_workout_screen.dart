@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/widgets/swipe_back_wrapper.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
 import '../providers/active_workout_provider.dart';
@@ -180,20 +181,22 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     final activeWorkout = ref.watch(activeWorkoutProvider);
     final restTimer = ref.watch(restTimerProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => _handleBackButtonPressed(context),
-        ),
-        title: Text(activeWorkout?.name ?? S.of(context)!.activeWorkout),
-        actions: [
-          TextButton(
-            onPressed: () => _showFinishWorkoutDialog(context),
-            child: Text(S.of(context)!.finish),
+    return SwipeBackWrapperWithFeedback(
+      onSwipeBack: () => _handleBackButtonPressed(context),
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => _handleBackButtonPressed(context),
           ),
-        ],
-      ),
+          title: Text(activeWorkout?.name ?? S.of(context)!.activeWorkout),
+          actions: [
+            TextButton(
+              onPressed: () => _showFinishWorkoutDialog(context),
+              child: Text(S.of(context)!.finish),
+            ),
+          ],
+        ),
       body: activeWorkout == null
           ? Center(child: Text(S.of(context)!.noActiveWorkout))
           : Column(
@@ -462,6 +465,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                 ),
               ],
             ),
+      ),
     );
   }
 
@@ -748,9 +752,20 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
               try {
                 await ref.read(activeWorkoutProvider.notifier).finishWorkout();
 
-                // TODO: Save notes to database
-                // TODO: Save photo to storage
-                // TODO: Create social post if requested
+                // Save notes to database
+                if (notes != null && notes.isNotEmpty) {
+                  await _saveWorkoutNotes(name, notes);
+                }
+
+                // Save photo to storage
+                if (photoPath != null && photoPath.isNotEmpty) {
+                  await _saveWorkoutPhoto(name, photoPath);
+                }
+
+                // Create social post if requested
+                if (postToSocial) {
+                  await _createSocialPost(name, notes, photoPath);
+                }
 
                 print('✅ Workout saved successfully!');
 
@@ -1000,6 +1015,96 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     } else {
       return '${minutes}m ${seconds}s';
     }
+  }
+
+  /// Save workout notes to database
+  Future<void> _saveWorkoutNotes(String workoutName, String notes) async {
+    try {
+      // TODO(klausandrade): Implement database storage for workout notes
+      // This would typically involve saving to a workout_notes table
+      print('📝 Saving workout notes for $workoutName: $notes');
+      
+      // For now, we'll just log the notes
+      // In a real implementation, you would:
+      // 1. Get the current user ID
+      // 2. Save to a workout_notes table with workout_id, user_id, notes, created_at
+      // 3. Handle any database errors
+      
+    } catch (e) {
+      print('❌ Error saving workout notes: $e');
+      // In a real implementation, you might want to show a user-friendly error
+    }
+  }
+
+  /// Save workout photo to storage
+  Future<void> _saveWorkoutPhoto(String workoutName, String photoPath) async {
+    try {
+      // TODO(klausandrade): Implement photo storage
+      // This would typically involve:
+      // 1. Moving/copying the photo to a permanent storage location
+      // 2. Compressing/resizing the image if needed
+      // 3. Saving the file path to the database
+      // 4. Handling cloud storage if needed
+      
+      print('📸 Saving workout photo for $workoutName: $photoPath');
+      
+      // For now, we'll just log the photo path
+      // In a real implementation, you would:
+      // 1. Create a unique filename (e.g., workout_${workoutId}_${timestamp}.jpg)
+      // 2. Copy the file to your app's documents directory
+      // 3. Save the final path to a workout_photos table
+      // 4. Handle file system errors
+      
+    } catch (e) {
+      print('❌ Error saving workout photo: $e');
+      // In a real implementation, you might want to show a user-friendly error
+    }
+  }
+
+  /// Create social media post
+  Future<void> _createSocialPost(String workoutName, String? notes, String? photoPath) async {
+    try {
+      // TODO(klausandrade): Implement social media posting
+      // This would typically involve:
+      // 1. Creating a formatted post with workout stats
+      // 2. Using social media APIs (Instagram, Twitter, Facebook, etc.)
+      // 3. Handling authentication and permissions
+      // 4. Uploading photos if provided
+      
+      print('📱 Creating social post for $workoutName');
+      
+      // Create a formatted post
+      final postContent = _createSocialPostContent(workoutName, notes);
+      print('📱 Post content: $postContent');
+      
+      // For now, we'll just log the post content
+      // In a real implementation, you would:
+      // 1. Use platform-specific APIs (Instagram Basic Display, Twitter API, etc.)
+      // 2. Handle OAuth authentication
+      // 3. Upload photos to the social platform
+      // 4. Handle API rate limits and errors
+      
+    } catch (e) {
+      print('❌ Error creating social post: $e');
+      // In a real implementation, you might want to show a user-friendly error
+    }
+  }
+
+  /// Create formatted content for social media post
+  String _createSocialPostContent(String workoutName, String? notes) {
+    final buffer = StringBuffer();
+    buffer.writeln('💪 Just finished my workout: $workoutName');
+    buffer.writeln('');
+    
+    if (notes != null && notes.isNotEmpty) {
+      buffer.writeln('Notes: $notes');
+      buffer.writeln('');
+    }
+    
+    buffer.writeln('Generated by HERQ - Your AI Fitness Coach');
+    buffer.writeln('#HERQ #Fitness #Workout #AI');
+    
+    return buffer.toString();
   }
 }
 

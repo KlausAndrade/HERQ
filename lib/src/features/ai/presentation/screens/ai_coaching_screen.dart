@@ -3,20 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../core/database/database.dart';
 import '../../../../core/providers/admin_provider.dart';
-import '../../../../core/providers/database_provider.dart';
-import '../../../../core/services/notification_service.dart';
-import '../../../../core/services/user_context_service.dart';
-import '../../../workout/presentation/providers/template_providers.dart';
-import '../../domain/models/ai_models.dart';
+import '../../../../core/widgets/swipe_back_wrapper.dart';
 import '../providers/ai_providers.dart';
 import '../widgets/generated_workout_card.dart';
 import '../widgets/optimized_folder_view.dart';
 import '../dialogs/folder_selection_dialog.dart';
-
-// Default user ID for AI coaching - TODO: Replace with actual user ID when auth implemented
-const String _kDefaultUserId = 'default_user';
 
 class AICoachingScreen extends HookConsumerWidget {
   const AICoachingScreen({super.key});
@@ -26,7 +18,9 @@ class AICoachingScreen extends HookConsumerWidget {
     // Check if we're in admin mode from provider
     final isAdminMode = ref.watch(currentAdminModeProvider);
     
-    return DefaultTabController(
+    return SwipeBackWrapperWithFeedback(
+      onSwipeBack: () => context.go('/'),
+      child: DefaultTabController(
         length: 2,
         child: Scaffold(
           appBar: AppBar(
@@ -78,7 +72,8 @@ class AICoachingScreen extends HookConsumerWidget {
             ],
           ),
         ),
-      );
+      ),
+    );
   }
 }
 

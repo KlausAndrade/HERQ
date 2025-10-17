@@ -15,6 +15,7 @@ import '../../../../core/providers/global_content_sync_provider.dart';
 import '../../../../core/providers/sync_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/widgets/animated_switch.dart';
+import '../../../../core/widgets/swipe_back_wrapper.dart';
 import '../../../gamification/data/providers/gamification_provider.dart';
 import '../../../social/presentation/providers/leaderboard_providers.dart';
 import '../../providers/data_export_provider.dart';
@@ -32,14 +33,16 @@ class SettingsScreen extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final workoutSettings = ref.watch(workoutSettingsProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(S.of(context)!.settings),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'),
+    return SwipeBackWrapperWithFeedback(
+      onSwipeBack: () => context.go('/'),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(S.of(context)!.settings),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/'),
+          ),
         ),
-      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -301,7 +304,7 @@ class SettingsScreen extends ConsumerWidget {
                           trailing: Switch(
                             value: adminMode,
                             onChanged: isAdmin ? (value) {
-                              ref.read(adminModeProvider.notifier).setAdminMode(value);
+                              ref.read(adminModeProvider.notifier).setAdminMode(enabled: value);
                             } : null,
                             activeColor: Colors.red,
                           ),
@@ -406,6 +409,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

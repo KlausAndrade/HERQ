@@ -180,6 +180,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       print('🔍 startWorkoutFromTemplate - Database not available');
       throw Exception('Database not available');
     }
+    
+    print('🔍 startWorkoutFromTemplate - Database available, proceeding with template lookup');
 
     try {
       print('🔍 startWorkoutFromTemplate - Fetching template from database');
@@ -190,11 +192,13 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       if (template == null) {
         print('🔍 startWorkoutFromTemplate - Template not found: $templateId');
+        print('🔍 startWorkoutFromTemplate - Available templates: ${await (db.select(db.workoutTemplates)).get().then((t) => t.map((e) => e.id).toList())}');
         throw Exception('Template not found: $templateId');
       }
       
       print('🔍 startWorkoutFromTemplate - Template found: ${template.name}');
       print('🔍 startWorkoutFromTemplate - Template exerciseIds: ${template.exerciseIds}');
+      print('🔍 startWorkoutFromTemplate - Template exerciseIds count: ${template.exerciseIds.length}');
 
       // Fetch all exercises for this template
       final exercisesList = await (db.select(db.exercises)

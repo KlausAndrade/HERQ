@@ -1,14 +1,19 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:drift/drift.dart';
 
 import '../../../../core/database/database.dart' as db;
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/supabase_admin_provider.dart';
+import '../../../../core/providers/admin_provider.dart';
 
 // Admin Dashboard Data Provider
 final adminDashboardProvider =
     FutureProvider<Map<String, dynamic>>((ref) async {
+  // Check if user is admin first
+  final isAdmin = ref.read(isAdminProvider);
+  if (!isAdmin) {
+    throw Exception('Access denied: Admin privileges required');
+  }
+
   final database = ref.read(databaseProvider);
   final supabase = ref.read(supabaseAdminProvider);
 
@@ -85,6 +90,12 @@ final adminDashboardProvider =
 // User Management Data Provider
 final userManagementProvider =
     FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  // Check if user is admin first
+  final isAdmin = ref.read(isAdminProvider);
+  if (!isAdmin) {
+    throw Exception('Access denied: Admin privileges required');
+  }
+
   final database = ref.read(databaseProvider);
   final supabase = ref.read(supabaseAdminProvider);
 
@@ -117,14 +128,13 @@ final userManagementProvider =
       }
 
       // Get user metadata
-      final userMetadata = authUser.userMetadata ?? {};
-      final appMetadata = authUser.appMetadata ?? {};
+      final userMetadata = authUser.userMetadata;
+      final appMetadata = authUser.appMetadata;
 
       // Calculate workout count from local database
       // NOTE: Current schema doesn't have userId in workout sessions
       // This is a limitation that needs to be addressed for true multi-user support
       int workoutCount = 0;
-      DateTime? lastWorkoutAt;
 
       // For now, we can't link workouts to specific users due to schema limitations
       // This would require adding a userId field to the WorkoutSessions table
@@ -132,25 +142,24 @@ final userManagementProvider =
       users.add({
         'id': authUser.id,
         'email': authUser.email ?? 'No email',
-        'displayName': userMetadata['display_name'] ??
-            userMetadata['full_name'] ??
+        'displayName': userMetadata?['display_name'] ??
+            userMetadata?['full_name'] ??
             localUser?.displayName ??
             authUser.email?.split('@')[0] ??
             'Unknown',
         'createdAt': authUser.createdAt,
         'lastSignInAt': authUser.lastSignInAt,
-        'role': appMetadata['role'] ?? 'user',
+        'role': appMetadata?['role'] ?? 'user',
         'status': authUser.emailConfirmedAt == null ? 'unconfirmed' : 'active',
         'bannedUntil': null, // Supabase User doesn't have bannedUntil field
         'emailConfirmed': authUser.emailConfirmedAt != null,
         'workoutCount': workoutCount,
-        'lastWorkoutAt': lastWorkoutAt?.toIso8601String(),
         'provider': authUser.appMetadata?['provider'] ?? 'email',
-        'avatarUrl': userMetadata['avatar_url'],
+        'avatarUrl': userMetadata?['avatar_url'],
       });
 
       print(
-          '    - ${userMetadata['display_name'] ?? authUser.email} (${authUser.email}) - ${workoutCount} workouts');
+          '    - ${userMetadata?['display_name'] ?? authUser.email} (${authUser.email}) - ${workoutCount} workouts');
     }
 
     return users;
@@ -165,6 +174,12 @@ final userManagementProvider =
 
 // Analytics Data Provider
 final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  // Check if user is admin first
+  final isAdmin = ref.read(isAdminProvider);
+  if (!isAdmin) {
+    throw Exception('Access denied: Admin privileges required');
+  }
+
   final database = ref.read(databaseProvider);
   final supabase = ref.read(supabaseAdminProvider);
 
@@ -261,6 +276,12 @@ final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
 
 // System Health Provider
 final systemHealthProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  // Check if user is admin first
+  final isAdmin = ref.read(isAdminProvider);
+  if (!isAdmin) {
+    throw Exception('Access denied: Admin privileges required');
+  }
+
   final database = ref.read(databaseProvider);
 
   if (database == null) {
@@ -312,6 +333,12 @@ final systemHealthProvider = FutureProvider<Map<String, dynamic>>((ref) async {
 // Content Moderation Provider
 final contentModerationProvider =
     FutureProvider<Map<String, dynamic>>((ref) async {
+  // Check if user is admin first
+  final isAdmin = ref.read(isAdminProvider);
+  if (!isAdmin) {
+    throw Exception('Access denied: Admin privileges required');
+  }
+
   // Debug: Print content data
   print('🔍 Content Moderation Debug:');
 
