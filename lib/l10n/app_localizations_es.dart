@@ -78,6 +78,15 @@ class SEs extends S {
   String get readyForWorkout => '¿Listo para tu próximo entrenamiento?';
 
   @override
+  String get welcomeFirstTime => '¡Bienvenido!';
+
+  @override
+  String get readyForFirstWorkout => '¿Listo para tu primer entrenamiento?';
+
+  @override
+  String get loggedInSuccessfully => 'Iniciado sesión correctamente';
+
+  @override
   String get quickActions => 'Acciones Rápidas';
 
   @override

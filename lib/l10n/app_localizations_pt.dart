@@ -78,6 +78,15 @@ class SPt extends S {
   String get readyForWorkout => 'Pronto para o próximo treino?';
 
   @override
+  String get welcomeFirstTime => 'Bem-vindo!';
+
+  @override
+  String get readyForFirstWorkout => 'Pronto para o seu primeiro treino?';
+
+  @override
+  String get loggedInSuccessfully => 'Logado com sucesso';
+
+  @override
   String get quickActions => 'Ações Rápidas';
 
   @override

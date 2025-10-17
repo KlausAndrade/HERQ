@@ -237,6 +237,24 @@ abstract class S {
   /// **'Ready for your next workout?'**
   String get readyForWorkout;
 
+  /// No description provided for @welcomeFirstTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome!'**
+  String get welcomeFirstTime;
+
+  /// No description provided for @readyForFirstWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for your first workout?'**
+  String get readyForFirstWorkout;
+
+  /// No description provided for @loggedInSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in successfully'**
+  String get loggedInSuccessfully;
+
   /// No description provided for @quickActions.
   ///
   /// In en, this message translates to:

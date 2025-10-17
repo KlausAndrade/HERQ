@@ -78,6 +78,15 @@ class SEn extends S {
   String get readyForWorkout => 'Ready for your next workout?';
 
   @override
+  String get welcomeFirstTime => 'Welcome!';
+
+  @override
+  String get readyForFirstWorkout => 'Ready for your first workout?';
+
+  @override
+  String get loggedInSuccessfully => 'Logged in successfully';
+
+  @override
   String get quickActions => 'Quick Actions';
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'src/features/auth/presentation/screens/auth_callback_screen.dart';
 import 'src/features/workout/presentation/screens/web_auth_screen.dart';
 import 'src/features/workout/presentation/screens/web_history_screen.dart';
 import 'src/features/workout/presentation/screens/web_home_screen.dart';
@@ -108,6 +109,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/auth',
       builder: (context, state) => const WebAuthScreen(),
+    ),
+    GoRoute(
+      path: '/auth/callback',
+      builder: (context, state) => const AuthCallbackScreen(),
     ),
     GoRoute(
       path: '/',

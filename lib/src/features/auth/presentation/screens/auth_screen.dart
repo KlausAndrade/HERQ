@@ -25,6 +25,25 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    // Listen for auth state changes to handle deep link authentication
+    _listenToAuthState();
+  }
+
+  void _listenToAuthState() {
+    // Watch for auth state changes
+    ref.listen(authStateProvider, (previous, next) {
+      next.whenData((authState) {
+        if (authState.session != null && mounted) {
+          print('✅ User authenticated via deep link, navigating to home');
+          context.go('/');
+        }
+      });
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();

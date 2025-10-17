@@ -14,6 +14,7 @@ import '../../../workout/presentation/providers/active_workout_provider.dart';
 import '../../../workout/presentation/providers/workout_checkpoint_provider.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
 import '../../../workout/presentation/widgets/resume_workout_dialog.dart';
+import '../providers/first_time_user_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -113,36 +114,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              S.of(context)!.welcomeBack,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displayMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
+                        child: Consumer(
+                          builder: (context, ref, child) {
+                            final firstTimeUser = ref.watch(firstTimeUserProvider);
+                            
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  firstTimeUser.when(
+                                    data: (isFirstTime) => isFirstTime 
+                                        ? S.of(context)!.welcomeFirstTime
+                                        : S.of(context)!.welcomeBack,
+                                    loading: () => S.of(context)!.welcomeBack,
+                                    error: (_, __) => S.of(context)!.welcomeBack,
                                   ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              S.of(context)!.readyForWorkout,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.6),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displayMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  firstTimeUser.when(
+                                    data: (isFirstTime) => isFirstTime 
+                                        ? S.of(context)!.readyForFirstWorkout
+                                        : S.of(context)!.readyForWorkout,
+                                    loading: () => S.of(context)!.readyForWorkout,
+                                    error: (_, __) => S.of(context)!.readyForWorkout,
                                   ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ],
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withOpacity(0.6),
+                                      ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 8),

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../l10n/app_localizations.dart';
 import 'core/routing/app_router.dart';
 import 'core/services/app_lifecycle_observer.dart';
+import 'core/services/deep_link_handler.dart';
 import 'core/theme/app_theme.dart';
 import 'core/ui/notification_redesign/notification_overlay.dart';
 import 'features/onboarding/presentation/splash_screen.dart';
@@ -57,6 +58,11 @@ class _HerqAppState extends ConsumerState<HerqApp> {
     final themeMode = ref.watch(themeModeProvider);
     final themeVariant = ref.watch(themeVariantProvider);
     final locale = ref.watch(localeProvider);
+
+    // Initialize deep link handler when router is available
+    if (!_showSplash) {
+      DeepLinkHandler().initialize(context, router);
+    }
 
     // Select theme based on variant (HERQ or Default)
     final lightTheme =
