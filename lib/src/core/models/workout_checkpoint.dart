@@ -4,11 +4,11 @@ import 'package:drift/drift.dart';
 /// Allows users to resume workouts if the app is closed unexpectedly
 class WorkoutCheckpoints extends Table {
   TextColumn get id => text()();
-  TextColumn get workoutName => text()();
-  TextColumn get workoutData => text()(); // JSON serialized ActiveWorkout
-  DateTimeColumn get lastSavedAt => dateTime()();
-  DateTimeColumn get startedAt => dateTime()();
-  IntColumn get elapsedSeconds => integer()();
+  TextColumn get workoutName => text().named('workout_name')();
+  TextColumn get workoutData => text().named('workout_data')(); // JSON serialized ActiveWorkout
+  DateTimeColumn get lastSavedAt => dateTime().named('last_saved_at')();
+  DateTimeColumn get startedAt => dateTime().named('started_at')();
+  IntColumn get elapsedSeconds => integer().named('elapsed_seconds')();
 
   @override
   Set<Column> get primaryKey => {id};

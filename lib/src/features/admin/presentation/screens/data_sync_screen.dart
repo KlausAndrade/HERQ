@@ -155,7 +155,9 @@ class _DataSyncScreenState extends ConsumerState<DataSyncScreen> {
     });
 
     try {
-      await ExerciseSyncService.syncLocalTemplatesToSupabase(ref);
+      // Need to sync folders first to get ID mapping
+      final folderIdMap = await ExerciseSyncService.syncLocalFoldersToSupabase(ref);
+      await ExerciseSyncService.syncLocalTemplatesToSupabase(ref, folderIdMap: folderIdMap);
       setState(() {
         _syncStatus = 'Templates synced successfully!';
       });
@@ -199,13 +201,16 @@ class _DataSyncScreenState extends ConsumerState<DataSyncScreen> {
     });
 
     try {
+      // 1. Sync exercises
       await ExerciseSyncService.syncLocalExercisesToSupabase(ref);
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 500));
       
-      await ExerciseSyncService.syncLocalTemplatesToSupabase(ref);
-      await Future.delayed(const Duration(seconds: 1));
+      // 2. Sync folders (returns ID mapping)
+      final folderIdMap = await ExerciseSyncService.syncLocalFoldersToSupabase(ref);
+      await Future.delayed(const Duration(milliseconds: 500));
       
-      await ExerciseSyncService.syncLocalFoldersToSupabase(ref);
+      // 3. Sync templates (using folder ID mapping)
+      await ExerciseSyncService.syncLocalTemplatesToSupabase(ref, folderIdMap: folderIdMap);
       
       setState(() {
         _syncStatus = 'All data synced successfully!';

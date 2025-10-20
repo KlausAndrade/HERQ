@@ -55,7 +55,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 23;
+  int get schemaVersion => 26;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -379,6 +379,73 @@ class AppDatabase extends _$AppDatabase {
               print('✅ Migration 23: Equipment column now uses array format');
             } catch (e) {
               print('❌ Migration 23 failed: $e');
+              rethrow;
+            }
+          }
+          
+          if (to == 24) {
+            try {
+              print('🔄 Migration 24: Adding missing columns to template_folders...');
+              
+              // Add color column
+              try {
+                await customStatement('ALTER TABLE template_folders ADD COLUMN color TEXT');
+                print('✅ Added color column to template_folders');
+              } catch (e) {
+                if (e.toString().contains('duplicate column name')) {
+                  print('ℹ️ color column already exists in template_folders');
+                } else {
+                  throw e;
+                }
+              }
+              
+              // Add is_expanded column
+              try {
+                await customStatement('ALTER TABLE template_folders ADD COLUMN is_expanded INTEGER DEFAULT 1');
+                print('✅ Added is_expanded column to template_folders');
+              } catch (e) {
+                if (e.toString().contains('duplicate column name')) {
+                  print('ℹ️ is_expanded column already exists in template_folders');
+                } else {
+                  throw e;
+                }
+              }
+              
+              print('✅ Migration 24: Added missing columns to template_folders');
+            } catch (e) {
+              print('❌ Migration 24 failed: $e');
+              rethrow;
+            }
+          }
+          
+          if (to == 26) {
+            try {
+              print('🔄 Migration 26: Workout checkpoints schema alignment...');
+              
+              // Rename columns to snake_case (SQLite requires table recreation)
+              await customStatement('''
+                CREATE TABLE workout_checkpoints_new (
+                  id TEXT PRIMARY KEY,
+                  workout_name TEXT NOT NULL,
+                  workout_data TEXT NOT NULL,
+                  last_saved_at INTEGER NOT NULL,
+                  started_at INTEGER NOT NULL,
+                  elapsed_seconds INTEGER NOT NULL
+                )
+              ''');
+              
+              await customStatement('''
+                INSERT INTO workout_checkpoints_new 
+                SELECT id, workoutName, workoutData, last_saved_at, started_at, elapsed_seconds
+                FROM workout_checkpoints
+              ''');
+              
+              await customStatement('DROP TABLE workout_checkpoints');
+              await customStatement('ALTER TABLE workout_checkpoints_new RENAME TO workout_checkpoints');
+              
+              print('✅ Migration 26: Workout checkpoints now use snake_case');
+            } catch (e) {
+              print('❌ Migration 26 failed: $e');
               rethrow;
             }
           }
@@ -1100,9 +1167,7 @@ class AppDatabase extends _$AppDatabase {
             List<String>.from(
                 variantData['secondaryMuscleGroups'] as List<dynamic>),
           ),
-          equipment: Value(
-            List<String>.from(variantData['equipment']! as List<dynamic>),
-          ),
+          equipment: Value(variantData['equipment']! as String),
           instructions: Value(variantData['instructions']! as String),
           tags: Value(
             List<String>.from(variantData['tags'] as List<dynamic>),
