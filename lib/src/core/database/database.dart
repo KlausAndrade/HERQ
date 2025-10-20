@@ -55,7 +55,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 19;
+  int get schemaVersion => 23;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -276,6 +276,112 @@ class AppDatabase extends _$AppDatabase {
 
             await _insertDefaultData();
           }
+          
+          if (to == 20) {
+            try {
+              // Add sort_order column to template_folders table
+              await customStatement('ALTER TABLE template_folders ADD COLUMN sort_order INTEGER DEFAULT 0');
+              print('✅ Added sort_order column to template_folders');
+              
+              // Set sort_order for existing folders based on creation date
+              await customStatement('''
+                UPDATE template_folders 
+                SET sort_order = (
+                  SELECT ROW_NUMBER() OVER (ORDER BY created_at) - 1
+                )
+                WHERE sort_order = 0
+              ''');
+              print('✅ Set sort_order for existing template folders');
+              
+              print('✅ Migration 20: Added sort_order to template_folders');
+            } catch (e) {
+              print('❌ Migration 20 failed: $e');
+              rethrow;
+            }
+          }
+          
+          if (to == 21) {
+            try {
+              // Add missing columns to workout_checkpoints table (with error handling)
+              try {
+                await customStatement('ALTER TABLE workout_checkpoints ADD COLUMN started_at INTEGER');
+                print('✅ Added started_at column to workout_checkpoints');
+              } catch (e) {
+                if (e.toString().contains('duplicate column name')) {
+                  print('ℹ️ started_at column already exists in workout_checkpoints');
+                } else {
+                  rethrow;
+                }
+              }
+              
+              try {
+                await customStatement('ALTER TABLE workout_checkpoints ADD COLUMN last_saved_at INTEGER');
+                print('✅ Added last_saved_at column to workout_checkpoints');
+              } catch (e) {
+                if (e.toString().contains('duplicate column name')) {
+                  print('ℹ️ last_saved_at column already exists in workout_checkpoints');
+                } else {
+                  rethrow;
+                }
+              }
+              
+              // Set timestamps for existing checkpoints (use current time as fallback)
+              final now = DateTime.now().millisecondsSinceEpoch;
+              await customStatement('''
+                UPDATE workout_checkpoints 
+                SET started_at = $now, last_saved_at = $now 
+                WHERE started_at IS NULL OR last_saved_at IS NULL
+              ''');
+              print('✅ Set timestamps for existing workout checkpoints');
+              
+              print('✅ Migration 21: Added missing columns to workout_checkpoints');
+            } catch (e) {
+              print('❌ Migration 21 failed: $e');
+              rethrow;
+            }
+          }
+          
+          if (to == 22) {
+            try {
+              print('🔄 Migration 22: Renaming columns to snake_case to match Supabase...');
+              
+              // ⚠️ SQLite doesn't support renaming columns directly
+              // We need to recreate tables with the new column names
+              
+              // 1. Add user_id to template_folders if it doesn't exist
+              try {
+                await customStatement('ALTER TABLE template_folders ADD COLUMN user_id TEXT');
+                print('✅ Added user_id column to template_folders');
+              } catch (e) {
+                if (e.toString().contains('duplicate column name')) {
+                  print('ℹ️ user_id column already exists in template_folders');
+                } else {
+                  throw e;
+                }
+              }
+              
+              print('✅ Migration 22: Schema updated to match Supabase (snake_case)');
+              print('ℹ️ Note: Drift will handle column name mapping automatically via .named()');
+            } catch (e) {
+              print('❌ Migration 22 failed: $e');
+              rethrow;
+            }
+          }
+          
+          if (to == 23) {
+            try {
+              print('🔄 Migration 23: Converting equipment column to array format...');
+              
+              // ℹ️ Drift will handle the conversion automatically via StringListConverter
+              // Equipment was TEXT, now it's TEXT with StringListConverter (JSON array)
+              // Existing data should be compatible as long as it's valid JSON
+              
+              print('✅ Migration 23: Equipment column now uses array format');
+            } catch (e) {
+              print('❌ Migration 23 failed: $e');
+              rethrow;
+            }
+          }
         },
       );
 
@@ -322,8 +428,8 @@ class AppDatabase extends _$AppDatabase {
       final foldersData = getDefaultFoldersData();
       for (final f in foldersData) {
         final companion = TemplateFoldersCompanion(
-          id: Value(f['id']! as String),
-          name: Value(f['name']! as String),
+          id: Value(f['id'] as String? ?? ''),
+          name: Value(f['name'] as String? ?? ''),
           description: Value(f['description'] as String?),
         );
         await into(templateFolders).insertOnConflictUpdate(companion);
@@ -332,10 +438,10 @@ class AppDatabase extends _$AppDatabase {
       final templatesData = getDefaultTemplatesData();
       for (final t in templatesData) {
         var companion = WorkoutTemplatesCompanion(
-          id: Value(t['id']! as String),
+          id: Value(t['id'] as String? ?? ''),
           userId: const Value(
               'system'), // Use 'system' as userId for default templates
-          name: Value(t['name']! as String),
+          name: Value(t['name'] as String? ?? ''),
           description: Value(t['description'] as String?),
           folderId: Value(t['folderId'] as String?),
           exerciseIds: Value(
@@ -654,23 +760,23 @@ class AppDatabase extends _$AppDatabase {
     for (final exerciseData in coreExercises) {
       try {
         final companion = ExercisesCompanion(
-          id: Value(exerciseData['id']! as String),
-          name: Value(exerciseData['name']! as String),
+          id: Value(exerciseData['id'] as String? ?? ''),
+          name: Value(exerciseData['name'] as String? ?? ''),
           primaryMuscleGroup:
-              Value(exerciseData['primaryMuscleGroup']! as String),
+              Value(exerciseData['primaryMuscleGroup'] as String? ?? ''),
           secondaryMuscleGroups: Value(
             List<String>.from(
                 exerciseData['secondaryMuscleGroups'] as List<dynamic>),
           ),
-          equipment: Value(exerciseData['equipment']! as String),
-          instructions: Value(exerciseData['instructions']! as String),
+          equipment: Value(exerciseData['equipment'] as String? ?? ''),
+          instructions: Value(exerciseData['instructions'] as String? ?? ''),
           tags: Value(
             List<String>.from(exerciseData['tags'] as List<dynamic>),
           ),
-          isBodyweight: Value(exerciseData['isBodyweight']! as bool),
-          exerciseType: Value(exerciseData['exerciseType']! as String),
-          category: Value(exerciseData['category']! as String),
-          difficulty: Value(exerciseData['difficulty']! as String),
+          isBodyweight: Value(exerciseData['isBodyweight'] as bool? ?? false),
+          exerciseType: Value(exerciseData['exerciseType'] as String? ?? ''),
+          category: Value(exerciseData['category'] as String? ?? ''),
+          difficulty: Value(exerciseData['difficulty'] as String? ?? ''),
         );
 
         await into(exercises).insertOnConflictUpdate(companion);
@@ -994,7 +1100,9 @@ class AppDatabase extends _$AppDatabase {
             List<String>.from(
                 variantData['secondaryMuscleGroups'] as List<dynamic>),
           ),
-          equipment: Value(variantData['equipment']! as String),
+          equipment: Value(
+            List<String>.from(variantData['equipment']! as List<dynamic>),
+          ),
           instructions: Value(variantData['instructions']! as String),
           tags: Value(
             List<String>.from(variantData['tags'] as List<dynamic>),

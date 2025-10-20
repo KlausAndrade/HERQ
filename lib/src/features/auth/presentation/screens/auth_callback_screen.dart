@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../core/utils/enhanced_web_auth_helper.dart';
 
 /// Handles authentication callbacks from Supabase (email confirmation, magic links, etc.)
 class AuthCallbackScreen extends ConsumerStatefulWidget {
@@ -25,35 +26,19 @@ class _AuthCallbackScreenState extends ConsumerState<AuthCallbackScreen> {
     try {
       print('🔍 Handling auth callback...');
       
-      // Get the current URL fragment (contains auth tokens)
-      final uri = Uri.base;
-      print('🔍 Current URI: $uri');
+      // Use enhanced auth callback handler
+      final response = await EnhancedWebAuthHelper.handleAuthCallback();
       
-      // Check if this is a Supabase auth callback
-      if (uri.fragment.contains('access_token') || 
-          uri.fragment.contains('error') ||
-          uri.queryParameters.containsKey('access_token') ||
-          uri.queryParameters.containsKey('error')) {
+      if (response != null && response.user != null) {
+        print('✅ Auth callback successful: ${response.user?.email}');
         
-        print('🔍 Supabase auth callback detected');
-        
-        // Let Supabase handle the session from the URL
-        final session = await Supabase.instance.client.auth.getSessionFromUrl(uri);
-        
-        if (session != null) {
-          print('✅ Auth callback successful: ${session.user?.email}');
-          
-          if (mounted) {
-            // Navigate to home page
-            context.go('/');
-          }
-        } else {
-          print('❌ No session found in callback');
-          _setError('Authentication failed. Please try again.');
+        if (mounted) {
+          // Navigate to home page
+          context.go('/');
         }
       } else {
-        print('❌ Not a valid auth callback URL');
-        _setError('Invalid authentication link. Please try again.');
+        print('❌ No valid session found in callback');
+        _setError('Authentication failed. Please try again.');
       }
     } catch (e) {
       print('❌ Auth callback error: $e');

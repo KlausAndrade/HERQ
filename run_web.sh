@@ -1,7 +1,22 @@
 #!/bin/bash
 
 # Script to run HERQ on Chrome (web platform)
-# Uses the web-specific entry point that doesn't require SQLite
+# Uses the main entry point with full app functionality
 
 echo "🌐 Launching HERQ on Chrome..."
-flutter run -d chrome -t lib/main_web.dart
+
+# Load environment variables from .env file
+if [ -f .env ]; then
+  echo "📋 Loading environment variables from .env..."
+  export $(cat .env | grep -v '^#' | xargs)
+else
+  echo "⚠️  No .env file found"
+fi
+
+# Run with environment variables
+flutter run -d chrome \
+  --dart-define=SUPABASE_URL=$SUPABASE_URL \
+  --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+  --dart-define=SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY \
+  --dart-define=ADMIN_EMAILS=$ADMIN_EMAILS \
+  --dart-define=GROQ_API_KEY=$GROQ_API_KEY

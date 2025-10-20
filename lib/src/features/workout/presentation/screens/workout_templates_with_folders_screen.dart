@@ -90,8 +90,8 @@ class _WorkoutTemplatesWithFoldersScreenState
           children: [
             Text(
               _isEditing
-                  ? S.of(context)!.workoutTemplates
-                  : S.of(context)!.selectWorkout,
+                  ? S.of(context)?.workoutTemplates ?? 'Workout Templates'
+                  : S.of(context)?.selectWorkout ?? 'Select Workout',
             ),
             if (_isAdminMode) ...[
               const SizedBox(width: 8),
@@ -184,7 +184,7 @@ class _WorkoutTemplatesWithFoldersScreenState
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _createNewFolder,
         icon: const Icon(Icons.folder_open),
-        label: Text(S.of(context)!.newFolder),
+        label: Text(S.of(context)?.newFolder ?? 'New Folder'),
       ),
     );
   }
@@ -196,9 +196,16 @@ class _WorkoutTemplatesWithFoldersScreenState
   }) {
     final isExpanded = _expandedFolders.contains(folder.id);
     final templatesAsync = ref.watch(templatesInFolderProvider(folder.id));
-    final folderColor = folder.color != null
-        ? Color(int.parse(folder.color!))
-        : Theme.of(context).colorScheme.primary;
+    Color folderColor;
+    if (folder.color != null && folder.color!.isNotEmpty) {
+      try {
+        folderColor = Color(int.parse(folder.color!));
+      } catch (e) {
+        folderColor = Theme.of(context).colorScheme.primary;
+      }
+    } else {
+      folderColor = Theme.of(context).colorScheme.primary;
+    }
 
     // Only the folder header is a DragTarget for move-to-folder
     return DragTarget<_DragItemData>(

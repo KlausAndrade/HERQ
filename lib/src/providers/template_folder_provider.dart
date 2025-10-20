@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../core/database/database.dart';
@@ -6,22 +7,44 @@ import '../core/providers/database_provider.dart';
 
 // Provider for all template folders
 final templateFoldersProvider = StreamProvider<List<TemplateFolder>>((ref) {
-  final database = ref.watch(databaseProvider)!;
-  return (database.select(database.templateFolders)
-        ..orderBy([(t) => OrderingTerm(expression: t.sortOrder)]))
-      .watch();
+  // On web, always return empty list - no local database access
+  if (kIsWeb) {
+    return Stream.value([]);
+  }
+  
+  final database = ref.watch(databaseProvider);
+  
+  // On mobile, if database is null, return empty list
+  if (database == null) {
+    return Stream.value([]);
+  }
+  
+  try {
+    return (database.select(database.templateFolders)
+          ..orderBy([(t) => OrderingTerm(expression: t.sortOrder)]))
+        .watch();
+  } catch (e) {
+    print('Error accessing template folders: $e');
+    return Stream.value([]);
+  }
 });
 
 // Provider for managing template folder operations
 final templateFolderNotifierProvider =
     StateNotifierProvider<TemplateFolderNotifier, AsyncValue<void>>((ref) {
-  final database = ref.watch(databaseProvider)!;
+  final database = ref.watch(databaseProvider);
+  
+  // On web, database is null - return a stub notifier
+  if (kIsWeb || database == null) {
+    return TemplateFolderNotifier(null);
+  }
+  
   return TemplateFolderNotifier(database);
 });
 
 class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
   TemplateFolderNotifier(this._database) : super(const AsyncValue.data(null));
-  final AppDatabase _database;
+  final AppDatabase? _database;
 
   // Create a new folder
   Future<TemplateFolder> createFolder({
@@ -29,6 +52,11 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
     String? description,
     String? color,
   }) async {
+    final db = _database;
+    if (db == null) {
+      throw UnimplementedError('Template folders not available on web yet');
+    }
+    
     state = const AsyncValue.loading();
     try {
       final folderId = const Uuid().v4();
@@ -39,9 +67,9 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
         color: Value(color),
       );
 
-      await _database.into(_database.templateFolders).insert(folder);
+      await db.into(db.templateFolders).insert(folder);
 
-      final createdFolder = await (_database.select(_database.templateFolders)
+      final createdFolder = await (db.select(db.templateFolders)
             ..where((t) => t.id.equals(folderId)))
           .getSingle();
 
@@ -61,9 +89,14 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
     String? color,
     bool? isExpanded,
   }) async {
+    final db = _database;
+    if (db == null) {
+      throw UnimplementedError('Template folders not available on web yet');
+    }
+    
     state = const AsyncValue.loading();
     try {
-      await (_database.update(_database.templateFolders)
+      await (db.update(db.templateFolders)
             ..where((t) => t.id.equals(folderId)))
           .write(
         TemplateFoldersCompanion(
@@ -85,10 +118,15 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
 
   // Delete folder
   Future<void> deleteFolder(String folderId) async {
+    final db = _database;
+    if (db == null) {
+      throw UnimplementedError('Template folders not available on web yet');
+    }
+    
     state = const AsyncValue.loading();
     try {
       // First, remove folderId from all templates in this folder
-      await (_database.update(_database.workoutTemplates)
+      await (db.update(db.workoutTemplates)
             ..where((t) => t.folderId.equals(folderId)))
           .write(
         const WorkoutTemplatesCompanion(
@@ -97,7 +135,7 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
       );
 
       // Then delete the folder
-      await (_database.delete(_database.templateFolders)
+      await (db.delete(db.templateFolders)
             ..where((t) => t.id.equals(folderId)))
           .go();
 
@@ -113,9 +151,14 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
     required String templateId,
     String? folderId, // null means remove from folder
   }) async {
+    final db = _database;
+    if (db == null) {
+      throw UnimplementedError('Template folders not available on web yet');
+    }
+    
     state = const AsyncValue.loading();
     try {
-      await (_database.update(_database.workoutTemplates)
+      await (db.update(db.workoutTemplates)
             ..where((t) => t.id.equals(templateId)))
           .write(
         WorkoutTemplatesCompanion(
@@ -132,11 +175,16 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
 
   // Reorder folders
   Future<void> reorderFolders(List<TemplateFolder> folders) async {
+    final db = _database;
+    if (db == null) {
+      throw UnimplementedError('Template folders not available on web yet');
+    }
+    
     state = const AsyncValue.loading();
     try {
       for (var i = 0; i < folders.length; i++) {
         final sortValue = i * 2;
-        await (_database.update(_database.templateFolders)
+        await (db.update(db.templateFolders)
               ..where((t) => t.id.equals(folders[i].id)))
             .write(
           TemplateFoldersCompanion(
@@ -154,12 +202,17 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
 
   Future<void> updateFolderSortOrders(Map<String, int> orders) async {
     if (orders.isEmpty) return;
+    
+    final db = _database;
+    if (db == null) {
+      throw UnimplementedError('Template folders not available on web yet');
+    }
 
     state = const AsyncValue.loading();
     try {
       final now = DateTime.now();
       for (final entry in orders.entries) {
-        await (_database.update(_database.templateFolders)
+        await (db.update(db.templateFolders)
               ..where((t) => t.id.equals(entry.key)))
             .write(
           TemplateFoldersCompanion(
@@ -179,19 +232,34 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
 // Provider for templates in a specific folder
 final templatesInFolderProvider =
     StreamProvider.family<List<WorkoutTemplate>, String?>((ref, folderId) {
-  final database = ref.watch(databaseProvider)!;
+  // On web, always return empty list - no local database access
+  if (kIsWeb) {
+    return Stream.value([]);
+  }
+  
+  final database = ref.watch(databaseProvider);
+  
+  // On mobile, if database is null, return empty list
+  if (database == null) {
+    return Stream.value([]);
+  }
 
-  if (folderId == null) {
-    // Return templates not in any folder
-    return (database.select(database.workoutTemplates)
-          ..where((t) => t.folderId.isNull())
-          ..orderBy([(t) => OrderingTerm(expression: t.sortOrder)]))
-        .watch();
-  } else {
-    // Return templates in the specified folder
-    return (database.select(database.workoutTemplates)
-          ..where((t) => t.folderId.equals(folderId))
-          ..orderBy([(t) => OrderingTerm(expression: t.sortOrder)]))
-        .watch();
+  try {
+    if (folderId == null) {
+      // Return templates not in any folder
+      return (database.select(database.workoutTemplates)
+            ..where((t) => t.folderId.isNull())
+            ..orderBy([(t) => OrderingTerm(expression: t.sortOrder)]))
+          .watch();
+    } else {
+      // Return templates in the specified folder
+      return (database.select(database.workoutTemplates)
+            ..where((t) => t.folderId.equals(folderId))
+            ..orderBy([(t) => OrderingTerm(expression: t.sortOrder)]))
+          .watch();
+    }
+  } catch (e) {
+    print('Error accessing templates in folder: $e');
+    return Stream.value([]);
   }
 });

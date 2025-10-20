@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
+import '../../../exercises/presentation/providers/exercise_unified_provider.dart';
 
 class MultiExercisePickerDialog extends ConsumerStatefulWidget {
   const MultiExercisePickerDialog({super.key});
@@ -27,8 +29,13 @@ class _MultiExercisePickerDialogState
 
   @override
   Widget build(BuildContext context) {
-    final exercisesAsync = ref.watch(exerciseSearchProvider(_searchQuery));
-    final categoriesAsync = ref.watch(exerciseCategoriesProvider);
+    // Use unified provider that works on both web and mobile
+    final exercisesAsync = kIsWeb 
+        ? ref.watch(exerciseSearchUnifiedProvider(_searchQuery))
+        : ref.watch(exerciseSearchProvider(_searchQuery));
+    final categoriesAsync = kIsWeb
+        ? ref.watch(exerciseCategoriesUnifiedProvider)
+        : ref.watch(exerciseCategoriesProvider);
 
     return Dialog(
       child: Container(
@@ -127,11 +134,13 @@ class _MultiExercisePickerDialogState
                       _selectedCategory == null || _selectedCategory == 'All'
                           ? exercises
                           : exercises
-                              .where(
-                                (e) =>
-                                    e.category.toLowerCase() ==
-                                    _selectedCategory!.toLowerCase(),
-                              )
+                              .where((e) {
+                                final category = kIsWeb 
+                                    ? (e as Map<String, dynamic>)['category'] 
+                                    : (e as Exercise).category;
+                                return category.toString().toLowerCase() ==
+                                    _selectedCategory!.toLowerCase();
+                              })
                               .toList();
                   if (filteredExercises.isEmpty) {
                     return const Center(
@@ -141,20 +150,41 @@ class _MultiExercisePickerDialogState
                   return ListView.builder(
                     itemCount: filteredExercises.length,
                     itemBuilder: (context, index) {
-                      final exercise = filteredExercises[index];
-                      final isSelected = _selectedExercises.contains(exercise);
+                      final exerciseData = filteredExercises[index];
+                      
+                      // Handle both web (Map) and mobile (Exercise object)
+                      final String name, category, muscleGroup;
+                      final Exercise? exerciseObj;
+                      
+                      if (kIsWeb) {
+                        final map = exerciseData as Map<String, dynamic>;
+                        name = map['name'] as String;
+                        category = map['category'] as String;
+                        muscleGroup = map['primary_muscle_group'] as String? ?? category;
+                        exerciseObj = mapToExercise(map);
+                      } else {
+                        exerciseObj = exerciseData as Exercise;
+                        name = exerciseObj.name;
+                        category = exerciseObj.category;
+                        muscleGroup = exerciseObj.primaryMuscleGroup;
+                      }
+                      
+                      final isSelected = exerciseObj != null && _selectedExercises.contains(exerciseObj);
+                      
                       return CheckboxListTile(
                         value: isSelected,
-                        title: Text(exercise.name),
+                        title: Text(name),
                         subtitle: Text(
-                          '${exercise.primaryMuscleGroup.toUpperCase()} • ${exercise.category}',
+                          '${muscleGroup.toUpperCase()} • $category',
                         ),
-                        onChanged: (selected) {
+                        onChanged: exerciseObj == null ? null : (selected) {
                           setState(() {
                             if (selected ?? false) {
-                              _selectedExercises.add(exercise);
+                              if (exerciseObj != null) {
+                                _selectedExercises.add(exerciseObj);
+                              }
                             } else {
-                              _selectedExercises.remove(exercise);
+                              _selectedExercises.remove(exerciseObj);
                             }
                           });
                         },

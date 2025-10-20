@@ -17,12 +17,26 @@ Future<void> main() async {
   try {
     await dotenv.load();
   } catch (e) {
-    print('ℹ️ No .env file found, using empty Supabase config');
+    print('ℹ️ No .env file found, using compile-time config');
   }
 
-  // Initialize Supabase (with empty config if .env is missing)
-  final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
-  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+  // Get Supabase credentials from compile-time constants (--dart-define)
+  // or fall back to .env file
+  const supabaseUrlConst = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: '',
+  );
+  const supabaseAnonKeyConst = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+    defaultValue: '',
+  );
+
+  final supabaseUrl = supabaseUrlConst.isNotEmpty
+      ? supabaseUrlConst
+      : (dotenv.env['SUPABASE_URL'] ?? '');
+  final supabaseAnonKey = supabaseAnonKeyConst.isNotEmpty
+      ? supabaseAnonKeyConst
+      : (dotenv.env['SUPABASE_ANON_KEY'] ?? '');
 
   if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
     print('⚠️ Supabase configuration missing. App will run in offline mode.');

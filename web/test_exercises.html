@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Supabase Exercises</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Supabase Exercises Test</h1>
+    <div id="status">Loading...</div>
+    <div id="exercises"></div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://vvgxvunvzhtvwvdvtlrm.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z3h2dW52emh0dnd2ZHZ0bHJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3NDcyNzcsImV4cCI6MjA3NTMyMzI3N30.yOMUIA2sQSTjAjlFemz1GYCxNR0sVm4ZMMl_9Y2ABno';
+        
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function testExercises() {
+            const statusDiv = document.getElementById('status');
+            const exercisesDiv = document.getElementById('exercises');
+            
+            try {
+                statusDiv.innerHTML = 'Testing Supabase connection...';
+                
+                // Test connection
+                const { data, error } = await supabase
+                    .from('exercises')
+                    .select('*')
+                    .limit(5);
+                
+                if (error) {
+                    statusDiv.innerHTML = `❌ Error: ${error.message}`;
+                    return;
+                }
+                
+                statusDiv.innerHTML = `✅ Connected! Found ${data.length} exercises (showing first 5)`;
+                
+                // Display exercises
+                exercisesDiv.innerHTML = '<h2>Sample Exercises:</h2><ul>';
+                data.forEach(exercise => {
+                    exercisesDiv.innerHTML += `
+                        <li>
+                            <strong>${exercise.name}</strong> 
+                            - ${exercise.category} 
+                            - ${exercise.primary_muscle_group}
+                            ${exercise.equipment ? `- Equipment: ${exercise.equipment}` : ''}
+                        </li>
+                    `;
+                });
+                exercisesDiv.innerHTML += '</ul>';
+                
+            } catch (err) {
+                statusDiv.innerHTML = `❌ Exception: ${err.message}`;
+            }
+        }
+
+        // Run test when page loads
+        testExercises();
+    </script>
+</body>
+</html>

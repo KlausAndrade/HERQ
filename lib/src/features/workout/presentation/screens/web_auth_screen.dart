@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/utils/auth_error_handler.dart';
-import '../../../../core/utils/web_auth_helper.dart';
+import '../../../../core/utils/enhanced_web_auth_helper.dart';
 import '../../../../core/utils/web_auth_test_helper.dart';
 
 class WebAuthScreen extends ConsumerStatefulWidget {
@@ -38,7 +38,7 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
 
     try {
       if (_isSignUp) {
-        final response = await WebAuthHelper.signUpSafe(
+        final response = await EnhancedWebAuthHelper.signUpSafe(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
@@ -53,7 +53,7 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
           throw Exception('Signup failed - no user returned');
         }
       } else {
-        final response = await WebAuthHelper.signInWithPasswordSafe(
+        final response = await EnhancedWebAuthHelper.signInWithPasswordSafe(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
@@ -176,7 +176,7 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+                    children: [
                     // HERQ Logo
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -404,6 +404,7 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
                       ),
                     ),
                   ],
+                ),
                 ),
               ),
             ),

@@ -9,7 +9,7 @@
     "android": "./build.sh android", 
     "ios": "./build.sh ios",
     "apple": "./build.sh apple",
-    "web": "./build.sh web",
+    "web": "./run_web.sh",
     "gh-pages": "./build.sh gh-pages",
     "deploy": "./build.sh deploy",
     "publish": "./build.sh publish",

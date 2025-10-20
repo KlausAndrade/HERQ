@@ -29,13 +29,15 @@ import '../../features/workout/presentation/screens/workout_detail_screen.dart';
 import '../../features/workout/presentation/screens/workout_history_screen.dart';
 import '../../features/workout/presentation/screens/workout_summary_screen.dart';
 import '../../features/workout/presentation/screens/workout_templates_with_folders_screen.dart';
-import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../../features/admin/presentation/screens/user_management_screen.dart';
 import '../../features/admin/presentation/screens/content_moderation_screen.dart';
 import '../../features/admin/presentation/screens/analytics_screen.dart';
 import '../../features/admin/presentation/screens/system_admin_screen.dart';
 import '../../features/admin/presentation/screens/data_operations_screen.dart';
 import '../../features/admin/presentation/screens/admin_settings_screen.dart';
+import '../../features/admin/presentation/screens/data_sync_screen.dart';
+import '../../features/admin/presentation/screens/database_test_screen.dart';
+import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../widgets/page_transitions.dart';
 
 final routerProvider = Provider<GoRouter>(
@@ -360,6 +362,24 @@ final routerProvider = Provider<GoRouter>(
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
           const DataOperationsScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/admin/sync',
+        name: 'admin-sync',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const DataSyncScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/admin/test',
+        name: 'admin-test',
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideRightTransition(
+          const DatabaseTestScreen(),
           key: state.pageKey,
         ),
       ),

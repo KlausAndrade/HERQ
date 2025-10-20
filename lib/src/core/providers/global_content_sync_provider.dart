@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../database/database.dart';
 import '../providers/database_provider.dart';
 import '../services/global_content_sync_service.dart';
 
