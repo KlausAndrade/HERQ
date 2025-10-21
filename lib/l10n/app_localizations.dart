@@ -4040,6 +4040,42 @@ abstract class S {
   /// In en, this message translates to:
   /// **'User'**
   String get user;
+
+  /// No description provided for @unfollowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfollowed'**
+  String get unfollowed;
+
+  /// No description provided for @youUnfollowed.
+  ///
+  /// In en, this message translates to:
+  /// **'You unfollowed {userName}'**
+  String youUnfollowed(String userName);
+
+  /// No description provided for @youAreNowFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'You are now following {userName}'**
+  String youAreNowFollowing(String userName);
+
+  /// No description provided for @failedToFollowUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to follow user'**
+  String get failedToFollowUser;
+
+  /// No description provided for @failedToUnfollowUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to unfollow user'**
+  String get failedToUnfollowUser;
+
+  /// No description provided for @thisUser.
+  ///
+  /// In en, this message translates to:
+  /// **'this user'**
+  String get thisUser;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

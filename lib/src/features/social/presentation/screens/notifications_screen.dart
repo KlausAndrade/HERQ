@@ -87,7 +87,7 @@ class NotificationsScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48),
               const SizedBox(height: 16),
-              Text('Error loading notifications'),
+              const Text('Error loading notifications'),
               const SizedBox(height: 8),
               Text(
                 '$error',
@@ -101,7 +101,7 @@ class NotificationsScreen extends ConsumerWidget {
     );
   }
 
-  void _handleNotificationTap(
+  Future<void> _handleNotificationTap(
     BuildContext context,
     WidgetRef ref,
     SocialNotification notification,
@@ -122,7 +122,7 @@ class NotificationsScreen extends ConsumerWidget {
     }
   }
 
-  void _deleteNotification(WidgetRef ref, String notificationId) async {
+  Future<void> _deleteNotification(WidgetRef ref, String notificationId) async {
     final supabase = ref.read(supabaseProvider);
     await deleteNotification(supabase, notificationId);
     ref.invalidate(notificationsProvider);
@@ -234,4 +234,3 @@ class _NotificationTile extends StatelessWidget {
     }
   }
 }
-

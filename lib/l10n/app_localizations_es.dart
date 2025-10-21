@@ -2073,4 +2073,26 @@ class SEs extends S {
 
   @override
   String get user => 'Usuario';
+
+  @override
+  String get unfollowed => 'Dejaste de seguir';
+
+  @override
+  String youUnfollowed(String userName) {
+    return 'Dejaste de seguir a $userName';
+  }
+
+  @override
+  String youAreNowFollowing(String userName) {
+    return 'Ahora sigues a $userName';
+  }
+
+  @override
+  String get failedToFollowUser => 'Error al seguir usuario';
+
+  @override
+  String get failedToUnfollowUser => 'Error al dejar de seguir usuario';
+
+  @override
+  String get thisUser => 'este usuario';
 }

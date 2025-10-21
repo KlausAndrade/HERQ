@@ -52,53 +52,7 @@ class SocialService {
     return bios[random.nextInt(bios.length)];
   }
 
-  static List<FeedItem> get _mockFeedItems {
-    final items = <FeedItem>[];
-    final random = Random(42);
-
-    for (int i = 0; i < MockDataConfig.mockPostsPerUser; i++) {
-      final userId = '${(i % MockDataConfig.mockUserNames.length) + 1}';
-      final workoutType = MockDataConfig.mockWorkoutTypes[
-          random.nextInt(MockDataConfig.mockWorkoutTypes.length)];
-
-      items.add(
-        FeedItem(
-          id: '${i + 1}',
-          userId: userId,
-          type: FeedItemType.values[random.nextInt(FeedItemType.values.length)],
-          createdAt: DateTime.now()
-              .subtract(Duration(hours: i * 2 + random.nextInt(12))),
-          exerciseId: random.nextBool() ? 'bench_press' : 'squat',
-          workoutId: random.nextBool() ? 'workout_${i + 1}' : null,
-          achievement: random.nextBool()
-              ? Achievement(
-                  id: 'achievement_${i + 1}',
-                  name: '$workoutType Achievement',
-                  description: 'Completed an amazing $workoutType session!',
-                  type: AchievementType
-                      .values[random.nextInt(AchievementType.values.length)],
-                  unlockedAt: DateTime.now().subtract(Duration(hours: i * 2)),
-                  badgeColor: _getRandomBadgeColor(random),
-                )
-              : null,
-        ),
-      );
-    }
-
-    return items;
-  }
-
-  static String _getRandomBadgeColor(Random random) {
-    final colors = [
-      '#FFD700',
-      '#FF6B6B',
-      '#4CAF50',
-      '#FF9800',
-      '#9C27B0',
-      '#2196F3',
-    ];
-    return colors[random.nextInt(colors.length)];
-  }
+  // Removed: _mockFeedItems and _getRandomBadgeColor - No longer needed, feed uses real Supabase data via feedPostsProvider
 
   Future<List<UserProfile>> searchUsers(String query) async {
     await Future.delayed(
@@ -154,7 +108,8 @@ class SocialService {
 
   Future<List<FeedItem>> getFeed(String userId, {int limit = 20}) async {
     await Future.delayed(const Duration(milliseconds: 400));
-    return _mockFeedItems;
+    // Feed now uses real Supabase data via feedPostsProvider
+    return [];
   }
 
   Future<Leaderboard> getLeaderboard(

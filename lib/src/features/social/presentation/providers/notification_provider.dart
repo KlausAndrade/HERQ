@@ -42,11 +42,13 @@ final notificationsStreamProvider =
       .from('notifications')
       .stream(primaryKey: ['id'])
       .eq('user_id', user.id)
-      .order('created_at', ascending: false)
+      .order('created_at')
       .limit(50)
-      .map((data) => (data as List)
-          .map((json) => SocialNotification.fromJson(json))
-          .toList());
+      .map(
+        (data) => (data as List)
+            .map((json) => SocialNotification.fromJson(json))
+            .toList(),
+      );
 });
 
 /// Unread notifications count provider
@@ -72,19 +74,20 @@ final unreadNotificationsCountProvider =
 });
 
 /// Mark notification as read
-Future<void> markNotificationAsRead(SupabaseClient supabase, String notificationId) async {
+Future<void> markNotificationAsRead(
+    SupabaseClient supabase, String notificationId) async {
   try {
     await supabase
         .from('notifications')
-        .update({'is_read': true})
-        .eq('id', notificationId);
+        .update({'is_read': true}).eq('id', notificationId);
   } catch (e) {
     print('Error marking notification as read: $e');
   }
 }
 
 /// Mark all notifications as read
-Future<void> markAllNotificationsAsRead(SupabaseClient supabase, String userId) async {
+Future<void> markAllNotificationsAsRead(
+    SupabaseClient supabase, String userId) async {
   try {
     await supabase
         .from('notifications')
@@ -97,14 +100,11 @@ Future<void> markAllNotificationsAsRead(SupabaseClient supabase, String userId) 
 }
 
 /// Delete notification
-Future<void> deleteNotification(SupabaseClient supabase, String notificationId) async {
+Future<void> deleteNotification(
+    SupabaseClient supabase, String notificationId) async {
   try {
-    await supabase
-        .from('notifications')
-        .delete()
-        .eq('id', notificationId);
+    await supabase.from('notifications').delete().eq('id', notificationId);
   } catch (e) {
     print('Error deleting notification: $e');
   }
 }
-

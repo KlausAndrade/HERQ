@@ -62,9 +62,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       print('⚠️ Image picker already in progress, ignoring');
       return;
     }
-    
+
     setState(() => _isPickingImage = true);
-    
+
     try {
       final picker = ImagePicker();
       final XFile? image = await picker.pickImage(

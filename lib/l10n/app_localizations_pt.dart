@@ -2062,4 +2062,26 @@ class SPt extends S {
 
   @override
   String get user => 'Usuário';
+
+  @override
+  String get unfollowed => 'Deixou de seguir';
+
+  @override
+  String youUnfollowed(String userName) {
+    return 'Você deixou de seguir $userName';
+  }
+
+  @override
+  String youAreNowFollowing(String userName) {
+    return 'Você está seguindo $userName';
+  }
+
+  @override
+  String get failedToFollowUser => 'Falha ao seguir usuário';
+
+  @override
+  String get failedToUnfollowUser => 'Falha ao deixar de seguir usuário';
+
+  @override
+  String get thisUser => 'este usuário';
 }

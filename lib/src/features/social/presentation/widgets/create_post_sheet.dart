@@ -29,7 +29,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
 
   // Image validation constants
   static const int _maxImageSizeBytes = 10 * 1024 * 1024; // 10MB
-  static const int _maxDimension = 1024; // Much smaller for faster HEIC conversion on iOS
+  static const int _maxDimension =
+      1024; // Much smaller for faster HEIC conversion on iOS
 
   @override
   void dispose() {
@@ -222,7 +223,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
             children: [
               OutlinedButton.icon(
                 onPressed: (_isPosting || _isPickingImage) ? null : _pickImage,
-                icon: _isPickingImage 
+                icon: _isPickingImage
                     ? const SizedBox(
                         width: 16,
                         height: 16,
@@ -256,22 +257,25 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
       print('⚠️ Image picker already in progress, ignoring');
       return;
     }
-    
+
     if (!mounted) return;
     setState(() => _isPickingImage = true);
-    
+
     XFile? image;
-    
+
     try {
       print('📸 Opening image picker...');
-      image = await _imagePicker.pickImage(
+      image = await _imagePicker
+          .pickImage(
         source: ImageSource.gallery,
         maxWidth: _maxDimension.toDouble(),
         maxHeight: _maxDimension.toDouble(),
         imageQuality: 60, // Very low quality for faster iOS HEIC conversion
         requestFullMetadata: false, // Faster on iOS
-      ).timeout(
-        const Duration(seconds: 45), // Shorter timeout - if it takes this long, it's stuck
+      )
+          .timeout(
+        const Duration(
+            seconds: 45), // Shorter timeout - if it takes this long, it's stuck
         onTimeout: () {
           print('⚠️ Image picker timed out after 45s - HEIC conversion failed');
           if (mounted) {
@@ -279,7 +283,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                 .showInAppNotification(
                   id: DateTime.now().millisecondsSinceEpoch.toString(),
                   title: 'Photo upload failed',
-                  body: 'iPhone camera photos (HEIC) are not supported. Please use: Screenshots (PNG) or Edit the photo first in Photos app.',
+                  body:
+                      'iPhone camera photos (HEIC) are not supported. Please use: Screenshots (PNG) or Edit the photo first in Photos app.',
                 )
                 .catchError((_) {});
           }
@@ -287,7 +292,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
         },
       );
 
-      print('📸 Image picker result: ${image != null ? "image selected" : "cancelled"}');
+      print(
+          '📸 Image picker result: ${image != null ? "image selected" : "cancelled"}');
       if (image != null) {
         print('📸 Image path: ${image.path}');
         print('📸 Image name: ${image.name}');
@@ -295,9 +301,9 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
     } catch (e) {
       print('❌ Error opening image picker: $e');
       image = null;
-      
+
       // Don't show error for user cancellation or multiple request errors
-      if (!e.toString().contains('Cancelled') && 
+      if (!e.toString().contains('Cancelled') &&
           !e.toString().contains('multiple_request')) {
         if (mounted) {
           NotificationService()
@@ -316,7 +322,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
         setState(() => _isPickingImage = false);
       }
     }
-    
+
     // Process the selected image (outside try-catch to ensure flag is reset)
     if (image != null && mounted) {
       try {
@@ -324,8 +330,9 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
         final bytes = await image.readAsBytes();
         final fileSize = bytes.length;
         final fileSizeMB = (fileSize / (1024 * 1024)).toStringAsFixed(2);
-        
-        print('📸 Image size: ${fileSizeMB}MB (${image.path.split('.').last} format)');
+
+        print(
+            '📸 Image size: ${fileSizeMB}MB (${image.path.split('.').last} format)');
 
         if (fileSize > _maxImageSizeBytes) {
           print('⚠️ Image too large: ${fileSizeMB}MB > 10MB');
@@ -334,7 +341,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                 .showInAppNotification(
                   id: DateTime.now().millisecondsSinceEpoch.toString(),
                   title: 'Image too large',
-                  body: 'Image is ${fileSizeMB}MB. Maximum size is 10MB. Try a different photo.',
+                  body:
+                      'Image is ${fileSizeMB}MB. Maximum size is 10MB. Try a different photo.',
                 )
                 .catchError((_) {});
           }

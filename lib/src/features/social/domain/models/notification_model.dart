@@ -71,4 +71,3 @@ class SocialNotification {
         'is_read': isRead,
       };
 }
-

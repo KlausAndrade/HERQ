@@ -2051,4 +2051,26 @@ class SEn extends S {
 
   @override
   String get user => 'User';
+
+  @override
+  String get unfollowed => 'Unfollowed';
+
+  @override
+  String youUnfollowed(String userName) {
+    return 'You unfollowed $userName';
+  }
+
+  @override
+  String youAreNowFollowing(String userName) {
+    return 'You are now following $userName';
+  }
+
+  @override
+  String get failedToFollowUser => 'Failed to follow user';
+
+  @override
+  String get failedToUnfollowUser => 'Failed to unfollow user';
+
+  @override
+  String get thisUser => 'this user';
 }

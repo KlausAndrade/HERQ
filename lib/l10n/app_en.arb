@@ -766,5 +766,25 @@
   "failedToShareWorkout": "Failed to share workout",
   "shareToSocial": "Share to social",
   "user": "User",
-  "exercise": "Exercise"
+  "exercise": "Exercise",
+  "unfollowed": "Unfollowed",
+  "youUnfollowed": "You unfollowed {userName}",
+  "@youUnfollowed": {
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "youAreNowFollowing": "You are now following {userName}",
+  "@youAreNowFollowing": {
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToFollowUser": "Failed to follow user",
+  "failedToUnfollowUser": "Failed to unfollow user",
+  "thisUser": "this user"
 }

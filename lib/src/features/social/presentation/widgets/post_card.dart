@@ -1,12 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-
-import 'package:drift/drift.dart' hide Column;
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/database.dart';
@@ -38,12 +37,13 @@ class PostCard extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       elevation: isDark ? 2 : 1,
-      color: isDark ? theme.colorScheme.surfaceContainerHighest : theme.colorScheme.surface,
+      color: isDark
+          ? theme.colorScheme.surfaceContainerHighest
+          : theme.colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
           color: theme.colorScheme.outlineVariant.withOpacity(0.3),
-          width: 1,
         ),
       ),
       child: Column(
@@ -75,7 +75,8 @@ class PostCard extends ConsumerWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          post.userName ?? 'User ${post.userId.substring(0, 8)}',
+                          post.userName ??
+                              'User ${post.userId.substring(0, 8)}',
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
@@ -96,28 +97,35 @@ class PostCard extends ConsumerWidget {
                   // Follow button for other users' posts
                   Consumer(
                     builder: (context, ref, _) {
-                      final isFollowingAsync = ref.watch(isFollowingProvider(post.userId));
+                      final isFollowingAsync =
+                          ref.watch(isFollowingProvider(post.userId));
                       return isFollowingAsync.when(
                         data: (isFollowing) => OutlinedButton(
-                          onPressed: () => _toggleFollow(ref, isFollowing),
+                          onPressed: () =>
+                              _toggleFollow(ref, isFollowing, context),
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           child: Text(
-                            isFollowing ? 'Following' : 'Follow',
+                            isFollowing
+                                ? S.of(context)!.following
+                                : 'Follow',
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
                         loading: () => const SizedBox(
                           width: 60,
                           height: 24,
-                          child: Center(child: SizedBox(
-                            width: 12,
-                            height: 12,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )),
+                          child: Center(
+                            child: SizedBox(
+                              width: 12,
+                              height: 12,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
                         ),
                         error: (_, __) => const SizedBox.shrink(),
                       );
@@ -190,9 +198,12 @@ class PostCard extends ConsumerWidget {
                   ),
                 ),
                 likesCountAsync.when(
-                  data: (count) => Text('$count', style: const TextStyle(fontSize: 13)),
-                  loading: () => const Text('...', style: TextStyle(fontSize: 13)),
-                  error: (_, __) => const Text('0', style: TextStyle(fontSize: 13)),
+                  data: (count) =>
+                      Text('$count', style: const TextStyle(fontSize: 13)),
+                  loading: () =>
+                      const Text('...', style: TextStyle(fontSize: 13)),
+                  error: (_, __) =>
+                      const Text('0', style: TextStyle(fontSize: 13)),
                 ),
                 const SizedBox(width: 8),
 
@@ -203,9 +214,12 @@ class PostCard extends ConsumerWidget {
                   visualDensity: VisualDensity.compact,
                 ),
                 commentsCountAsync.when(
-                  data: (count) => Text('$count', style: const TextStyle(fontSize: 13)),
-                  loading: () => const Text('...', style: TextStyle(fontSize: 13)),
-                  error: (_, __) => const Text('0', style: TextStyle(fontSize: 13)),
+                  data: (count) =>
+                      Text('$count', style: const TextStyle(fontSize: 13)),
+                  loading: () =>
+                      const Text('...', style: TextStyle(fontSize: 13)),
+                  error: (_, __) =>
+                      const Text('0', style: TextStyle(fontSize: 13)),
                 ),
                 const SizedBox(width: 8),
 
@@ -237,8 +251,10 @@ class PostCard extends ConsumerWidget {
   /// Check if this post is related to a workout (contains workout stats)
   bool _isWorkoutPost() {
     final caption = post.caption?.toLowerCase() ?? '';
-    return caption.contains('sets') && 
-           (caption.contains('reps') || caption.contains('💪') || caption.contains('🏋'));
+    return caption.contains('sets') &&
+        (caption.contains('reps') ||
+            caption.contains('💪') ||
+            caption.contains('🏋'));
   }
 
   /// Format timestamp to relative time (e.g., "2h ago", "3d ago")
@@ -259,8 +275,10 @@ class PostCard extends ConsumerWidget {
     }
   }
 
-  Future<void> _toggleFollow(WidgetRef ref, bool isFollowing) async {
+  Future<void> _toggleFollow(
+      WidgetRef ref, bool isFollowing, BuildContext context) async {
     final social = ref.read(supabaseSocialServiceProvider);
+    final l10n = S.of(context)!;
 
     try {
       if (isFollowing) {
@@ -272,16 +290,14 @@ class PostCard extends ConsumerWidget {
       // Refresh providers
       ref.invalidate(isFollowingProvider(post.userId));
       ref.invalidate(feedPostsProvider);
-      
-      // Note: Using hardcoded English for now as we don't have context
-      // TODO: Add follow/unfollow translations
+
       NotificationService()
           .showInAppNotification(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
-            title: isFollowing ? 'Unfollowed' : 'Following',
-            body: isFollowing 
-                ? 'You unfollowed ${post.userName ?? "this user"}'
-                : 'You are now following ${post.userName ?? "this user"}',
+            title: isFollowing ? l10n.unfollowed : l10n.following,
+            body: isFollowing
+                ? l10n.youUnfollowed(post.userName ?? l10n.thisUser)
+                : l10n.youAreNowFollowing(post.userName ?? l10n.thisUser),
           )
           .catchError((_) {});
     } catch (e) {
@@ -289,8 +305,10 @@ class PostCard extends ConsumerWidget {
       NotificationService()
           .showInAppNotification(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
-            title: 'Error',
-            body: 'Failed to ${isFollowing ? "unfollow" : "follow"} user',
+            title: l10n.error,
+            body: isFollowing
+                ? l10n.failedToUnfollowUser
+                : l10n.failedToFollowUser,
           )
           .catchError((_) {});
     }
@@ -353,12 +371,13 @@ class PostCard extends ConsumerWidget {
     // Extract workout details from caption
     final caption = post.caption ?? '';
     final workoutData = _parseWorkoutData(caption);
-    
+
     // If this post has a workout session ID, fetch the actual exercises
     if (post.workoutSessionId != null) {
       try {
         print('🔍 Fetching exercises for session: ${post.workoutSessionId}');
-        final exercises = await _fetchExercisesFromSession(ref, post.workoutSessionId!);
+        final exercises =
+            await _fetchExercisesFromSession(ref, post.workoutSessionId!);
         if (exercises.isNotEmpty) {
           workoutData['exercises'] = exercises;
           print('✅ Loaded ${exercises.length} exercises from workout session');
@@ -372,7 +391,7 @@ class PostCard extends ConsumerWidget {
     } else {
       print('⚠️ Post has no workout session ID');
     }
-    
+
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -395,7 +414,8 @@ class PostCard extends ConsumerWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: Row(
                   children: [
@@ -405,7 +425,8 @@ class PostCard extends ConsumerWidget {
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.fitness_center, color: Colors.white),
+                      child:
+                          const Icon(Icons.fitness_center, color: Colors.white),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -413,17 +434,24 @@ class PostCard extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            workoutData['workoutName'] ?? S.of(context)!.workoutDetails,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                            workoutData['workoutName'] ??
+                                S.of(context)!.workoutDetails,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                           ),
                           Text(
                             post.userName ?? S.of(context)!.user,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white.withOpacity(0.9),
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white.withOpacity(0.9),
+                                ),
                           ),
                         ],
                       ),
@@ -439,10 +467,6 @@ class PostCard extends ConsumerWidget {
               // Image if available
               if (post.imageUrl != null)
                 ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(0),
-                    topRight: Radius.circular(0),
-                  ),
                   child: CachedNetworkImage(
                     imageUrl: post.imageUrl!,
                     height: 180,
@@ -455,7 +479,10 @@ class PostCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest
+                      .withOpacity(0.3),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -497,15 +524,19 @@ class PostCard extends ConsumerWidget {
                     children: [
                       Text(
                         S.of(context)!.exerciseBreakdown,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                       const SizedBox(height: 12),
-                      if (workoutData['exercises'] != null && workoutData['exercises'].isNotEmpty)
-                        ...workoutData['exercises'].map<Widget>((exercise) => 
-                          _ExerciseCard(exercise: exercise)
-                        ).toList()
+                      if (workoutData['exercises'] != null &&
+                          workoutData['exercises'].isNotEmpty)
+                        ...workoutData['exercises']
+                            .map<Widget>(
+                              (exercise) => _ExerciseCard(exercise: exercise),
+                            )
+                            .toList()
                       else
                         Container(
                           padding: const EdgeInsets.all(16),
@@ -514,14 +545,21 @@ class PostCard extends ConsumerWidget {
                               Icon(
                                 Icons.fitness_center_outlined,
                                 size: 48,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 S.of(context)!.noExerciseDetailsAvailable,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                    ),
                               ),
                             ],
                           ),
@@ -536,7 +574,8 @@ class PostCard extends ConsumerWidget {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+                  borderRadius:
+                      const BorderRadius.vertical(bottom: Radius.circular(20)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -550,7 +589,8 @@ class PostCard extends ConsumerWidget {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: () => _saveAsTemplate(context, ref, workoutData),
+                        onPressed: () =>
+                            _saveAsTemplate(context, ref, workoutData),
                         icon: const Icon(Icons.bookmark_border),
                         label: Text(S.of(context)!.saveTemplate),
                         style: OutlinedButton.styleFrom(
@@ -565,7 +605,8 @@ class PostCard extends ConsumerWidget {
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton.icon(
-                        onPressed: () => _startWorkout(context, ref, workoutData),
+                        onPressed: () =>
+                            _startWorkout(context, ref, workoutData),
                         icon: const Icon(Icons.play_arrow),
                         label: Text(S.of(context)!.startWorkout),
                         style: FilledButton.styleFrom(
@@ -589,78 +630,81 @@ class PostCard extends ConsumerWidget {
   /// Parse workout data from caption text
   Map<String, dynamic> _parseWorkoutData(String caption) {
     final data = <String, dynamic>{};
-    
+
     // Extract workout name (first line after 💪)
-    final workoutNameMatch = RegExp(r'💪 Just finished (.+)').firstMatch(caption);
+    final workoutNameMatch =
+        RegExp('💪 Just finished (.+)').firstMatch(caption);
     data['workoutName'] = workoutNameMatch?.group(1) ?? 'Workout';
-    
+
     // Extract basic stats using regex patterns
     final setsMatch = RegExp(r'(\d+)\s*sets').firstMatch(caption);
     final repsMatch = RegExp(r'(\d+)\s*reps').firstMatch(caption);
     final durationMatch = RegExp(r'(\d+[hm])').firstMatch(caption);
     final volumeMatch = RegExp(r'(\d+)\s*kg').firstMatch(caption);
-    
+
     data['totalSets'] = setsMatch?.group(1) ?? '0';
     data['totalReps'] = repsMatch?.group(1) ?? '0';
     data['duration'] = durationMatch?.group(1) ?? '0m';
     data['volume'] = volumeMatch?.group(1) ?? '0kg';
-    
+
     return data;
   }
 
-
   /// Save workout as template
-  Future<void> _saveAsTemplate(BuildContext context, WidgetRef ref, Map<String, dynamic> workoutData) async {
+  Future<void> _saveAsTemplate(BuildContext context, WidgetRef ref,
+      Map<String, dynamic> workoutData) async {
     Navigator.pop(context);
-    
+
     // Show dialog to get template name
     final templateName = await _showTemplateNameDialog(context);
     if (templateName == null || templateName.trim().isEmpty) {
       return; // User cancelled or entered empty name
     }
-    
+
     try {
       // Get the current user
       final currentUser = ref.read(currentUserProvider);
       if (currentUser == null) {
         throw Exception('User not authenticated');
       }
-      
+
       // Get the database
       final db = ref.read(databaseProvider);
       if (db == null) {
         throw Exception('Database not available');
       }
-      
+
       // If this post has a workout session ID, fetch the actual exercises
       List<String> exerciseIds = [];
       if (post.workoutSessionId != null) {
-        exerciseIds = await _fetchExerciseIdsFromSession(ref, post.workoutSessionId!);
+        exerciseIds =
+            await _fetchExerciseIdsFromSession(ref, post.workoutSessionId!);
       }
-      
+
       // If no exercises found, use common exercises as fallback
       if (exerciseIds.isEmpty) {
         exerciseIds = await _fetchCommonExercises(ref);
       }
-      
+
       // Create the template
       final templateId = 'template_${DateTime.now().millisecondsSinceEpoch}';
       await db.into(db.workoutTemplates).insert(
-        WorkoutTemplatesCompanion.insert(
-          id: templateId,
-          name: templateName.trim(),
-          userId: Value(currentUser.id),
-          description: Value('Template created from ${post.userName ?? 'user'}\'s workout'),
-          category: const Value('Social'),
-          exerciseIds: Value(exerciseIds),
-          tags: const [],
-          estimatedDurationMinutes: const Value(30), // Default estimate
-          isDefault: const Value(false),
-          createdAt: Value(DateTime.now()),
-          updatedAt: Value(DateTime.now()),
-        ),
-      );
-      
+            WorkoutTemplatesCompanion.insert(
+              id: templateId,
+              name: templateName.trim(),
+              userId: Value(currentUser.id),
+              description: Value(
+                  'Template created from ${post.userName ?? 'user'}\'s workout'),
+              category: const Value('Social'),
+              exerciseIds: Value(exerciseIds),
+              tags: const [],
+              estimatedDurationMinutes: const Value(30), // Default estimate
+              isDefault: const Value(false),
+              createdAt: Value(DateTime.now()),
+              updatedAt: Value(DateTime.now()),
+            ),
+          );
+
       // Show success notification
       if (context.mounted) {
         final l10n = S.of(context)!;
@@ -672,8 +716,9 @@ class PostCard extends ConsumerWidget {
             )
             .catchError((_) {});
       }
-      
-      print('✅ Template saved: $templateName with ${exerciseIds.length} exercises');
+
+      print(
+          '✅ Template saved: $templateName with ${exerciseIds.length} exercises');
     } catch (e) {
       print('❌ Error saving template: $e');
       if (context.mounted) {
@@ -694,7 +739,7 @@ class PostCard extends ConsumerWidget {
     final controller = TextEditingController();
     final formKey = GlobalKey<FormState>();
     final l10n = S.of(context)!;
-    
+
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -757,29 +802,30 @@ class PostCard extends ConsumerWidget {
   }
 
   /// Fetch exercise IDs from workout session (from Supabase)
-  Future<List<String>> _fetchExerciseIdsFromSession(WidgetRef ref, String sessionId) async {
+  Future<List<String>> _fetchExerciseIdsFromSession(
+      WidgetRef ref, String sessionId) async {
     try {
       final supabase = ref.read(supabaseClientProvider);
-      
+
       print('🔍 Querying Supabase for exercise IDs in session: $sessionId');
-      
+
       // Fetch set entries for this session from Supabase
       final setEntriesData = await supabase
           .from('set_entries')
           .select('exercise_id')
           .eq('workout_session_id', sessionId);
-      
+
       if (setEntriesData.isEmpty) {
         print('⚠️ No set entries found in Supabase');
         return [];
       }
-      
+
       // Extract unique exercise IDs
       final exerciseIds = setEntriesData
           .map((entry) => entry['exercise_id'] as String)
           .toSet()
           .toList();
-      
+
       print('📋 Found ${exerciseIds.length} unique exercises in session');
       return exerciseIds;
     } catch (e) {
@@ -789,72 +835,74 @@ class PostCard extends ConsumerWidget {
   }
 
   /// Fetch detailed exercise data from workout session (from Supabase)
-  Future<List<Map<String, dynamic>>> _fetchExercisesFromSession(WidgetRef ref, String sessionId) async {
+  Future<List<Map<String, dynamic>>> _fetchExercisesFromSession(
+      WidgetRef ref, String sessionId) async {
     try {
       final supabase = ref.read(supabaseClientProvider);
-      
+
       print('🔍 Querying Supabase for session: $sessionId');
-      
+
       // Fetch set entries for this session (without join - workaround for schema cache issue)
       final setEntriesData = await supabase
           .from('set_entries')
-          .select('*')
+          .select()
           .eq('workout_session_id', sessionId)
           .order('exercise_id, set_number');
-      
+
       print('📊 Found ${setEntriesData.length} set entries');
-      
+
       if (setEntriesData.isEmpty) {
         print('⚠️ No set entries found for session $sessionId');
         return [];
       }
-      
+
       // Get unique exercise IDs
       final exerciseIds = setEntriesData
           .map((entry) => entry['exercise_id'] as String)
           .toSet()
           .toList();
-      
+
       print('📋 Found ${exerciseIds.length} unique exercises');
-      
+
       // Fetch exercise details separately (workaround for FK relationship not in cache)
       final exercisesData = await supabase
           .from('exercises')
           .select('id, name, exercise_type, equipment, primary_muscle_group')
           .inFilter('id', exerciseIds);
-      
+
       print('✅ Fetched ${exercisesData.length} exercise details');
-      
+
       // Create exercise info map
       final Map<String, Map<String, dynamic>> exerciseInfoMap = {
-        for (var ex in exercisesData) ex['id'] as String: ex
+        for (final ex in exercisesData) ex['id'] as String: ex,
       };
-      
+
       // Group sets by exercise
       final Map<String, List<Map<String, dynamic>>> exerciseSetsMap = {};
-      
+
       for (final setEntry in setEntriesData) {
         final exerciseId = setEntry['exercise_id'] as String;
-        
+
         if (!exerciseSetsMap.containsKey(exerciseId)) {
           exerciseSetsMap[exerciseId] = [];
         }
         exerciseSetsMap[exerciseId]!.add(setEntry);
       }
-      
+
       // Create exercise summaries with sets
       final List<Map<String, dynamic>> exercises = [];
-      
+
       for (final entry in exerciseSetsMap.entries) {
         final exerciseId = entry.key;
         final sets = entry.value;
         final exerciseInfo = exerciseInfoMap[exerciseId];
-        
+
         if (exerciseInfo != null) {
           // Calculate totals
           final totalSets = sets.length;
-          final totalReps = sets.fold<int>(0, (sum, set) => sum + (set['reps'] as int? ?? 0));
-          
+          final totalReps =
+              sets.fold<int>(0, (sum, set) => sum + (set['reps'] as int? ?? 0));
+
           // Handle weight as either int or double from Supabase
           final maxWeight = sets
               .map((set) {
@@ -865,15 +913,17 @@ class PostCard extends ConsumerWidget {
                 return null;
               })
               .whereType<double>()
-              .fold<double?>(null, (max, weight) => max == null || weight > max ? weight : max);
-          
+              .fold<double?>(null,
+                  (max, weight) => max == null || weight > max ? weight : max);
+
           final exerciseName = exerciseInfo['name'] as String;
-          print('💪 Creating exercise: $exerciseName ($totalSets sets, $totalReps reps)');
-          
+          print(
+              '💪 Creating exercise: $exerciseName ($totalSets sets, $totalReps reps)');
+
           // Safely extract equipment (handle potential array or string)
           final equipment = exerciseInfo['equipment'];
           final equipmentStr = equipment is String ? equipment : 'bodyweight';
-          
+
           exercises.add({
             'id': exerciseId,
             'name': exerciseName,
@@ -883,7 +933,9 @@ class PostCard extends ConsumerWidget {
             'equipment': equipmentStr,
             'sets_detail': sets.map((set) {
               final weight = set['weight'];
-              final weightDouble = weight == null ? 0.0 : (weight is double ? weight : (weight as int).toDouble());
+              final weightDouble = weight == null
+                  ? 0.0
+                  : (weight is double ? weight : (weight as int).toDouble());
               return {
                 'reps': set['reps'] as int? ?? 0,
                 'weight': weightDouble,
@@ -895,7 +947,7 @@ class PostCard extends ConsumerWidget {
           print('⚠️ Skipping exercise $exerciseId - no exercise info found');
         }
       }
-      
+
       print('✅ Created ${exercises.length} exercise summaries from Supabase');
       return exercises;
     } catch (e) {
@@ -906,32 +958,38 @@ class PostCard extends ConsumerWidget {
   }
 
   /// Start workout from template
-  Future<void> _startWorkout(BuildContext context, WidgetRef ref, Map<String, dynamic> workoutData) async {
+  Future<void> _startWorkout(BuildContext context, WidgetRef ref,
+      Map<String, dynamic> workoutData) async {
     // Store the navigator before popping
     final navigator = Navigator.of(context);
     final goRouter = GoRouter.of(context);
-    
+
     // Close the dialog
     navigator.pop();
-    
+
     try {
       // Create a new workout from the template
-      final workoutName = workoutData['workoutName'] ?? 'Workout from ${post.userName ?? 'User'}';
-      
+      final workoutName = workoutData['workoutName'] ??
+          'Workout from ${post.userName ?? 'User'}';
+
       // If this post has a workout session ID, fetch the actual workout data
       if (post.workoutSessionId != null) {
-        print('🔍 Fetching workout data from session: ${post.workoutSessionId}');
-        await _startWorkoutFromSession(goRouter, ref, workoutName, post.workoutSessionId!);
+        print(
+            '🔍 Fetching workout data from session: ${post.workoutSessionId}');
+        await _startWorkoutFromSession(
+            goRouter, ref, workoutName, post.workoutSessionId!);
       } else {
         // Fallback: Create a basic workout with common exercises
         print('⚠️ No workout session ID, creating basic workout');
         final exerciseIds = await _fetchCommonExercises(ref);
-        
-        await ref.read(activeWorkoutProvider.notifier).startWorkoutFromExerciseIds(
-          workoutName,
-          exerciseIds,
-        );
-        
+
+        await ref
+            .read(activeWorkoutProvider.notifier)
+            .startWorkoutFromExerciseIds(
+              workoutName,
+              exerciseIds,
+            );
+
         if (context.mounted) {
           final l10n = S.of(context)!;
           context.go('/active-workout');
@@ -968,65 +1026,68 @@ class PostCard extends ConsumerWidget {
   ) async {
     try {
       final supabase = ref.read(supabaseClientProvider);
-      
+
       print('🔍 Fetching workout data from Supabase for session: $sessionId');
-      
+
       // Fetch set entries for this session (without join)
       final setEntriesData = await supabase
           .from('set_entries')
-          .select('*')
+          .select()
           .eq('workout_session_id', sessionId)
           .order('set_number');
-      
+
       if (setEntriesData.isEmpty) {
         print('⚠️ No set entries found for session $sessionId');
         throw Exception('No workout data found');
       }
-      
+
       print('✅ Found ${setEntriesData.length} sets from workout session');
-      
+
       // Get unique exercise IDs
       final exerciseIds = setEntriesData
           .map((entry) => entry['exercise_id'] as String)
           .toSet()
           .toList();
-      
+
       print('📋 Found ${exerciseIds.length} unique exercises');
-      
+
       // Fetch exercise details separately
       final exercisesData = await supabase
           .from('exercises')
           .select('id, name, exercise_type, equipment, primary_muscle_group')
           .inFilter('id', exerciseIds);
-      
+
       print('✅ Fetched ${exercisesData.length} exercise details');
-      
+
       // Create exercise data map
       final Map<String, Map<String, dynamic>> exerciseDataMap = {
-        for (var ex in exercisesData) ex['id'] as String: ex
+        for (final ex in exercisesData) ex['id'] as String: ex,
       };
-      
+
       // Ensure exercises exist in local database (copy from Supabase if needed)
       await _ensureExercisesExist(ref, exerciseDataMap);
-      
+
       print('🏋️ Starting workout with ${exerciseIds.length} exercises');
-      
+
       // Start workout with the fetched exercises
-      await ref.read(activeWorkoutProvider.notifier).startWorkoutFromExerciseIds(
-        workoutName,
-        exerciseIds,
-      );
-      
+      await ref
+          .read(activeWorkoutProvider.notifier)
+          .startWorkoutFromExerciseIds(
+            workoutName,
+            exerciseIds,
+          );
+
       // Navigate to active workout screen
       goRouter.go('/active-workout');
-      
+
       // Note: Can't use context here as dialog is closed, using hardcoded English
       // The notification will use device locale automatically if we had access to l10n
       NotificationService()
           .showInAppNotification(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
             title: 'Workout Started',
-            body: 'Starting $workoutName with ${exerciseIds.length} exercises...',
+            body:
+                'Starting $workoutName with ${exerciseIds.length} exercises...',
           )
           .catchError((_) {});
     } catch (e) {
@@ -1045,38 +1106,44 @@ class PostCard extends ConsumerWidget {
       print('⚠️ Database not available, skipping exercise copy');
       return;
     }
-    
+
     for (final entry in exerciseDataMap.entries) {
       final exerciseId = entry.key;
       final exerciseData = entry.value;
-      
+
       try {
         // Check if exercise already exists in local database
         final existingExercise = await (db.select(db.exercises)
               ..where((tbl) => tbl.id.equals(exerciseId)))
             .getSingleOrNull();
-        
+
         if (existingExercise == null) {
           // Exercise doesn't exist, copy it from Supabase data
-          print('📋 Copying exercise to local database: ${exerciseData['name']}');
-          
+          print(
+              '📋 Copying exercise to local database: ${exerciseData['name']}');
+
           await db.into(db.exercises).insert(
-            ExercisesCompanion.insert(
-              id: exerciseId,
-              name: exerciseData['name'] as String,
-              primaryMuscleGroup: exerciseData['primary_muscle_group'] as String? ?? 'other',
-              equipment: exerciseData['equipment'] as String? ?? 'bodyweight',
-              instructions: '',
-              secondaryMuscleGroups: const [],
-              tags: const [],
-              category: const Value('Other'),
-              difficulty: const Value('intermediate'),
-              exerciseType: Value(exerciseData['exercise_type'] as String? ?? 'reps'),
-              userId: const Value(null), // Null means accessible to all users
-            ),
-            mode: InsertMode.insertOrIgnore,
-          );
-          
+                ExercisesCompanion.insert(
+                  id: exerciseId,
+                  name: exerciseData['name'] as String,
+                  primaryMuscleGroup:
+                      exerciseData['primary_muscle_group'] as String? ??
+                          'other',
+                  equipment:
+                      exerciseData['equipment'] as String? ?? 'bodyweight',
+                  instructions: '',
+                  secondaryMuscleGroups: const [],
+                  tags: const [],
+                  category: const Value('Other'),
+                  difficulty: const Value('intermediate'),
+                  exerciseType:
+                      Value(exerciseData['exercise_type'] as String? ?? 'reps'),
+                  userId:
+                      const Value(null), // Null means accessible to all users
+                ),
+                mode: InsertMode.insertOrIgnore,
+              );
+
           print('✅ Exercise copied successfully');
         } else {
           print('✓ Exercise already exists: ${existingExercise.name}');
@@ -1099,19 +1166,21 @@ class PostCard extends ConsumerWidget {
 
       // Fetch popular compound exercises
       final exercises = await (db.select(db.exercises)
-            ..where((tbl) => tbl.name.isIn([
-                  'Squats',
-                  'Barbell Squats',
-                  'Back Squats',
-                  'Romanian Deadlifts',
-                  'Deadlifts',
-                  'Bench Press',
-                  'Barbell Bench Press',
-                  'Overhead Press',
-                  'Barbell Row',
-                  'Pull-ups',
-                  'Lat Pulldown',
-                ]))
+            ..where(
+              (tbl) => tbl.name.isIn([
+                'Squats',
+                'Barbell Squats',
+                'Back Squats',
+                'Romanian Deadlifts',
+                'Deadlifts',
+                'Bench Press',
+                'Barbell Bench Press',
+                'Overhead Press',
+                'Barbell Row',
+                'Pull-ups',
+                'Lat Pulldown',
+              ]),
+            )
             ..limit(5))
           .get();
 
@@ -1128,7 +1197,6 @@ class PostCard extends ConsumerWidget {
       return [];
     }
   }
-
 
   void _showPostOptions(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
@@ -1261,31 +1329,29 @@ class _StatChip extends StatelessWidget {
   final String value;
 
   @override
-  Widget build(BuildContext buildContext) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Theme.of(buildContext).colorScheme.primary,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: Theme.of(buildContext).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+  Widget build(BuildContext buildContext) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: Theme.of(buildContext).colorScheme.primary,
           ),
-        ),
-        Text(
-          label,
-          style: Theme.of(buildContext).textTheme.bodySmall?.copyWith(
-            color: Theme.of(buildContext).colorScheme.onSurfaceVariant,
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: Theme.of(buildContext).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
-        ),
-      ],
-    );
-  }
+          Text(
+            label,
+            style: Theme.of(buildContext).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(buildContext).colorScheme.onSurfaceVariant,
+                ),
+          ),
+        ],
+      );
 }
 
 /// Exercise card widget for workout breakdown
@@ -1299,20 +1365,25 @@ class _ExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = S.of(context)!;
-    
+
     // Handle both string and int types from database
     final setsRaw = exercise['sets'];
     final repsRaw = exercise['reps'];
-    
-    final sets = setsRaw is int ? setsRaw : (int.tryParse(setsRaw.toString()) ?? 0);
-    final reps = repsRaw is int ? repsRaw : (int.tryParse(repsRaw.toString()) ?? 0);
+
+    final sets =
+        setsRaw is int ? setsRaw : (int.tryParse(setsRaw.toString()) ?? 0);
+    final reps =
+        repsRaw is int ? repsRaw : (int.tryParse(repsRaw.toString()) ?? 0);
     final weight = exercise['weight'] as String? ?? l10n.bodyweight;
     final name = exercise['name'] as String? ?? l10n.exercise;
-    
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withOpacity(0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
@@ -1340,15 +1411,15 @@ class _ExerciseCard extends StatelessWidget {
                 Text(
                   name,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '$sets ${l10n.sets} × $reps ${l10n.reps}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                 ),
               ],
             ),
@@ -1362,9 +1433,9 @@ class _ExerciseCard extends StatelessWidget {
             child: Text(
               weight,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
             ),
           ),
         ],

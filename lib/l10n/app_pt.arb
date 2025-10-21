@@ -749,5 +749,11 @@
   "failedToShareWorkout": "Falha ao compartilhar treino",
   "shareToSocial": "Compartilhar no social",
   "user": "Usuário",
-  "exercise": "Exercício"
+  "exercise": "Exercício",
+  "unfollowed": "Deixou de seguir",
+  "youUnfollowed": "Você deixou de seguir {userName}",
+  "youAreNowFollowing": "Você está seguindo {userName}",
+  "failedToFollowUser": "Falha ao seguir usuário",
+  "failedToUnfollowUser": "Falha ao deixar de seguir usuário",
+  "thisUser": "este usuário"
 }
