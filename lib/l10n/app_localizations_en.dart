@@ -1819,7 +1819,73 @@ class SEn extends S {
   String get optimizeWorkouts => 'Optimize Workouts';
 
   @override
+  String get evaluateProgress => 'Evaluate Progress';
+
+  @override
   String get buildMyNextWorkout => 'Build My Next Workout';
+
+  @override
+  String get evaluateMyProgress => 'Evaluate My Progress';
+
+  @override
+  String get getProfessionalAnalysis =>
+      'Get professional AI analysis of your training';
+
+  @override
+  String get startEvaluation => 'Start Evaluation';
+
+  @override
+  String get evaluateProgressInstructions =>
+      '1. AI analyzes your last 30 workout sessions\n2. Evaluates muscle group distribution and balance\n3. Assesses training frequency and recovery patterns\n4. Identifies your training goals based on data\n5. Provides direct, professional feedback on weaknesses\n6. Suggests specific, actionable improvements';
+
+  @override
+  String get evaluateProgressWarning =>
+      '⚠️ This AI provides professional, brutally honest feedback. It will directly point out training gaps, muscle imbalances, and poor frequency without sugar-coating. Prepare for constructive criticism.';
+
+  @override
+  String get analyzingTrainingHistory => 'Analyzing your training history...';
+
+  @override
+  String get thisMayTakeMoment => 'This may take a moment';
+
+  @override
+  String get evaluationFailed => 'Evaluation Failed';
+
+  @override
+  String failedToAnalyzeProgress(String error) {
+    return 'Failed to analyze your progress: $error';
+  }
+
+  @override
+  String get progressEvaluation => 'Progress Evaluation';
+
+  @override
+  String get overallAssessment => 'Overall Assessment';
+
+  @override
+  String get strengths => 'Strengths';
+
+  @override
+  String get areasNeedingAttention => 'Areas Needing Attention';
+
+  @override
+  String get muscleGroupBalance => 'Muscle Group Balance';
+
+  @override
+  String get detectedTrainingGoal => 'Detected Training Goal';
+
+  @override
+  String get professionalRecommendations => 'Professional Recommendations';
+
+  @override
+  String get evaluationAlreadyDone => 'Already Evaluated Today';
+
+  @override
+  String get evaluationAlreadyDoneMessage =>
+      'You\'ve already received your progress evaluation today. Complete a workout and come back tomorrow for a fresh analysis!';
+
+  @override
+  String get seeAgain => 'See Again';
 
   @override
   String get generateMyNextWorkout => 'Generate My Next Workout';

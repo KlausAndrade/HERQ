@@ -1827,7 +1827,74 @@ class SPt extends S {
   String get optimizeWorkouts => 'Otimizar Treinos';
 
   @override
+  String get evaluateProgress => 'Avaliar Progresso';
+
+  @override
   String get buildMyNextWorkout => 'Criar Meu Próximo Treino';
+
+  @override
+  String get evaluateMyProgress => 'Avaliar Meu Progresso';
+
+  @override
+  String get getProfessionalAnalysis =>
+      'Obtenha análise profissional de IA do seu treinamento';
+
+  @override
+  String get startEvaluation => 'Iniciar Avaliação';
+
+  @override
+  String get evaluateProgressInstructions =>
+      '1. A IA analisa suas últimas 30 sessões de treino\n2. Avalia distribuição e equilíbrio de grupos musculares\n3. Avalia frequência de treinamento e padrões de recuperação\n4. Identifica seus objetivos de treinamento com base nos dados\n5. Fornece feedback profissional direto sobre fraquezas\n6. Sugere melhorias específicas e acionáveis';
+
+  @override
+  String get evaluateProgressWarning =>
+      '⚠️ Esta IA fornece feedback profissional e brutalmente honesto. Ela apontará diretamente lacunas de treinamento, desequilíbrios musculares e frequência inadequada sem rodeios. Prepare-se para críticas construtivas.';
+
+  @override
+  String get analyzingTrainingHistory =>
+      'Analisando seu histórico de treino...';
+
+  @override
+  String get thisMayTakeMoment => 'Isso pode levar um momento';
+
+  @override
+  String get evaluationFailed => 'Avaliação Falhou';
+
+  @override
+  String failedToAnalyzeProgress(String error) {
+    return 'Falha ao analisar seu progresso: $error';
+  }
+
+  @override
+  String get progressEvaluation => 'Avaliação de Progresso';
+
+  @override
+  String get overallAssessment => 'Avaliação Geral';
+
+  @override
+  String get strengths => 'Pontos Fortes';
+
+  @override
+  String get areasNeedingAttention => 'Áreas Que Precisam de Atenção';
+
+  @override
+  String get muscleGroupBalance => 'Equilíbrio de Grupos Musculares';
+
+  @override
+  String get detectedTrainingGoal => 'Objetivo de Treinamento Detectado';
+
+  @override
+  String get professionalRecommendations => 'Recomendações Profissionais';
+
+  @override
+  String get evaluationAlreadyDone => 'Já Avaliado Hoje';
+
+  @override
+  String get evaluationAlreadyDoneMessage =>
+      'Você já recebeu sua avaliação de progresso hoje. Complete um treino e volte amanhã para uma nova análise!';
+
+  @override
+  String get seeAgain => 'Ver Novamente';
 
   @override
   String get generateMyNextWorkout => 'Gerar Meu Próximo Treino';

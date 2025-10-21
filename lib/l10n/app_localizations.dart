@@ -3609,11 +3609,131 @@ abstract class S {
   /// **'Optimize Workouts'**
   String get optimizeWorkouts;
 
+  /// No description provided for @evaluateProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Evaluate Progress'**
+  String get evaluateProgress;
+
   /// No description provided for @buildMyNextWorkout.
   ///
   /// In en, this message translates to:
   /// **'Build My Next Workout'**
   String get buildMyNextWorkout;
+
+  /// No description provided for @evaluateMyProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Evaluate My Progress'**
+  String get evaluateMyProgress;
+
+  /// No description provided for @getProfessionalAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Get professional AI analysis of your training'**
+  String get getProfessionalAnalysis;
+
+  /// No description provided for @startEvaluation.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Evaluation'**
+  String get startEvaluation;
+
+  /// No description provided for @evaluateProgressInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'1. AI analyzes your last 30 workout sessions\n2. Evaluates muscle group distribution and balance\n3. Assesses training frequency and recovery patterns\n4. Identifies your training goals based on data\n5. Provides direct, professional feedback on weaknesses\n6. Suggests specific, actionable improvements'**
+  String get evaluateProgressInstructions;
+
+  /// No description provided for @evaluateProgressWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ This AI provides professional, brutally honest feedback. It will directly point out training gaps, muscle imbalances, and poor frequency without sugar-coating. Prepare for constructive criticism.'**
+  String get evaluateProgressWarning;
+
+  /// No description provided for @analyzingTrainingHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing your training history...'**
+  String get analyzingTrainingHistory;
+
+  /// No description provided for @thisMayTakeMoment.
+  ///
+  /// In en, this message translates to:
+  /// **'This may take a moment'**
+  String get thisMayTakeMoment;
+
+  /// No description provided for @evaluationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Evaluation Failed'**
+  String get evaluationFailed;
+
+  /// No description provided for @failedToAnalyzeProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to analyze your progress: {error}'**
+  String failedToAnalyzeProgress(String error);
+
+  /// No description provided for @progressEvaluation.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress Evaluation'**
+  String get progressEvaluation;
+
+  /// No description provided for @overallAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Assessment'**
+  String get overallAssessment;
+
+  /// No description provided for @strengths.
+  ///
+  /// In en, this message translates to:
+  /// **'Strengths'**
+  String get strengths;
+
+  /// No description provided for @areasNeedingAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Areas Needing Attention'**
+  String get areasNeedingAttention;
+
+  /// No description provided for @muscleGroupBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscle Group Balance'**
+  String get muscleGroupBalance;
+
+  /// No description provided for @detectedTrainingGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected Training Goal'**
+  String get detectedTrainingGoal;
+
+  /// No description provided for @professionalRecommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional Recommendations'**
+  String get professionalRecommendations;
+
+  /// No description provided for @evaluationAlreadyDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Already Evaluated Today'**
+  String get evaluationAlreadyDone;
+
+  /// No description provided for @evaluationAlreadyDoneMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve already received your progress evaluation today. Complete a workout and come back tomorrow for a fresh analysis!'**
+  String get evaluationAlreadyDoneMessage;
+
+  /// No description provided for @seeAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'See Again'**
+  String get seeAgain;
 
   /// No description provided for @generateMyNextWorkout.
   ///

@@ -293,6 +293,38 @@ final optimizeFolderProvider = FutureProvider.autoDispose.family<Map<String, dyn
   }
 });
 
+// Parameter class for evaluate progress
+class EvaluateProgressParams {
+  const EvaluateProgressParams({
+    required this.isAdminMode,
+    required this.languageCode,
+  });
+  
+  final bool isAdminMode;
+  final String languageCode;
+}
+
+// Evaluate progress provider - AI analyzes user's training history
+final evaluateProgressProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, EvaluateProgressParams>((ref, params) async {
+  final userId = params.isAdminMode ? null : 'default_user';
+  
+  try {
+    final aiService = ref.read(groqAICoachingServiceProvider);
+    if (aiService != null) {
+      final result = await aiService.evaluateProgress(
+        userId ?? 'default_user',
+        languageCode: params.languageCode,
+      );
+      print('✅ Progress evaluation completed (Real API)');
+      return result;
+    }
+    throw Exception('Groq service unavailable');
+  } catch (e) {
+    print('❌ Progress evaluation failed: $e');
+    throw Exception(getAiErrorMessage(e.toString()));
+  }
+});
+
 // AI actions provider for user interactions (with Groq fallback)
 final aiActionsProvider = Provider<AIActions>(
   (ref) => AIActions(

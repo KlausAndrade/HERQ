@@ -669,7 +669,34 @@
   },
   "buildWorkout": "Build Workout",
   "optimizeWorkouts": "Optimize Workouts",
+  "evaluateProgress": "Evaluate Progress",
   "buildMyNextWorkout": "Build My Next Workout",
+  "evaluateMyProgress": "Evaluate My Progress",
+  "getProfessionalAnalysis": "Get professional AI analysis of your training",
+  "startEvaluation": "Start Evaluation",
+  "evaluateProgressInstructions": "1. AI analyzes your last 30 workout sessions\n2. Evaluates muscle group distribution and balance\n3. Assesses training frequency and recovery patterns\n4. Identifies your training goals based on data\n5. Provides direct, professional feedback on weaknesses\n6. Suggests specific, actionable improvements",
+  "evaluateProgressWarning": "⚠️ This AI provides professional, brutally honest feedback. It will directly point out training gaps, muscle imbalances, and poor frequency without sugar-coating. Prepare for constructive criticism.",
+  "analyzingTrainingHistory": "Analyzing your training history...",
+  "thisMayTakeMoment": "This may take a moment",
+  "evaluationFailed": "Evaluation Failed",
+  "failedToAnalyzeProgress": "Failed to analyze your progress: {error}",
+  "@failedToAnalyzeProgress": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "progressEvaluation": "Progress Evaluation",
+  "overallAssessment": "Overall Assessment",
+  "strengths": "Strengths",
+  "areasNeedingAttention": "Areas Needing Attention",
+  "muscleGroupBalance": "Muscle Group Balance",
+  "detectedTrainingGoal": "Detected Training Goal",
+  "professionalRecommendations": "Professional Recommendations",
+  "evaluationAlreadyDone": "Already Evaluated Today",
+  "evaluationAlreadyDoneMessage": "You've already received your progress evaluation today. Complete a workout and come back tomorrow for a fresh analysis!",
+  "seeAgain": "See Again",
   "generateMyNextWorkout": "Generate My Next Workout",
   "optimizeMyWorkouts": "Optimize My Workouts",
   "generatedWorkout": "Generated Workout",

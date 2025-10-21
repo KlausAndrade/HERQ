@@ -509,6 +509,140 @@ Create a complete workout that builds on my training patterns and applies progre
     }
   }
 
+  /// Evaluate user's progress with professional, direct feedback
+  Future<Map<String, dynamic>> evaluateProgress(
+    String userId, {
+    String languageCode = 'en',
+  }) async {
+    print('🤖 Using GROQ service for evaluateProgress (language: $languageCode)');
+    try {
+      // Get last 30 completed workout sessions for comprehensive analysis
+      final workoutHistory = await (_database.select(_database.workoutSessions)
+            ..where((w) => w.completedAt.isNotNull())
+            ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
+            ..limit(30))
+          .get();
+
+      if (workoutHistory.isEmpty) {
+        throw Exception('No workout history found. Complete some workouts first!');
+      }
+
+      // Analyze muscle group distribution
+      final muscleGroupCounts = <String, int>{};
+      final exerciseFrequency = <String, int>{};
+      final weeklyWorkouts = <int>[];
+      
+      // Get detailed workout data
+      for (final session in workoutHistory) {
+        final setEntries = await (_database.select(_database.setEntries)
+              ..where((se) => se.workoutSessionId.equals(session.id)))
+            .get();
+
+        for (final set in setEntries) {
+          final exercise = await (_database.select(_database.exercises)
+                ..where((e) => e.id.equals(set.exerciseId)))
+              .getSingleOrNull();
+
+          if (exercise != null) {
+            // Count muscle groups
+            muscleGroupCounts[exercise.primaryMuscleGroup] = 
+                (muscleGroupCounts[exercise.primaryMuscleGroup] ?? 0) + 1;
+            
+            // Count exercise frequency
+            exerciseFrequency[exercise.name] = 
+                (exerciseFrequency[exercise.name] ?? 0) + 1;
+          }
+        }
+      }
+
+      // Calculate weekly workout frequency
+      final now = DateTime.now();
+      for (var i = 0; i < 4; i++) {
+        final weekStart = now.subtract(Duration(days: 7 * (i + 1)));
+        final weekEnd = weekStart.add(const Duration(days: 7));
+        final weekWorkouts = workoutHistory.where((w) => 
+          w.startedAt.isAfter(weekStart) && w.startedAt.isBefore(weekEnd)
+        ).length;
+        weeklyWorkouts.add(weekWorkouts);
+      }
+
+      // Calculate training volume trends
+      final volumeTrend = workoutHistory.take(10).map((w) => w.totalVolume).toList();
+      
+      // Map language codes to language names for the AI
+      final languageMap = {
+        'en': 'English',
+        'pt': 'Portuguese',
+        'es': 'Spanish',
+      };
+      final languageName = languageMap[languageCode] ?? 'English';
+      
+      final systemPrompt = '''You are a professional strength and conditioning coach with 15+ years of experience.
+You provide DIRECT, HONEST, and CONSTRUCTIVE feedback without sugar-coating.
+Your goal is to help the user improve, even if it means pointing out harsh truths about their training.
+
+When evaluating:
+1. BE CRITICAL about muscle imbalances and neglected muscle groups
+2. BE DIRECT about poor training frequency or excessive rest days
+3. BE SPECIFIC about what needs to change
+4. IDENTIFY the user's training goal based on their patterns (strength, hypertrophy, endurance, skill, etc.)
+5. DON'T be overly polite - be professional but brutally honest
+6. PRIORITIZE addressing weaknesses over praising strengths
+7. Use percentages and numbers to make your points clear
+
+Format your response as a professional coach would speak to a serious athlete.
+
+IMPORTANT: Respond ENTIRELY in $languageName. All text, explanations, and recommendations must be in $languageName.''';
+
+      final userPrompt = '''Evaluate my training progress and provide professional feedback (respond in $languageName):
+
+WORKOUT HISTORY (last 30 sessions):
+Total workouts: ${workoutHistory.length}
+Average weekly workouts (last 4 weeks): ${weeklyWorkouts.isEmpty ? 0 : (weeklyWorkouts.reduce((a, b) => a + b) / weeklyWorkouts.length).toStringAsFixed(1)}
+Weekly breakdown: Week 1: ${weeklyWorkouts.isNotEmpty ? weeklyWorkouts[0] : 0}, Week 2: ${weeklyWorkouts.length > 1 ? weeklyWorkouts[1] : 0}, Week 3: ${weeklyWorkouts.length > 2 ? weeklyWorkouts[2] : 0}, Week 4: ${weeklyWorkouts.length > 3 ? weeklyWorkouts[3] : 0}
+
+MUSCLE GROUP DISTRIBUTION:
+${muscleGroupCounts.entries.map((e) => '${e.key}: ${e.value} sets (${(e.value / muscleGroupCounts.values.reduce((a, b) => a + b) * 100).toStringAsFixed(1)}%)').join('\n')}
+
+TOP EXERCISES:
+${exerciseFrequency.entries.toList()..sort((a, b) => b.value.compareTo(a.value))}
+${exerciseFrequency.entries.take(10).map((e) => '${e.key}: ${e.value} times').join('\n')}
+
+VOLUME TREND (last 10 workouts):
+${volumeTrend.asMap().entries.map((e) => 'Workout ${e.key + 1}: ${e.value.toStringAsFixed(0)}kg').join('\n')}
+
+Provide a professional evaluation in JSON format:
+{
+  "overall_assessment": "2-3 paragraph honest assessment of their training",
+  "detected_goal": "Strength/Hypertrophy/Endurance/Skill/General Fitness - explain why you think this based on their data",
+  "strengths": "What they're doing well (be brief, 1-2 sentences max)",
+  "weaknesses": "BE DIRECT about problems: neglected muscle groups, poor frequency, imbalances, etc. (2-3 paragraphs with specific numbers)",
+  "muscle_balance": "Detailed analysis of muscle group distribution. Point out SPECIFICALLY which muscles are neglected and by how much percentage",
+  "recommendations": "3-5 SPECIFIC, ACTIONABLE changes they must make. Be direct and use numbers/percentages. Example: 'You're completely neglecting posterior chain (only 12% of total volume). Add 2 dedicated leg days per week focusing on hamstrings and glutes.'"
+}
+
+Remember: Be PROFESSIONAL but DIRECT. Don't be afraid to point out serious problems. The user wants honest feedback to improve.''';
+
+      final response = await _groqService.chatJson(
+        prompt: userPrompt,
+        systemPrompt: systemPrompt,
+      );
+
+      // Parse and return evaluation
+      String cleanResponse = response.trim();
+      if (cleanResponse.startsWith('```json')) {
+        cleanResponse = cleanResponse.replaceFirst('```json', '').replaceAll('```', '').trim();
+      }
+      
+      final jsonData = jsonDecode(cleanResponse) as Map<String, dynamic>;
+      
+      print('✅ Progress evaluation completed');
+      return jsonData;
+    } catch (e) {
+      throw Exception('Failed to evaluate progress: $e');
+    }
+  }
+
   /// Optimize workout folder with all templates
   Future<Map<String, dynamic>> optimizeWorkoutFolder(String folderId) async {
     try {
