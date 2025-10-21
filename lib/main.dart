@@ -13,6 +13,22 @@ import 'src/core/services/notification_service.dart'
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Log deployment information
+  final now = DateTime.now();
+  const version = String.fromEnvironment('APP_VERSION', defaultValue: '1.0.0');
+  const buildDate = String.fromEnvironment('BUILD_DATE', defaultValue: '');
+  const buildNumber = String.fromEnvironment('BUILD_NUMBER', defaultValue: 'dev');
+  
+  print('');
+  print('═══════════════════════════════════════════════════');
+  print('🚀 HERQ - AI-Powered Workout Tracker');
+  print('📦 Version: $version+$buildNumber');
+  print('📅 Deployed at: ${buildDate.isNotEmpty ? buildDate : now.toIso8601String()}');
+  print('🌍 Platform: ${kIsWeb ? "Web" : "Mobile"}');
+  print('👤 Author: Klaus Andrade');
+  print('═══════════════════════════════════════════════════');
+  print('');
+
   // Load environment variables (gracefully handle missing .env file)
   try {
     await dotenv.load();
