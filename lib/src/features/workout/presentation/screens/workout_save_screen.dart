@@ -45,6 +45,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
   late TextEditingController _notesController;
   String? _photoPath;
   bool _postToSocial = false;
+  bool _isPickingImage = false; // Prevent multiple simultaneous picker calls
   final ImagePicker _imagePicker = ImagePicker();
 
   @override
@@ -62,25 +63,70 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
+    // Prevent multiple simultaneous picker calls (iOS issue)
+    if (_isPickingImage) {
+      print('⚠️ Image picker already in progress, ignoring');
+      return;
+    }
+    
+    if (!mounted) return;
+    setState(() => _isPickingImage = true);
+    
+    XFile? image;
+    
     try {
-      final XFile? image = await _imagePicker.pickImage(
+      print('📸 Opening image picker (source: $source)...');
+      image = await _imagePicker.pickImage(
         source: source,
-        maxWidth: 1920,
-        maxHeight: 1080,
-        imageQuality: 85,
+        maxWidth: 1024, // Smaller for faster HEIC conversion on iOS
+        maxHeight: 1024,
+        imageQuality: 60, // Lower quality for faster processing
+        requestFullMetadata: false, // Faster on iOS
+      ).timeout(
+        const Duration(seconds: 45), // Timeout for stuck HEIC conversions
+        onTimeout: () {
+          print('⚠️ Image picker timed out after 45s');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Photo upload failed. iPhone camera photos (HEIC) may not work. Try using a screenshot or edit the photo first.'),
+                duration: Duration(seconds: 5),
+              ),
+            );
+          }
+          return null;
+        },
       );
 
+      print('📸 Image picker result: ${image != null ? "image selected" : "cancelled"}');
       if (image != null) {
-        setState(() {
-          _photoPath = image.path;
-        });
+        print('📸 Image path: ${image.path}');
       }
     } catch (e) {
-      if (mounted) {
+      print('❌ Error opening image picker: $e');
+      image = null;
+      
+      // Don't show error for user cancellation
+      if (!e.toString().contains('Cancelled') && 
+          !e.toString().contains('multiple_request') && 
+          mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error picking image: $e')),
         );
       }
+    } finally {
+      print('📸 Resetting picker state');
+      if (mounted) {
+        setState(() => _isPickingImage = false);
+      }
+    }
+    
+    // Process the selected image (outside try-catch to ensure flag is reset)
+    if (image != null && mounted) {
+      setState(() {
+        _photoPath = image!.path;
+      });
+      print('✅ Image set successfully');
     }
   }
 

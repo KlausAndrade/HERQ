@@ -68,5 +68,11 @@
 	<string>35ff7e58ab93ccacbdb17a5da2e6d95f</string>
 	<key>FacebookDisplayName</key>
 	<string>HERQ</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>HERQ needs access to your photo library to share workout photos and update your profile picture.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>HERQ needs access to save workout photos to your photo library.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>HERQ needs access to your camera to take workout photos and update your profile picture.</string>
 </dict>
 </plist>

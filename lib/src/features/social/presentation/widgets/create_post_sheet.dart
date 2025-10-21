@@ -25,10 +25,11 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
   final _imagePicker = ImagePicker();
   XFile? _selectedImage;
   bool _isPosting = false;
+  bool _isPickingImage = false; // Prevent multiple simultaneous picker calls
 
   // Image validation constants
   static const int _maxImageSizeBytes = 10 * 1024 * 1024; // 10MB
-  static const int _maxDimension = 2048;
+  static const int _maxDimension = 1024; // Much smaller for faster HEIC conversion on iOS
 
   @override
   void dispose() {
@@ -220,8 +221,14 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
           Row(
             children: [
               OutlinedButton.icon(
-                onPressed: _isPosting ? null : _pickImage,
-                icon: const Icon(Icons.image),
+                onPressed: (_isPosting || _isPickingImage) ? null : _pickImage,
+                icon: _isPickingImage 
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.image),
                 label: const Text('Add Photo'),
               ),
               const Spacer(),
@@ -244,43 +251,114 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
   }
 
   Future<void> _pickImage() async {
+    // Prevent multiple simultaneous picker calls (iOS issue)
+    if (_isPickingImage) {
+      print('⚠️ Image picker already in progress, ignoring');
+      return;
+    }
+    
+    if (!mounted) return;
+    setState(() => _isPickingImage = true);
+    
+    XFile? image;
+    
     try {
-      final image = await _imagePicker.pickImage(
+      print('📸 Opening image picker...');
+      image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
         maxWidth: _maxDimension.toDouble(),
         maxHeight: _maxDimension.toDouble(),
-        imageQuality: 85,
+        imageQuality: 60, // Very low quality for faster iOS HEIC conversion
+        requestFullMetadata: false, // Faster on iOS
+      ).timeout(
+        const Duration(seconds: 45), // Shorter timeout - if it takes this long, it's stuck
+        onTimeout: () {
+          print('⚠️ Image picker timed out after 45s - HEIC conversion failed');
+          if (mounted) {
+            NotificationService()
+                .showInAppNotification(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  title: 'Photo upload failed',
+                  body: 'iPhone camera photos (HEIC) are not supported. Please use: Screenshots (PNG) or Edit the photo first in Photos app.',
+                )
+                .catchError((_) {});
+          }
+          return null;
+        },
       );
 
+      print('📸 Image picker result: ${image != null ? "image selected" : "cancelled"}');
       if (image != null) {
-        // Validate image size
+        print('📸 Image path: ${image.path}');
+        print('📸 Image name: ${image.name}');
+      }
+    } catch (e) {
+      print('❌ Error opening image picker: $e');
+      image = null;
+      
+      // Don't show error for user cancellation or multiple request errors
+      if (!e.toString().contains('Cancelled') && 
+          !e.toString().contains('multiple_request')) {
+        if (mounted) {
+          NotificationService()
+              .showInAppNotification(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: 'Error picking image',
+                body: 'Failed to open image picker',
+              )
+              .catchError((_) {});
+        }
+      }
+    } finally {
+      // Always reset the flag, even if there was an error
+      print('📸 Resetting picker state (finally block)');
+      if (mounted) {
+        setState(() => _isPickingImage = false);
+      }
+    }
+    
+    // Process the selected image (outside try-catch to ensure flag is reset)
+    if (image != null && mounted) {
+      try {
+        print('📸 Reading image file...');
         final bytes = await image.readAsBytes();
         final fileSize = bytes.length;
+        final fileSizeMB = (fileSize / (1024 * 1024)).toStringAsFixed(2);
+        
+        print('📸 Image size: ${fileSizeMB}MB (${image.path.split('.').last} format)');
 
         if (fileSize > _maxImageSizeBytes) {
+          print('⚠️ Image too large: ${fileSizeMB}MB > 10MB');
           if (mounted) {
             NotificationService()
                 .showInAppNotification(
                   id: DateTime.now().millisecondsSinceEpoch.toString(),
                   title: 'Image too large',
-                  body: 'Maximum size is 10MB',
+                  body: 'Image is ${fileSizeMB}MB. Maximum size is 10MB. Try a different photo.',
                 )
                 .catchError((_) {});
           }
           return;
         }
 
-        setState(() => _selectedImage = image);
-      }
-    } catch (e) {
-      if (mounted) {
-        NotificationService()
-            .showInAppNotification(
-              id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Error picking image',
-              body: '$e',
-            )
-            .catchError((_) {});
+        print('📸 Image validated, setting state');
+        if (mounted) {
+          setState(() {
+            _selectedImage = image;
+          });
+          print('✅ Image set successfully');
+        }
+      } catch (e) {
+        print('❌ Error processing image: $e');
+        if (mounted) {
+          NotificationService()
+              .showInAppNotification(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: 'Error processing image',
+                body: 'Could not read image file. Try a different photo.',
+              )
+              .catchError((_) {});
+        }
       }
     }
   }

@@ -25,6 +25,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   bool _isLoading = false;
   bool _isPrivate = false;
+  bool _isPickingImage = false; // Prevent multiple simultaneous picker calls
   Uint8List? _imageBytes;
   String? _currentAvatarUrl;
 
@@ -56,28 +57,52 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1024,
-      maxHeight: 1024,
-      imageQuality: 85,
-    );
-
-    if (image != null) {
-      final bytes = await image.readAsBytes();
-
-      // Compress image
-      final compressed = await FlutterImageCompress.compressWithList(
-        bytes,
-        minWidth: 512,
-        minHeight: 512,
-        quality: 85,
+    // Prevent multiple simultaneous picker calls (iOS issue)
+    if (_isPickingImage) {
+      print('⚠️ Image picker already in progress, ignoring');
+      return;
+    }
+    
+    setState(() => _isPickingImage = true);
+    
+    try {
+      final picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
       );
 
-      setState(() {
-        _imageBytes = Uint8List.fromList(compressed);
-      });
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+
+        // Compress image
+        final compressed = await FlutterImageCompress.compressWithList(
+          bytes,
+          minWidth: 512,
+          minHeight: 512,
+          quality: 85,
+        );
+
+        if (mounted) {
+          setState(() {
+            _imageBytes = Uint8List.fromList(compressed);
+          });
+        }
+      }
+    } catch (e) {
+      print('❌ Error picking image: $e');
+      // Don't show error for user cancellation
+      if (!e.toString().contains('Cancelled by a second request') && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error picking image: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isPickingImage = false);
+      }
     }
   }
 
