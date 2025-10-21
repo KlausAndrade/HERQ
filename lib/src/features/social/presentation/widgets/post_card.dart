@@ -215,7 +215,7 @@ class PostCard extends ConsumerWidget {
                     icon: const Icon(Icons.fitness_center, size: 22),
                     onPressed: () => _showWorkoutDetails(context, ref),
                     visualDensity: VisualDensity.compact,
-                    tooltip: 'View Workout',
+                    tooltip: S.of(context)!.viewWorkout,
                   ),
 
                 const Spacer(),
@@ -273,6 +273,8 @@ class PostCard extends ConsumerWidget {
       ref.invalidate(isFollowingProvider(post.userId));
       ref.invalidate(feedPostsProvider);
       
+      // Note: Using hardcoded English for now as we don't have context
+      // TODO: Add follow/unfollow translations
       NotificationService()
           .showInAppNotification(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -411,14 +413,14 @@ class PostCard extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            workoutData['workoutName'] ?? 'Workout Details',
+                            workoutData['workoutName'] ?? S.of(context)!.workoutDetails,
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
                           Text(
-                            post.userName ?? 'User',
+                            post.userName ?? S.of(context)!.user,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Colors.white.withOpacity(0.9),
                             ),
@@ -459,23 +461,27 @@ class PostCard extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _StatChip(
+                      context: context,
                       icon: Icons.repeat,
-                      label: 'Sets',
+                      label: S.of(context)!.sets,
                       value: workoutData['totalSets'] ?? '0',
                     ),
                     _StatChip(
+                      context: context,
                       icon: Icons.fitness_center,
-                      label: 'Reps',
+                      label: S.of(context)!.reps,
                       value: workoutData['totalReps'] ?? '0',
                     ),
                     _StatChip(
+                      context: context,
                       icon: Icons.timer,
-                      label: 'Duration',
+                      label: S.of(context)!.duration,
                       value: workoutData['duration'] ?? '0m',
                     ),
                     _StatChip(
+                      context: context,
                       icon: Icons.scale,
-                      label: 'Volume',
+                      label: S.of(context)!.totalVolume,
                       value: workoutData['volume'] ?? '0kg',
                     ),
                   ],
@@ -490,7 +496,7 @@ class PostCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Exercise Breakdown',
+                        S.of(context)!.exerciseBreakdown,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -512,7 +518,7 @@ class PostCard extends ConsumerWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'No exercise details available',
+                                S.of(context)!.noExerciseDetailsAvailable,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
@@ -546,7 +552,7 @@ class PostCard extends ConsumerWidget {
                       child: OutlinedButton.icon(
                         onPressed: () => _saveAsTemplate(context, ref, workoutData),
                         icon: const Icon(Icons.bookmark_border),
-                        label: const Text('Save Template'),
+                        label: Text(S.of(context)!.saveTemplate),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -561,7 +567,7 @@ class PostCard extends ConsumerWidget {
                       child: FilledButton.icon(
                         onPressed: () => _startWorkout(context, ref, workoutData),
                         icon: const Icon(Icons.play_arrow),
-                        label: const Text('Start Workout'),
+                        label: Text(S.of(context)!.startWorkout),
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -656,24 +662,30 @@ class PostCard extends ConsumerWidget {
       );
       
       // Show success notification
-      NotificationService()
-          .showInAppNotification(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            title: 'Template Saved',
-            body: 'Workout saved as "$templateName" template!',
-          )
-          .catchError((_) {});
+      if (context.mounted) {
+        final l10n = S.of(context)!;
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: l10n.templateSaved,
+              body: l10n.templateSavedSuccess(templateName),
+            )
+            .catchError((_) {});
+      }
       
       print('✅ Template saved: $templateName with ${exerciseIds.length} exercises');
     } catch (e) {
       print('❌ Error saving template: $e');
-      NotificationService()
-          .showInAppNotification(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            title: 'Error',
-            body: 'Failed to save template: $e',
-          )
-          .catchError((_) {});
+      if (context.mounted) {
+        final l10n = S.of(context)!;
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: l10n.error,
+              body: l10n.failedToSaveTemplate,
+            )
+            .catchError((_) {});
+      }
     }
   }
 
@@ -681,16 +693,17 @@ class PostCard extends ConsumerWidget {
   Future<String?> _showTemplateNameDialog(BuildContext context) async {
     final controller = TextEditingController();
     final formKey = GlobalKey<FormState>();
+    final l10n = S.of(context)!;
     
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.bookmark_add),
-            SizedBox(width: 12),
-            Text('Save as Template'),
+            const Icon(Icons.bookmark_add),
+            const SizedBox(width: 12),
+            Text(l10n.saveAsTemplate),
           ],
         ),
         content: Form(
@@ -699,23 +712,23 @@ class PostCard extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Enter a name for this workout template:',
+                l10n.enterTemplateName,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: controller,
-                decoration: const InputDecoration(
-                  labelText: 'Template Name',
-                  hintText: 'e.g., Leg Day - Classic',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n.templateName,
+                  hintText: l10n.templateNameHint,
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a template name';
+                    return l10n.pleaseEnterTemplateName;
                   }
                   if (value.trim().length < 3) {
-                    return 'Template name must be at least 3 characters';
+                    return l10n.templateNameMinLength;
                   }
                   return null;
                 },
@@ -728,7 +741,7 @@ class PostCard extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -736,7 +749,7 @@ class PostCard extends ConsumerWidget {
                 Navigator.pop(context, controller.text.trim());
               }
             },
-            child: const Text('Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -920,12 +933,13 @@ class PostCard extends ConsumerWidget {
         );
         
         if (context.mounted) {
+          final l10n = S.of(context)!;
           context.go('/active-workout');
           NotificationService()
               .showInAppNotification(
                 id: DateTime.now().millisecondsSinceEpoch.toString(),
-                title: 'Workout Started',
-                body: 'Starting $workoutName with ${exerciseIds.length} exercises...',
+                title: l10n.workoutStarted,
+                body: l10n.startingWorkout(workoutName, exerciseIds.length),
               )
               .catchError((_) {});
         }
@@ -933,11 +947,12 @@ class PostCard extends ConsumerWidget {
     } catch (e) {
       print('❌ Error starting workout: $e');
       if (context.mounted) {
+        final l10n = S.of(context)!;
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Error',
-              body: 'Failed to start workout: $e',
+              title: l10n.error,
+              body: l10n.failedToStartWorkout,
             )
             .catchError((_) {});
       }
@@ -1005,6 +1020,8 @@ class PostCard extends ConsumerWidget {
       // Navigate to active workout screen
       goRouter.go('/active-workout');
       
+      // Note: Can't use context here as dialog is closed, using hardcoded English
+      // The notification will use device locale automatically if we had access to l10n
       NotificationService()
           .showInAppNotification(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -1232,36 +1249,38 @@ class PostCard extends ConsumerWidget {
 /// Stat chip widget for workout summary
 class _StatChip extends StatelessWidget {
   const _StatChip({
+    required this.context,
     required this.icon,
     required this.label,
     required this.value,
   });
 
+  final BuildContext context;
   final IconData icon;
   final String label;
   final String value;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext buildContext) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
           icon,
           size: 20,
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(buildContext).colorScheme.primary,
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          style: Theme.of(buildContext).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          style: Theme.of(buildContext).textTheme.bodySmall?.copyWith(
+            color: Theme.of(buildContext).colorScheme.onSurfaceVariant,
           ),
         ),
       ],
@@ -1279,14 +1298,16 @@ class _ExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
+    
     // Handle both string and int types from database
     final setsRaw = exercise['sets'];
     final repsRaw = exercise['reps'];
     
     final sets = setsRaw is int ? setsRaw : (int.tryParse(setsRaw.toString()) ?? 0);
     final reps = repsRaw is int ? repsRaw : (int.tryParse(repsRaw.toString()) ?? 0);
-    final weight = exercise['weight'] as String? ?? 'Bodyweight';
-    final name = exercise['name'] as String? ?? 'Exercise';
+    final weight = exercise['weight'] as String? ?? l10n.bodyweight;
+    final name = exercise['name'] as String? ?? l10n.exercise;
     
     return Container(
       padding: const EdgeInsets.all(12),
@@ -1324,7 +1345,7 @@ class _ExerciseCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '$sets sets × $reps reps',
+                  '$sets ${l10n.sets} × $reps ${l10n.reps}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

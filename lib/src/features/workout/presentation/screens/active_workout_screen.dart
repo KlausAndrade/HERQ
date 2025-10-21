@@ -1136,11 +1136,12 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       
       // Show success notification
       if (mounted) {
+        final l10n = S.of(context)!;
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Posted to social feed',
-              body: 'Your workout has been shared!',
+              title: l10n.postedToSocialFeed,
+              body: l10n.yourWorkoutHasBeenShared,
             )
             .catchError((_) {});
       }
@@ -1148,11 +1149,12 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       print('❌ Error creating social post: $e');
       print('Stack trace: $stackTrace');
       if (mounted) {
+        final l10n = S.of(context)!;
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              title: 'Failed to share workout',
-              body: 'Error: ${e.toString()}',
+              title: l10n.failedToShareWorkout,
+              body: l10n.error,
             )
             .catchError((_) {});
       }

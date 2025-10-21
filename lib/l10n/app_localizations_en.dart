@@ -366,10 +366,10 @@ class SEn extends S {
   String get removeExercise => 'Remove Exercise';
 
   @override
-  String get sets => 'Sets';
+  String get sets => 'sets';
 
   @override
-  String get reps => 'Reps';
+  String get reps => 'reps';
 
   @override
   String get weight => 'Weight';
@@ -1989,4 +1989,66 @@ class SEn extends S {
 
   @override
   String get failedToOptimizeFolder => 'Failed to optimize folder';
+
+  @override
+  String get viewWorkout => 'View Workout';
+
+  @override
+  String get workoutDetails => 'Workout Details';
+
+  @override
+  String get noExerciseDetailsAvailable => 'No exercise details available';
+
+  @override
+  String get saveTemplate => 'Save Template';
+
+  @override
+  String get enterTemplateName => 'Enter a name for this workout template:';
+
+  @override
+  String get templateName => 'Template Name';
+
+  @override
+  String get templateNameHint => 'e.g., Leg Day - Classic';
+
+  @override
+  String get pleaseEnterTemplateName => 'Please enter a template name';
+
+  @override
+  String get templateNameMinLength =>
+      'Template name must be at least 3 characters';
+
+  @override
+  String get templateSaved => 'Template Saved';
+
+  @override
+  String templateSavedSuccess(String templateName) {
+    return 'Workout saved as \"$templateName\" template!';
+  }
+
+  @override
+  String get workoutStarted => 'Workout Started';
+
+  @override
+  String startingWorkout(String workoutName, int count) {
+    return 'Starting $workoutName with $count exercises...';
+  }
+
+  @override
+  String get noWorkoutDataFound => 'No workout data found';
+
+  @override
+  String get postedToSocialFeed => 'Posted to social feed';
+
+  @override
+  String get yourWorkoutHasBeenShared => 'Your workout has been shared!';
+
+  @override
+  String get failedToShareWorkout => 'Failed to share workout';
+
+  @override
+  String get shareToSocial => 'Share to social';
+
+  @override
+  String get user => 'User';
 }

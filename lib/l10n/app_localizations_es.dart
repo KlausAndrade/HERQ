@@ -374,10 +374,10 @@ class SEs extends S {
   String get removeExercise => 'Eliminar Ejercicio';
 
   @override
-  String get sets => 'Series';
+  String get sets => 'series';
 
   @override
-  String get reps => 'Repeticiones';
+  String get reps => 'repeticiones';
 
   @override
   String get weight => 'Peso';
@@ -766,7 +766,7 @@ class SEs extends S {
   String get cable => 'Cable';
 
   @override
-  String get bodyweight => 'Peso Corporal';
+  String get bodyweight => 'Peso corporal';
 
   @override
   String get bands => 'Bandas';
@@ -2007,4 +2007,70 @@ class SEs extends S {
 
   @override
   String get failedToOptimizeFolder => 'Error al optimizar carpeta';
+
+  @override
+  String get viewWorkout => 'Ver Entrenamiento';
+
+  @override
+  String get workoutDetails => 'Detalles del Entrenamiento';
+
+  @override
+  String get noExerciseDetailsAvailable =>
+      'No hay detalles de ejercicios disponibles';
+
+  @override
+  String get saveTemplate => 'Guardar Plantilla';
+
+  @override
+  String get enterTemplateName =>
+      'Ingresa un nombre para esta plantilla de entrenamiento:';
+
+  @override
+  String get templateName => 'Nombre de Plantilla';
+
+  @override
+  String get templateNameHint => 'ej: Día de Pierna - Clásico';
+
+  @override
+  String get pleaseEnterTemplateName =>
+      'Por favor, ingresa un nombre para la plantilla';
+
+  @override
+  String get templateNameMinLength =>
+      'El nombre de la plantilla debe tener al menos 3 caracteres';
+
+  @override
+  String get templateSaved => 'Plantilla Guardada';
+
+  @override
+  String templateSavedSuccess(String templateName) {
+    return '¡Entrenamiento guardado como plantilla \"$templateName\"!';
+  }
+
+  @override
+  String get workoutStarted => 'Entrenamiento Iniciado';
+
+  @override
+  String startingWorkout(String workoutName, int count) {
+    return 'Iniciando $workoutName con $count ejercicios...';
+  }
+
+  @override
+  String get noWorkoutDataFound => 'No se encontraron datos de entrenamiento';
+
+  @override
+  String get postedToSocialFeed => 'Publicado en el feed social';
+
+  @override
+  String get yourWorkoutHasBeenShared =>
+      '¡Tu entrenamiento ha sido compartido!';
+
+  @override
+  String get failedToShareWorkout => 'Error al compartilhar entrenamiento';
+
+  @override
+  String get shareToSocial => 'Compartir en social';
+
+  @override
+  String get user => 'Usuario';
 }

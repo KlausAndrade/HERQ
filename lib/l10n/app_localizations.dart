@@ -810,13 +810,13 @@ abstract class S {
   /// No description provided for @sets.
   ///
   /// In en, this message translates to:
-  /// **'Sets'**
+  /// **'sets'**
   String get sets;
 
   /// No description provided for @reps.
   ///
   /// In en, this message translates to:
-  /// **'Reps'**
+  /// **'reps'**
   String get reps;
 
   /// No description provided for @weight.
@@ -3926,6 +3926,120 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Failed to optimize folder'**
   String get failedToOptimizeFolder;
+
+  /// No description provided for @viewWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'View Workout'**
+  String get viewWorkout;
+
+  /// No description provided for @workoutDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Details'**
+  String get workoutDetails;
+
+  /// No description provided for @noExerciseDetailsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercise details available'**
+  String get noExerciseDetailsAvailable;
+
+  /// No description provided for @saveTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Template'**
+  String get saveTemplate;
+
+  /// No description provided for @enterTemplateName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name for this workout template:'**
+  String get enterTemplateName;
+
+  /// No description provided for @templateName.
+  ///
+  /// In en, this message translates to:
+  /// **'Template Name'**
+  String get templateName;
+
+  /// No description provided for @templateNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Leg Day - Classic'**
+  String get templateNameHint;
+
+  /// No description provided for @pleaseEnterTemplateName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a template name'**
+  String get pleaseEnterTemplateName;
+
+  /// No description provided for @templateNameMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Template name must be at least 3 characters'**
+  String get templateNameMinLength;
+
+  /// No description provided for @templateSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Template Saved'**
+  String get templateSaved;
+
+  /// No description provided for @templateSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout saved as \"{templateName}\" template!'**
+  String templateSavedSuccess(String templateName);
+
+  /// No description provided for @workoutStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Started'**
+  String get workoutStarted;
+
+  /// No description provided for @startingWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting {workoutName} with {count} exercises...'**
+  String startingWorkout(String workoutName, int count);
+
+  /// No description provided for @noWorkoutDataFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No workout data found'**
+  String get noWorkoutDataFound;
+
+  /// No description provided for @postedToSocialFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted to social feed'**
+  String get postedToSocialFeed;
+
+  /// No description provided for @yourWorkoutHasBeenShared.
+  ///
+  /// In en, this message translates to:
+  /// **'Your workout has been shared!'**
+  String get yourWorkoutHasBeenShared;
+
+  /// No description provided for @failedToShareWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to share workout'**
+  String get failedToShareWorkout;
+
+  /// No description provided for @shareToSocial.
+  ///
+  /// In en, this message translates to:
+  /// **'Share to social'**
+  String get shareToSocial;
+
+  /// No description provided for @user.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get user;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

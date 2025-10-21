@@ -373,10 +373,10 @@ class SPt extends S {
   String get removeExercise => 'Remover Exercício';
 
   @override
-  String get sets => 'Séries';
+  String get sets => 'séries';
 
   @override
-  String get reps => 'Repetições';
+  String get reps => 'repetições';
 
   @override
   String get weight => 'Peso';
@@ -762,7 +762,7 @@ class SPt extends S {
   String get cable => 'Cabo';
 
   @override
-  String get bodyweight => 'Peso Corporal';
+  String get bodyweight => 'Peso corporal';
 
   @override
   String get bands => 'Elásticos';
@@ -1877,7 +1877,7 @@ class SPt extends S {
       'Falha ao analisar a resposta da IA. A IA pode ter retornado JSON inválido. Por favor tente novamente.';
 
   @override
-  String get failedToSaveTemplate => 'Falha ao salvar plantilla';
+  String get failedToSaveTemplate => 'Falha ao salvar modelo';
 
   @override
   String get failedToStartWorkout => 'Falha ao iniciar treino';
@@ -1899,7 +1899,7 @@ class SPt extends S {
       'Seu treino personalizado foi gerado baseado no seu histórico de treinos.';
 
   @override
-  String get saveAsTemplate => 'Salvar como Plantilla';
+  String get saveAsTemplate => 'Salvar como Modelo';
 
   @override
   String get saveOptimizedTemplates => 'Salvar Plantillas Otimizadas';
@@ -1998,4 +1998,68 @@ class SPt extends S {
 
   @override
   String get failedToOptimizeFolder => 'Falha ao otimizar pasta';
+
+  @override
+  String get viewWorkout => 'Ver Treino';
+
+  @override
+  String get workoutDetails => 'Detalhes do Treino';
+
+  @override
+  String get noExerciseDetailsAvailable =>
+      'Nenhum detalhe de exercício disponível';
+
+  @override
+  String get saveTemplate => 'Salvar Modelo';
+
+  @override
+  String get enterTemplateName => 'Digite um nome para este modelo de treino:';
+
+  @override
+  String get templateName => 'Nome do Modelo';
+
+  @override
+  String get templateNameHint => 'ex: Dia de Perna - Clássico';
+
+  @override
+  String get pleaseEnterTemplateName =>
+      'Por favor, digite um nome para o modelo';
+
+  @override
+  String get templateNameMinLength =>
+      'O nome do modelo deve ter pelo menos 3 caracteres';
+
+  @override
+  String get templateSaved => 'Modelo Salvo';
+
+  @override
+  String templateSavedSuccess(String templateName) {
+    return 'Treino salvo como modelo \"$templateName\"!';
+  }
+
+  @override
+  String get workoutStarted => 'Treino Iniciado';
+
+  @override
+  String startingWorkout(String workoutName, int count) {
+    return 'Iniciando $workoutName com $count exercícios...';
+  }
+
+  @override
+  String get noWorkoutDataFound => 'Nenhum dado de treino encontrado';
+
+  @override
+  String get postedToSocialFeed => 'Publicado no feed social';
+
+  @override
+  String get yourWorkoutHasBeenShared => 'Seu treino foi compartilhado!';
+
+  @override
+  String get failedToShareWorkout => 'Falha ao compartilhar treino';
+
+  @override
+  String get shareToSocial => 'Compartilhar no social';
+
+  @override
+  String get user => 'Usuário';
 }
