@@ -1,97 +1,88 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/providers/auth_provider.dart';
-
-/// Web-only workout templates provider
-final workoutTemplatesWebProvider =
-    StreamProvider<List<Map<String, dynamic>>>((ref) {
-  if (!kIsWeb) {
-    throw UnimplementedError(
-      'Use mobile template provider for non-web platforms',
-    );
-  }
-
-  final supabase = ref.watch(supabaseClientProvider);
+/// Provider for fetching workout templates from Supabase (web only)
+final templatesWebProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final supabase = Supabase.instance.client;
   final user = supabase.auth.currentUser;
-
+  
   if (user == null) {
-    return Stream.value([]);
+    print('❌ No authenticated user for template fetch');
+    return [];
   }
-
-  return supabase
-      .from('workout_templates')
-      .stream(primaryKey: ['id'])
-      .eq('user_id', user.id)
-      .order('name')
-      .map(List<Map<String, dynamic>>.from);
+  
+  try {
+    // Fetch user's templates and default templates
+    final response = await supabase
+        .from('workout_templates')
+        .select()
+        .or('user_id.eq.${user.id},is_default.eq.true')
+        .order('sort_order');
+    
+    return List<Map<String, dynamic>>.from(response);
+  } catch (e) {
+    print('❌ Failed to fetch templates from Supabase: $e');
+    return [];
+  }
 });
 
-/// Get single template by ID
-final templateByIdWebProvider =
-    FutureProvider.family<Map<String, dynamic>?, String>((ref, id) async {
-  if (!kIsWeb) {
-    throw UnimplementedError(
-      'Use mobile template provider for non-web platforms',
-    );
+/// Provider for fetching template folders from Supabase (web only)
+final foldersWebProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final supabase = Supabase.instance.client;
+  final user = supabase.auth.currentUser;
+  
+  if (user == null) {
+    print('❌ No authenticated user for folder fetch');
+    return [];
   }
-
-  final supabase = ref.watch(supabaseClientProvider);
-  final data = await supabase
-      .from('workout_templates')
-      .select()
-      .eq('id', id)
-      .maybeSingle();
-
-  return data;
+  
+  try {
+    final response = await supabase
+        .from('template_folders')
+        .select()
+        .eq('user_id', user.id)
+        .order('sort_order');
+    
+    return List<Map<String, dynamic>>.from(response);
+  } catch (e) {
+    print('❌ Failed to fetch folders from Supabase: $e');
+    return [];
+  }
 });
 
-/// Create new template
-final createTemplateWebProvider = Provider((ref) {
-  if (!kIsWeb) {
-    throw UnimplementedError(
-      'Use mobile template provider for non-web platforms',
-    );
+/// Provider for templates in a specific folder (web only)
+final templatesInFolderWebProvider =
+    FutureProvider.family<List<Map<String, dynamic>>, String?>((ref, folderId) async {
+  final supabase = Supabase.instance.client;
+  final user = supabase.auth.currentUser;
+  
+  if (user == null) {
+    return [];
   }
-
-  final supabase = ref.watch(supabaseClientProvider);
-
-  return ({
-    required String name,
-    required List<String> exerciseIds,
-    String? description,
-  }) async {
-    final user = supabase.auth.currentUser;
-    if (user == null) throw Exception('Not authenticated');
-
-    await supabase.from('workout_templates').insert({
-      'id': const Uuid().v4(),
-      'user_id': user.id,
-      'name': name,
-      'description': description,
-      'exercise_ids': exerciseIds,
-    });
-
-    // Invalidate to refresh
-    ref.invalidate(workoutTemplatesWebProvider);
-  };
-});
-
-/// Delete template
-final deleteTemplateWebProvider = Provider((ref) {
-  if (!kIsWeb) {
-    throw UnimplementedError(
-      'Use mobile template provider for non-web platforms',
-    );
+  
+  try {
+    if (folderId == null) {
+      // Templates not in any folder
+      final response = await supabase
+          .from('workout_templates')
+          .select()
+          .eq('user_id', user.id)
+          .isFilter('folder_id', null)
+          .order('sort_order');
+      
+      return List<Map<String, dynamic>>.from(response);
+    } else {
+      // Templates in specific folder
+      final response = await supabase
+          .from('workout_templates')
+          .select()
+          .eq('folder_id', folderId)
+          .order('sort_order');
+      
+      return List<Map<String, dynamic>>.from(response);
+    }
+  } catch (e) {
+    print('❌ Failed to fetch templates in folder: $e');
+    return [];
   }
-
-  final supabase = ref.watch(supabaseClientProvider);
-
-  return (String templateId) async {
-    await supabase.from('workout_templates').delete().eq('id', templateId);
-
-    // Invalidate to refresh
-    ref.invalidate(workoutTemplatesWebProvider);
-  };
 });

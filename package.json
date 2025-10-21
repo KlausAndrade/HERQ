@@ -6,7 +6,7 @@
     "dev": "./build.sh dev",
     "emulator": "./build.sh emulator",
     "apk": "./build.sh apk",
-    "android": "./build.sh android", 
+    "android": "./build.sh android",
     "ios": "./build.sh ios",
     "apple": "./build.sh apple",
     "web": "./run_web.sh",
@@ -21,7 +21,9 @@
     "build:web": "./build_web.sh",
     "deploy:web": "./deploy_web.sh",
     "fix": "./scripts/fix_ios.sh",
-    "fix:ios": "./scripts/fix_ios.sh"
+    "fix:ios": "./scripts/fix_ios.sh",
+    "cleanup:exercises": "node scripts/cleanup_exercises.js",
+    "cleanup:exercises:confirm": "node scripts/cleanup_exercises.js --confirm"
   },
   "keywords": [
     "flutter",
@@ -41,6 +43,9 @@
     "flutter": ">=3.0.0"
   },
   "devDependencies": {
+    "@supabase/supabase-js": "^2.76.0",
+    "dotenv": "^17.2.3",
+    "tslib": "^2.8.1",
     "flutter": "latest"
   }
 }

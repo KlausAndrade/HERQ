@@ -173,7 +173,7 @@ class _WorkoutTemplatesWithFoldersScreenState
                 ),
               // Unfoldered Templates - wrapped in DragTarget to allow dropping
               unfoldered.when(
-                data: _buildUncategorizedSection,
+                data: (templates) => _buildUncategorizedSection(templates as List<WorkoutTemplate>),
                 loading: () => const SizedBox.shrink(),
                 error: (_, __) => const SizedBox.shrink(),
               ),

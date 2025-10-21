@@ -4,28 +4,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../core/database/database.dart';
 import '../core/providers/database_provider.dart';
+import '../features/workout/presentation/providers/template_web_provider.dart';
 
-// Provider for all template folders
-final templateFoldersProvider = StreamProvider<List<TemplateFolder>>((ref) {
-  // On web, always return empty list - no local database access
+// Provider for all template folders  
+final templateFoldersProvider = StreamProvider<List<dynamic>>((ref) async* {
+  // On web, fetch from Supabase
   if (kIsWeb) {
-    return Stream.value([]);
+    final folders = await ref.watch(foldersWebProvider.future);
+    yield folders;
+    return;
   }
   
   final database = ref.watch(databaseProvider);
   
   // On mobile, if database is null, return empty list
   if (database == null) {
-    return Stream.value([]);
+    yield [];
+    return;
   }
   
   try {
-    return (database.select(database.templateFolders)
+    await for (final folders in (database.select(database.templateFolders)
           ..orderBy([(t) => OrderingTerm(expression: t.sortOrder)]))
-        .watch();
+        .watch()) {
+      yield folders;
+    }
   } catch (e) {
     print('Error accessing template folders: $e');
-    return Stream.value([]);
+    yield [];
   }
 });
 
@@ -231,35 +237,42 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
 
 // Provider for templates in a specific folder
 final templatesInFolderProvider =
-    StreamProvider.family<List<WorkoutTemplate>, String?>((ref, folderId) {
-  // On web, always return empty list - no local database access
+    StreamProvider.family<List<dynamic>, String?>((ref, folderId) async* {
+  // On web, fetch from Supabase
   if (kIsWeb) {
-    return Stream.value([]);
+    final templates = await ref.watch(templatesInFolderWebProvider(folderId).future);
+    yield templates;
+    return;
   }
   
   final database = ref.watch(databaseProvider);
   
   // On mobile, if database is null, return empty list
   if (database == null) {
-    return Stream.value([]);
+    yield [];
+    return;
   }
-
+  
   try {
     if (folderId == null) {
       // Return templates not in any folder
-      return (database.select(database.workoutTemplates)
+      await for (final templates in (database.select(database.workoutTemplates)
             ..where((t) => t.folderId.isNull())
             ..orderBy([(t) => OrderingTerm(expression: t.sortOrder)]))
-          .watch();
+          .watch()) {
+        yield templates;
+      }
     } else {
       // Return templates in the specified folder
-      return (database.select(database.workoutTemplates)
+      await for (final templates in (database.select(database.workoutTemplates)
             ..where((t) => t.folderId.equals(folderId))
             ..orderBy([(t) => OrderingTerm(expression: t.sortOrder)]))
-          .watch();
+          .watch()) {
+        yield templates;
+      }
     }
   } catch (e) {
     print('Error accessing templates in folder: $e');
-    return Stream.value([]);
+    yield [];
   }
 });
