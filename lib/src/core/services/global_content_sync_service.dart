@@ -34,7 +34,9 @@ class GlobalContentSyncService {
             equipment: exercise['equipment'] ?? 'none',
             instructions: exercise['instructions'] ?? 'No instructions provided',
             tags: List<String>.from(exercise['tags'] ?? []),
-            aliases: Value(exercise['aliases']),
+            aliases: Value(exercise['aliases'] != null 
+                ? List<String>.from(exercise['aliases'])
+                : null),
             isBodyweight: Value(exercise['is_bodyweight'] ?? false),
             exerciseType: Value(exercise['exercise_type'] ?? 'weight_reps'),
             category: Value(exercise['category'] ?? 'strength'),

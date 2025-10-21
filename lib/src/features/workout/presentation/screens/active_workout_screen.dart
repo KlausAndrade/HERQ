@@ -1,11 +1,18 @@
+import 'dart:io';
+
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/database/database.dart';
+import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/widgets/swipe_back_wrapper.dart';
+import '../../../social/presentation/providers/social_providers.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
 import '../providers/active_workout_provider.dart';
@@ -750,7 +757,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 
               // Save the workout
               try {
-                await ref.read(activeWorkoutProvider.notifier).finishWorkout();
+                final savedSummary = await ref.read(activeWorkoutProvider.notifier).finishWorkout();
 
                 // Save notes to database
                 if (notes != null && notes.isNotEmpty) {
@@ -763,8 +770,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                 }
 
                 // Create social post if requested
-                if (postToSocial) {
-                  await _createSocialPost(name, notes, photoPath);
+                if (postToSocial && savedSummary != null) {
+                  await _createSocialPost(savedSummary, notes, photoPath);
                 }
 
                 print('✅ Workout saved successfully!');
@@ -772,7 +779,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                 // Navigate to summary screen with confetti
                 if (context.mounted) {
                   Navigator.of(context).pop(); // Close save screen
-                  context.go('/workout-summary', extra: quickSummary);
+                  context.go('/workout-summary', extra: savedSummary ?? quickSummary);
                 }
               } catch (e) {
                 print('❌ Error saving workout: $e');
@@ -1062,49 +1069,163 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   }
 
   /// Create social media post
-  Future<void> _createSocialPost(String workoutName, String? notes, String? photoPath) async {
+  Future<void> _createSocialPost(WorkoutSummary summary, String? notes, String? photoPath) async {
     try {
-      // TODO(klausandrade): Implement social media posting
-      // This would typically involve:
-      // 1. Creating a formatted post with workout stats
-      // 2. Using social media APIs (Instagram, Twitter, Facebook, etc.)
-      // 3. Handling authentication and permissions
-      // 4. Uploading photos if provided
+      print('📱 Creating social post for ${summary.workoutName}');
       
-      print('📱 Creating social post for $workoutName');
+      final currentUser = ref.read(currentUserProvider);
+      if (currentUser == null) {
+        print('❌ No user authenticated, cannot create post');
+        return;
+      }
+
+      if (summary.sessionId == null) {
+        print('❌ No session ID available, cannot create post');
+        return;
+      }
+
+      // Create a formatted caption with workout stats
+      final caption = _createPostCaption(summary, notes);
       
-      // Create a formatted post
-      final postContent = _createSocialPostContent(workoutName, notes);
-      print('📱 Post content: $postContent');
+      // Upload photo to Supabase storage if provided
+      String? imageUrl;
+      if (photoPath != null && photoPath.isNotEmpty) {
+        imageUrl = await _uploadPostImage(photoPath, currentUser.id);
+      }
+
+      // Create the post in Supabase
+      final supabase = ref.read(supabaseClientProvider);
       
-      // For now, we'll just log the post content
-      // In a real implementation, you would:
-      // 1. Use platform-specific APIs (Instagram Basic Display, Twitter API, etc.)
-      // 2. Handle OAuth authentication
-      // 3. Upload photos to the social platform
-      // 4. Handle API rate limits and errors
+      // Insert post - let Supabase auto-generate ID
+      final response = await supabase.from('posts').insert({
+        'user_id': currentUser.id,
+        'caption': caption,
+        'image_url': imageUrl,
+        'workout_session_id': summary.sessionId,
+        'created_at': DateTime.now().toIso8601String(),
+      }).select().single();
       
-    } catch (e) {
+      final postId = response['id'] as String;
+
+      // Also save to local database (best effort - don't fail if constraints aren't met)
+      try {
+        final db = ref.read(databaseProvider);
+        if (db != null) {
+          await db.into(db.posts).insert(
+            PostsCompanion.insert(
+              id: postId,
+              userId: currentUser.id,
+              caption: caption,
+              imageUrl: Value(imageUrl),
+              workoutSessionId: Value(summary.sessionId),
+              createdAt: Value(DateTime.now()),
+              updatedAt: Value(DateTime.now()),
+            ),
+          );
+        }
+      } catch (dbError) {
+        // Ignore local DB errors - Supabase is source of truth for posts
+        print('⚠️ Could not save post to local DB (non-critical): $dbError');
+      }
+
+      // Refresh social feed
+      ref.invalidate(feedPostsProvider);
+      ref.invalidate(explorePostsProvider);
+
+      print('✅ Social post created successfully');
+      
+      // Show success notification
+      if (mounted) {
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Posted to social feed',
+              body: 'Your workout has been shared!',
+            )
+            .catchError((_) {});
+      }
+    } catch (e, stackTrace) {
       print('❌ Error creating social post: $e');
-      // In a real implementation, you might want to show a user-friendly error
+      print('Stack trace: $stackTrace');
+      if (mounted) {
+        NotificationService()
+            .showInAppNotification(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              title: 'Failed to share workout',
+              body: 'Error: ${e.toString()}',
+            )
+            .catchError((_) {});
+      }
     }
   }
 
-  /// Create formatted content for social media post
-  String _createSocialPostContent(String workoutName, String? notes) {
+  /// Create formatted caption for social post with workout stats
+  String _createPostCaption(WorkoutSummary summary, String? notes) {
     final buffer = StringBuffer();
-    buffer.writeln('💪 Just finished my workout: $workoutName');
+    buffer.write('💪 Just finished ');
+    buffer.writeln(summary.workoutName);
     buffer.writeln('');
     
-    if (notes != null && notes.isNotEmpty) {
-      buffer.writeln('Notes: $notes');
-      buffer.writeln('');
+    // Add workout stats
+    buffer.writeln('📊 ${summary.totalSets} sets • ${summary.totalReps} reps');
+    
+    final duration = summary.duration;
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    if (hours > 0) {
+      buffer.writeln('⏱️ ${hours}h ${minutes}m');
+    } else {
+      buffer.writeln('⏱️ ${minutes}m');
     }
     
-    buffer.writeln('Generated by HERQ - Your AI Fitness Coach');
-    buffer.writeln('#HERQ #Fitness #Workout #AI');
+    if (summary.totalVolume > 0) {
+      buffer.writeln('🏋️ ${summary.totalVolume.toStringAsFixed(0)} kg total volume');
+    }
+    
+    // Add PRs if any
+    if (summary.prs.isNotEmpty) {
+      buffer.writeln('');
+      buffer.writeln('🏆 ${summary.prs.length} ${summary.prs.length == 1 ? "PR" : "PRs"}!');
+    }
+    
+    // Add user notes if provided
+    if (notes != null && notes.isNotEmpty) {
+      buffer.writeln('');
+      buffer.writeln(notes);
+    }
     
     return buffer.toString();
+  }
+
+  /// Upload post image to Supabase storage
+  Future<String?> _uploadPostImage(String photoPath, String userId) async {
+    try {
+      print('📸 Uploading post image...');
+      
+      final file = File(photoPath);
+      final bytes = await file.readAsBytes();
+      
+      // Compress image if needed (using flutter_image_compress would be better)
+      // For now, just upload the original
+      
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final path = '$userId/$fileName';
+      
+      final supabase = ref.read(supabaseClientProvider);
+      await supabase.storage
+          .from('post-images')
+          .uploadBinary(path, bytes);
+      
+      final imageUrl = supabase.storage
+          .from('post-images')
+          .getPublicUrl(path);
+      
+      print('✅ Image uploaded successfully');
+      return imageUrl;
+    } catch (e) {
+      print('❌ Error uploading image: $e');
+      return null; // Continue without image if upload fails
+    }
   }
 }
 

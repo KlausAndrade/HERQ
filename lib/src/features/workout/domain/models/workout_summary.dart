@@ -10,6 +10,7 @@ class WorkoutSummary {
     required this.exercises,
     required this.prs,
     required this.achievements,
+    this.sessionId,
   });
   final String workoutName;
   final Duration duration;
@@ -20,6 +21,7 @@ class WorkoutSummary {
   final List<ExerciseSummary> exercises;
   final List<PersonalRecordAchievement> prs;
   final WorkoutAchievements achievements;
+  final String? sessionId; // Workout session ID for linking to social posts
 }
 
 class ExerciseSummary {

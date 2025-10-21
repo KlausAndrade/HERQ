@@ -1174,6 +1174,21 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           achievements: WorkoutAchievements(
             perfectCompletion: workout.isFullyCompleted(),
           ),
+          sessionId: sessionId,
+        );
+      } else if (summary != null) {
+        // Add sessionId to existing summary from service
+        summary = WorkoutSummary(
+          workoutName: summary.workoutName,
+          duration: summary.duration,
+          totalSets: summary.totalSets,
+          totalReps: summary.totalReps,
+          totalVolume: summary.totalVolume,
+          totalTonnage: summary.totalTonnage,
+          exercises: summary.exercises,
+          prs: summary.prs,
+          achievements: summary.achievements,
+          sessionId: sessionId,
         );
       }
 
@@ -1263,7 +1278,51 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
               'total_reps': totalReps,
             });
 
+            // Sync exercises first (if they don't exist in Supabase)
+            print('☁️ Syncing ${workout.exercises.length} exercises to Supabase...');
+            for (final exercise in workout.exercises) {
+              try {
+                print('  🔍 Checking if exercise exists: ${exercise.id} (${exercise.name})');
+                
+                // Check if exercise exists in Supabase
+                final existingExercise = await supabase
+                    .from('exercises')
+                    .select('id')
+                    .eq('id', exercise.id)
+                    .maybeSingle();
+
+                if (existingExercise == null) {
+                  // Exercise doesn't exist, create it
+                  print('  📝 Creating new exercise: ${exercise.id}');
+                  
+                  await supabase.from('exercises').insert({
+                    'id': exercise.id,
+                    'name': exercise.name,
+                    'exercise_type': exercise.exerciseType,
+                    'equipment': exercise.equipmentUsed ?? 'bodyweight',
+                    'primary_muscle_group': 'other',
+                    'secondary_muscle_groups': '{}', // PostgreSQL array format
+                    'instructions': '',
+                    'category': 'Other',
+                    'difficulty': 'intermediate',
+                    'aliases': '{}', // PostgreSQL array format
+                    'tags': '{}', // PostgreSQL array format
+                    'user_id': null,
+                  });
+                  print('  ✅ Synced exercise: ${exercise.name} (${exercise.id})');
+                } else {
+                  print('  ✓ Exercise already exists: ${exercise.name} (${exercise.id})');
+                }
+              } catch (e, stackTrace) {
+                print('  ❌ ERROR syncing exercise ${exercise.name} (${exercise.id}): $e');
+                print('  Stack: $stackTrace');
+                // Continue with other exercises even if one fails
+              }
+            }
+            print('☁️ Finished syncing exercises');
+
             // Sync all completed sets
+            print('☁️ Syncing set entries to Supabase...');
             final setEntries = <Map<String, dynamic>>[];
             for (final exercise in workout.exercises) {
               for (final set in exercise.sets.where((s) => s.isCompleted)) {
@@ -1277,18 +1336,18 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                   'reps': set.reps,
                   'duration_seconds': set.durationSeconds,
                   'distance': set.distance,
+                  'completed': true, // Fixed: was 'is_completed'
+                  'rpe': set.rpe,
+                  'notes': null,
                   'assistance_weight': set.assistanceWeight,
                   'added_weight': set.addedWeight,
-                  'rpe': set.rpe,
-                  'equipment_used': exercise.equipmentUsed,
-                  'variant_type': exercise.variantType,
-                  'completed': true,
                 });
               }
             }
 
             if (setEntries.isNotEmpty) {
               await supabase.from('set_entries').insert(setEntries);
+              print('  ✅ Synced ${setEntries.length} set entries');
             }
 
             print('✅ Workout synced to Supabase successfully');

@@ -267,7 +267,7 @@ Widget _buildPostList(
       ref.invalidate(explorePostsProvider);
     },
     child: ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 80), // Extra bottom padding for FAB
       itemCount: feedItems.length,
       itemBuilder: (context, index) {
         final post = feedItems[index];

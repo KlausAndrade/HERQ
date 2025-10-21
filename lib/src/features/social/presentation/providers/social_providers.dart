@@ -24,6 +24,7 @@ class SupabasePost {
     this.imageUrl,
     this.userName,
     this.userAvatar,
+    this.workoutSessionId,
   });
 
   factory SupabasePost.fromJson(Map<String, dynamic> json) => SupabasePost(
@@ -34,6 +35,7 @@ class SupabasePost {
         createdAt: DateTime.parse(json['created_at'] as String),
         userName: json['profiles']?['display_name'] as String?,
         userAvatar: json['profiles']?['avatar_url'] as String?,
+        workoutSessionId: json['workout_session_id'] as String?,
       );
   final String id;
   final String userId;
@@ -42,6 +44,7 @@ class SupabasePost {
   final DateTime createdAt;
   final String? userName;
   final String? userAvatar;
+  final String? workoutSessionId;
 }
 
 class SupabaseComment {
