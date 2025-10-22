@@ -4196,6 +4196,300 @@ abstract class S {
   /// In en, this message translates to:
   /// **'this user'**
   String get thisUser;
+
+  /// No description provided for @upgradeToPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro'**
+  String get upgradeToPro;
+
+  /// No description provided for @unlockPremiumFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Premium Features'**
+  String get unlockPremiumFeatures;
+
+  /// No description provided for @premiumFeaturesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get unlimited AI coaching, advanced analytics, and premium features'**
+  String get premiumFeaturesDescription;
+
+  /// No description provided for @chooseYourPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Your Plan'**
+  String get chooseYourPlan;
+
+  /// No description provided for @freeTrialAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'7-Day Free Trial'**
+  String get freeTrialAvailable;
+
+  /// No description provided for @freeTrialDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Try all premium features for 7 days, then \$9.99/month'**
+  String get freeTrialDescription;
+
+  /// No description provided for @startFreeTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Free Trial'**
+  String get startFreeTrial;
+
+  /// No description provided for @trialTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel anytime. No commitment.'**
+  String get trialTerms;
+
+  /// No description provided for @selectAPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a Plan'**
+  String get selectAPlan;
+
+  /// No description provided for @trialStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Free trial started! Enjoy premium features.'**
+  String get trialStarted;
+
+  /// No description provided for @trialStartFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to start trial. Please try again.'**
+  String get trialStartFailed;
+
+  /// No description provided for @errorLoadingProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Error Loading Products'**
+  String get errorLoadingProducts;
+
+  /// No description provided for @errorLoadingProductsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load subscription options. Please check your connection and try again.'**
+  String get errorLoadingProductsMessage;
+
+  /// No description provided for @alreadyPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re Already Premium!'**
+  String get alreadyPremium;
+
+  /// No description provided for @alreadyPremiumMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have access to all premium features. Enjoy your workouts!'**
+  String get alreadyPremiumMessage;
+
+  /// No description provided for @continueToApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to App'**
+  String get continueToApp;
+
+  /// No description provided for @premiumFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Features'**
+  String get premiumFeatures;
+
+  /// No description provided for @unlimitedAICoaching.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited AI Coaching'**
+  String get unlimitedAICoaching;
+
+  /// No description provided for @unlimitedAICoachingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get personalized workout recommendations, progress analysis, and optimization suggestions'**
+  String get unlimitedAICoachingDescription;
+
+  /// No description provided for @advancedAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Analytics'**
+  String get advancedAnalytics;
+
+  /// No description provided for @advancedAnalyticsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed insights into your training patterns, volume trends, and performance metrics'**
+  String get advancedAnalyticsDescription;
+
+  /// No description provided for @unlimitedTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited Templates'**
+  String get unlimitedTemplates;
+
+  /// No description provided for @unlimitedTemplatesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and save unlimited workout templates for different training goals'**
+  String get unlimitedTemplatesDescription;
+
+  /// No description provided for @dataExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Export'**
+  String get dataExport;
+
+  /// No description provided for @dataExportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Export your workout data in CSV or JSON format for analysis'**
+  String get dataExportDescription;
+
+  /// No description provided for @prioritySupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority Support'**
+  String get prioritySupport;
+
+  /// No description provided for @prioritySupportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get faster response times and priority customer support'**
+  String get prioritySupportDescription;
+
+  /// No description provided for @upgradePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro'**
+  String get upgradePrompt;
+
+  /// No description provided for @upgradePromptMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock unlimited AI coaching and premium features'**
+  String get upgradePromptMessage;
+
+  /// No description provided for @aiLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Limit Reached'**
+  String get aiLimitReached;
+
+  /// No description provided for @aiLimitReachedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve used your daily AI evaluation. Upgrade to Pro for unlimited access.'**
+  String get aiLimitReachedMessage;
+
+  /// No description provided for @templateLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Template Limit Reached'**
+  String get templateLimitReached;
+
+  /// No description provided for @templateLimitReachedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve reached the 3 template limit. Upgrade to Pro for unlimited templates.'**
+  String get templateLimitReachedMessage;
+
+  /// No description provided for @premiumFeature.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Feature'**
+  String get premiumFeature;
+
+  /// No description provided for @premiumFeatureMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This feature is available with HERQ Pro subscription.'**
+  String get premiumFeatureMessage;
+
+  /// No description provided for @upgradeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade Now'**
+  String get upgradeNow;
+
+  /// No description provided for @maybeLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe Later'**
+  String get maybeLater;
+
+  /// No description provided for @retentionDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Retention Dashboard'**
+  String get retentionDashboard;
+
+  /// No description provided for @achievementUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievement Unlocked!'**
+  String get achievementUnlocked;
+
+  /// No description provided for @recentAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Achievements'**
+  String get recentAchievements;
+
+  /// No description provided for @retentionTips.
+  ///
+  /// In en, this message translates to:
+  /// **'Retention Tips'**
+  String get retentionTips;
+
+  /// No description provided for @setConsistentSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a consistent workout schedule'**
+  String get setConsistentSchedule;
+
+  /// No description provided for @setConsistentScheduleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Work out at the same time each day to build a habit'**
+  String get setConsistentScheduleDescription;
+
+  /// No description provided for @trackProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your progress'**
+  String get trackProgress;
+
+  /// No description provided for @trackProgressDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the app to monitor your improvements and stay motivated'**
+  String get trackProgressDescription;
+
+  /// No description provided for @connectWithFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect with friends'**
+  String get connectWithFriends;
+
+  /// No description provided for @connectWithFriendsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your workouts and compete with friends for extra motivation'**
+  String get connectWithFriendsDescription;
+
+  /// No description provided for @useAICoaching.
+  ///
+  /// In en, this message translates to:
+  /// **'Use AI coaching'**
+  String get useAICoaching;
+
+  /// No description provided for @useAICoachingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get personalized recommendations to optimize your training'**
+  String get useAICoachingDescription;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

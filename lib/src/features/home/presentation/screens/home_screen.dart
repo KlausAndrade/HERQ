@@ -351,6 +351,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _QuickActionCard(
+                      title: 'Retention',
+                      subtitle: 'Track engagement',
+                      icon: Icons.analytics,
+                      color: Colors.indigo,
+                      onTap: () => context.go('/retention'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _QuickActionCard(
                       title: S.of(context)!.settings,
                       subtitle: S.of(context)!.appPreferences,
                       icon: Icons.settings,

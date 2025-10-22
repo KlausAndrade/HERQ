@@ -2,6 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/groq_provider.dart';
+import '../../../../core/providers/subscription_provider.dart';
 import '../../data/services/ai_coaching_service.dart';
 import '../../data/services/groq_ai_coaching_service.dart';
 import '../../domain/models/ai_models.dart';
@@ -308,6 +309,16 @@ class EvaluateProgressParams {
 final evaluateProgressProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, EvaluateProgressParams>((ref, params) async {
   final userId = params.isAdminMode ? null : 'default_user';
   
+  // Check AI usage limits for non-admin users
+  if (!params.isAdminMode) {
+    final aiUsage = ref.read(aiUsageProvider);
+    final aiLimits = ref.read(aiUsageLimitsProvider);
+    
+    if (!aiLimits.hasUnlimitedEvaluations && aiUsage.dailyEvaluations >= aiLimits.maxDailyEvaluations) {
+      throw Exception('AI_LIMIT_REACHED');
+    }
+  }
+  
   try {
     final aiService = ref.read(groqAICoachingServiceProvider);
     if (aiService != null) {
@@ -315,6 +326,12 @@ final evaluateProgressProvider = FutureProvider.autoDispose.family<Map<String, d
         userId ?? 'default_user',
         languageCode: params.languageCode,
       );
+      
+      // Record AI usage for non-admin users
+      if (!params.isAdminMode) {
+        ref.read(aiUsageProvider.notifier).recordAIEvaluation();
+      }
+      
       print('✅ Progress evaluation completed (Real API)');
       return result;
     }

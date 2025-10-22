@@ -2151,4 +2151,168 @@ class SPt extends S {
 
   @override
   String get thisUser => 'este usuário';
+
+  @override
+  String get upgradeToPro => 'Upgrade to Pro';
+
+  @override
+  String get unlockPremiumFeatures => 'Unlock Premium Features';
+
+  @override
+  String get premiumFeaturesDescription =>
+      'Get unlimited AI coaching, advanced analytics, and premium features';
+
+  @override
+  String get chooseYourPlan => 'Choose Your Plan';
+
+  @override
+  String get freeTrialAvailable => '7-Day Free Trial';
+
+  @override
+  String get freeTrialDescription =>
+      'Try all premium features for 7 days, then \$9.99/month';
+
+  @override
+  String get startFreeTrial => 'Start Free Trial';
+
+  @override
+  String get trialTerms => 'Cancel anytime. No commitment.';
+
+  @override
+  String get selectAPlan => 'Select a Plan';
+
+  @override
+  String get trialStarted => 'Free trial started! Enjoy premium features.';
+
+  @override
+  String get trialStartFailed => 'Failed to start trial. Please try again.';
+
+  @override
+  String get errorLoadingProducts => 'Error Loading Products';
+
+  @override
+  String get errorLoadingProductsMessage =>
+      'Unable to load subscription options. Please check your connection and try again.';
+
+  @override
+  String get alreadyPremium => 'You\'re Already Premium!';
+
+  @override
+  String get alreadyPremiumMessage =>
+      'You have access to all premium features. Enjoy your workouts!';
+
+  @override
+  String get continueToApp => 'Continue to App';
+
+  @override
+  String get premiumFeatures => 'Premium Features';
+
+  @override
+  String get unlimitedAICoaching => 'Unlimited AI Coaching';
+
+  @override
+  String get unlimitedAICoachingDescription =>
+      'Get personalized workout recommendations, progress analysis, and optimization suggestions';
+
+  @override
+  String get advancedAnalytics => 'Advanced Analytics';
+
+  @override
+  String get advancedAnalyticsDescription =>
+      'Detailed insights into your training patterns, volume trends, and performance metrics';
+
+  @override
+  String get unlimitedTemplates => 'Unlimited Templates';
+
+  @override
+  String get unlimitedTemplatesDescription =>
+      'Create and save unlimited workout templates for different training goals';
+
+  @override
+  String get dataExport => 'Data Export';
+
+  @override
+  String get dataExportDescription =>
+      'Export your workout data in CSV or JSON format for analysis';
+
+  @override
+  String get prioritySupport => 'Priority Support';
+
+  @override
+  String get prioritySupportDescription =>
+      'Get faster response times and priority customer support';
+
+  @override
+  String get upgradePrompt => 'Upgrade to Pro';
+
+  @override
+  String get upgradePromptMessage =>
+      'Unlock unlimited AI coaching and premium features';
+
+  @override
+  String get aiLimitReached => 'AI Limit Reached';
+
+  @override
+  String get aiLimitReachedMessage =>
+      'You\'ve used your daily AI evaluation. Upgrade to Pro for unlimited access.';
+
+  @override
+  String get templateLimitReached => 'Template Limit Reached';
+
+  @override
+  String get templateLimitReachedMessage =>
+      'You\'ve reached the 3 template limit. Upgrade to Pro for unlimited templates.';
+
+  @override
+  String get premiumFeature => 'Premium Feature';
+
+  @override
+  String get premiumFeatureMessage =>
+      'This feature is available with HERQ Pro subscription.';
+
+  @override
+  String get upgradeNow => 'Upgrade Now';
+
+  @override
+  String get maybeLater => 'Maybe Later';
+
+  @override
+  String get retentionDashboard => 'Retention Dashboard';
+
+  @override
+  String get achievementUnlocked => 'Achievement Unlocked!';
+
+  @override
+  String get recentAchievements => 'Recent Achievements';
+
+  @override
+  String get retentionTips => 'Retention Tips';
+
+  @override
+  String get setConsistentSchedule => 'Set a consistent workout schedule';
+
+  @override
+  String get setConsistentScheduleDescription =>
+      'Work out at the same time each day to build a habit';
+
+  @override
+  String get trackProgress => 'Track your progress';
+
+  @override
+  String get trackProgressDescription =>
+      'Use the app to monitor your improvements and stay motivated';
+
+  @override
+  String get connectWithFriends => 'Connect with friends';
+
+  @override
+  String get connectWithFriendsDescription =>
+      'Share your workouts and compete with friends for extra motivation';
+
+  @override
+  String get useAICoaching => 'Use AI coaching';
+
+  @override
+  String get useAICoachingDescription =>
+      'Get personalized recommendations to optimize your training';
 }

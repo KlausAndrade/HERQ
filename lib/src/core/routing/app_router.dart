@@ -38,6 +38,8 @@ import '../../features/admin/presentation/screens/admin_settings_screen.dart';
 import '../../features/admin/presentation/screens/data_sync_screen.dart';
 import '../../features/admin/presentation/screens/database_test_screen.dart';
 import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
+import '../../features/subscription/presentation/screens/premium_onboarding_screen.dart';
+import '../../features/gamification/presentation/screens/retention_dashboard.dart';
 import '../widgets/page_transitions.dart';
 
 final routerProvider = Provider<GoRouter>(
@@ -389,6 +391,22 @@ final routerProvider = Provider<GoRouter>(
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
           const AdminSettingsScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/premium',
+        name: 'premium',
+        pageBuilder: (context, state) => AppPageTransitions.slideUpTransition(
+          const PremiumOnboardingScreen(),
+          key: state.pageKey,
+        ),
+      ),
+      GoRoute(
+        path: '/retention',
+        name: 'retention',
+        pageBuilder: (context, state) => AppPageTransitions.slideRightTransition(
+          const RetentionDashboard(),
           key: state.pageKey,
         ),
       ),

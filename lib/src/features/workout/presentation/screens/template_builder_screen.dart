@@ -5,9 +5,12 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database.dart';
 import '../../../../core/providers/admin_provider.dart';
+import '../../../../core/providers/database_provider.dart';
+import '../../../../core/providers/subscription_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/user_context_service.dart';
 import '../../../exercises/presentation/providers/exercise_providers.dart';
+import '../../../subscription/presentation/widgets/upgrade_prompt_dialog.dart';
 import '../providers/template_providers.dart';
 import '../widgets/multi_exercise_picker_dialog.dart';
 
@@ -504,6 +507,26 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
     );
   }
 
+  /// Get current template count for the user
+  Future<int> _getCurrentTemplateCount() async {
+    try {
+      final database = ref.read(databaseProvider);
+      if (database == null) return 0;
+      
+      final userId = UserContextService.instance.getCurrentUserId();
+      if (userId == null) return 0;
+      
+      final templates = await (database.select(database.workoutTemplates)
+            ..where((t) => t.userId.equals(userId)))
+          .get();
+      
+      return templates.length;
+    } catch (e) {
+      print('Error getting template count: $e');
+      return 0;
+    }
+  }
+
   Future<void> _saveTemplate() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -516,6 +539,27 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
           )
           .catchError((_) {});
       return;
+    }
+
+    // Check template limits for new templates (not editing existing)
+    if (widget.templateId == null) {
+      final isAdminMode = ref.read(currentAdminModeProvider);
+      if (!isAdminMode) {
+        final templateLimits = ref.read(templateLimitsProvider);
+        final currentTemplateCount = await _getCurrentTemplateCount();
+        
+        if (!templateLimits.hasUnlimitedTemplates && 
+            currentTemplateCount >= templateLimits.maxTemplates) {
+          // Show template limit reached dialog
+          if (mounted) {
+            showDialog(
+              context: context,
+              builder: (context) => const TemplateLimitReachedDialog(),
+            );
+          }
+          return;
+        }
+      }
     }
 
     setState(() => _isLoading = true);

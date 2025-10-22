@@ -7,6 +7,7 @@ import '../../../../core/providers/admin_provider.dart';
 import '../../../../core/providers/preferences_provider.dart';
 import '../../../../core/widgets/swipe_back_wrapper.dart';
 import '../../../settings/providers/locale_provider.dart';
+import '../../../subscription/presentation/widgets/upgrade_prompt_dialog.dart';
 import '../providers/ai_providers.dart';
 import '../widgets/generated_workout_card.dart';
 import '../widgets/optimized_folder_view.dart';
@@ -773,20 +774,28 @@ class EvaluateProgressTab extends HookConsumerWidget {
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading dialog
 
-        // Show error dialog
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(l10n.evaluationFailed),
-            content: Text(l10n.failedToAnalyzeProgress(e.toString())),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(l10n.ok),
-              ),
-            ],
-          ),
-        );
+        // Check if it's an AI limit error
+        if (e.toString().contains('AI_LIMIT_REACHED')) {
+          showDialog(
+            context: context,
+            builder: (context) => const AILimitReachedDialog(),
+          );
+        } else {
+          // Show error dialog
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(l10n.evaluationFailed),
+              content: Text(l10n.failedToAnalyzeProgress(e.toString())),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(l10n.ok),
+                ),
+              ],
+            ),
+          );
+        }
       }
     }
   }
