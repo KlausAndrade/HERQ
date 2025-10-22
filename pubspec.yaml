@@ -38,7 +38,7 @@ dependencies:
   flutter_facebook_auth: ^6.0.4
   
   # Monetization & Subscriptions
-  # purchases_flutter: ^6.0.0  # Temporarily disabled for iOS build
+  # purchases_flutter: ^6.0.0  # Temporarily disabled due to iOS build issues
   
   # Charts & Visualization
   fl_chart: ^0.65.0

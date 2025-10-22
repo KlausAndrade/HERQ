@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/models/achievement_models.dart';
 import '../../../../core/providers/achievement_provider.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class RetentionDashboard extends ConsumerWidget {
   const RetentionDashboard({super.key});

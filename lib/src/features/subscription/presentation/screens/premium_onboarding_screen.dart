@@ -23,7 +23,7 @@ class _PremiumOnboardingScreenState extends ConsumerState<PremiumOnboardingScree
   @override
   Widget build(BuildContext context) {
     final l10n = S.of(context)!;
-    final productsAsync = ref.watch(subscriptionProductsProvider);
+    final productsAsync = ref.watch(availableProductsProvider);
     final subscription = ref.watch(currentSubscriptionProvider);
 
     return SwipeBackWrapperWithFeedback(
@@ -52,7 +52,7 @@ class _PremiumOnboardingScreenState extends ConsumerState<PremiumOnboardingScree
     );
   }
 
-  Widget _buildAlreadyPremiumView(BuildContext context, AppLocalizations l10n) {
+      Widget _buildAlreadyPremiumView(BuildContext context, dynamic l10n) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -88,7 +88,7 @@ class _PremiumOnboardingScreenState extends ConsumerState<PremiumOnboardingScree
     );
   }
 
-  Widget _buildUpgradeView(BuildContext context, AppLocalizations l10n, AsyncValue<List<SubscriptionProduct>> productsAsync) {
+      Widget _buildUpgradeView(BuildContext context, dynamic l10n, AsyncValue<List<SubscriptionProduct>> productsAsync) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -203,7 +203,7 @@ class _PremiumOnboardingScreenState extends ConsumerState<PremiumOnboardingScree
     );
   }
 
-  Widget _buildErrorView(BuildContext context, AppLocalizations l10n) {
+      Widget _buildErrorView(BuildContext context, dynamic l10n) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -230,7 +230,7 @@ class _PremiumOnboardingScreenState extends ConsumerState<PremiumOnboardingScree
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
-                ref.invalidate(subscriptionProductsProvider);
+                ref.invalidate(availableProductsProvider);
               },
               child: Text(l10n.tryAgain),
             ),
@@ -240,7 +240,7 @@ class _PremiumOnboardingScreenState extends ConsumerState<PremiumOnboardingScree
     );
   }
 
-  Widget? _buildBottomBar(BuildContext context, AppLocalizations l10n) {
+      Widget? _buildBottomBar(BuildContext context, dynamic l10n) {
     final subscription = ref.watch(currentSubscriptionProvider);
     
     return subscription.when(
@@ -281,6 +281,22 @@ class _PremiumOnboardingScreenState extends ConsumerState<PremiumOnboardingScree
                     ),
                   ),
                   const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: _isLoading ? null : _purchaseSubscription,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: Text('Purchase Subscription'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: _isLoading ? null : _restorePurchases,
+                    child: Text('Restore Purchases'),
+                  ),
+                  const SizedBox(height: 8),
                   Text(
                     l10n.trialTerms,
                     style: Theme.of(context).textTheme.bodySmall,
@@ -317,7 +333,7 @@ class _PremiumOnboardingScreenState extends ConsumerState<PremiumOnboardingScree
 
     try {
       final subscriptionService = ref.read(subscriptionServiceProvider);
-      final success = await subscriptionService.startFreeTrial(_selectedProductId!);
+      final success = await subscriptionService.startFreeTrial();
 
       if (success && mounted) {
         // Show success message
@@ -336,6 +352,105 @@ class _PremiumOnboardingScreenState extends ConsumerState<PremiumOnboardingScree
           SnackBar(
             content: Text(S.of(context)!.trialStartFailed),
             backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _purchaseSubscription() async {
+    if (_selectedProductId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(S.of(context)!.selectAPlan),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final subscriptionService = ref.read(subscriptionServiceProvider);
+      final success = await subscriptionService.purchaseSubscription(_selectedProductId!);
+
+      if (success && mounted) {
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Subscription purchased successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        // Navigate back to home
+        context.go('/');
+      } else if (mounted) {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to purchase subscription'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _restorePurchases() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final subscriptionService = ref.read(subscriptionServiceProvider);
+      final success = await subscriptionService.restorePurchases();
+
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Purchases restored successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No purchases to restore'),
+            backgroundColor: Colors.orange,
           ),
         );
       }

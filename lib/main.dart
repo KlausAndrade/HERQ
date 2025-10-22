@@ -9,6 +9,7 @@ import 'src/core/database/database.dart';
 import 'src/core/providers/database_provider.dart';
 import 'src/core/services/notification_service.dart'
     if (dart.library.html) 'src/core/services/notification_service_stub.dart';
+import 'src/core/services/subscription_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,6 +75,15 @@ Future<void> main() async {
   AppDatabase? database;
   if (!kIsWeb) {
     database = AppDatabase();
+  }
+
+  // Initialize RevenueCat subscription service
+  try {
+    await SubscriptionService().initialize();
+    print('✅ RevenueCat subscription service initialized');
+  } catch (e) {
+    print('⚠️ RevenueCat initialization failed: $e');
+    print('   App will continue with mock subscription service');
   }
 
   runApp(

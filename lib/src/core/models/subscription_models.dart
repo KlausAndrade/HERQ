@@ -39,6 +39,24 @@ class Subscription extends Equatable {
   bool get isElite => tier == SubscriptionTier.elite && isActive;
   bool get isFree => tier == SubscriptionTier.free || !isActive;
 
+  Subscription copyWith({
+    SubscriptionTier? tier,
+    SubscriptionStatus? status,
+    DateTime? expiresAt,
+    DateTime? trialEndsAt,
+    bool? isTrialActive,
+    bool? autoRenew,
+  }) {
+    return Subscription(
+      tier: tier ?? this.tier,
+      status: status ?? this.status,
+      expiresAt: expiresAt ?? this.expiresAt,
+      trialEndsAt: trialEndsAt ?? this.trialEndsAt,
+      isTrialActive: isTrialActive ?? this.isTrialActive,
+      autoRenew: autoRenew ?? this.autoRenew,
+    );
+  }
+
   @override
   List<Object?> get props => [tier, status, expiresAt, trialEndsAt, isTrialActive, autoRenew];
 }

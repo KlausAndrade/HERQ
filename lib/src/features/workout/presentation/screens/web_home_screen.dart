@@ -7,6 +7,7 @@ import '../../../../../l10n/app_localizations.dart';
 
 import '../providers/template_web_provider.dart';
 import '../providers/workout_web_sessions_provider.dart';
+import '../providers/template_providers.dart';
 
 class WebHomeScreen extends ConsumerWidget {
   const WebHomeScreen({super.key});
@@ -14,7 +15,7 @@ class WebHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = Supabase.instance.client.auth.currentUser;
-    final templates = ref.watch(workoutTemplatesWebProvider);
+    final templates = ref.watch(workoutTemplatesProvider);
     final recentSessions = ref.watch(recentSessionsWebProvider);
 
     return Scaffold(

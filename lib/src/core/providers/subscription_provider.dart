@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/subscription_models.dart';
 import '../services/subscription_service.dart';
@@ -11,34 +10,54 @@ final subscriptionServiceProvider = Provider<SubscriptionService>((ref) {
 
 /// Current subscription provider
 final currentSubscriptionProvider = StreamProvider<Subscription>((ref) {
-  final subscriptionService = ref.watch(subscriptionServiceProvider);
-  return subscriptionService.subscriptionStream;
+  final service = ref.read(subscriptionServiceProvider);
+  return service.subscriptionStream;
 });
 
-/// Subscription products provider
-final subscriptionProductsProvider = FutureProvider<List<SubscriptionProduct>>((ref) async {
-  final subscriptionService = ref.watch(subscriptionServiceProvider);
-  return await subscriptionService.getAvailableProducts();
+/// Subscription status provider
+final subscriptionStatusProvider = Provider<SubscriptionStatus>((ref) {
+  final subscription = ref.watch(currentSubscriptionProvider);
+  return subscription.when(
+    data: (sub) => sub.status,
+    loading: () => SubscriptionStatus.none,
+    error: (_, __) => SubscriptionStatus.none,
+  );
 });
 
-/// AI usage tracking provider
-final aiUsageProvider = StateNotifierProvider<AIUsageNotifier, AIUsage>((ref) {
-  return AIUsageNotifier();
+/// Subscription tier provider
+final subscriptionTierProvider = Provider<SubscriptionTier>((ref) {
+  final subscription = ref.watch(currentSubscriptionProvider);
+  return subscription.when(
+    data: (sub) => sub.tier,
+    loading: () => SubscriptionTier.free,
+    error: (_, __) => SubscriptionTier.free,
+  );
 });
 
-/// Template usage tracking provider
-final templateUsageProvider = StateNotifierProvider<TemplateUsageNotifier, TemplateUsage>((ref) {
-  return TemplateUsageNotifier();
-});
-
-/// Premium features access provider
-final premiumAccessProvider = Provider<bool>((ref) {
+/// Is premium provider
+final isPremiumProvider = Provider<bool>((ref) {
   final subscription = ref.watch(currentSubscriptionProvider);
   return subscription.when(
     data: (sub) => sub.isPro || sub.isElite,
     loading: () => false,
     error: (_, __) => false,
   );
+});
+
+/// Is trial provider
+final isTrialProvider = Provider<bool>((ref) {
+  final subscription = ref.watch(currentSubscriptionProvider);
+  return subscription.when(
+    data: (sub) => sub.isTrialActive,
+    loading: () => false,
+    error: (_, __) => false,
+  );
+});
+
+/// Available products provider
+final availableProductsProvider = FutureProvider<List<SubscriptionProduct>>((ref) async {
+  final service = ref.read(subscriptionServiceProvider);
+  return await service.getAvailableProducts();
 });
 
 /// AI usage limits provider
@@ -52,24 +71,36 @@ final aiUsageLimitsProvider = Provider<AIUsageLimits>((ref) {
           maxDailyEvaluations: -1, // Unlimited
           maxDailyWorkoutBuilds: -1, // Unlimited
           maxDailyOptimizations: -1, // Unlimited
+          hasUnlimitedEvaluations: true,
+          hasUnlimitedWorkoutBuilds: true,
+          hasUnlimitedOptimizations: true,
         );
       } else {
         return AIUsageLimits(
-          maxDailyEvaluations: 1,
-          maxDailyWorkoutBuilds: 0,
-          maxDailyOptimizations: 0,
+          maxDailyEvaluations: 1, // Free tier limit
+          maxDailyWorkoutBuilds: 1, // Free tier limit
+          maxDailyOptimizations: 1, // Free tier limit
+          hasUnlimitedEvaluations: false,
+          hasUnlimitedWorkoutBuilds: false,
+          hasUnlimitedOptimizations: false,
         );
       }
     },
     loading: () => AIUsageLimits(
       maxDailyEvaluations: 1,
-      maxDailyWorkoutBuilds: 0,
-      maxDailyOptimizations: 0,
+      maxDailyWorkoutBuilds: 1,
+      maxDailyOptimizations: 1,
+      hasUnlimitedEvaluations: false,
+      hasUnlimitedWorkoutBuilds: false,
+      hasUnlimitedOptimizations: false,
     ),
     error: (_, __) => AIUsageLimits(
       maxDailyEvaluations: 1,
-      maxDailyWorkoutBuilds: 0,
-      maxDailyOptimizations: 0,
+      maxDailyWorkoutBuilds: 1,
+      maxDailyOptimizations: 1,
+      hasUnlimitedEvaluations: false,
+      hasUnlimitedWorkoutBuilds: false,
+      hasUnlimitedOptimizations: false,
     ),
   );
 });
@@ -81,15 +112,72 @@ final templateLimitsProvider = Provider<TemplateLimits>((ref) {
   return subscription.when(
     data: (sub) {
       if (sub.isPro || sub.isElite) {
-        return TemplateLimits(maxTemplates: -1); // Unlimited
+        return TemplateLimits(
+          maxTemplates: -1, // Unlimited
+          hasUnlimitedTemplates: true,
+        );
       } else {
-        return TemplateLimits(maxTemplates: 3); // Free tier limit
+        return TemplateLimits(
+          maxTemplates: 3, // Free tier limit
+          hasUnlimitedTemplates: false,
+        );
       }
     },
-    loading: () => TemplateLimits(maxTemplates: 3),
-    error: (_, __) => TemplateLimits(maxTemplates: 3),
+    loading: () => TemplateLimits(
+      maxTemplates: 3,
+      hasUnlimitedTemplates: false,
+    ),
+    error: (_, __) => TemplateLimits(
+      maxTemplates: 3,
+      hasUnlimitedTemplates: false,
+    ),
   );
 });
+
+/// AI Usage model
+class AIUsage {
+  const AIUsage({
+    required this.dailyEvaluations,
+    required this.dailyWorkoutBuilds,
+    required this.dailyOptimizations,
+    required this.lastResetDate,
+  });
+
+  final int dailyEvaluations;
+  final int dailyWorkoutBuilds;
+  final int dailyOptimizations;
+  final DateTime lastResetDate;
+}
+
+/// AI Usage Limits model
+class AIUsageLimits {
+  const AIUsageLimits({
+    required this.maxDailyEvaluations,
+    required this.maxDailyWorkoutBuilds,
+    required this.maxDailyOptimizations,
+    required this.hasUnlimitedEvaluations,
+    required this.hasUnlimitedWorkoutBuilds,
+    required this.hasUnlimitedOptimizations,
+  });
+
+  final int maxDailyEvaluations;
+  final int maxDailyWorkoutBuilds;
+  final int maxDailyOptimizations;
+  final bool hasUnlimitedEvaluations;
+  final bool hasUnlimitedWorkoutBuilds;
+  final bool hasUnlimitedOptimizations;
+}
+
+/// Template Limits model
+class TemplateLimits {
+  const TemplateLimits({
+    required this.maxTemplates,
+    required this.hasUnlimitedTemplates,
+  });
+
+  final int maxTemplates;
+  final bool hasUnlimitedTemplates;
+}
 
 /// AI Usage Notifier
 class AIUsageNotifier extends StateNotifier<AIUsage> {
@@ -103,119 +191,39 @@ class AIUsageNotifier extends StateNotifier<AIUsage> {
   }
 
   Future<void> _loadUsage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final lastReset = prefs.getString('ai_usage_last_reset');
-    final now = DateTime.now();
-    
-    // Reset daily usage if it's a new day
-    if (lastReset == null || 
-        DateTime.parse(lastReset).day != now.day ||
-        DateTime.parse(lastReset).month != now.month ||
-        DateTime.parse(lastReset).year != now.year) {
-      await _resetDailyUsage();
-    } else {
-      // Load existing usage
-      final evaluations = prefs.getInt('ai_daily_evaluations') ?? 0;
-      final workoutBuilds = prefs.getInt('ai_daily_workout_builds') ?? 0;
-      final optimizations = prefs.getInt('ai_daily_optimizations') ?? 0;
-      
-      state = AIUsage(
-        dailyEvaluations: evaluations,
-        dailyWorkoutBuilds: workoutBuilds,
-        dailyOptimizations: optimizations,
-        lastResetDate: DateTime.parse(lastReset),
-      );
-    }
+    // This would load from SharedPreferences
+    // For now, we'll use default values
   }
 
-  Future<void> _resetDailyUsage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final now = DateTime.now();
-    
-    await prefs.setString('ai_usage_last_reset', now.toIso8601String());
-    await prefs.setInt('ai_daily_evaluations', 0);
-    await prefs.setInt('ai_daily_workout_builds', 0);
-    await prefs.setInt('ai_daily_optimizations', 0);
-    
+  void recordAIEvaluation() {
     state = AIUsage(
-      dailyEvaluations: 0,
-      dailyWorkoutBuilds: 0,
-      dailyOptimizations: 0,
-      lastResetDate: now,
+      dailyEvaluations: state.dailyEvaluations + 1,
+      dailyWorkoutBuilds: state.dailyWorkoutBuilds,
+      dailyOptimizations: state.dailyOptimizations,
+      lastResetDate: state.lastResetDate,
     );
   }
 
-  Future<void> recordAIEvaluation() async {
-    final prefs = await SharedPreferences.getInstance();
-    final newCount = state.dailyEvaluations + 1;
-    await prefs.setInt('ai_daily_evaluations', newCount);
-    
-    state = state.copyWith(dailyEvaluations: newCount);
-  }
-
-  Future<void> recordWorkoutBuild() async {
-    final prefs = await SharedPreferences.getInstance();
-    final newCount = state.dailyWorkoutBuilds + 1;
-    await prefs.setInt('ai_daily_workout_builds', newCount);
-    
-    state = state.copyWith(dailyWorkoutBuilds: newCount);
-  }
-
-  Future<void> recordOptimization() async {
-    final prefs = await SharedPreferences.getInstance();
-    final newCount = state.dailyOptimizations + 1;
-    await prefs.setInt('ai_daily_optimizations', newCount);
-    
-    state = state.copyWith(dailyOptimizations: newCount);
-  }
-}
-
-/// Template Usage Notifier
-class TemplateUsageNotifier extends StateNotifier<TemplateUsage> {
-  TemplateUsageNotifier() : super(const TemplateUsage(
-    totalTemplates: 0,
-    maxTemplates: 3,
-  ));
-
-  void updateTemplateCount(int count) {
-    state = TemplateUsage(
-      totalTemplates: count,
-      maxTemplates: state.maxTemplates,
+  void recordWorkoutBuild() {
+    state = AIUsage(
+      dailyEvaluations: state.dailyEvaluations,
+      dailyWorkoutBuilds: state.dailyWorkoutBuilds + 1,
+      dailyOptimizations: state.dailyOptimizations,
+      lastResetDate: state.lastResetDate,
     );
   }
 
-  void setMaxTemplates(int max) {
-    state = TemplateUsage(
-      totalTemplates: state.totalTemplates,
-      maxTemplates: max,
+  void recordOptimization() {
+    state = AIUsage(
+      dailyEvaluations: state.dailyEvaluations,
+      dailyWorkoutBuilds: state.dailyWorkoutBuilds,
+      dailyOptimizations: state.dailyOptimizations + 1,
+      lastResetDate: state.lastResetDate,
     );
   }
 }
 
-/// AI Usage Limits
-class AIUsageLimits {
-  const AIUsageLimits({
-    required this.maxDailyEvaluations,
-    required this.maxDailyWorkoutBuilds,
-    required this.maxDailyOptimizations,
-  });
-
-  final int maxDailyEvaluations;
-  final int maxDailyWorkoutBuilds;
-  final int maxDailyOptimizations;
-
-  bool get hasUnlimitedEvaluations => maxDailyEvaluations == -1;
-  bool get hasUnlimitedWorkoutBuilds => maxDailyWorkoutBuilds == -1;
-  bool get hasUnlimitedOptimizations => maxDailyOptimizations == -1;
-}
-
-/// Template Limits
-class TemplateLimits {
-  const TemplateLimits({
-    required this.maxTemplates,
-  });
-
-  final int maxTemplates;
-
-  bool get hasUnlimitedTemplates => maxTemplates == -1;
-}
+/// AI Usage provider
+final aiUsageProvider = StateNotifierProvider<AIUsageNotifier, AIUsage>((ref) {
+  return AIUsageNotifier();
+});

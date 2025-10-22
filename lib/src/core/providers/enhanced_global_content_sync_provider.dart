@@ -27,12 +27,7 @@ final needsGlobalContentSyncProvider = FutureProvider<bool>((ref) async {
 final globalContentSyncStatusProvider = FutureProvider<SyncStatus>((ref) async {
   final service = ref.watch(enhancedGlobalContentSyncServiceProvider);
   if (service == null) {
-    return const SyncStatus(
-      lastSync: null,
-      version: null,
-      needsUpdate: false,
-      error: 'Service not available',
-    );
+    return SyncStatus.failed;
   }
 
   return await service.getSyncStatus();

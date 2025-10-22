@@ -29,7 +29,7 @@ class PremiumFeaturesList extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildFeatureItems(BuildContext context, AppLocalizations l10n) {
+      List<Widget> _buildFeatureItems(BuildContext context, dynamic l10n) {
     final features = [
       _FeatureItem(
         icon: Icons.psychology,

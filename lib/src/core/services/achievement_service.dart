@@ -310,8 +310,8 @@ class AchievementService {
       UserAchievementsCompanion.insert(
         userId: userId,
         achievementId: achievement.id,
-        unlockedAt: DateTime.now(),
-        progress: 1.0,
+        unlockedAt: Value(DateTime.now()),
+        progress: Value(1),
       ),
     );
   }
@@ -319,7 +319,7 @@ class AchievementService {
   /// Get user's unlocked achievements
   Future<List<Achievement>> getUserAchievements(String userId) async {
     final userAchievements = await (_database.select(_database.userAchievements)
-          ..where((a) => a.userId.equals(userId) & a.isUnlocked.equals(true)))
+          ..where((a) => a.userId.equals(userId)))
         .get();
 
     final allAchievements = getAllAchievements();

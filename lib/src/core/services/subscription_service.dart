@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/subscription_models.dart';
 
-/// Simplified subscription service (without RevenueCat for now)
+/// Mock subscription service (RevenueCat temporarily disabled due to iOS build issues)
 class SubscriptionService {
   static final SubscriptionService _instance = SubscriptionService._internal();
   factory SubscriptionService() => _instance;
@@ -21,17 +21,41 @@ class SubscriptionService {
 
   Subscription get currentSubscription => _currentSubscription;
 
-  /// Initialize subscription service
+  /// Initialize subscription service (mock implementation)
   Future<void> initialize() async {
     if (_isInitialized) return;
     
     try {
-      // For now, just load from SharedPreferences
-      await _loadSubscriptionFromPrefs();
+      print('Initializing SubscriptionService (mock)...');
+      // In a real app, this would initialize RevenueCat
+      // await Purchases.setLogLevel(LogLevel.debug);
+      // await Purchases.configure(PurchasesConfiguration("public_sdk_key"));
+      
+      // Load current subscription status
+      await _loadCurrentSubscription();
+      
       _isInitialized = true;
-      print('✅ Subscription service initialized (simplified mode)');
+      print('✅ SubscriptionService (mock) initialized');
     } catch (e) {
       print('❌ Error initializing subscription service: $e');
+      await _loadSubscriptionFromPrefs();
+      _isInitialized = true;
+    }
+  }
+
+  /// Load current subscription from local storage
+  Future<void> _loadCurrentSubscription() async {
+    try {
+      await _loadSubscriptionFromPrefs();
+    } catch (e) {
+      print('❌ Error loading subscription: $e');
+      // Use default free subscription
+      _currentSubscription = Subscription(
+        tier: SubscriptionTier.free,
+        status: SubscriptionStatus.none,
+        expiresAt: DateTime(2099, 12, 31),
+      );
+      _subscriptionController.add(_currentSubscription);
     }
   }
 
@@ -73,19 +97,23 @@ class SubscriptionService {
     await prefs.setString('subscription_expires_at', _currentSubscription.expiresAt.toIso8601String());
   }
 
-  /// Start free trial
+  /// Start free trial (mock implementation)
   Future<bool> startFreeTrial() async {
     try {
-      _currentSubscription = Subscription(
+      print('Starting mock free trial...');
+      // In a real app, this would initiate a trial purchase via RevenueCat
+      // For now, simulate success
+      _currentSubscription = _currentSubscription.copyWith(
         tier: SubscriptionTier.pro,
         status: SubscriptionStatus.trial,
         expiresAt: DateTime.now().add(const Duration(days: 7)),
+        trialEndsAt: DateTime.now().add(const Duration(days: 7)),
+        isTrialActive: true,
       );
       
       await _saveSubscriptionToPrefs();
       _subscriptionController.add(_currentSubscription);
-      
-      print('✅ Free trial started');
+      print('✅ Mock free trial started successfully');
       return true;
     } catch (e) {
       print('❌ Error starting free trial: $e');
@@ -96,17 +124,19 @@ class SubscriptionService {
   /// Purchase subscription (mock implementation)
   Future<bool> purchaseSubscription(String productId) async {
     try {
-      // Mock purchase - in real app, this would integrate with RevenueCat
-      _currentSubscription = Subscription(
+      print('Purchasing mock product: $productId');
+      // In a real app, this would initiate a purchase via RevenueCat
+      // For now, simulate success
+      _currentSubscription = _currentSubscription.copyWith(
         tier: SubscriptionTier.pro,
         status: SubscriptionStatus.active,
-        expiresAt: DateTime.now().add(const Duration(days: 30)), // 1 month
+        expiresAt: DateTime.now().add(const Duration(days: 30)), // Approx 1 month
+        isTrialActive: false,
       );
       
       await _saveSubscriptionToPrefs();
       _subscriptionController.add(_currentSubscription);
-      
-      print('✅ Subscription purchased: $productId');
+      print('✅ Mock product purchased successfully');
       return true;
     } catch (e) {
       print('❌ Error purchasing subscription: $e');
@@ -117,10 +147,11 @@ class SubscriptionService {
   /// Restore purchases (mock implementation)
   Future<bool> restorePurchases() async {
     try {
-      // Mock restore - in real app, this would check RevenueCat
-      await _loadSubscriptionFromPrefs();
-      print('✅ Purchases restored');
-      return true;
+      print('Restoring mock purchases...');
+      // In a real app, this would restore purchases via RevenueCat
+      // For now, simulate no purchases to restore
+      print('No mock purchases to restore');
+      return false;
     } catch (e) {
       print('❌ Error restoring purchases: $e');
       return false;
@@ -136,7 +167,9 @@ class SubscriptionService {
         title: 'HERQ Pro Monthly',
         description: 'Unlimited AI coaching and premium features',
         price: 9.99,
+        currencyCode: 'USD',
         duration: 1, // months
+        tier: SubscriptionTier.pro,
         isPopular: false,
         discountPercentage: null,
       ),
@@ -145,7 +178,9 @@ class SubscriptionService {
         title: 'HERQ Pro Quarterly',
         description: '3 months of premium features',
         price: 24.99,
+        currencyCode: 'USD',
         duration: 3,
+        tier: SubscriptionTier.pro,
         isPopular: true,
         discountPercentage: 5,
       ),
@@ -154,7 +189,9 @@ class SubscriptionService {
         title: 'HERQ Pro Yearly',
         description: '12 months of premium features',
         price: 99.99,
+        currencyCode: 'USD',
         duration: 12,
+        tier: SubscriptionTier.pro,
         isPopular: false,
         discountPercentage: 20,
       ),
