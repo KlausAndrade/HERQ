@@ -167,10 +167,46 @@ final exerciseVariantsProvider =
     return [];
   }
 
-  return (database.select(database.exercises)
-        ..where((tbl) => tbl.parentExerciseId.equals(parentId))
-        ..orderBy([(tbl) => OrderingTerm(expression: tbl.difficulty)]))
+  final variants = await (database.select(database.exercises)
+        ..where((tbl) => tbl.parentExerciseId.equals(parentId)))
       .get();
+  
+  // Sort by difficulty (basic/beginner first, expert last)
+  variants.sort((a, b) {
+    // Handle both 'basic' and 'beginner' as the same level
+    const difficultyOrder = ['basic', 'beginner', 'intermediate', 'advanced', 'expert'];
+    
+    // Normalize difficulty names
+    String normalizeDifficulty(String difficulty) {
+      switch (difficulty.toLowerCase()) {
+        case 'basic':
+        case 'beginner':
+          return 'beginner';
+        case 'intermediate':
+          return 'intermediate';
+        case 'advanced':
+          return 'advanced';
+        case 'expert':
+          return 'expert';
+        default:
+          return 'intermediate'; // Default fallback
+      }
+    }
+    
+    final aNormalized = normalizeDifficulty(a.difficulty);
+    final bNormalized = normalizeDifficulty(b.difficulty);
+    
+    final aIndex = difficultyOrder.indexOf(aNormalized);
+    final bIndex = difficultyOrder.indexOf(bNormalized);
+    
+    // If difficulty not found, put it at the end
+    final aIndexSafe = aIndex == -1 ? difficultyOrder.length : aIndex;
+    final bIndexSafe = bIndex == -1 ? difficultyOrder.length : bIndex;
+    
+    return aIndexSafe.compareTo(bIndexSafe);
+  });
+  
+  return variants;
 });
 
 // Provider for exercise progression chain (parent + all variants)
@@ -195,13 +231,40 @@ final exerciseProgressionChainProvider =
   // Get all variants
   final variants = await ref.read(exerciseVariantsProvider(parentId).future);
 
-  // Return parent + variants, sorted by difficulty
+  // Return parent + variants, sorted by difficulty (basic/beginner first, expert last)
   final allExercises = [parent, ...variants];
   allExercises.sort((a, b) {
-    const difficultyOrder = ['beginner', 'intermediate', 'advanced', 'expert'];
-    final aIndex = difficultyOrder.indexOf(a.difficulty);
-    final bIndex = difficultyOrder.indexOf(b.difficulty);
-    return aIndex.compareTo(bIndex);
+    // Handle both 'basic' and 'beginner' as the same level
+    const difficultyOrder = ['basic', 'beginner', 'intermediate', 'advanced', 'expert'];
+    
+    // Normalize difficulty names
+    String normalizeDifficulty(String difficulty) {
+      switch (difficulty.toLowerCase()) {
+        case 'basic':
+        case 'beginner':
+          return 'beginner';
+        case 'intermediate':
+          return 'intermediate';
+        case 'advanced':
+          return 'advanced';
+        case 'expert':
+          return 'expert';
+        default:
+          return 'intermediate'; // Default fallback
+      }
+    }
+    
+    final aNormalized = normalizeDifficulty(a.difficulty);
+    final bNormalized = normalizeDifficulty(b.difficulty);
+    
+    final aIndex = difficultyOrder.indexOf(aNormalized);
+    final bIndex = difficultyOrder.indexOf(bNormalized);
+    
+    // If difficulty not found, put it at the end
+    final aIndexSafe = aIndex == -1 ? difficultyOrder.length : aIndex;
+    final bIndexSafe = bIndex == -1 ? difficultyOrder.length : bIndex;
+    
+    return aIndexSafe.compareTo(bIndexSafe);
   });
 
   return allExercises;

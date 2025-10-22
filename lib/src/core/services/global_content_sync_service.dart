@@ -14,6 +14,9 @@ class GlobalContentSyncService {
     try {
       print('🌍 Syncing global exercises from Supabase...');
 
+      // First, let's check if we can access the exercises table
+      print('🔍 Checking Supabase connection and permissions...');
+      
       // Fetch global exercises from Supabase
       // Note: We'll fetch all exercises since the user_id column may not exist yet
       final globalExercises = await _supabase
@@ -21,25 +24,55 @@ class GlobalContentSyncService {
           .select()
           .order('name');
 
+      print('📊 Found ${globalExercises.length} exercises in Supabase');
+      
+      if (globalExercises.isEmpty) {
+        print('⚠️ No exercises found in Supabase. Check:');
+        print('   1. Are you logged in?');
+        print('   2. Do you have read permissions on exercises table?');
+        print('   3. Are there actually exercises in the table?');
+        return;
+      }
+
+      // Show first few exercises for debugging
+      print('📋 First few exercises:');
+      for (int i = 0; i < (globalExercises.length > 3 ? 3 : globalExercises.length); i++) {
+        final exercise = globalExercises[i];
+        print('   ${i + 1}. ${exercise['name']} (ID: ${exercise['id']})');
+      }
+
       int syncedCount = 0;
+      int errorCount = 0;
+      
       for (final exercise in globalExercises) {
         try {
+          print('🔄 Syncing exercise: ${exercise['name']}');
+          
+          // Debug progression relationships
+          if (exercise['parent_exercise_id'] != null) {
+            print('   📋 Parent: ${exercise['parent_exercise_id']} | Variant: ${exercise['variant_type']}');
+          }
+          
           // Convert to local format and insert/update
           final companion = ExercisesCompanion.insert(
             id: exercise['id'] ?? 'unknown_${DateTime.now().millisecondsSinceEpoch}',
             userId: const Value(null), // Global exercise
             name: exercise['name'] ?? 'Unknown Exercise',
             primaryMuscleGroup: exercise['primary_muscle_group'] ?? 'other',
-            secondaryMuscleGroups: List<String>.from(exercise['secondary_muscle_groups'] ?? []),
-            equipment: exercise['equipment'] ?? 'none',
+            secondaryMuscleGroups: _convertToStringList(exercise['secondary_muscle_groups']),
+            equipment: _convertToStringList(exercise['equipment']).isNotEmpty 
+                ? _convertToStringList(exercise['equipment']).first 
+                : 'none',
             instructions: exercise['instructions'] ?? 'No instructions provided',
-            tags: List<String>.from(exercise['tags'] ?? []),
-            aliases: Value(exercise['aliases'] != null 
-                ? List<String>.from(exercise['aliases'])
+            tags: _convertToStringList(exercise['tags']),
+            aliases: Value(_convertToStringList(exercise['aliases']).isNotEmpty 
+                ? _convertToStringList(exercise['aliases'])
                 : null),
             isBodyweight: Value(exercise['is_bodyweight'] ?? false),
             exerciseType: Value(exercise['exercise_type'] ?? 'weight_reps'),
             category: Value(exercise['category'] ?? 'strength'),
+            parentExerciseId: Value(exercise['parent_exercise_id'] as String?),
+            variantType: Value(exercise['variant_type'] as String?),
             difficulty: Value(exercise['difficulty'] ?? 'intermediate'),
             createdAt: Value(exercise['created_at'] != null
                 ? DateTime.parse(exercise['created_at'])
@@ -51,14 +84,31 @@ class GlobalContentSyncService {
 
           await _db.into(_db.exercises).insertOnConflictUpdate(companion);
           syncedCount++;
+          print('   ✅ Synced successfully');
         } catch (e) {
-          print('⚠️ Error syncing exercise ${exercise['id']}: $e');
+          errorCount++;
+          print('   ❌ Error syncing exercise ${exercise['id']}: $e');
+          print('   📋 Exercise data: ${exercise.toString()}');
         }
       }
 
-      print('✅ Synced $syncedCount global exercises from Supabase');
+      print('📊 Sync Summary:');
+      print('   ✅ Successfully synced: $syncedCount');
+      print('   ❌ Errors: $errorCount');
+      print('   📊 Total processed: ${globalExercises.length}');
+      
+      if (syncedCount > 0) {
+        print('✅ Synced $syncedCount global exercises from Supabase');
+      } else {
+        print('⚠️ No exercises were synced. Check the errors above.');
+      }
     } catch (e) {
       print('❌ Error syncing global exercises: $e');
+      print('🔍 Debug info:');
+      print('   - Supabase client: Available');
+      print('   - Database: Available');
+      print('   - Error type: ${e.runtimeType}');
+      print('   - Error details: $e');
       // Don't throw - sync errors shouldn't break the app
     }
   }
@@ -75,9 +125,30 @@ class GlobalContentSyncService {
           .select()
           .order('name');
 
+      print('📊 Found ${globalTemplates.length} templates in Supabase');
+      
+      if (globalTemplates.isEmpty) {
+        print('⚠️ No templates found in Supabase. Check:');
+        print('   1. Are you logged in?');
+        print('   2. Do you have read permissions on workout_templates table?');
+        print('   3. Are there actually templates in the table?');
+        return;
+      }
+
+      // Show first few templates for debugging
+      print('📋 First few templates:');
+      for (int i = 0; i < (globalTemplates.length > 3 ? 3 : globalTemplates.length); i++) {
+        final template = globalTemplates[i];
+        print('   ${i + 1}. ${template['name']} (ID: ${template['id']})');
+      }
+
       int syncedCount = 0;
+      int errorCount = 0;
+      
       for (final template in globalTemplates) {
         try {
+          print('🔄 Syncing template: ${template['name']}');
+          
           // Convert to local format and insert/update
           final companion = WorkoutTemplatesCompanion.insert(
             id: template['id'] ?? 'unknown_template_${DateTime.now().millisecondsSinceEpoch}',
@@ -103,14 +174,31 @@ class GlobalContentSyncService {
 
           await _db.into(_db.workoutTemplates).insertOnConflictUpdate(companion);
           syncedCount++;
+          print('   ✅ Synced successfully');
         } catch (e) {
-          print('⚠️ Error syncing template ${template['id']}: $e');
+          errorCount++;
+          print('   ❌ Error syncing template ${template['id']}: $e');
+          print('   📋 Template data: ${template.toString()}');
         }
       }
 
-      print('✅ Synced $syncedCount global templates from Supabase');
+      print('📊 Template Sync Summary:');
+      print('   ✅ Successfully synced: $syncedCount');
+      print('   ❌ Errors: $errorCount');
+      print('   📊 Total processed: ${globalTemplates.length}');
+      
+      if (syncedCount > 0) {
+        print('✅ Synced $syncedCount global templates from Supabase');
+      } else {
+        print('⚠️ No templates were synced. Check the errors above.');
+      }
     } catch (e) {
       print('❌ Error syncing global templates: $e');
+      print('🔍 Debug info:');
+      print('   - Supabase client: Available');
+      print('   - Database: Available');
+      print('   - Error type: ${e.runtimeType}');
+      print('   - Error details: $e');
       // Don't throw - sync errors shouldn't break the app
     }
   }
@@ -178,13 +266,16 @@ class GlobalContentSyncService {
     }
   }
 
-  /// Update last sync timestamp
-  Future<void> _updateLastSyncTimestamp() async {
-    try {
-      // This would need to be implemented with SharedPreferences
-      // For now, do nothing
-    } catch (e) {
-      // Ignore errors
+  /// Helper method to safely convert dynamic arrays to String lists
+  List<String> _convertToStringList(dynamic data) {
+    if (data == null) return [];
+    if (data is List) {
+      return data.map((e) => e.toString()).toList();
     }
+    if (data is String) {
+      return [data];
+    }
+    return [];
   }
+
 }
