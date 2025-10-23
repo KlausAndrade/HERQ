@@ -119,21 +119,22 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
     'none',
   ];
 
-  static const variantOptions = [
-    'standard',
-    'assisted',
-    'weighted',
-    'tempo',
-    'pause',
-    'strict',
-    'explosive',
+  static const executionTypeOptions = [
+    'weight_reps',
+    'reps',
+    'weighted_bodyweight',
+    'assisted_bodyweight',
+    'timer',
+    'duration_weight',
+    'distance_duration',
+    'weight_distance',
   ];
 
   @override
   void initState() {
     super.initState();
     selectedEquipment = widget.currentEquipment;
-    selectedVariant = widget.currentVariant ?? 'standard';
+    selectedVariant = widget.currentVariant ?? 'weight_reps';
   }
 
   @override
@@ -196,9 +197,9 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
               const Divider(),
               const SizedBox(height: 6),
 
-              // Variant Type Selection
+              // Execution Type Selection
               Text(
-                'Variant Type',
+                'Execution Type',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -207,20 +208,20 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
               Wrap(
                 spacing: 8,
                 runSpacing: 2,
-                children: variantOptions.map((variant) {
-                  final isSelected = variant == selectedVariant;
+                children: executionTypeOptions.map((executionType) {
+                  final isSelected = executionType == selectedVariant;
                   return ChoiceChip(
-                    label: Text(_formatLabel(variant)),
+                    label: Text(_formatExecutionTypeLabel(executionType)),
                     selected: isSelected,
                     onSelected: (selected) {
-                      final newVariant = selected ? variant : 'standard';
+                      final newExecutionType = selected ? executionType : 'weight_reps';
                       setState(() {
-                        selectedVariant = newVariant;
+                        selectedVariant = newExecutionType;
                       });
                       // Apply change immediately
                       widget.onChanged(
                         selectedEquipment,
-                        newVariant == 'standard' ? null : newVariant,
+                        newExecutionType,
                       );
                     },
                     selectedColor: theme.colorScheme.secondaryContainer,
@@ -228,8 +229,9 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                 }).toList(),
               ),
               
-              // Help text for tempo and pause
-              if (selectedVariant == 'tempo' || selectedVariant == 'pause')
+              // Help text for execution types
+              if (selectedVariant == 'timer' || selectedVariant == 'duration_weight' || 
+                  selectedVariant == 'distance_duration' || selectedVariant == 'weight_distance')
                 Container(
                   margin: const EdgeInsets.only(top: 8),
                   padding: const EdgeInsets.all(12),
@@ -244,7 +246,7 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        selectedVariant == 'tempo' ? 'Tempo Training' : 'Pause Training',
+                        _getExecutionTypeHelpTitle(selectedVariant ?? ''),
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: theme.colorScheme.primary,
@@ -252,9 +254,7 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        selectedVariant == 'tempo' 
-                          ? 'Control the speed of your movement (e.g., 3-1-2-1: 3s down, 1s pause, 2s up, 1s pause)'
-                          : 'Hold at the most difficult part of the movement to increase time under tension',
+                        _getExecutionTypeHelpText(selectedVariant ?? ''),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onPrimaryContainer,
                         ),
@@ -275,6 +275,59 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
       .split('_')
       .map((word) => word[0].toUpperCase() + word.substring(1))
       .join(' ');
+
+  String _formatExecutionTypeLabel(String executionType) {
+    switch (executionType) {
+      case 'weight_reps':
+        return 'Weight & Reps';
+      case 'reps':
+        return 'Bodyweight Reps';
+      case 'weighted_bodyweight':
+        return 'Weighted Bodyweight';
+      case 'assisted_bodyweight':
+        return 'Assisted Bodyweight';
+      case 'timer':
+        return 'Duration';
+      case 'duration_weight':
+        return 'Duration & Weight';
+      case 'distance_duration':
+        return 'Distance & Duration';
+      case 'weight_distance':
+        return 'Weight & Distance';
+      default:
+        return executionType[0].toUpperCase() + executionType.substring(1);
+    }
+  }
+
+  String _getExecutionTypeHelpTitle(String executionType) {
+    switch (executionType) {
+      case 'timer':
+        return 'Duration Training';
+      case 'duration_weight':
+        return 'Weighted Duration';
+      case 'distance_duration':
+        return 'Cardio Training';
+      case 'weight_distance':
+        return 'Weighted Carries';
+      default:
+        return 'Execution Type';
+    }
+  }
+
+  String _getExecutionTypeHelpText(String executionType) {
+    switch (executionType) {
+      case 'timer':
+        return 'Time-based exercises like planks, wall sits, or isometric holds. Track duration in seconds.';
+      case 'duration_weight':
+        return 'Weighted exercises held for time, like farmer\'s carries or weighted planks. Track both weight and duration.';
+      case 'distance_duration':
+        return 'Cardio exercises like running, cycling, or rowing. Track both distance and time.';
+      case 'weight_distance':
+        return 'Weighted carries or sled pushes. Track both weight and distance covered.';
+      default:
+        return 'Select the appropriate execution type for your exercise.';
+    }
+  }
 
   IconData _getEquipmentIconForType(String equipment) {
     switch (equipment.toLowerCase()) {

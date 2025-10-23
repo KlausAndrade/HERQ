@@ -7,6 +7,7 @@ class ActiveWorkout {
     this.elapsedTime = Duration.zero,
     this.totalSets = 0,
     this.totalVolume = 0.0,
+    this.templateId, // ✅ Track template ID for workout sessions
   });
 
   factory ActiveWorkout.fromJson(Map<String, dynamic> json) => ActiveWorkout(
@@ -19,6 +20,7 @@ class ActiveWorkout {
         elapsedTime: Duration(seconds: json['elapsedTimeSeconds'] as int? ?? 0),
         totalSets: json['totalSets'] as int? ?? 0,
         totalVolume: (json['totalVolume'] as num?)?.toDouble() ?? 0.0,
+        templateId: json['templateId'] as String?, // ✅ Include template ID
       );
   final String id;
   final String name;
@@ -27,6 +29,7 @@ class ActiveWorkout {
   final Duration elapsedTime;
   final int totalSets;
   final double totalVolume;
+  final String? templateId; // ✅ Track template ID for workout sessions
 
   // JSON serialization
   Map<String, dynamic> toJson() => {
@@ -37,6 +40,7 @@ class ActiveWorkout {
         'elapsedTimeSeconds': elapsedTime.inSeconds,
         'totalSets': totalSets,
         'totalVolume': totalVolume,
+        'templateId': templateId, // ✅ Include template ID
       };
 
   /// Check if all sets in the workout are completed

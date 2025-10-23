@@ -323,6 +323,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         name: template.name,
         exercises: activeExercises,
         totalSets: activeExercises.length * 3,
+        templateId: templateId, // ✅ Pass template ID to active workout
       );
 
       print('🔍 startWorkoutFromTemplate - Workout state set successfully');
@@ -707,6 +708,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         exerciseType: exercise.exerciseType, // 🔧 FIX: Preserve exercise type!
         equipmentUsed: exercise.equipmentUsed,
         variantType: exercise.variantType,
+        previousSet: exercise.previousSet, // ✅ FIX: Preserve previous set data!
       );
 
       state = ActiveWorkout(
@@ -769,6 +771,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         exerciseType: exercise.exerciseType, // 🔧 FIX: Preserve exercise type!
         equipmentUsed: exercise.equipmentUsed,
         variantType: exercise.variantType,
+        previousSet: exercise.previousSet, // ✅ FIX: Preserve previous set data!
       );
 
       state = ActiveWorkout(
@@ -825,6 +828,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         sets: renumberedSets,
         restTimerSeconds: exercise.restTimerSeconds,
         exerciseType: exercise.exerciseType, // 🔧 FIX: Preserve exercise type!
+        equipmentUsed: exercise.equipmentUsed,
+        variantType: exercise.variantType,
+        previousSet: exercise.previousSet, // ✅ FIX: Preserve previous set data!
       );
 
       state = ActiveWorkout(
@@ -943,6 +949,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         sets: exercise.sets,
         restTimerSeconds: newRestTimerSeconds,
         exerciseType: exercise.exerciseType, // 🔧 FIX: Preserve exercise type!
+        equipmentUsed: exercise.equipmentUsed,
+        variantType: exercise.variantType,
+        previousSet: exercise.previousSet, // ✅ FIX: Preserve previous set data!
       );
 
       state = ActiveWorkout(
@@ -975,21 +984,26 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       final exercise = exercises[exerciseIndex];
 
+      // ✅ FIX: Update exerciseType to match the new execution type
+      final newExerciseType = variantType ?? exercise.exerciseType;
+
       print('🔄 Updating exercise variant:');
       print('   Exercise: ${exercise.name}');
       print(
         '   Old equipment: ${exercise.equipmentUsed} → New: $equipmentUsed',
       );
       print('   Old variant: ${exercise.variantType} → New: $variantType');
+      print('   Old exerciseType: ${exercise.exerciseType} → New: $newExerciseType');
 
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
         name: exercise.name,
         sets: exercise.sets,
         restTimerSeconds: exercise.restTimerSeconds,
-        exerciseType: exercise.exerciseType,
+        exerciseType: newExerciseType, // ✅ Update exerciseType to match execution type
         equipmentUsed: equipmentUsed, // Use new value directly (can be null)
         variantType: variantType, // Use new value directly (can be null)
+        previousSet: exercise.previousSet, // ✅ FIX: Preserve previous set data!
       );
 
       state = ActiveWorkout(
@@ -1200,6 +1214,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                 id: sessionId,
                 userId: UserContextService.instance
                     .getCurrentUserId(), // ✅ USER ISOLATION
+                templateId: Value(workout.templateId), // ✅ Include template ID
                 name: workout.name,
                 startedAt: now.subtract(workout.elapsedTime),
                 completedAt: Value(now),
@@ -1268,6 +1283,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             await supabase.from('workout_sessions').insert({
               'id': sessionId,
               'user_id': user.id,
+              'template_id': workout.templateId, // ✅ Include template ID
               'name': workout.name,
               'started_at': now.subtract(workout.elapsedTime).toIso8601String(),
               'completed_at': now.toIso8601String(),

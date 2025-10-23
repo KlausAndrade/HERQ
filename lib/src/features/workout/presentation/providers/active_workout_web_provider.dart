@@ -111,6 +111,7 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
         name: templateData['name'] as String,
         exercises: activeExercises,
         totalSets: activeExercises.length * 3,
+        templateId: templateId, // ✅ Pass template ID to active workout
       );
 
       print('🏁 New workout created: ${templateData['name']}');
@@ -244,6 +245,7 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       await supabase.from('workout_sessions').insert({
         'id': sessionId,
         'user_id': user.id,
+        'template_id': workout.templateId, // ✅ Include template ID
         'name': workout.name,
         'started_at': now.subtract(workout.elapsedTime).toIso8601String(),
         'completed_at': now.toIso8601String(),

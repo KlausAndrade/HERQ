@@ -59,6 +59,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
   }
 
   String? _initialFolderId;
+  String? _currentFolderId; // ✅ Track current folder ID for editing
 
   @override
   void dispose() {
@@ -90,6 +91,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
               _selectedExerciseIds.addAll(template.exerciseIds);
               _tags.addAll(template.tags);
               _estimatedDuration = template.estimatedDurationMinutes;
+              _currentFolderId = template.folderId; // ✅ Preserve folder ID when editing
               
               print('🔍 TemplateBuilder - Loaded exerciseIds: $_selectedExerciseIds');
               print('🔍 TemplateBuilder - Loaded exerciseIds count: ${_selectedExerciseIds.length}');
@@ -531,7 +533,7 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
           : _descriptionController.text.trim(),
       category: _selectedCategory,
       sortOrder: 0,
-      folderId: _initialFolderId,
+      folderId: widget.templateId != null ? _currentFolderId : _initialFolderId, // ✅ Use current folder ID for editing, initial for creating
       exerciseIds: _selectedExerciseIds,
       tags: _tags,
       estimatedDurationMinutes: _estimatedDuration,

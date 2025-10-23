@@ -26,6 +26,49 @@ final workoutTemplatesProvider =
     await ref.read(globalContentSyncTriggerProvider.notifier).syncGlobalContent();
   }
 
+  // 🌩️ SYNC: Fetch folders from Supabase first
+  try {
+    final user = supabase.auth.currentUser;
+    if (user != null) {
+      print('☁️ Fetching folders from Supabase...');
+
+      final cloudFolders = await supabase
+          .from('template_folders')
+          .select()
+          .eq('user_id', user.id)
+          .order('sort_order');
+
+      // Merge cloud folders into local database
+      for (final folder in cloudFolders) {
+        try {
+          await database.into(database.templateFolders).insertOnConflictUpdate(
+                TemplateFoldersCompanion.insert(
+                  id: folder['id'],
+                  userId: Value(UserContextService.instance.getCurrentUserId()), // ✅ USER ISOLATION
+                  name: folder['name'],
+                  description: Value(folder['description']),
+                  color: Value(folder['color']),
+                  sortOrder: Value(folder['sort_order'] ?? 0),
+                  isExpanded: Value(folder['is_expanded'] ?? true),
+                  createdAt: Value(folder['created_at'] != null
+                      ? DateTime.parse(folder['created_at'])
+                      : DateTime.now()),
+                  updatedAt: Value(folder['updated_at'] != null
+                      ? DateTime.parse(folder['updated_at'])
+                      : DateTime.now()),
+                ),
+              );
+        } catch (e) {
+          print('⚠️ Error syncing folder ${folder['id']}: $e');
+        }
+      }
+
+      print('✅ Synced ${cloudFolders.length} folders from cloud');
+    }
+  } catch (e) {
+    print('⚠️ Folder sync failed, using local data: $e');
+  }
+
   // 🌩️ SYNC: Fetch templates from Supabase
   try {
     final user = supabase.auth.currentUser;
@@ -49,7 +92,8 @@ final workoutTemplatesProvider =
                       .getCurrentUserId(), // ✅ USER ISOLATION
                   name: template['name'],
                   description: template['description'],
-                  category: template['folder_id'] ?? 'Custom',
+                  category: 'Custom', // Keep category as 'Custom' for templates
+                  folderId: template['folder_id'], // Use folder_id for folder assignment
                   sortOrder:
                       template['sort_order'] ?? 0, // Use cloud sort order
                   exerciseIds:
@@ -190,6 +234,7 @@ class TemplateActions {
             'user_id': user.id,
             'name': template.name,
             'description': template.description,
+            'folder_id': template.folderId, // ✅ Include folder_id
             'exercise_ids': template.exerciseIds,
             'created_at': template.createdAt.toIso8601String(),
             'updated_at': template.updatedAt.toIso8601String(),
@@ -221,6 +266,7 @@ class TemplateActions {
           await _supabase.from('workout_templates').update({
             'name': template.name,
             'description': template.description,
+            'folder_id': template.folderId, // ✅ Include folder_id
             'exercise_ids': template.exerciseIds,
             'updated_at': template.updatedAt.toIso8601String(),
           }).eq('id', template.id);

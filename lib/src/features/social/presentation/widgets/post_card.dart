@@ -13,6 +13,7 @@ import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../workout/presentation/providers/active_workout_provider.dart';
+import '../../../workout/presentation/providers/workout_providers.dart';
 import '../providers/social_providers.dart';
 import 'edit_post_dialog.dart';
 
@@ -838,16 +839,11 @@ class PostCard extends ConsumerWidget {
   Future<List<Map<String, dynamic>>> _fetchExercisesFromSession(
       WidgetRef ref, String sessionId) async {
     try {
-      final supabase = ref.read(supabaseClientProvider);
+      print('🔍 Fetching exercises for session: $sessionId');
 
-      print('🔍 Querying Supabase for session: $sessionId');
-
-      // Fetch set entries for this session (without join - workaround for schema cache issue)
-      final setEntriesData = await supabase
-          .from('set_entries')
-          .select()
-          .eq('workout_session_id', sessionId)
-          .order('exercise_id, set_number');
+      // Use the new provider to fetch set entries from Supabase
+      final setEntriesAsync = ref.read(setEntriesBySessionFromSupabaseProvider(sessionId).future);
+      final setEntriesData = await setEntriesAsync;
 
       print('📊 Found ${setEntriesData.length} set entries');
 
@@ -865,6 +861,7 @@ class PostCard extends ConsumerWidget {
       print('📋 Found ${exerciseIds.length} unique exercises');
 
       // Fetch exercise details separately (workaround for FK relationship not in cache)
+      final supabase = ref.read(supabaseClientProvider);
       final exercisesData = await supabase
           .from('exercises')
           .select('id, name, exercise_type, equipment, primary_muscle_group')

@@ -145,49 +145,13 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     super.dispose();
   }
 
-  /// Adjust fields based on variant type
-  List<ExerciseField> _getFieldsForVariant(
-    List<ExerciseField> baseFields,
-    String variantType,
+  /// Adjust fields based on execution type (replaces old variant logic)
+  List<ExerciseField> _getFieldsForExecutionType(
+    String executionType,
   ) {
-    final variant = variantType.toLowerCase();
-
-    // For "assisted" variant: Add or replace with assistanceWeight (-kg)
-    if (variant == 'assisted') {
-      final hasWeight = baseFields.contains(ExerciseField.weight);
-      if (hasWeight) {
-        // Replace existing weight with assistanceWeight
-        return baseFields.map((field) {
-          if (field == ExerciseField.weight) {
-            return ExerciseField.assistanceWeight;
-          }
-          return field;
-        }).toList();
-      } else {
-        // Add assistanceWeight for bodyweight exercises
-        return [ExerciseField.assistanceWeight, ...baseFields];
-      }
-    }
-
-    // For "weighted" variant: Add or replace with addedWeight (+kg)
-    if (variant == 'weighted') {
-      final hasWeight = baseFields.contains(ExerciseField.weight);
-      if (hasWeight) {
-        // Replace existing weight with addedWeight
-        return baseFields.map((field) {
-          if (field == ExerciseField.weight) {
-            return ExerciseField.addedWeight;
-          }
-          return field;
-        }).toList();
-      } else {
-        // Add addedWeight for bodyweight exercises
-        return [ExerciseField.addedWeight, ...baseFields];
-      }
-    }
-
-    // For other variants (standard, tempo, pause), use base fields
-    return baseFields;
+    // Get the configuration for the execution type
+    final config = ExerciseTypeConfig.fromString(executionType);
+    return config.requiredFields;
   }
 
   @override
@@ -211,12 +175,15 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
       );
     }
 
+    // Use execution type to determine fields (replaces old variant logic)
+    final fields = _getFieldsForExecutionType(exerciseTypeString);
     final config = ExerciseTypeConfig.fromString(exerciseTypeString);
-    var fields = config.requiredFields;
-
-    // Override fields based on variant type
-    if (widget.variantType != null && widget.variantType != 'standard') {
-      fields = _getFieldsForVariant(fields, widget.variantType!);
+    
+    // Debug: Log the fields that will be displayed
+    if (widget.setNumber == 1 && widget.isFirstSet) {
+      print('🎯 SetEntryWidget Fields for "${widget.exerciseName}":');
+      print('   executionType="${exerciseTypeString}"');
+      print('   fields=${fields.map((f) => f.name).toList()}');
     }
 
     return Column(

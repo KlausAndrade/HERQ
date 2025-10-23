@@ -77,7 +77,7 @@ final workoutSessionsProvider =
   return sessions;
 });
 
-// Provider for a single workout session by ID
+// Provider for a single workout session by ID (current user only)
 final workoutSessionByIdProvider =
     FutureProvider.family<WorkoutSession?, String>((ref, sessionId) async {
   final database = ref.read(databaseProvider);
@@ -89,6 +89,22 @@ final workoutSessionByIdProvider =
   final results = await (database.select(database.workoutSessions)
         ..where((tbl) =>
             tbl.id.equals(sessionId) & tbl.userId.equals(currentUserId)))
+      .get();
+
+  return results.isNotEmpty ? results.first : null;
+});
+
+// Provider for a single workout session by ID (any user - for social viewing)
+final workoutSessionByIdAnyUserProvider =
+    FutureProvider.family<WorkoutSession?, String>((ref, sessionId) async {
+  final database = ref.read(databaseProvider);
+  if (database == null) {
+    return null;
+  }
+
+  // Don't filter by userId - allow viewing any user's workout sessions
+  final results = await (database.select(database.workoutSessions)
+        ..where((tbl) => tbl.id.equals(sessionId)))
       .get();
 
   return results.isNotEmpty ? results.first : null;
@@ -109,7 +125,7 @@ final workoutTemplateByIdProvider =
   return results.isNotEmpty ? results.first : null;
 });
 
-// Provider for set entries in a workout session
+// Provider for set entries in a workout session (current user only)
 final setEntriesBySessionProvider =
     FutureProvider.family<List<SetEntry>, String>((ref, sessionId) async {
   final database = ref.read(databaseProvider);
@@ -126,6 +142,49 @@ final setEntriesBySessionProvider =
       .get();
 
   return sets;
+});
+
+// Provider for set entries in a workout session (any user - for social viewing)
+final setEntriesBySessionAnyUserProvider =
+    FutureProvider.family<List<SetEntry>, String>((ref, sessionId) async {
+  final database = ref.read(databaseProvider);
+  if (database == null) {
+    return [];
+  }
+
+  // Don't filter by userId - allow viewing any user's set entries
+  final sets = await (database.select(database.setEntries)
+        ..where((tbl) => tbl.workoutSessionId.equals(sessionId))
+        ..orderBy([
+          (tbl) => OrderingTerm.asc(tbl.exerciseId),
+          (tbl) => OrderingTerm.asc(tbl.setNumber),
+        ]))
+      .get();
+
+  return sets;
+});
+
+// Provider for set entries from Supabase (for social viewing)
+final setEntriesBySessionFromSupabaseProvider =
+    FutureProvider.family<List<Map<String, dynamic>>, String>((ref, sessionId) async {
+  final supabase = ref.read(supabaseClientProvider);
+  
+  try {
+    print('🔍 Fetching set entries from Supabase for session: $sessionId');
+    
+    final setEntriesData = await supabase
+        .from('set_entries')
+        .select()
+        .eq('workout_session_id', sessionId)
+        .order('exercise_id, set_number');
+    
+    print('📊 Found ${setEntriesData.length} set entries in Supabase');
+    
+    return setEntriesData;
+  } catch (e) {
+    print('❌ Error fetching set entries from Supabase: $e');
+    return [];
+  }
 });
 
 // Provider for exercise count in a workout session
