@@ -111,6 +111,12 @@ abstract class S {
   /// **'Cancel'**
   String get cancel;
 
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
   /// No description provided for @delete.
   ///
   /// In en, this message translates to:

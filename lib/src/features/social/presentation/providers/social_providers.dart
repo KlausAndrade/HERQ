@@ -122,7 +122,7 @@ final feedPostsProvider =
     // Get posts from followed users
     final postsData = await supabase
         .from('posts')
-        .select('*, profiles!inner(display_name, avatar_url)')
+        .select('*, profiles(display_name, avatar_url)')
         .inFilter('user_id', followingIds)
         .order('created_at', ascending: false)
         .limit(50);
@@ -182,7 +182,7 @@ final explorePostsProvider =
   try {
     final postsData = await supabase
         .from('posts')
-        .select('*, profiles!inner(display_name, avatar_url)')
+        .select('*, profiles(display_name, avatar_url)')
         .order('created_at', ascending: false)
         .limit(50);
 
@@ -203,7 +203,7 @@ final userPostsProvider = FutureProvider.autoDispose
   try {
     final postsData = await supabase
         .from('posts')
-        .select('*, profiles!inner(display_name, avatar_url)')
+        .select('*, profiles(display_name, avatar_url)')
         .eq('user_id', userId)
         .order('created_at', ascending: false)
         .limit(50);
@@ -460,7 +460,7 @@ final singlePostProvider = FutureProvider.autoDispose
   try {
     final data = await supabase.from('posts').select('''
           *,
-          profiles!inner(
+          profiles(
             display_name,
             avatar_url
           )

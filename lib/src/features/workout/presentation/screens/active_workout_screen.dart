@@ -1,21 +1,23 @@
 import 'dart:io';
 
-import 'package:drift/drift.dart' hide Column;
+// import removed: drift not used here
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+// import removed: intl not used here
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../core/database/database.dart';
+// import removed: local database not used for posts here
 import '../../../../core/providers/auth_provider.dart';
-import '../../../../core/providers/database_provider.dart';
+// import removed: local database provider not used for posts here
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/widgets/swipe_back_wrapper.dart';
 import '../../../social/presentation/providers/social_providers.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
 import '../providers/active_workout_provider.dart';
+// import removed: unused
 import '../widgets/exercise_picker_dialog.dart';
 import '../widgets/exercise_variant_picker.dart';
 import '../widgets/rest_timer_widget.dart';
@@ -1090,7 +1092,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       final supabase = ref.read(supabaseClientProvider);
 
       // Insert post - let Supabase auto-generate ID
-      final response = await supabase
+      await supabase
           .from('posts')
           .insert({
             'user_id': currentUser.id,
@@ -1102,28 +1104,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           .select()
           .single();
 
-      final postId = response['id'] as String;
-
-      // Also save to local database (best effort - don't fail if constraints aren't met)
-      try {
-        final db = ref.read(databaseProvider);
-        if (db != null) {
-          await db.into(db.posts).insert(
-                PostsCompanion.insert(
-                  id: postId,
-                  userId: currentUser.id,
-                  caption: caption,
-                  imageUrl: Value(imageUrl),
-                  workoutSessionId: Value(summary.sessionId),
-                  createdAt: Value(DateTime.now()),
-                  updatedAt: Value(DateTime.now()),
-                ),
-              );
-        }
-      } catch (dbError) {
-        // Ignore local DB errors - Supabase is source of truth for posts
-        print('⚠️ Could not save post to local DB (non-critical): $dbError');
-      }
+      // Removed local DB insert; Supabase is the source of truth for posts
 
       // Refresh social feed
       ref.invalidate(feedPostsProvider);

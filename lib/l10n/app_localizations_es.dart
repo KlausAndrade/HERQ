@@ -15,6 +15,9 @@ class SEs extends S {
   String get cancel => 'Cancelar';
 
   @override
+  String get continueButton => 'Continuar';
+
+  @override
   String get delete => 'Eliminar';
 
   @override
