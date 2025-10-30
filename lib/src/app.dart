@@ -8,6 +8,7 @@ import 'core/services/app_lifecycle_observer.dart';
 import 'core/services/deep_link_handler.dart';
 import 'core/theme/app_theme.dart';
 import 'core/ui/notification_redesign/notification_overlay.dart';
+import 'core/providers/telemetry_provider.dart';
 import 'features/onboarding/presentation/splash_screen.dart';
 import 'features/settings/providers/locale_provider.dart';
 import 'features/settings/providers/theme_provider.dart';
@@ -92,6 +93,15 @@ class _HerqAppState extends ConsumerState<HerqApp> {
             setState(() {
               _showSplash = false;
             });
+
+            // Track app open (best-effort, non-blocking)
+            try {
+              final telemetry = ref.read(telemetryProvider);
+              telemetry.trackEvent('app_open', {
+                'platform': Theme.of(context).platform.name,
+                'timestamp': DateTime.now().toIso8601String(),
+              });
+            } catch (_) {}
           },
         ),
       );

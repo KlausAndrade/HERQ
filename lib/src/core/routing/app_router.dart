@@ -39,10 +39,12 @@ import '../../features/admin/presentation/screens/data_sync_screen.dart';
 import '../../features/admin/presentation/screens/database_test_screen.dart';
 import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../widgets/page_transitions.dart';
+import 'telemetry_route_observer.dart';
 
 final routerProvider = Provider<GoRouter>(
   (ref) => GoRouter(
     initialLocation: '/',
+    observers: [TelemetryRouteObserver(ref)],
     redirect: (context, state) {
       final user = Supabase.instance.client.auth.currentUser;
       final isAuthRoute = state.matchedLocation == '/auth';

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/database/fix_display_names.dart';
@@ -254,6 +256,26 @@ class SettingsScreen extends ConsumerWidget {
                   subtitle: const Text('Download your workout data'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showExportDialog(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.analytics_outlined),
+                  title: const Text('Telemetry'),
+                  subtitle: const Text('Help improve HERQ by sending anonymous usage events'),
+                  trailing: FutureBuilder<bool>(
+                    future: _getTelemetryEnabled(),
+                    builder: (context, snapshot) {
+                      final enabled = snapshot.data ?? true;
+                      return Switch(
+                        value: enabled,
+                        onChanged: (value) async {
+                          await _setTelemetryEnabled(value);
+                          // Refresh
+                          (context as Element).markNeedsBuild();
+                        },
+                      );
+                    },
+                  ),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -1833,5 +1855,21 @@ By using HERQ, you agree to these terms.''',
         print('⚠️ Could not remove overlay after error: $e');
       }
     }
+  }
+
+  Future<bool> _getTelemetryEnabled() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool('telemetry_enabled') ?? true;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  Future<void> _setTelemetryEnabled(bool enabled) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('telemetry_enabled', enabled);
+    } catch (_) {}
   }
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/telemetry_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/utils/auth_error_handler.dart';
 
@@ -328,6 +329,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               ? _nameController.text.trim()
               : null,
         );
+        // Telemetry: signup_completed
+        try {
+          final telemetry = ref.read(telemetryProvider);
+          telemetry.trackEvent('signup_completed', {
+            'method': 'email',
+          });
+        } catch (_) {}
 
         if (mounted) {
           NotificationService()
@@ -343,6 +351,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
+
+        // Telemetry: login_completed
+        try {
+          final telemetry = ref.read(telemetryProvider);
+          telemetry.trackEvent('login_completed', {
+            'method': 'email',
+          });
+        } catch (_) {}
 
         if (mounted) {
           context.go('/');
@@ -377,6 +393,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       final success = await authService.signInWithGoogleSafe();
 
       if (success && mounted) {
+        try {
+          ref.read(telemetryProvider).trackEvent('login_completed', {
+            'method': 'google',
+          });
+        } catch (_) {}
         context.go('/');
       }
     } catch (e) {
@@ -411,6 +432,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       final success = await authService.signInWithAppleSafe();
 
       if (success && mounted) {
+        try {
+          ref.read(telemetryProvider).trackEvent('login_completed', {
+            'method': 'apple',
+          });
+        } catch (_) {}
         context.go('/');
       }
     } catch (e) {
@@ -445,6 +471,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       final success = await authService.signInWithFacebookSafe();
 
       if (success && mounted) {
+        try {
+          ref.read(telemetryProvider).trackEvent('login_completed', {
+            'method': 'facebook',
+          });
+        } catch (_) {}
         context.go('/');
       }
     } catch (e) {

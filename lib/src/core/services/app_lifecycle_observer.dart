@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/workout/presentation/providers/active_workout_provider.dart';
 import '../../features/workout/presentation/providers/workout_checkpoint_provider.dart';
 import 'notification_service.dart';
+import '../providers/telemetry_provider.dart';
 
 /// Observer for app lifecycle events
 /// Saves workout checkpoint when app goes to background
@@ -24,11 +25,21 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
         // App is going to background - save checkpoint and schedule notification
         _saveCheckpointOnPause();
         _scheduleWorkoutReminderNotification();
+        try {
+          ref.read(telemetryProvider).trackEvent('app_background', {
+            'timestamp': DateTime.now().toIso8601String(),
+          });
+        } catch (_) {}
         break;
       case AppLifecycleState.resumed:
         // App is coming back to foreground - cancel reminder
         _cancelWorkoutReminderNotification();
         print('📱 App resumed');
+        try {
+          ref.read(telemetryProvider).trackEvent('app_foreground', {
+            'timestamp': DateTime.now().toIso8601String(),
+          });
+        } catch (_) {}
         break;
       case AppLifecycleState.inactive:
         // App is inactive (e.g., during a phone call)

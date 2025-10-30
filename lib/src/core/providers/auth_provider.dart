@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import '../utils/auth_error_handler.dart';
+// telemetry is handled in UI layers where ref is accessible
 
 // Supabase client provider
 final supabaseClientProvider =
