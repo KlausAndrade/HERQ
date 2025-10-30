@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Import the supabase client provider that's defined alongside auth
@@ -14,6 +15,16 @@ final telemetryProvider = Provider<TelemetryService>((ref) {
 class TelemetryService {
   TelemetryService({this.supabase});
   final SupabaseClient? supabase;
+  static const String _prefsKeyEnabled = 'telemetry_enabled';
+
+  Future<bool> _isEnabled() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool(_prefsKeyEnabled) ?? true; // default: enabled
+    } catch (_) {
+      return true;
+    }
+  }
 
   void log(String message) {
     // Local console log
@@ -22,6 +33,9 @@ class TelemetryService {
   }
 
   Future<void> trackEvent(String name, Map<String, dynamic> props) async {
+    if (!await _isEnabled()) {
+      return;
+    }
     // Local log
     // ignore: avoid_print
     print('[telemetry.event] $name: $props');

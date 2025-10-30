@@ -12,6 +12,7 @@ import '../../../../core/services/user_context_service.dart';
 import '../../../../core/services/live_activity_service.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/workout_foreground_service.dart';
+import '../../../../core/providers/telemetry_provider.dart';
 import '../../../gamification/data/providers/gamification_provider.dart';
 import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
@@ -1495,6 +1496,19 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       });
 
       // Return immediately with summary (don't wait for cleanup)
+      // Telemetry: workout_completed (best-effort)
+      try {
+        final telemetry = _ref.read(telemetryProvider);
+        telemetry.trackEvent('workout_completed', {
+          'name': workout.name,
+          'duration_seconds': workout.elapsedTime.inSeconds,
+          'total_sets': totalSets,
+          'total_reps': totalReps,
+          'total_volume': totalVolume,
+          'template_id': workout.templateId,
+        });
+      } catch (_) {}
+
       return summary;
     } catch (e) {
       print('❌ Error finishing workout: $e');

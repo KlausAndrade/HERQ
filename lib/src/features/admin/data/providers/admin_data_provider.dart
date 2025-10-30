@@ -4,6 +4,7 @@ import '../../../../core/database/database.dart' as db;
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/providers/supabase_admin_provider.dart';
 import '../../../../core/providers/admin_provider.dart';
+import '../../../../core/providers/auth_provider.dart';
 
 // Admin Dashboard Data Provider
 final adminDashboardProvider =
@@ -127,9 +128,11 @@ final userManagementProvider =
         localUser = localUsers.isNotEmpty ? localUsers.first : null;
       }
 
-      // Get user metadata
-      final userMetadata = authUser.userMetadata;
-      final appMetadata = authUser.appMetadata;
+      // Get user metadata (default to empty maps for null-safety)
+      final Map<String, dynamic> userMetadata =
+          Map<String, dynamic>.from((authUser.userMetadata ?? const {}));
+      final Map<String, dynamic> appMetadata =
+          Map<String, dynamic>.from((authUser.appMetadata ?? const {}));
 
       // Calculate workout count from local database
       // NOTE: Current schema doesn't have userId in workout sessions
@@ -139,27 +142,31 @@ final userManagementProvider =
       // For now, we can't link workouts to specific users due to schema limitations
       // This would require adding a userId field to the WorkoutSessions table
 
+      final displayName = (userMetadata['display_name'] as String?) ??
+          (userMetadata['full_name'] as String?) ??
+          localUser?.displayName ??
+          (authUser.email != null
+              ? authUser.email!.split('@').first
+              : null) ??
+          'Unknown';
+
       users.add({
         'id': authUser.id,
         'email': authUser.email ?? 'No email',
-        'displayName': userMetadata?['display_name'] ??
-            userMetadata?['full_name'] ??
-            localUser?.displayName ??
-            authUser.email?.split('@')[0] ??
-            'Unknown',
+        'displayName': displayName,
         'createdAt': authUser.createdAt,
         'lastSignInAt': authUser.lastSignInAt,
-        'role': appMetadata?['role'] ?? 'user',
+        'role': appMetadata['role'] ?? 'user',
         'status': authUser.emailConfirmedAt == null ? 'unconfirmed' : 'active',
         'bannedUntil': null, // Supabase User doesn't have bannedUntil field
         'emailConfirmed': authUser.emailConfirmedAt != null,
         'workoutCount': workoutCount,
-        'provider': authUser.appMetadata?['provider'] ?? 'email',
-        'avatarUrl': userMetadata?['avatar_url'],
+        'provider': appMetadata['provider'] ?? 'email',
+        'avatarUrl': userMetadata['avatar_url'],
       });
 
       print(
-          '    - ${userMetadata?['display_name'] ?? authUser.email} (${authUser.email}) - ${workoutCount} workouts');
+          '    - ${userMetadata['display_name'] ?? authUser.email} (${authUser.email}) - ${workoutCount} workouts');
     }
 
     return users;
@@ -271,6 +278,31 @@ final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
       'lastUpdated': DateTime.now().toIso8601String(),
       'error': 'Supabase admin access required',
     };
+  }
+});
+
+// Recent telemetry events (admin-only)
+final recentEventsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final isAdmin = ref.read(isAdminProvider);
+  if (!isAdmin) {
+    throw Exception('Access denied: Admin privileges required');
+  }
+
+  try {
+    final supabase = ref.read(supabaseClientProvider);
+    final data = await supabase
+        .from('events')
+        .select('name, properties, created_at')
+        .order('created_at', ascending: false)
+        .limit(100);
+
+    // Ensure list of maps
+    return (data as List<dynamic>)
+        .map((e) => e as Map<String, dynamic>)
+        .toList();
+  } catch (e) {
+    print('⚠️ Failed to fetch events: $e');
+    return [];
   }
 });
 

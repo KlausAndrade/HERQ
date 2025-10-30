@@ -4,13 +4,23 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/providers/admin_data_provider.dart';
+import '../../../../core/providers/admin_provider.dart';
 
 class AnalyticsScreen extends ConsumerWidget {
   const AnalyticsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Gate access
+    final isAdmin = ref.watch(isAdminProvider);
+    if (!isAdmin) {
+      return const Scaffold(
+        body: Center(child: Text('Access denied')),
+      );
+    }
+
     final analyticsData = ref.watch(analyticsProvider);
+    final recentEvents = ref.watch(recentEventsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -37,6 +47,24 @@ class AnalyticsScreen extends ConsumerWidget {
               _buildSectionHeader(context, 'User Metrics', Colors.blue),
               const SizedBox(height: 12),
               _buildUserMetrics(context, data),
+              const SizedBox(height: 24),
+              _buildSectionHeader(context, 'Recent Events (Last 100)', Colors.teal),
+              const SizedBox(height: 12),
+              recentEvents.when(
+                data: (events) => _buildEventsList(context, events),
+                loading: () => const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+                error: (e, _) => Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text('Failed to load events: $e'),
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
               _buildSectionHeader(context, 'Workout Activity', Colors.green),
               const SizedBox(height: 12),
@@ -589,4 +617,53 @@ class _MetricCard extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _buildEventsList(BuildContext context, List<Map<String, dynamic>> events) {
+  if (events.isEmpty) {
+    return const Card(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: Text('No events found.')),
+      ),
+    );
+  }
+
+  return Card(
+    child: Padding(
+      padding: const EdgeInsets.all(8),
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: events.length,
+        separatorBuilder: (_, __) => const Divider(height: 1),
+        itemBuilder: (context, index) {
+          final e = events[index];
+          final name = e['name'] as String? ?? 'event';
+          final createdAt = e['created_at'] as String?;
+          final props = e['properties'];
+
+          return ListTile(
+            dense: true,
+            leading: const Icon(Icons.bolt, color: Colors.teal),
+            title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+            subtitle: Text(
+              props is Map<String, dynamic>
+                  ? props.entries
+                      .take(3)
+                      .map((kv) => '${kv.key}: ${kv.value}')
+                      .join(' • ')
+                  : props?.toString() ?? '-',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: Text(
+              createdAt != null ? createdAt.substring(0, 19).replaceFirst('T', ' ') : '',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+            ),
+          );
+        },
+      ),
+    ),
+  );
 }
