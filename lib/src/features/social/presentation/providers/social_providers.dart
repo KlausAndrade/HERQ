@@ -5,8 +5,9 @@ import '../../../../core/providers/auth_provider.dart';
 import '../../data/supabase_social_service.dart';
 
 // Supabase client provider
-final supabaseProvider =
-    Provider<SupabaseClient>((ref) => Supabase.instance.client);
+final supabaseProvider = Provider<SupabaseClient>(
+  (ref) => Supabase.instance.client,
+);
 
 // Supabase social service provider
 final supabaseSocialServiceProvider = Provider<SupabaseSocialService>((ref) {
@@ -28,15 +29,15 @@ class SupabasePost {
   });
 
   factory SupabasePost.fromJson(Map<String, dynamic> json) => SupabasePost(
-        id: json['id'] as String,
-        userId: json['user_id'] as String,
-        caption: json['caption'] as String?,
-        imageUrl: json['image_url'] as String?,
-        createdAt: DateTime.parse(json['created_at'] as String),
-        userName: json['profiles']?['display_name'] as String?,
-        userAvatar: json['profiles']?['avatar_url'] as String?,
-        workoutSessionId: json['workout_session_id'] as String?,
-      );
+    id: json['id'] as String,
+    userId: json['user_id'] as String,
+    caption: json['caption'] as String?,
+    imageUrl: json['image_url'] as String?,
+    createdAt: DateTime.parse(json['created_at'] as String),
+    userName: json['profiles']?['display_name'] as String?,
+    userAvatar: json['profiles']?['avatar_url'] as String?,
+    workoutSessionId: json['workout_session_id'] as String?,
+  );
   final String id;
   final String userId;
   final String? caption;
@@ -99,8 +100,9 @@ class SupabaseProfile {
 }
 
 // Feed posts provider (posts from followed users)
-final feedPostsProvider =
-    FutureProvider.autoDispose<List<SupabasePost>>((ref) async {
+final feedPostsProvider = FutureProvider.autoDispose<List<SupabasePost>>((
+  ref,
+) async {
   final supabase = ref.watch(supabaseProvider);
   final user = ref.watch(currentUserProvider);
 
@@ -113,8 +115,9 @@ final feedPostsProvider =
         .select('following_id')
         .eq('follower_id', user.id);
 
-    final followingIds =
-        (followsData as List).map((f) => f['following_id'] as String).toList();
+    final followingIds = (followsData as List)
+        .map((f) => f['following_id'] as String)
+        .toList();
 
     // Include own posts
     followingIds.add(user.id);
@@ -139,8 +142,9 @@ final feedPostsProvider =
 // ===== REAL-TIME STREAM PROVIDERS =====
 
 // Real-time feed posts stream provider
-final feedPostsStreamProvider =
-    StreamProvider.autoDispose<List<SupabasePost>>((ref) {
+final feedPostsStreamProvider = StreamProvider.autoDispose<List<SupabasePost>>((
+  ref,
+) {
   final supabase = ref.watch(supabaseProvider);
   final user = ref.watch(currentUserProvider);
 
@@ -160,23 +164,24 @@ final feedPostsStreamProvider =
 // Real-time comments stream provider
 final postCommentsStreamProvider = StreamProvider.autoDispose
     .family<List<SupabaseComment>, String>((ref, postId) {
-  final supabase = ref.watch(supabaseProvider);
+      final supabase = ref.watch(supabaseProvider);
 
-  return supabase
-      .from('comments')
-      .stream(primaryKey: ['id'])
-      .eq('post_id', postId)
-      .order('created_at', ascending: true)
-      .map(
-        (data) => (data as List)
-            .map((json) => SupabaseComment.fromJson(json))
-            .toList(),
-      );
-});
+      return supabase
+          .from('comments')
+          .stream(primaryKey: ['id'])
+          .eq('post_id', postId)
+          .order('created_at', ascending: true)
+          .map(
+            (data) => (data as List)
+                .map((json) => SupabaseComment.fromJson(json))
+                .toList(),
+          );
+    });
 
 // Explore posts provider (all recent posts)
-final explorePostsProvider =
-    FutureProvider.autoDispose<List<SupabasePost>>((ref) async {
+final explorePostsProvider = FutureProvider.autoDispose<List<SupabasePost>>((
+  ref,
+) async {
   final supabase = ref.watch(supabaseProvider);
 
   try {
@@ -198,49 +203,51 @@ final explorePostsProvider =
 // User posts provider
 final userPostsProvider = FutureProvider.autoDispose
     .family<List<SupabasePost>, String>((ref, userId) async {
-  final supabase = ref.watch(supabaseProvider);
+      final supabase = ref.watch(supabaseProvider);
 
-  try {
-    final postsData = await supabase
-        .from('posts')
-        .select('*, profiles(display_name, avatar_url)')
-        .eq('user_id', userId)
-        .order('created_at', ascending: false)
-        .limit(50);
+      try {
+        final postsData = await supabase
+            .from('posts')
+            .select('*, profiles(display_name, avatar_url)')
+            .eq('user_id', userId)
+            .order('created_at', ascending: false)
+            .limit(50);
 
-    return (postsData as List)
-        .map((json) => SupabasePost.fromJson(json))
-        .toList();
-  } catch (e) {
-    print('Error fetching user posts: $e');
-    return [];
-  }
-});
+        return (postsData as List)
+            .map((json) => SupabasePost.fromJson(json))
+            .toList();
+      } catch (e) {
+        print('Error fetching user posts: $e');
+        return [];
+      }
+    });
 
 // Post comments provider
 final postCommentsProvider = FutureProvider.autoDispose
     .family<List<SupabaseComment>, String>((ref, postId) async {
-  final supabase = ref.watch(supabaseProvider);
+      final supabase = ref.watch(supabaseProvider);
 
-  try {
-    final commentsData = await supabase
-        .from('comments')
-        .select('*, profiles!inner(display_name)')
-        .eq('post_id', postId)
-        .order('created_at', ascending: true);
+      try {
+        final commentsData = await supabase
+            .from('comments')
+            .select('*, profiles!inner(display_name)')
+            .eq('post_id', postId)
+            .order('created_at', ascending: true);
 
-    return (commentsData as List)
-        .map((json) => SupabaseComment.fromJson(json))
-        .toList();
-  } catch (e) {
-    print('Error fetching comments: $e');
-    return [];
-  }
-});
+        return (commentsData as List)
+            .map((json) => SupabaseComment.fromJson(json))
+            .toList();
+      } catch (e) {
+        print('Error fetching comments: $e');
+        return [];
+      }
+    });
 
 // Is following provider
-final isFollowingProvider =
-    FutureProvider.autoDispose.family<bool, String>((ref, userId) async {
+final isFollowingProvider = FutureProvider.autoDispose.family<bool, String>((
+  ref,
+  userId,
+) async {
   final supabase = ref.watch(supabaseProvider);
   final currentUser = ref.watch(currentUserProvider);
 
@@ -264,55 +271,59 @@ final isFollowingProvider =
 // Followers provider
 final followersProvider = FutureProvider.autoDispose
     .family<List<SupabaseProfile>, String>((ref, userId) async {
-  final supabase = ref.watch(supabaseProvider);
+      final supabase = ref.watch(supabaseProvider);
 
-  try {
-    final data = await supabase
-        .from('follows')
-        .select(
-          'profiles!follows_follower_id_fkey(id, display_name, avatar_url, bio)',
-        )
-        .eq('following_id', userId);
+      try {
+        final data = await supabase
+            .from('follows')
+            .select(
+              'profiles!follows_follower_id_fkey(id, display_name, avatar_url, bio)',
+            )
+            .eq('following_id', userId);
 
-    return (data as List)
-        .map((item) => SupabaseProfile.fromJson(item['profiles']))
-        .toList();
-  } catch (e) {
-    print('Error fetching followers: $e');
-    return [];
-  }
-});
+        return (data as List)
+            .map((item) => SupabaseProfile.fromJson(item['profiles']))
+            .toList();
+      } catch (e) {
+        print('Error fetching followers: $e');
+        return [];
+      }
+    });
 
 // Following provider
 final followingProvider = FutureProvider.autoDispose
     .family<List<SupabaseProfile>, String>((ref, userId) async {
-  final supabase = ref.watch(supabaseProvider);
+      final supabase = ref.watch(supabaseProvider);
 
-  try {
-    final data = await supabase
-        .from('follows')
-        .select(
-          'profiles!follows_following_id_fkey(id, display_name, avatar_url, bio)',
-        )
-        .eq('follower_id', userId);
+      try {
+        final data = await supabase
+            .from('follows')
+            .select(
+              'profiles!follows_following_id_fkey(id, display_name, avatar_url, bio)',
+            )
+            .eq('follower_id', userId);
 
-    return (data as List)
-        .map((item) => SupabaseProfile.fromJson(item['profiles']))
-        .toList();
-  } catch (e) {
-    print('Error fetching following: $e');
-    return [];
-  }
-});
+        return (data as List)
+            .map((item) => SupabaseProfile.fromJson(item['profiles']))
+            .toList();
+      } catch (e) {
+        print('Error fetching following: $e');
+        return [];
+      }
+    });
 
 // Followers count provider
-final followersCountProvider =
-    FutureProvider.autoDispose.family<int, String>((ref, userId) async {
+final followersCountProvider = FutureProvider.autoDispose.family<int, String>((
+  ref,
+  userId,
+) async {
   final supabase = ref.watch(supabaseProvider);
 
   try {
-    final response =
-        await supabase.from('follows').select('id').eq('following_id', userId);
+    final response = await supabase
+        .from('follows')
+        .select('id')
+        .eq('following_id', userId);
 
     return (response as List).length;
   } catch (e) {
@@ -322,13 +333,17 @@ final followersCountProvider =
 });
 
 // Following count provider
-final followingCountProvider =
-    FutureProvider.autoDispose.family<int, String>((ref, userId) async {
+final followingCountProvider = FutureProvider.autoDispose.family<int, String>((
+  ref,
+  userId,
+) async {
   final supabase = ref.watch(supabaseProvider);
 
   try {
-    final response =
-        await supabase.from('follows').select('id').eq('follower_id', userId);
+    final response = await supabase
+        .from('follows')
+        .select('id')
+        .eq('follower_id', userId);
 
     return (response as List).length;
   } catch (e) {
@@ -338,8 +353,10 @@ final followingCountProvider =
 });
 
 // Has liked post provider
-final hasLikedPostProvider =
-    FutureProvider.autoDispose.family<bool, String>((ref, postId) async {
+final hasLikedPostProvider = FutureProvider.autoDispose.family<bool, String>((
+  ref,
+  postId,
+) async {
   final supabase = ref.watch(supabaseProvider);
   final currentUser = ref.watch(currentUserProvider);
 
@@ -361,13 +378,17 @@ final hasLikedPostProvider =
 });
 
 // Likes count provider
-final likesCountProvider =
-    FutureProvider.autoDispose.family<int, String>((ref, postId) async {
+final likesCountProvider = FutureProvider.autoDispose.family<int, String>((
+  ref,
+  postId,
+) async {
   final supabase = ref.watch(supabaseProvider);
 
   try {
-    final response =
-        await supabase.from('likes').select('id').eq('post_id', postId);
+    final response = await supabase
+        .from('likes')
+        .select('id')
+        .eq('post_id', postId);
 
     return (response as List).length;
   } catch (e) {
@@ -377,13 +398,17 @@ final likesCountProvider =
 });
 
 // Comments count provider
-final commentsCountProvider =
-    FutureProvider.autoDispose.family<int, String>((ref, postId) async {
+final commentsCountProvider = FutureProvider.autoDispose.family<int, String>((
+  ref,
+  postId,
+) async {
   final supabase = ref.watch(supabaseProvider);
 
   try {
-    final response =
-        await supabase.from('comments').select('id').eq('post_id', postId);
+    final response = await supabase
+        .from('comments')
+        .select('id')
+        .eq('post_id', postId);
 
     return (response as List).length;
   } catch (e) {
@@ -395,81 +420,82 @@ final commentsCountProvider =
 // Search users provider
 final searchUsersProvider = FutureProvider.autoDispose
     .family<List<SupabaseProfile>, String>((ref, query) async {
-  final supabase = ref.watch(supabaseProvider);
+      final supabase = ref.watch(supabaseProvider);
 
-  if (query.isEmpty) return [];
+      if (query.isEmpty) return [];
 
-  try {
-    final data = await supabase
-        .from('profiles')
-        .select('id, display_name, avatar_url, bio')
-        .ilike('display_name', '%$query%')
-        .limit(20);
+      try {
+        final data = await supabase
+            .from('profiles')
+            .select('id, display_name, avatar_url, bio')
+            .ilike('display_name', '%$query%')
+            .limit(20);
 
-    return (data as List)
-        .map((json) => SupabaseProfile.fromJson(json))
-        .toList();
-  } catch (e) {
-    print('Error searching users: $e');
-    return [];
-  }
-});
+        return (data as List)
+            .map((json) => SupabaseProfile.fromJson(json))
+            .toList();
+      } catch (e) {
+        print('Error searching users: $e');
+        return [];
+      }
+    });
 
 // Get user profile by ID
 final userProfileProvider = FutureProvider.autoDispose
     .family<SupabaseProfile?, String>((ref, userId) async {
-  final supabase = ref.watch(supabaseProvider);
+      final supabase = ref.watch(supabaseProvider);
 
-  try {
-    final data = await supabase
-        .from('profiles')
-        .select('id, display_name, avatar_url, bio')
-        .eq('id', userId)
-        .maybeSingle();
+      try {
+        final data = await supabase
+            .from('profiles')
+            .select('id, display_name, avatar_url, bio')
+            .eq('id', userId)
+            .maybeSingle();
 
-    if (data == null) return null;
-    return SupabaseProfile.fromJson(data);
-  } catch (e) {
-    print('Error fetching user profile: $e');
-    return null;
-  }
-});
+        if (data == null) return null;
+        return SupabaseProfile.fromJson(data);
+      } catch (e) {
+        print('Error fetching user profile: $e');
+        return null;
+      }
+    });
 
 // ===== ACTION PROVIDERS =====
 
 // Edit post provider
 final editPostProvider = FutureProvider.autoDispose
     .family<void, ({String postId, String caption})>((ref, params) async {
-  final service = ref.watch(supabaseSocialServiceProvider);
-  await service.updatePost(
-    postId: params.postId,
-    caption: params.caption,
-  );
+      final service = ref.watch(supabaseSocialServiceProvider);
+      await service.updatePost(postId: params.postId, caption: params.caption);
 
-  // Invalidate related providers to refresh data
-  ref.invalidate(singlePostProvider(params.postId));
-  ref.invalidate(feedPostsProvider);
-  ref.invalidate(explorePostsProvider);
-});
+      // Invalidate related providers to refresh data
+      ref.invalidate(singlePostProvider(params.postId));
+      ref.invalidate(feedPostsProvider);
+      ref.invalidate(explorePostsProvider);
+    });
 
 // Get single post by ID
 final singlePostProvider = FutureProvider.autoDispose
     .family<SupabasePost?, String>((ref, postId) async {
-  final supabase = ref.watch(supabaseProvider);
+      final supabase = ref.watch(supabaseProvider);
 
-  try {
-    final data = await supabase.from('posts').select('''
+      try {
+        final data = await supabase
+            .from('posts')
+            .select('''
           *,
           profiles(
             display_name,
             avatar_url
           )
-        ''').eq('id', postId).maybeSingle();
+        ''')
+            .eq('id', postId)
+            .maybeSingle();
 
-    if (data == null) return null;
-    return SupabasePost.fromJson(data);
-  } catch (e) {
-    print('Error fetching post: $e');
-    return null;
-  }
-});
+        if (data == null) return null;
+        return SupabasePost.fromJson(data);
+      } catch (e) {
+        print('Error fetching post: $e');
+        return null;
+      }
+    });

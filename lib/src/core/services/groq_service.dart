@@ -14,10 +14,7 @@ class GroqService {
     }
 
     final apiKey = dotenv.env['GROQ_API_KEY'];
-    _groq = Groq(
-      apiKey: apiKey!,
-      model: _defaultModel,
-    );
+    _groq = Groq(apiKey: apiKey!, model: _defaultModel);
   }
   late final Groq? _groq;
   final bool _isMock;
@@ -27,20 +24,22 @@ class GroqService {
     try {
       // Check MOCK_AI environment variable first
       final mockAi = dotenv.env['MOCK_AI'];
-      
+
       if (mockAi != null && mockAi.toLowerCase() == 'true') {
         return true;
       }
-      
+
       // If MOCK_AI is explicitly set to false, use real API
       if (mockAi != null && mockAi.toLowerCase() == 'false') {
         final apiKey = dotenv.env['GROQ_API_KEY'];
-        if (apiKey == null || apiKey.isEmpty || apiKey == 'your_groq_api_key_here') {
+        if (apiKey == null ||
+            apiKey.isEmpty ||
+            apiKey == 'your_groq_api_key_here') {
           throw Exception('MOCK_AI=false but GROQ_API_KEY is not configured');
         }
         return false;
       }
-      
+
       // Default behavior: check API key
       final apiKey = dotenv.env['GROQ_API_KEY'];
       if (apiKey == null ||
@@ -56,10 +55,7 @@ class GroqService {
   }
 
   /// Send a chat message to Groq and get a response
-  Future<String> chat({
-    required String prompt,
-    String? systemPrompt,
-  }) async {
+  Future<String> chat({required String prompt, String? systemPrompt}) async {
     if (_isMock) {
       // Deterministic mock response for tests
       return Future.value(
@@ -80,13 +76,17 @@ class GroqService {
     } catch (e) {
       if (e is GroqException) {
         // Handle specific error types
-        if (e.message.toLowerCase().contains('rate limit') || 
+        if (e.message.toLowerCase().contains('rate limit') ||
             e.message.toLowerCase().contains('quota') ||
             e.message.toLowerCase().contains('too many requests')) {
-          throw Exception('Rate limit exceeded. Please wait a moment and try again.');
+          throw Exception(
+            'Rate limit exceeded. Please wait a moment and try again.',
+          );
         } else if (e.message.toLowerCase().contains('unauthorized') ||
-                   e.message.toLowerCase().contains('invalid api key')) {
-          throw Exception('Invalid API key. Please check your Groq API configuration.');
+            e.message.toLowerCase().contains('invalid api key')) {
+          throw Exception(
+            'Invalid API key. Please check your Groq API configuration.',
+          );
         } else if (e.message.toLowerCase().contains('timeout')) {
           throw Exception('Request timed out. Please try again.');
         } else {
@@ -102,16 +102,14 @@ class GroqService {
     required String prompt,
     String? systemPrompt,
   }) async {
-    final enhancedSystemPrompt = '''
+    final enhancedSystemPrompt =
+        '''
 ${systemPrompt ?? 'You are a helpful assistant.'}
 
 IMPORTANT: Respond ONLY with valid JSON. Do not include any markdown formatting, code blocks, or explanatory text. Just pure JSON.
 ''';
 
-    return chat(
-      prompt: prompt,
-      systemPrompt: enhancedSystemPrompt,
-    );
+    return chat(prompt: prompt, systemPrompt: enhancedSystemPrompt);
   }
 
   /// Clear chat history

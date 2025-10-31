@@ -6,10 +6,7 @@ import '../../domain/models/analytics_models.dart';
 
 /// Card displaying AI-powered PR predictions
 class PRPredictionsCard extends StatelessWidget {
-  const PRPredictionsCard({
-    required this.predictions,
-    super.key,
-  });
+  const PRPredictionsCard({required this.predictions, super.key});
   final List<PRPrediction> predictions;
 
   @override
@@ -52,10 +49,7 @@ class PRPredictionsCard extends StatelessWidget {
                       ),
                       Text(
                         'AI-powered predictions based on your progress',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -66,10 +60,7 @@ class PRPredictionsCard extends StatelessWidget {
 
             // Predictions list
             ...topPredictions.map(
-              (prediction) => _buildPredictionItem(
-                context,
-                prediction,
-              ),
+              (prediction) => _buildPredictionItem(context, prediction),
             ),
           ],
         ),
@@ -96,8 +87,9 @@ class PRPredictionsCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest
-            .withAlpha((0.3 * 255).round()),
+        color: theme.colorScheme.surfaceContainerHighest.withAlpha(
+          (0.3 * 255).round(),
+        ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: confidenceColor.withAlpha((0.3 * 255).round()),
@@ -149,10 +141,7 @@ class PRPredictionsCard extends StatelessWidget {
                   children: [
                     Text(
                       'Current PR',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -167,10 +156,7 @@ class PRPredictionsCard extends StatelessWidget {
               ),
 
               // Arrow
-              Icon(
-                Icons.arrow_forward,
-                color: theme.colorScheme.primary,
-              ),
+              Icon(Icons.arrow_forward, color: theme.colorScheme.primary),
 
               // Predicted PR
               Expanded(
@@ -179,10 +165,7 @@ class PRPredictionsCard extends StatelessWidget {
                   children: [
                     Text(
                       'Predicted',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -261,19 +244,12 @@ class PRPredictionsCard extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.lightbulb,
-                    size: 16,
-                    color: Colors.blue,
-                  ),
+                  const Icon(Icons.lightbulb, size: 16, color: Colors.blue),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       prediction.recommendations.first,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.blue,
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.blue),
                     ),
                   ),
                 ],

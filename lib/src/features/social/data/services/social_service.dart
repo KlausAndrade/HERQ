@@ -25,8 +25,9 @@ class SocialService {
           avatarUrl: 'https://avatar.iran.liara.run/public/${i + 1}',
           bio: _generateBio(random),
           location: location,
-          joinedAt:
-              DateTime.now().subtract(Duration(days: 30 + random.nextInt(300))),
+          joinedAt: DateTime.now().subtract(
+            Duration(days: 30 + random.nextInt(300)),
+          ),
           totalWorkouts: 20 + random.nextInt(200),
           totalVolume: (50000 + random.nextInt(150000)).toDouble(),
           currentStreak: random.nextInt(30),
@@ -134,8 +135,9 @@ class SocialService {
           score = user.currentStreak.toDouble();
           break;
         case LeaderboardType.prCount:
-          score =
-              (user.totalWorkouts * 0.1).round().toDouble(); // Mock PR count
+          score = (user.totalWorkouts * 0.1)
+              .round()
+              .toDouble(); // Mock PR count
           break;
       }
 

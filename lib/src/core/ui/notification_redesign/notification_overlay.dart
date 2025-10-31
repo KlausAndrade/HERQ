@@ -37,8 +37,8 @@ class _NotificationOverlayState extends ConsumerState<NotificationOverlay>
         setState(() {
           _active.insert(0, n);
           // Auto-dismiss after 5s (unless it has actions)
-          final hasActions = (n.primaryActionLabel != null &&
-                  n.onPrimaryAction != null) ||
+          final hasActions =
+              (n.primaryActionLabel != null && n.onPrimaryAction != null) ||
               (n.secondaryActionLabel != null && n.onSecondaryAction != null);
 
           if (!hasActions) {

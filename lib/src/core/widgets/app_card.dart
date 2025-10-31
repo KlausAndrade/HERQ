@@ -5,12 +5,7 @@ import '../services/haptic_service.dart';
 import '../theme/app_animations.dart';
 import '../theme/app_theme.dart';
 
-enum AppCardVariant {
-  elevated,
-  flat,
-  outlined,
-  glass,
-}
+enum AppCardVariant { elevated, flat, outlined, glass }
 
 class AppCard extends StatefulWidget {
   const AppCard({
@@ -49,8 +44,9 @@ class AppCard extends StatefulWidget {
     properties.add(DiagnosticsProperty<EdgeInsets?>('padding', padding));
     properties.add(DiagnosticsProperty<EdgeInsets?>('margin', margin));
     properties.add(DiagnosticsProperty<Gradient?>('gradient', gradient));
-    properties
-        .add(DiagnosticsProperty<BorderRadius?>('borderRadius', borderRadius));
+    properties.add(
+      DiagnosticsProperty<BorderRadius?>('borderRadius', borderRadius),
+    );
     properties.add(StringProperty('heroTag', heroTag));
     properties.add(DiagnosticsProperty<bool>('enableHaptics', enableHaptics));
     properties.add(DiagnosticsProperty<bool>('animateOnTap', animateOnTap));
@@ -65,16 +61,15 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: AppDurations.fast,
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1, end: 0.98).animate(
-      CurvedAnimation(parent: _controller, curve: AppCurves.snappy),
-    );
-    _elevationAnimation = Tween<double>(begin: 2, end: 8).animate(
-      CurvedAnimation(parent: _controller, curve: AppCurves.smooth),
-    );
+    _controller = AnimationController(duration: AppDurations.fast, vsync: this);
+    _scaleAnimation = Tween<double>(
+      begin: 1,
+      end: 0.98,
+    ).animate(CurvedAnimation(parent: _controller, curve: AppCurves.snappy));
+    _elevationAnimation = Tween<double>(
+      begin: 2,
+      end: 8,
+    ).animate(CurvedAnimation(parent: _controller, curve: AppCurves.smooth));
   }
 
   @override
@@ -118,10 +113,12 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
                 onTapDown: _handleTapDown,
                 onTapUp: _handleTapUp,
                 onTapCancel: _handleTapCancel,
-                borderRadius: widget.borderRadius ??
+                borderRadius:
+                    widget.borderRadius ??
                     BorderRadius.circular(AppTheme.radiusMD),
                 child: Container(
-                  padding: widget.padding ??
+                  padding:
+                      widget.padding ??
                       const EdgeInsets.all(AppTheme.spacingMD),
                   child: widget.child,
                 ),
@@ -133,10 +130,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
     );
 
     if (widget.heroTag != null) {
-      card = Hero(
-        tag: widget.heroTag!,
-        child: card,
-      );
+      card = Hero(tag: widget.heroTag!, child: card);
     }
 
     return card;

@@ -77,10 +77,12 @@ class SwipeBackWrapperWithFeedback extends StatefulWidget {
   final double swipeVelocityThreshold;
 
   @override
-  State<SwipeBackWrapperWithFeedback> createState() => _SwipeBackWrapperWithFeedbackState();
+  State<SwipeBackWrapperWithFeedback> createState() =>
+      _SwipeBackWrapperWithFeedbackState();
 }
 
-class _SwipeBackWrapperWithFeedbackState extends State<SwipeBackWrapperWithFeedback>
+class _SwipeBackWrapperWithFeedbackState
+    extends State<SwipeBackWrapperWithFeedback>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _slideAnimation;
@@ -94,13 +96,9 @@ class _SwipeBackWrapperWithFeedbackState extends State<SwipeBackWrapperWithFeedb
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    _slideAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
+    _slideAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
   }
 
   @override
@@ -128,9 +126,12 @@ class _SwipeBackWrapperWithFeedbackState extends State<SwipeBackWrapperWithFeedb
           setState(() {
             _dragDistance += details.delta.dx;
           });
-          
+
           // Update animation based on drag distance
-          final progress = (_dragDistance / widget.swipeThreshold).clamp(0.0, 1.0);
+          final progress = (_dragDistance / widget.swipeThreshold).clamp(
+            0.0,
+            1.0,
+          );
           _animationController.value = progress;
         }
       },
@@ -141,8 +142,9 @@ class _SwipeBackWrapperWithFeedbackState extends State<SwipeBackWrapperWithFeedb
           });
 
           // Check if swipe should trigger back navigation
-          if (_dragDistance > widget.swipeThreshold || 
-              details.velocity.pixelsPerSecond.dx > widget.swipeVelocityThreshold) {
+          if (_dragDistance > widget.swipeThreshold ||
+              details.velocity.pixelsPerSecond.dx >
+                  widget.swipeVelocityThreshold) {
             _performBackNavigation();
           } else {
             // Animate back to original position
@@ -155,10 +157,10 @@ class _SwipeBackWrapperWithFeedbackState extends State<SwipeBackWrapperWithFeedb
         builder: (context, child) {
           // Calculate the actual drag distance for smooth following
           final screenWidth = MediaQuery.of(context).size.width;
-          final dragOffset = _isDragging 
+          final dragOffset = _isDragging
               ? _dragDistance.clamp(0.0, screenWidth * 0.3)
               : _slideAnimation.value * screenWidth * 0.3;
-          
+
           return Stack(
             children: [
               // Background shadow effect
@@ -174,8 +176,12 @@ class _SwipeBackWrapperWithFeedbackState extends State<SwipeBackWrapperWithFeedb
               Transform.translate(
                 offset: Offset(dragOffset, 0),
                 child: Opacity(
-                  opacity: _isDragging 
-                      ? (1.0 - (_dragDistance / widget.swipeThreshold).clamp(0.0, 0.3))
+                  opacity: _isDragging
+                      ? (1.0 -
+                            (_dragDistance / widget.swipeThreshold).clamp(
+                              0.0,
+                              0.3,
+                            ))
                       : (1.0 - _slideAnimation.value * 0.3),
                   child: widget.child,
                 ),

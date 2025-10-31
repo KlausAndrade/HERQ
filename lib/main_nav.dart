@@ -5,11 +5,7 @@ import 'src/core/routing/app_router.dart';
 import 'src/core/theme/app_theme.dart';
 
 void main() {
-  runApp(
-    const ProviderScope(
-      child: HerqNavApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: HerqNavApp()));
 }
 
 class HerqNavApp extends ConsumerWidget {

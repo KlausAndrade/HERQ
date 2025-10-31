@@ -45,8 +45,9 @@ class CustomRefreshIndicator extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(ObjectFlagProperty<RefreshCallback>.has('onRefresh', onRefresh));
+    properties.add(
+      ObjectFlagProperty<RefreshCallback>.has('onRefresh', onRefresh),
+    );
     properties.add(ColorProperty('color', color));
     properties.add(ColorProperty('backgroundColor', backgroundColor));
     properties.add(DoubleProperty('displacement', displacement));
@@ -77,8 +78,9 @@ class AnimatedRefreshIndicator extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(ObjectFlagProperty<RefreshCallback>.has('onRefresh', onRefresh));
+    properties.add(
+      ObjectFlagProperty<RefreshCallback>.has('onRefresh', onRefresh),
+    );
     properties.add(ColorProperty('color', color));
     properties.add(ColorProperty('backgroundColor', backgroundColor));
   }
@@ -120,8 +122,9 @@ class WorkoutRefreshIndicator extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(ObjectFlagProperty<RefreshCallback>.has('onRefresh', onRefresh));
+    properties.add(
+      ObjectFlagProperty<RefreshCallback>.has('onRefresh', onRefresh),
+    );
     properties.add(ColorProperty('color', color));
   }
 }
@@ -133,10 +136,7 @@ class _WorkoutRefreshIndicatorState extends State<WorkoutRefreshIndicator>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: AppDurations.slow,
-      vsync: this,
-    );
+    _controller = AnimationController(duration: AppDurations.slow, vsync: this);
   }
 
   @override

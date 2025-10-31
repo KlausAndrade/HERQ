@@ -70,10 +70,7 @@ class HapticService {
     final hasVibrator = await Vibration.hasVibrator();
     if (hasVibrator == true) {
       if (intensities != null) {
-        await Vibration.vibrate(
-          pattern: pattern,
-          intensities: intensities,
-        );
+        await Vibration.vibrate(pattern: pattern, intensities: intensities);
       } else {
         await Vibration.vibrate(pattern: pattern);
       }

@@ -6,10 +6,7 @@ import '../../domain/models/analytics_models.dart';
 
 /// Card showing volume trends over time with chart
 class VolumeChartCard extends StatelessWidget {
-  const VolumeChartCard({
-    required this.volumeTrends,
-    super.key,
-  });
+  const VolumeChartCard({required this.volumeTrends, super.key});
   final List<VolumeAnalysis> volumeTrends;
 
   @override
@@ -29,10 +26,7 @@ class VolumeChartCard extends StatelessWidget {
           children: [
             const Text(
               'Volume Trends',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             const Text(
@@ -81,7 +75,8 @@ class VolumeChartCard extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(IterableProperty<VolumeAnalysis>('volumeTrends', volumeTrends));
+    properties.add(
+      IterableProperty<VolumeAnalysis>('volumeTrends', volumeTrends),
+    );
   }
 }

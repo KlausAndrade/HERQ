@@ -5,19 +5,9 @@ import '../services/haptic_service.dart';
 import '../theme/app_animations.dart';
 import '../theme/app_theme.dart';
 
-enum AppButtonVariant {
-  primary,
-  secondary,
-  outline,
-  text,
-  danger,
-}
+enum AppButtonVariant { primary, secondary, outline, text, danger }
 
-enum AppButtonSize {
-  small,
-  medium,
-  large,
-}
+enum AppButtonSize { small, medium, large }
 
 class AppButton extends StatefulWidget {
   const AppButton({
@@ -51,8 +41,9 @@ class AppButton extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(ObjectFlagProperty<VoidCallback?>.has('onPressed', onPressed));
+    properties.add(
+      ObjectFlagProperty<VoidCallback?>.has('onPressed', onPressed),
+    );
     properties.add(EnumProperty<AppButtonVariant>('variant', variant));
     properties.add(EnumProperty<AppButtonSize>('size', size));
     properties.add(DiagnosticsProperty<bool>('isLoading', isLoading));
@@ -73,16 +64,15 @@ class _AppButtonState extends State<AppButton>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: AppDurations.fast,
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1, end: 0.95).animate(
-      CurvedAnimation(parent: _controller, curve: AppCurves.snappy),
-    );
-    _elevationAnimation = Tween<double>(begin: 2, end: 8).animate(
-      CurvedAnimation(parent: _controller, curve: AppCurves.smooth),
-    );
+    _controller = AnimationController(duration: AppDurations.fast, vsync: this);
+    _scaleAnimation = Tween<double>(
+      begin: 1,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: AppCurves.snappy));
+    _elevationAnimation = Tween<double>(
+      begin: 2,
+      end: 8,
+    ).animate(CurvedAnimation(parent: _controller, curve: AppCurves.smooth));
   }
 
   @override
@@ -191,8 +181,9 @@ class _AppButtonState extends State<AppButton>
           boxShadow: isEnabled
               ? [
                   BoxShadow(
-                    color: theme.colorScheme.primary
-                        .withAlpha((0.3 * 255).round()),
+                    color: theme.colorScheme.primary.withAlpha(
+                      (0.3 * 255).round(),
+                    ),
                     blurRadius: _elevationAnimation.value,
                     offset: Offset(0, _elevationAnimation.value / 2),
                   ),
@@ -206,8 +197,9 @@ class _AppButtonState extends State<AppButton>
           boxShadow: isEnabled
               ? [
                   BoxShadow(
-                    color: theme.colorScheme.secondary
-                        .withAlpha((0.3 * 255).round()),
+                    color: theme.colorScheme.secondary.withAlpha(
+                      (0.3 * 255).round(),
+                    ),
                     blurRadius: _elevationAnimation.value,
                     offset: Offset(0, _elevationAnimation.value / 2),
                   ),
@@ -269,9 +261,9 @@ class _AppButtonState extends State<AppButton>
 
   Widget _buildContent(BuildContext context) {
     final textStyle = Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: _getTextColor(context),
-          fontWeight: FontWeight.w600,
-        );
+      color: _getTextColor(context),
+      fontWeight: FontWeight.w600,
+    );
 
     if (widget.isLoading) {
       return Row(
@@ -283,9 +275,7 @@ class _AppButtonState extends State<AppButton>
             height: 16,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                _getTextColor(context),
-              ),
+              valueColor: AlwaysStoppedAnimation<Color>(_getTextColor(context)),
             ),
           ),
           const SizedBox(width: AppTheme.spacingSM),
@@ -302,11 +292,7 @@ class _AppButtonState extends State<AppButton>
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            widget.icon,
-            size: 20,
-            color: _getTextColor(context),
-          ),
+          Icon(widget.icon, size: 20, color: _getTextColor(context)),
           const SizedBox(width: AppTheme.spacingSM),
           DefaultTextStyle(
             style: textStyle ?? const TextStyle(),

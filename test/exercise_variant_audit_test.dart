@@ -29,15 +29,15 @@ void main() {
     );
 
     // Spot-check a few known mappings
-    final weightedPull = await (db.select(db.exercises)
-          ..where((e) => e.id.equals('weighted_pull_up')))
-        .getSingleOrNull();
-    final oneArm = await (db.select(db.exercises)
-          ..where((e) => e.id.equals('one_arm_pushup')))
-        .getSingleOrNull();
-    final hspu = await (db.select(db.exercises)
-          ..where((e) => e.id.equals('handstand_push_up')))
-        .getSingleOrNull();
+    final weightedPull = await (db.select(
+      db.exercises,
+    )..where((e) => e.id.equals('weighted_pull_up'))).getSingleOrNull();
+    final oneArm = await (db.select(
+      db.exercises,
+    )..where((e) => e.id.equals('one_arm_pushup'))).getSingleOrNull();
+    final hspu = await (db.select(
+      db.exercises,
+    )..where((e) => e.id.equals('handstand_push_up'))).getSingleOrNull();
 
     expect(weightedPull, isNotNull);
     expect(weightedPull!.parentExerciseId, equals('pull_up'));

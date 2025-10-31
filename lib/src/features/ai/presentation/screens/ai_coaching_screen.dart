@@ -19,7 +19,7 @@ class AICoachingScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Check if we're in admin mode from provider
     final isAdminMode = ref.watch(currentAdminModeProvider);
-    
+
     return SwipeBackWrapperWithFeedback(
       onSwipeBack: () => context.go('/'),
       child: DefaultTabController(
@@ -36,7 +36,10 @@ class AICoachingScreen extends HookConsumerWidget {
                 if (isAdminMode) ...[
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(12),
@@ -87,7 +90,7 @@ class AICoachingScreen extends HookConsumerWidget {
 /// Tab for building next workout based on user history
 class BuildNextWorkoutTab extends HookConsumerWidget {
   const BuildNextWorkoutTab({super.key, this.isAdminMode = false});
-  
+
   final bool isAdminMode;
 
   @override
@@ -118,16 +121,18 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
                           children: [
                             Text(
                               S.of(context)!.buildMyNextWorkout,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               S.of(context)!.generatePersonalizedWorkout,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
                             ),
                           ],
                         ),
@@ -139,7 +144,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          
+
           // Generate button
           SizedBox(
             width: double.infinity,
@@ -149,12 +154,15 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
               label: Text(S.of(context)!.generateMyNextWorkout),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 8),
-          
+
           // Instructions
           Card(
             child: Padding(
@@ -169,9 +177,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    S.of(context)!.buildWorkoutInstructions,
-                  ),
+                  Text(S.of(context)!.buildWorkoutInstructions),
                 ],
               ),
             ),
@@ -209,11 +215,13 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
 
     try {
       // Trigger the API call
-      final workoutData = await ref.read(generateNextWorkoutProvider(isAdminMode).future);
-      
+      final workoutData = await ref.read(
+        generateNextWorkoutProvider(isAdminMode).future,
+      );
+
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading dialog
-        
+
         // Show results dialog
         showDialog(
           context: context,
@@ -240,9 +248,8 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
                         Expanded(
                           child: Text(
                             S.of(context)!.generatedWorkout,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -255,7 +262,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
                     const SizedBox(height: 2),
                     const Divider(),
                     const SizedBox(height: 2),
-                    
+
                     // Content
                     Flexible(
                       child: SingleChildScrollView(
@@ -264,7 +271,9 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
                           isAdminMode: isAdminMode,
                           onSave: () {
                             Navigator.of(context).pop();
-                            ref.invalidate(generateNextWorkoutProvider(isAdminMode));
+                            ref.invalidate(
+                              generateNextWorkoutProvider(isAdminMode),
+                            );
                           },
                           onStart: () {
                             Navigator.of(context).pop();
@@ -283,7 +292,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading dialog
-        
+
         // Show error dialog
         showDialog(
           context: context,
@@ -313,7 +322,7 @@ class BuildNextWorkoutTab extends HookConsumerWidget {
 /// Tab for optimizing workout folders
 class OptimizeWorkoutsTab extends HookConsumerWidget {
   const OptimizeWorkoutsTab({super.key, this.isAdminMode = false});
-  
+
   final bool isAdminMode;
 
   @override
@@ -344,16 +353,18 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                           children: [
                             Text(
                               S.of(context)!.optimizeMyWorkouts,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               S.of(context)!.aiPoweredOptimization,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
                             ),
                           ],
                         ),
@@ -365,7 +376,7 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Select folder button
           SizedBox(
             width: double.infinity,
@@ -375,12 +386,15 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
               label: Text(S.of(context)!.selectFolderToOptimize),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Instructions
           Card(
             child: Padding(
@@ -395,9 +409,7 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    S.of(context)!.optimizeWorkoutInstructions,
-                  ),
+                  Text(S.of(context)!.optimizeWorkoutInstructions),
                 ],
               ),
             ),
@@ -407,7 +419,10 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
     );
   }
 
-  Future<void> _showFolderSelectionDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showFolderSelectionDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final selectedFolderId = await showDialog<String>(
       context: context,
       builder: (context) => const FolderSelectionDialog(),
@@ -418,7 +433,11 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
     }
   }
 
-  Future<void> _showOptimizationResults(BuildContext context, WidgetRef ref, String folderId) async {
+  Future<void> _showOptimizationResults(
+    BuildContext context,
+    WidgetRef ref,
+    String folderId,
+  ) async {
     final optimizeAsync = ref.watch(optimizeFolderProvider(folderId));
 
     showDialog(
@@ -462,7 +481,7 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                 const SizedBox(height: 16),
                 const Divider(),
                 const SizedBox(height: 16),
-                
+
                 // Content
                 Flexible(
                   child: SingleChildScrollView(
@@ -512,7 +531,9 @@ class OptimizeWorkoutsTab extends HookConsumerWidget {
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
-                                ref.invalidate(optimizeFolderProvider(folderId));
+                                ref.invalidate(
+                                  optimizeFolderProvider(folderId),
+                                );
                               },
                               child: Text(S.of(context)!.tryAgain),
                             ),
@@ -565,16 +586,18 @@ class EvaluateProgressTab extends HookConsumerWidget {
                           children: [
                             Text(
                               S.of(context)!.evaluateMyProgress,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               S.of(context)!.getProfessionalAnalysis,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
                             ),
                           ],
                         ),
@@ -596,7 +619,10 @@ class EvaluateProgressTab extends HookConsumerWidget {
               label: Text(S.of(context)!.startEvaluation),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -616,9 +642,7 @@ class EvaluateProgressTab extends HookConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    S.of(context)!.evaluateProgressInstructions,
-                  ),
+                  Text(S.of(context)!.evaluateProgressInstructions),
                 ],
               ),
             ),
@@ -627,7 +651,9 @@ class EvaluateProgressTab extends HookConsumerWidget {
 
           // Warning/Notice
           Card(
-            color: Theme.of(context).colorScheme.errorContainer.withOpacity(0.3),
+            color: Theme.of(
+              context,
+            ).colorScheme.errorContainer.withOpacity(0.3),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -654,23 +680,26 @@ class EvaluateProgressTab extends HookConsumerWidget {
 
   Future<void> _startEvaluation(BuildContext context, WidgetRef ref) async {
     final l10n = S.of(context)!;
-    
+
     // Check if user has already evaluated today
     try {
       final prefsAsync = await ref.read(userPreferencesProvider.future);
-      final lastEvaluationDate = prefsAsync['lastProgressEvaluationDate'] as String?;
-      
+      final lastEvaluationDate =
+          prefsAsync['lastProgressEvaluationDate'] as String?;
+
       if (lastEvaluationDate != null) {
         final lastDate = DateTime.parse(lastEvaluationDate);
         final today = DateTime.now();
-        
+
         // Check if evaluation was done today
-        if (lastDate.year == today.year && 
-            lastDate.month == today.month && 
+        if (lastDate.year == today.year &&
+            lastDate.month == today.month &&
             lastDate.day == today.day) {
           // Already evaluated today - show message with option to see again
-          final lastResults = prefsAsync['lastProgressEvaluationResults'] as Map<String, dynamic>?;
-          
+          final lastResults =
+              prefsAsync['lastProgressEvaluationResults']
+                  as Map<String, dynamic>?;
+
           if (context.mounted) {
             showDialog(
               context: context,
@@ -682,9 +711,7 @@ class EvaluateProgressTab extends HookConsumerWidget {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(l10n.evaluationAlreadyDone),
-                    ),
+                    Expanded(child: Text(l10n.evaluationAlreadyDone)),
                   ],
                 ),
                 content: Text(l10n.evaluationAlreadyDoneMessage),
@@ -712,7 +739,7 @@ class EvaluateProgressTab extends HookConsumerWidget {
       // If there's an error reading preferences, continue with evaluation
       print('Error checking last evaluation date: $e');
     }
-    
+
     // Show loading dialog
     if (!context.mounted) return;
     showDialog(
@@ -741,7 +768,7 @@ class EvaluateProgressTab extends HookConsumerWidget {
     try {
       // Get current locale
       final locale = ref.read(localeProvider);
-      
+
       // Get evaluation from AI provider
       final evaluation = await ref.read(
         evaluateProgressProvider(
@@ -791,9 +818,12 @@ class EvaluateProgressTab extends HookConsumerWidget {
     }
   }
 
-  void _showEvaluationResults(BuildContext context, Map<String, dynamic> evaluation) {
+  void _showEvaluationResults(
+    BuildContext context,
+    Map<String, dynamic> evaluation,
+  ) {
     final l10n = S.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -815,8 +845,9 @@ class EvaluateProgressTab extends HookConsumerWidget {
                       Theme.of(context).colorScheme.primaryContainer,
                     ],
                   ),
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -826,9 +857,9 @@ class EvaluateProgressTab extends HookConsumerWidget {
                       child: Text(
                         l10n.progressEvaluation,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     IconButton(
@@ -923,8 +954,9 @@ class EvaluateProgressTab extends HookConsumerWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  borderRadius:
-                      const BorderRadius.vertical(bottom: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(12),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.05),
@@ -958,12 +990,14 @@ class EvaluateProgressTab extends HookConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: (color ?? Theme.of(context).colorScheme.primary)
-            .withOpacity(0.1),
+        color: (color ?? Theme.of(context).colorScheme.primary).withOpacity(
+          0.1,
+        ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: (color ?? Theme.of(context).colorScheme.primary)
-              .withOpacity(0.3),
+          color: (color ?? Theme.of(context).colorScheme.primary).withOpacity(
+            0.3,
+          ),
         ),
       ),
       child: Column(
@@ -980,17 +1014,14 @@ class EvaluateProgressTab extends HookConsumerWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: color ?? Theme.of(context).colorScheme.primary,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: color ?? Theme.of(context).colorScheme.primary,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          Text(
-            content,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          Text(content, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );

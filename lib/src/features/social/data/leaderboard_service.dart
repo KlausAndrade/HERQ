@@ -319,8 +319,11 @@ class LeaderboardService {
 
       case Period.weekly:
         final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-        final startOfWeekDay =
-            DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+        final startOfWeekDay = DateTime(
+          startOfWeek.year,
+          startOfWeek.month,
+          startOfWeek.day,
+        );
         final endOfWeek = startOfWeekDay.add(const Duration(days: 7));
         return (startOfWeekDay, endOfWeek);
 

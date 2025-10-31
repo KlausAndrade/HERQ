@@ -5,11 +5,12 @@ import '../../../../core/services/unified_storage_service.dart';
 
 /// Provider for managing per-exercise rest timer preferences
 final exerciseTimerPreferencesProvider =
-    StateNotifierProvider<ExerciseTimerPreferencesNotifier, Map<String, int>>(
-        (ref) {
-  final storage = ref.watch(unifiedStorageProvider);
-  return ExerciseTimerPreferencesNotifier(storage, ref);
-});
+    StateNotifierProvider<ExerciseTimerPreferencesNotifier, Map<String, int>>((
+      ref,
+    ) {
+      final storage = ref.watch(unifiedStorageProvider);
+      return ExerciseTimerPreferencesNotifier(storage, ref);
+    });
 
 class ExerciseTimerPreferencesNotifier extends StateNotifier<Map<String, int>> {
   ExerciseTimerPreferencesNotifier(this._storage, this._ref) : super({}) {

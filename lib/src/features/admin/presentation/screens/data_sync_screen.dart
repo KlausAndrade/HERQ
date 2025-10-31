@@ -60,10 +60,7 @@ class _DataSyncScreenState extends ConsumerState<DataSyncScreen> {
             const SizedBox(height: 24),
             const Text(
               'Sync Options',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -108,10 +105,7 @@ class _DataSyncScreenState extends ConsumerState<DataSyncScreen> {
             const SizedBox(height: 24),
             const Text(
               'Instructions',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -156,8 +150,13 @@ class _DataSyncScreenState extends ConsumerState<DataSyncScreen> {
 
     try {
       // Need to sync folders first to get ID mapping
-      final folderIdMap = await ExerciseSyncService.syncLocalFoldersToSupabase(ref);
-      await ExerciseSyncService.syncLocalTemplatesToSupabase(ref, folderIdMap: folderIdMap);
+      final folderIdMap = await ExerciseSyncService.syncLocalFoldersToSupabase(
+        ref,
+      );
+      await ExerciseSyncService.syncLocalTemplatesToSupabase(
+        ref,
+        folderIdMap: folderIdMap,
+      );
       setState(() {
         _syncStatus = 'Templates synced successfully!';
       });
@@ -204,14 +203,19 @@ class _DataSyncScreenState extends ConsumerState<DataSyncScreen> {
       // 1. Sync exercises
       await ExerciseSyncService.syncLocalExercisesToSupabase(ref);
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // 2. Sync folders (returns ID mapping)
-      final folderIdMap = await ExerciseSyncService.syncLocalFoldersToSupabase(ref);
+      final folderIdMap = await ExerciseSyncService.syncLocalFoldersToSupabase(
+        ref,
+      );
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // 3. Sync templates (using folder ID mapping)
-      await ExerciseSyncService.syncLocalTemplatesToSupabase(ref, folderIdMap: folderIdMap);
-      
+      await ExerciseSyncService.syncLocalTemplatesToSupabase(
+        ref,
+        folderIdMap: folderIdMap,
+      );
+
       setState(() {
         _syncStatus = 'All data synced successfully!';
       });

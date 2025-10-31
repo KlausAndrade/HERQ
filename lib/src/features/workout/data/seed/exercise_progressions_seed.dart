@@ -12,7 +12,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'chest',
     'secondaryMuscleGroups': ['triceps', 'shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'Start in plank position. Lower chest to ground, then push back up.',
+    'instructions':
+        'Start in plank position. Lower chest to ground, then push back up.',
     'tags': ['chest', 'bodyweight', 'compound'],
     'isBodyweight': true,
     'exerciseType': 'reps',
@@ -27,7 +28,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'chest',
     'secondaryMuscleGroups': ['triceps', 'shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'Start in plank position on knees. Lower chest to ground, then push back up.',
+    'instructions':
+        'Start in plank position on knees. Lower chest to ground, then push back up.',
     'tags': ['chest', 'bodyweight', 'regression'],
     'isBodyweight': true,
     'exerciseType': 'reps',
@@ -42,7 +44,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'chest',
     'secondaryMuscleGroups': ['triceps', 'shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'Place hands on elevated surface. Perform push-up with reduced difficulty.',
+    'instructions':
+        'Place hands on elevated surface. Perform push-up with reduced difficulty.',
     'tags': ['chest', 'bodyweight', 'regression'],
     'isBodyweight': true,
     'exerciseType': 'reps',
@@ -57,7 +60,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'chest',
     'secondaryMuscleGroups': ['triceps', 'shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'Place feet on elevated surface. Perform push-up with increased difficulty.',
+    'instructions':
+        'Place feet on elevated surface. Perform push-up with increased difficulty.',
     'tags': ['chest', 'bodyweight', 'progression'],
     'isBodyweight': true,
     'exerciseType': 'reps',
@@ -72,7 +76,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'chest',
     'secondaryMuscleGroups': ['triceps', 'shoulders', 'core'],
     'equipment': 'bodyweight',
-    'instructions': 'Perform push-up with one arm. Keep body straight and controlled.',
+    'instructions':
+        'Perform push-up with one arm. Keep body straight and controlled.',
     'tags': ['chest', 'bodyweight', 'progression', 'core'],
     'isBodyweight': true,
     'exerciseType': 'reps',
@@ -89,7 +94,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'back',
     'secondaryMuscleGroups': ['biceps', 'shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'Hang from bar. Pull body up until chin clears bar, then lower with control.',
+    'instructions':
+        'Hang from bar. Pull body up until chin clears bar, then lower with control.',
     'tags': ['back', 'bodyweight', 'compound'],
     'isBodyweight': true,
     'exerciseType': 'reps',
@@ -151,7 +157,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'legs',
     'secondaryMuscleGroups': ['glutes', 'core'],
     'equipment': 'bodyweight',
-    'instructions': 'Stand with feet shoulder-width apart. Lower until thighs parallel to ground, then stand up.',
+    'instructions':
+        'Stand with feet shoulder-width apart. Lower until thighs parallel to ground, then stand up.',
     'tags': ['legs', 'bodyweight', 'compound'],
     'isBodyweight': true,
     'exerciseType': 'reps',
@@ -166,7 +173,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'legs',
     'secondaryMuscleGroups': ['glutes', 'core'],
     'equipment': 'dumbbell',
-    'instructions': 'Hold dumbbell at chest. Perform squat with weight for assistance.',
+    'instructions':
+        'Hold dumbbell at chest. Perform squat with weight for assistance.',
     'tags': ['legs', 'weighted', 'regression'],
     'isBodyweight': false,
     'exerciseType': 'reps',
@@ -198,7 +206,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'core',
     'secondaryMuscleGroups': ['shoulders', 'glutes'],
     'equipment': 'bodyweight',
-    'instructions': 'Hold straight line from head to heels. Engage core throughout.',
+    'instructions':
+        'Hold straight line from head to heels. Engage core throughout.',
     'tags': ['core', 'bodyweight', 'isometric'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -213,7 +222,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'core',
     'secondaryMuscleGroups': ['shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'Hold plank position on knees. Keep straight line from knees to head.',
+    'instructions':
+        'Hold plank position on knees. Keep straight line from knees to head.',
     'tags': ['core', 'bodyweight', 'regression'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -228,7 +238,8 @@ const exerciseProgressions = [
     'primaryMuscleGroup': 'core',
     'secondaryMuscleGroups': ['obliques', 'shoulders'],
     'equipment': 'bodyweight',
-    'instructions': 'Hold straight line on side. Stack feet and support on forearm.',
+    'instructions':
+        'Hold straight line on side. Stack feet and support on forearm.',
     'tags': ['core', 'bodyweight', 'progression'],
     'isBodyweight': true,
     'exerciseType': 'duration',
@@ -241,13 +252,16 @@ const exerciseProgressions = [
 
 Future<void> seedExerciseProgressions(AppDatabase database) async {
   for (final exercise in exerciseProgressions) {
-    await database.into(database.exercises).insertOnConflictUpdate(
+    await database
+        .into(database.exercises)
+        .insertOnConflictUpdate(
           ExercisesCompanion.insert(
             id: exercise['id']! as String,
             name: exercise['name']! as String,
             primaryMuscleGroup: exercise['primaryMuscleGroup']! as String,
-            secondaryMuscleGroups:
-                List<String>.from(exercise['secondaryMuscleGroups']! as List),
+            secondaryMuscleGroups: List<String>.from(
+              exercise['secondaryMuscleGroups']! as List,
+            ),
             equipment: exercise['equipment']! as String,
             instructions: exercise['instructions']! as String,
             tags: List<String>.from(exercise['tags']! as List),

@@ -5,10 +5,7 @@ import '../../domain/models/analytics_models.dart';
 
 /// Card showing plateau warnings with recommendations
 class PlateauWarningsCard extends StatelessWidget {
-  const PlateauWarningsCard({
-    required this.analysis,
-    super.key,
-  });
+  const PlateauWarningsCard({required this.analysis, super.key});
   final PlateauAnalysis analysis;
 
   @override
@@ -30,10 +27,7 @@ class PlateauWarningsCard extends StatelessWidget {
                 SizedBox(width: 8),
                 Text(
                   'Plateau Alerts',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -43,14 +37,17 @@ class PlateauWarningsCard extends StatelessWidget {
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 12),
-            ...analysis.plateaus.take(3).map(
+            ...analysis.plateaus
+                .take(3)
+                .map(
                   (plateau) => Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: _getSeverityColor(plateau.severity.name)
-                            .withOpacity(0.1),
+                        color: _getSeverityColor(
+                          plateau.severity.name,
+                        ).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: _getSeverityColor(plateau.severity.name),
@@ -76,8 +73,9 @@ class PlateauWarningsCard extends StatelessWidget {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color:
-                                      _getSeverityColor(plateau.severity.name),
+                                  color: _getSeverityColor(
+                                    plateau.severity.name,
+                                  ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
@@ -95,7 +93,9 @@ class PlateauWarningsCard extends StatelessWidget {
                           Text(
                             'No PR in ${plateau.weeksStagnant} weeks',
                             style: const TextStyle(
-                                fontSize: 12, color: Colors.grey),
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
                           if (plateau.recommendations.isNotEmpty) ...[
                             const SizedBox(height: 8),

@@ -140,29 +140,33 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
     if (database == null) return;
 
     try {
-      final exercise = await (database.select(database.exercises)
-            ..where((tbl) => tbl.id.equals(widget.exerciseId!)))
-          .getSingleOrNull();
+      final exercise = await (database.select(
+        database.exercises,
+      )..where((tbl) => tbl.id.equals(widget.exerciseId!))).getSingleOrNull();
 
       if (exercise != null && mounted) {
         setState(() {
           _nameController.text = exercise.name;
           _instructionsController.text = exercise.instructions;
-          _selectedMuscleGroup = _muscleGroups.contains(exercise.primaryMuscleGroup) 
-              ? exercise.primaryMuscleGroup 
+          _selectedMuscleGroup =
+              _muscleGroups.contains(exercise.primaryMuscleGroup)
+              ? exercise.primaryMuscleGroup
               : 'Chest'; // Fallback to ensure valid value
           _selectedSecondaryMuscles.addAll(exercise.secondaryMuscleGroups);
-          _selectedEquipment = _equipmentOptions.contains(exercise.equipment) 
-              ? exercise.equipment 
+          _selectedEquipment = _equipmentOptions.contains(exercise.equipment)
+              ? exercise.equipment
               : 'Barbell'; // Fallback
-          _selectedCategory = _categories.contains(exercise.category) 
-              ? exercise.category 
+          _selectedCategory = _categories.contains(exercise.category)
+              ? exercise.category
               : 'strength'; // Fallback
-          _selectedDifficulty = _difficulties.contains(exercise.difficulty) 
-              ? exercise.difficulty 
+          _selectedDifficulty = _difficulties.contains(exercise.difficulty)
+              ? exercise.difficulty
               : 'intermediate'; // Fallback
-          _selectedExerciseType = _exerciseTypeConfigs.any((config) => config.type.value == exercise.exerciseType)
-              ? exercise.exerciseType 
+          _selectedExerciseType =
+              _exerciseTypeConfigs.any(
+                (config) => config.type.value == exercise.exerciseType,
+              )
+              ? exercise.exerciseType
               : 'weight_reps'; // Fallback
           _isBodyweight = exercise.isBodyweight;
           _selectedTags.addAll(exercise.tags);
@@ -233,18 +237,23 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
       final isEdit = widget.exerciseId != null;
       final isAdminMode = ref.read(currentAdminModeProvider);
-      final exerciseId = isEdit 
-          ? widget.exerciseId! 
-          : isAdminMode 
-              ? const Uuid().v4() // Admin exercises get system IDs
-              : 'custom_${const Uuid().v4()}'; // User exercises get custom_ prefix
+      final exerciseId = isEdit
+          ? widget.exerciseId!
+          : isAdminMode
+          ? const Uuid()
+                .v4() // Admin exercises get system IDs
+          : 'custom_${const Uuid().v4()}'; // User exercises get custom_ prefix
 
       // Get current user ID for user isolation (null for admin mode = system-wide)
-      final currentUserId = isAdminMode ? null : ref.read(currentUserProvider)?.id;
-      
+      final currentUserId = isAdminMode
+          ? null
+          : ref.read(currentUserProvider)?.id;
+
       final companion = ExercisesCompanion.insert(
         id: exerciseId,
-        userId: Value(currentUserId), // ✅ USER ISOLATION: Link to current user (null = admin/system-wide)
+        userId: Value(
+          currentUserId,
+        ), // ✅ USER ISOLATION: Link to current user (null = admin/system-wide)
         name: _nameController.text.trim(),
         primaryMuscleGroup: _selectedMuscleGroup,
         secondaryMuscleGroups: _selectedSecondaryMuscles,
@@ -344,10 +353,7 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
               ),
             )
           else
-            TextButton(
-              onPressed: _saveExercise,
-              child: const Text('Save'),
-            ),
+            TextButton(onPressed: _saveExercise, child: const Text('Save')),
         ],
       ),
       body: Form(
@@ -387,10 +393,8 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
               ),
               items: _muscleGroups
                   .map(
-                    (muscle) => DropdownMenuItem(
-                      value: muscle,
-                      child: Text(muscle),
-                    ),
+                    (muscle) =>
+                        DropdownMenuItem(value: muscle, child: Text(muscle)),
                   )
                   .toList(),
               onChanged: (value) {
@@ -532,11 +536,12 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 8, left: 12, right: 12),
                 child: Text(
-                  ExerciseTypeConfig.fromString(_selectedExerciseType)
-                      .description,
+                  ExerciseTypeConfig.fromString(
+                    _selectedExerciseType,
+                  ).description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             const SizedBox(height: 16),
@@ -611,10 +616,8 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
                         const SizedBox(width: 8),
                         Text(
                           'Exercise Variant',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -636,8 +639,9 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
                         });
                       },
                       title: const Text('This is a variant'),
-                      subtitle:
-                          const Text('Set parent exercise and variant type'),
+                      subtitle: const Text(
+                        'Set parent exercise and variant type',
+                      ),
                     ),
                     if (_isVariant) ...[
                       const SizedBox(height: 16),
@@ -718,29 +722,25 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
     required List<String> options,
     required List<String> selectedValues,
     required Function(String) onChanged,
-  }) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: options.map((option) {
-              final isSelected = selectedValues.contains(option);
-              return FilterChip(
-                label: Text(option),
-                selected: isSelected,
-                onSelected: (_) => onChanged(option),
-              );
-            }).toList(),
-          ),
-        ],
-      );
+  }) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title, style: Theme.of(context).textTheme.titleSmall),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: options.map((option) {
+          final isSelected = selectedValues.contains(option);
+          return FilterChip(
+            label: Text(option),
+            selected: isSelected,
+            onSelected: (_) => onChanged(option),
+          );
+        }).toList(),
+      ),
+    ],
+  );
 
   Widget _buildParentExerciseSelector() {
     final parentExercisesAsync = ref.watch(parentExercisesProvider);

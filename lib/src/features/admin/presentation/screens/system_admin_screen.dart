@@ -126,9 +126,9 @@ class _MonitoringTab extends StatelessWidget {
           children: [
             Text(
               'System Status',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -191,9 +191,9 @@ class _MonitoringTab extends StatelessWidget {
           children: [
             Text(
               'Performance Metrics',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             LayoutBuilder(
@@ -310,8 +310,8 @@ class _MonitoringTab extends StatelessWidget {
                 Text(
                   'Recent Logs',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 TextButton(
                   onPressed: _viewAllLogs,
@@ -391,9 +391,9 @@ class _ConfigurationTab extends StatelessWidget {
           children: [
             Text(
               'App Settings',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _SettingItem(
@@ -443,9 +443,9 @@ class _ConfigurationTab extends StatelessWidget {
           children: [
             Text(
               'Feature Flags',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _FeatureFlag(
@@ -495,9 +495,9 @@ class _ConfigurationTab extends StatelessWidget {
           children: [
             Text(
               'Environment Variables',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _EnvVariable(
@@ -515,11 +515,7 @@ class _ConfigurationTab extends StatelessWidget {
               value: 'gsk_1234567890abcdef...',
               isSecret: true,
             ),
-            _EnvVariable(
-              name: 'APP_VERSION',
-              value: '1.0.0',
-              isSecret: false,
-            ),
+            _EnvVariable(name: 'APP_VERSION', value: '1.0.0', isSecret: false),
           ],
         ),
       ),
@@ -563,9 +559,9 @@ class _MaintenanceTab extends StatelessWidget {
           children: [
             Text(
               'Maintenance Actions',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _MaintenanceAction(
@@ -611,9 +607,9 @@ class _MaintenanceTab extends StatelessWidget {
           children: [
             Text(
               'Database Operations',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _DatabaseOperation(
@@ -651,9 +647,9 @@ class _MaintenanceTab extends StatelessWidget {
           children: [
             Text(
               'System Health',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _HealthCheck(
@@ -721,9 +717,9 @@ class _MaintenanceTab extends StatelessWidget {
       'Create a full backup of all data?',
       () {
         // TODO: Implement data backup
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Backup process started')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Backup process started')));
       },
     );
   }
@@ -851,18 +847,14 @@ class _StatusCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.circle,
-                  size: 12,
-                  color: color,
-                ),
+                Icon(Icons.circle, size: 12, color: color),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -870,10 +862,7 @@ class _StatusCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               status,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: color, fontWeight: FontWeight.bold),
             ),
             Text(
               'Uptime: $uptime',
@@ -924,9 +913,9 @@ class _MetricCard extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
           ],
         ),
@@ -973,17 +962,13 @@ class _LogItem extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              message,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(message, style: Theme.of(context).textTheme.bodyMedium),
           ),
           Text(
             timestamp,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                ),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            ),
           ),
         ],
       ),
@@ -1009,10 +994,7 @@ class _SettingItem extends StatelessWidget {
     return ListTile(
       title: Text(title),
       subtitle: Text(subtitle),
-      trailing: Switch(
-        value: value,
-        onChanged: onChanged,
-      ),
+      trailing: Switch(value: value, onChanged: onChanged),
     );
   }
 }
@@ -1035,10 +1017,7 @@ class _FeatureFlag extends StatelessWidget {
     return ListTile(
       title: Text(name),
       subtitle: Text(description),
-      trailing: Switch(
-        value: enabled,
-        onChanged: onChanged,
-      ),
+      trailing: Switch(value: enabled, onChanged: onChanged),
     );
   }
 }
@@ -1060,18 +1039,15 @@ class _EnvVariable extends StatelessWidget {
       title: Text(name),
       subtitle: Text(
         isSecret ? '••••••••••••••••' : value,
-        style: TextStyle(
-          fontFamily: 'monospace',
-          fontSize: 12,
-        ),
+        style: TextStyle(fontFamily: 'monospace', fontSize: 12),
       ),
       trailing: IconButton(
         icon: const Icon(Icons.copy),
         onPressed: () {
           // TODO: Implement copy to clipboard
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Copied to clipboard')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
         },
       ),
     );
@@ -1144,19 +1120,12 @@ class _HealthCheck extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(
-        Icons.circle,
-        color: color,
-        size: 16,
-      ),
+      leading: Icon(Icons.circle, color: color, size: 16),
       title: Text(title),
       subtitle: Text('Last checked: $lastChecked'),
       trailing: Text(
         status,
-        style: TextStyle(
-          color: color,
-          fontWeight: FontWeight.bold,
-        ),
+        style: TextStyle(color: color, fontWeight: FontWeight.bold),
       ),
     );
   }

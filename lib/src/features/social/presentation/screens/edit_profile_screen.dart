@@ -95,9 +95,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       print('❌ Error picking image: $e');
       // Don't show error for user cancellation
       if (!e.toString().contains('Cancelled by a second request') && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking image: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
       }
     } finally {
       if (mounted) {
@@ -123,10 +123,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         final fileName =
             '${currentUser.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-        await supabase.storage.from('avatars').uploadBinary(
-              '${currentUser.id}/$fileName',
-              _imageBytes!,
-            );
+        await supabase.storage
+            .from('avatars')
+            .uploadBinary('${currentUser.id}/$fileName', _imageBytes!);
 
         avatarUrl = supabase.storage
             .from('avatars')
@@ -215,8 +214,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     backgroundImage: _imageBytes != null
                         ? MemoryImage(_imageBytes!)
                         : (_currentAvatarUrl != null
-                            ? NetworkImage(_currentAvatarUrl!)
-                            : null) as ImageProvider?,
+                                  ? NetworkImage(_currentAvatarUrl!)
+                                  : null)
+                              as ImageProvider?,
                     child: _imageBytes == null && _currentAvatarUrl == null
                         ? Text(
                             (currentUser?.email ?? 'U')[0].toUpperCase(),
@@ -301,9 +301,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             Card(
               child: SwitchListTile(
                 title: Text(S.of(context)!.privateAccount),
-                subtitle: Text(
-                  S.of(context)!.privateAccountDescription,
-                ),
+                subtitle: Text(S.of(context)!.privateAccountDescription),
                 value: _isPrivate,
                 onChanged: (value) => setState(() => _isPrivate = value),
                 secondary: const Icon(Icons.lock_outline),
@@ -314,9 +312,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             // Info text
             Text(
               S.of(context)!.emailCannotBeChanged,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey),
               textAlign: TextAlign.center,
             ),
           ],

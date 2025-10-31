@@ -19,10 +19,7 @@ class WorkoutFilterState {
   final WorkoutFilter filter;
   final String searchQuery;
 
-  WorkoutFilterState copyWith({
-    WorkoutFilter? filter,
-    String? searchQuery,
-  }) =>
+  WorkoutFilterState copyWith({WorkoutFilter? filter, String? searchQuery}) =>
       WorkoutFilterState(
         filter: filter ?? this.filter,
         searchQuery: searchQuery ?? this.searchQuery,
@@ -47,21 +44,22 @@ class WorkoutFilterNotifier extends StateNotifier<WorkoutFilterState> {
 
 final workoutFilterProvider =
     StateNotifierProvider<WorkoutFilterNotifier, WorkoutFilterState>(
-  (ref) => WorkoutFilterNotifier(),
-);
+      (ref) => WorkoutFilterNotifier(),
+    );
 
 // Provider for filtered workout sessions
-final filteredWorkoutSessionsProvider =
-    FutureProvider<List<WorkoutSession>>((ref) async {
+final filteredWorkoutSessionsProvider = FutureProvider<List<WorkoutSession>>((
+  ref,
+) async {
   final database = ref.read(databaseProvider);
   if (database == null) {
     return [];
   }
 
   final filterState = ref.watch(workoutFilterProvider);
-  final sessions = await (database.select(database.workoutSessions)
-        ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)]))
-      .get();
+  final sessions = await (database.select(
+    database.workoutSessions,
+  )..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)])).get();
 
   var filteredSessions = sessions.where((session) {
     // Always filter out incomplete workouts
@@ -72,8 +70,11 @@ final filteredWorkoutSessionsProvider =
       case WorkoutFilter.thisWeek:
         final now = DateTime.now();
         final weekStart = now.subtract(Duration(days: now.weekday - 1));
-        final weekStartDate =
-            DateTime(weekStart.year, weekStart.month, weekStart.day);
+        final weekStartDate = DateTime(
+          weekStart.year,
+          weekStart.month,
+          weekStart.day,
+        );
         return session.startedAt.isAfter(weekStartDate);
       case WorkoutFilter.thisMonth:
         final now = DateTime.now();

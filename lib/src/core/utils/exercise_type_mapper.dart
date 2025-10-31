@@ -136,8 +136,9 @@ class ExerciseTypeMapper {
 
     final isCardioCategory =
         category.contains('cardio') || category.contains('conditioning');
-    final hasDistanceKeyword =
-        distanceDurationKeywords.any((keyword) => name.contains(keyword));
+    final hasDistanceKeyword = distanceDurationKeywords.any(
+      (keyword) => name.contains(keyword),
+    );
 
     return hasDistanceKeyword || isCardioCategory;
   }
@@ -211,9 +212,11 @@ class ExerciseTypeMapper {
       'machine dip',
     ];
 
-    final hasAssistedKeyword =
-        assistedKeywords.any((keyword) => name.contains(keyword));
-    final hasAssistedEquipment = equipment.contains('assisted') ||
+    final hasAssistedKeyword = assistedKeywords.any(
+      (keyword) => name.contains(keyword),
+    );
+    final hasAssistedEquipment =
+        equipment.contains('assisted') ||
         equipment.contains('machine') ||
         equipment.contains('band');
 
@@ -233,7 +236,8 @@ class ExerciseTypeMapper {
         category.contains('calisthenics') || category.contains('bodyweight');
 
     // Check if equipment is bodyweight
-    final isBodyweightEquipment = equipment.contains('bodyweight') ||
+    final isBodyweightEquipment =
+        equipment.contains('bodyweight') ||
         equipment.contains('none') ||
         equipment.isEmpty;
 
@@ -277,8 +281,9 @@ class ExerciseTypeMapper {
       'mountain climber',
     ];
 
-    final hasBodyweightKeyword =
-        bodyweightKeywords.any((keyword) => name.contains(keyword));
+    final hasBodyweightKeyword = bodyweightKeywords.any(
+      (keyword) => name.contains(keyword),
+    );
 
     // Bodyweight if: calisthenics category, bodyweight equipment, or has bodyweight keyword
     // BUT not if it's weighted or assisted
@@ -292,14 +297,7 @@ class ExerciseTypeMapper {
 
   /// Check if base exercise is a bodyweight movement (for assisted detection)
   static bool _isBodyweightExerciseBase(String name) {
-    final bodyweightBases = [
-      'pull',
-      'chin',
-      'dip',
-      'muscle',
-      'push',
-      'squat',
-    ];
+    final bodyweightBases = ['pull', 'chin', 'dip', 'muscle', 'push', 'squat'];
 
     return bodyweightBases.any((base) => name.contains(base));
   }

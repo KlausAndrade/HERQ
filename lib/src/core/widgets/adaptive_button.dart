@@ -28,10 +28,7 @@ class AdaptiveButton extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (icon != null) ...[
-          Icon(icon, size: 20),
-          const SizedBox(width: 2),
-        ],
+        if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: 2)],
         Flexible(
           child: Text(
             label,
@@ -67,17 +64,18 @@ class AdaptiveButton extends StatelessWidget {
   }
 
   ButtonStyle _defaultStyle() => ButtonStyle(
-        minimumSize: WidgetStateProperty.all(const Size(0, 48)),
-        padding: WidgetStateProperty.all(
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        ),
-      );
+    minimumSize: WidgetStateProperty.all(const Size(0, 48)),
+    padding: WidgetStateProperty.all(
+      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(ObjectFlagProperty<VoidCallback?>.has('onPressed', onPressed));
+    properties.add(
+      ObjectFlagProperty<VoidCallback?>.has('onPressed', onPressed),
+    );
     properties.add(DiagnosticsProperty<IconData?>('icon', icon));
     properties.add(StringProperty('label', label));
     properties.add(DiagnosticsProperty<ButtonStyle?>('style', style));
@@ -85,8 +83,4 @@ class AdaptiveButton extends StatelessWidget {
   }
 }
 
-enum ButtonType {
-  filled,
-  outlined,
-  text,
-}
+enum ButtonType { filled, outlined, text }

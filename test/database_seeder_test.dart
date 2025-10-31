@@ -18,9 +18,9 @@ void main() {
     );
 
     // Verify specific folders exist
-    final pplFolder = await (db.select(db.templateFolders)
-          ..where((f) => f.id.equals('fold_ppl')))
-        .getSingleOrNull();
+    final pplFolder = await (db.select(
+      db.templateFolders,
+    )..where((f) => f.id.equals('fold_ppl'))).getSingleOrNull();
     expect(
       pplFolder,
       isNot(null),
@@ -37,9 +37,9 @@ void main() {
     );
 
     // Verify specific template exists
-    final pushTemplate = await (db.select(db.workoutTemplates)
-          ..where((t) => t.id.equals('ppl_push')))
-        .getSingleOrNull();
+    final pushTemplate = await (db.select(
+      db.workoutTemplates,
+    )..where((t) => t.id.equals('ppl_push'))).getSingleOrNull();
     expect(
       pushTemplate,
       isNot(null),

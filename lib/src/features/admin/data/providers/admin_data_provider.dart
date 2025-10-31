@@ -7,8 +7,9 @@ import '../../../../core/providers/admin_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 
 // Admin Dashboard Data Provider
-final adminDashboardProvider =
-    FutureProvider<Map<String, dynamic>>((ref) async {
+final adminDashboardProvider = FutureProvider<Map<String, dynamic>>((
+  ref,
+) async {
   // Check if user is admin first
   final isAdmin = ref.read(isAdminProvider);
   if (!isAdmin) {
@@ -47,8 +48,9 @@ final adminDashboardProvider =
     // Get recent activity (last 7 days)
     final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7));
     final recentWorkouts = workouts
-        .where((w) =>
-            w.completedAt != null && w.completedAt!.isAfter(sevenDaysAgo))
+        .where(
+          (w) => w.completedAt != null && w.completedAt!.isAfter(sevenDaysAgo),
+        )
         .toList();
 
     // Calculate active users (users who have signed in within last 30 days)
@@ -73,7 +75,7 @@ final adminDashboardProvider =
   } catch (e) {
     print('  Error fetching Supabase users: $e');
     print('  Supabase admin access required - no fallback to local users');
-    
+
     // Return empty data when Supabase admin access fails
     return {
       'totalUsers': 0,
@@ -89,8 +91,9 @@ final adminDashboardProvider =
 });
 
 // User Management Data Provider
-final userManagementProvider =
-    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final userManagementProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   // Check if user is admin first
   final isAdmin = ref.read(isAdminProvider);
   if (!isAdmin) {
@@ -129,10 +132,12 @@ final userManagementProvider =
       }
 
       // Get user metadata (default to empty maps for null-safety)
-      final Map<String, dynamic> userMetadata =
-          Map<String, dynamic>.from((authUser.userMetadata ?? const {}));
-      final Map<String, dynamic> appMetadata =
-          Map<String, dynamic>.from((authUser.appMetadata ?? const {}));
+      final Map<String, dynamic> userMetadata = Map<String, dynamic>.from(
+        (authUser.userMetadata ?? const {}),
+      );
+      final Map<String, dynamic> appMetadata = Map<String, dynamic>.from(
+        (authUser.appMetadata ?? const {}),
+      );
 
       // Calculate workout count from local database
       // NOTE: Current schema doesn't have userId in workout sessions
@@ -142,12 +147,11 @@ final userManagementProvider =
       // For now, we can't link workouts to specific users due to schema limitations
       // This would require adding a userId field to the WorkoutSessions table
 
-      final displayName = (userMetadata['display_name'] as String?) ??
+      final displayName =
+          (userMetadata['display_name'] as String?) ??
           (userMetadata['full_name'] as String?) ??
           localUser?.displayName ??
-          (authUser.email != null
-              ? authUser.email!.split('@').first
-              : null) ??
+          (authUser.email != null ? authUser.email!.split('@').first : null) ??
           'Unknown';
 
       users.add({
@@ -166,14 +170,15 @@ final userManagementProvider =
       });
 
       print(
-          '    - ${userMetadata['display_name'] ?? authUser.email} (${authUser.email}) - ${workoutCount} workouts');
+        '    - ${userMetadata['display_name'] ?? authUser.email} (${authUser.email}) - ${workoutCount} workouts',
+      );
     }
 
     return users;
   } catch (e) {
     print('  Error fetching Supabase users: $e');
     print('  Supabase admin access required - no fallback to local users');
-    
+
     // Return empty list when Supabase admin access fails
     return [];
   }
@@ -212,8 +217,9 @@ final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
 
     // Get workouts by day (last 30 days)
     final recentWorkouts = allWorkouts
-        .where((w) =>
-            w.completedAt != null && w.completedAt!.isAfter(thirtyDaysAgo))
+        .where(
+          (w) => w.completedAt != null && w.completedAt!.isAfter(thirtyDaysAgo),
+        )
         .toList();
 
     // Calculate daily workout counts
@@ -254,8 +260,9 @@ final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
       'totalWorkouts': totalWorkouts,
       'recentWorkouts': recentWorkouts.length,
       'dailyWorkouts': dailyWorkouts,
-      'topExercises':
-          topExercises.map((e) => {'name': e.key, 'count': e.value}).toList(),
+      'topExercises': topExercises
+          .map((e) => {'name': e.key, 'count': e.value})
+          .toList(),
       'averageWorkoutsPerUser': totalUsers > 0
           ? (totalWorkouts / totalUsers).toStringAsFixed(1)
           : '0',
@@ -265,7 +272,7 @@ final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
     print('🔍 Analytics Debug:');
     print('  Error fetching Supabase users: $e');
     print('  Supabase admin access required - no fallback to local users');
-    
+
     // Return empty data when Supabase admin access fails
     return {
       'totalUsers': 0,
@@ -282,7 +289,9 @@ final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
 });
 
 // Recent telemetry events (admin-only)
-final recentEventsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final recentEventsProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   final isAdmin = ref.read(isAdminProvider);
   if (!isAdmin) {
     throw Exception('Access denied: Admin privileges required');
@@ -321,8 +330,10 @@ final systemHealthProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   }
 
   // Get database stats
-  final userCount =
-      await database.select(database.users).get().then((users) => users.length);
+  final userCount = await database
+      .select(database.users)
+      .get()
+      .then((users) => users.length);
   final workoutCount = await database
       .select(database.workoutSessions)
       .get()
@@ -337,7 +348,8 @@ final systemHealthProvider = FutureProvider<Map<String, dynamic>>((ref) async {
       .then((exercises) => exercises.length);
 
   // Calculate database size (approximate)
-  final dbSize = (userCount * 0.5 +
+  final dbSize =
+      (userCount * 0.5 +
       workoutCount * 2.0 +
       templateCount * 1.0 +
       exerciseCount * 0.3);
@@ -347,7 +359,8 @@ final systemHealthProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   final allWorkouts = await database.select(database.workoutSessions).get();
   final recentActivity = allWorkouts
       .where(
-          (w) => w.completedAt != null && w.completedAt!.isAfter(last24Hours))
+        (w) => w.completedAt != null && w.completedAt!.isAfter(last24Hours),
+      )
       .length;
 
   return {
@@ -363,8 +376,9 @@ final systemHealthProvider = FutureProvider<Map<String, dynamic>>((ref) async {
 });
 
 // Content Moderation Provider
-final contentModerationProvider =
-    FutureProvider<Map<String, dynamic>>((ref) async {
+final contentModerationProvider = FutureProvider<Map<String, dynamic>>((
+  ref,
+) async {
   // Check if user is admin first
   final isAdmin = ref.read(isAdminProvider);
   if (!isAdmin) {
@@ -379,17 +393,9 @@ final contentModerationProvider =
     // This will show "No content found" message instead of fake data
     print('  No social features implemented yet - returning empty data');
 
-    return {
-      'posts': [],
-      'comments': [],
-      'reports': [],
-    };
+    return {'posts': [], 'comments': [], 'reports': []};
   } catch (e) {
     print('  Error fetching content: $e');
-    return {
-      'posts': [],
-      'comments': [],
-      'reports': [],
-    };
+    return {'posts': [], 'comments': [], 'reports': []};
   }
 });

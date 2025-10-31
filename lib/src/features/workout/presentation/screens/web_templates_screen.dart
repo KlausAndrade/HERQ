@@ -118,10 +118,7 @@ class WebTemplatesScreen extends ConsumerWidget {
         nameController: nameController,
         onSubmit: (name, exerciseIds) async {
           final create = ref.read(createTemplateWebProvider);
-          await create(
-            name: name,
-            exerciseIds: exerciseIds,
-          );
+          await create(name: name, exerciseIds: exerciseIds);
           if (context.mounted) {
             Navigator.pop(context);
           }
@@ -172,11 +169,18 @@ class _CreateTemplateDialog extends ConsumerStatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<TextEditingController>(
-        'nameController', nameController));
     properties.add(
-        ObjectFlagProperty<Function(String name, List<String> exerciseIds)>.has(
-            'onSubmit', onSubmit));
+      DiagnosticsProperty<TextEditingController>(
+        'nameController',
+        nameController,
+      ),
+    );
+    properties.add(
+      ObjectFlagProperty<Function(String name, List<String> exerciseIds)>.has(
+        'onSubmit',
+        onSubmit,
+      ),
+    );
   }
 }
 
@@ -185,97 +189,98 @@ class _CreateTemplateDialogState extends ConsumerState<_CreateTemplateDialog> {
 
   @override
   Widget build(BuildContext context) => Dialog(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    child: Container(
+      constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Create Template',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 24),
+          TextField(
+            controller: widget.nameController,
+            decoration: const InputDecoration(
+              labelText: 'Template Name',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Create Template',
-                style: Theme.of(context).textTheme.headlineSmall,
+                'Select Exercises',
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: widget.nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Template Name',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Select Exercises',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  if (selectedExercises.isNotEmpty)
-                    Chip(
-                      label: Text('${selectedExercises.length} selected'),
-                      backgroundColor: const Color(0xFF6366F1).withOpacity(0.2),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 12),
               if (selectedExercises.isNotEmpty)
                 Chip(
                   label: Text('${selectedExercises.length} selected'),
                   backgroundColor: const Color(0xFF6366F1).withOpacity(0.2),
                 ),
-              const SizedBox(height: 12),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.add),
-                label: const Text('Add Exercises'),
-                onPressed: () async {
-                  final result = await showDialog<Map<String, dynamic>>(
-                    context: context,
-                    builder: (context) => const MultiExercisePickerDialog(),
-                  );
-                  if (result != null && result['exercises'] != null) {
-                    setState(() {
-                      final exercises = result['exercises'] as List;
-                      for (final exercise in exercises) {
-                        if (!selectedExercises.contains(exercise.id)) {
-                          selectedExercises.add(exercise.id);
-                        }
-                      }
-                    });
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (selectedExercises.isNotEmpty)
+            Chip(
+              label: Text('${selectedExercises.length} selected'),
+              backgroundColor: const Color(0xFF6366F1).withOpacity(0.2),
+            ),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.add),
+            label: const Text('Add Exercises'),
+            onPressed: () async {
+              final result = await showDialog<Map<String, dynamic>>(
+                context: context,
+                builder: (context) => const MultiExercisePickerDialog(),
+              );
+              if (result != null && result['exercises'] != null) {
+                setState(() {
+                  final exercises = result['exercises'] as List;
+                  for (final exercise in exercises) {
+                    if (!selectedExercises.contains(exercise.id)) {
+                      selectedExercises.add(exercise.id);
+                    }
                   }
-                },
+                });
+              }
+            },
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
               ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: selectedExercises.isEmpty
-                        ? null
-                        : () {
-                            widget.onSubmit(
-                              widget.nameController.text,
-                              selectedExercises,
-                            );
-                          },
-                    child: const Text('Create'),
-                  ),
-                ],
+              const SizedBox(width: 12),
+              ElevatedButton(
+                onPressed: selectedExercises.isEmpty
+                    ? null
+                    : () {
+                        widget.onSubmit(
+                          widget.nameController.text,
+                          selectedExercises,
+                        );
+                      },
+                child: const Text('Create'),
               ),
             ],
           ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(IterableProperty<String>('selectedExercises', selectedExercises));
+    properties.add(
+      IterableProperty<String>('selectedExercises', selectedExercises),
+    );
   }
 }

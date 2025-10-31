@@ -78,11 +78,11 @@ class AboutHerqScreen extends StatelessWidget {
                                   const SizedBox(height: 12),
                                   Text(
                                     S.of(context)!.appTitle,
-                                    style:
-                                        theme.textTheme.headlineLarge?.copyWith(
-                                      fontWeight: FontWeight.w900,
-                                      color: theme.colorScheme.onSurface,
-                                    ),
+                                    style: theme.textTheme.headlineLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w900,
+                                          color: theme.colorScheme.onSurface,
+                                        ),
                                   ),
                                 ],
                               );
@@ -189,8 +189,9 @@ class AboutHerqScreen extends StatelessWidget {
                             subtitle: const Text('Get in touch'),
                             trailing: const Icon(Icons.open_in_new),
                             onTap: () async {
-                              final uri =
-                                  Uri.parse('https://herq.app/#contact');
+                              final uri = Uri.parse(
+                                'https://herq.app/#contact',
+                              );
                               if (await canLaunchUrl(uri)) {
                                 await launchUrl(
                                   uri,

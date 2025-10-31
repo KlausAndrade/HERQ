@@ -3,8 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:herq/src/core/ui/notification_redesign/notification_card.dart';
 
 void main() {
-  testWidgets('NotificationCard renders and action buttons call callbacks',
-      (WidgetTester tester) async {
+  testWidgets('NotificationCard renders and action buttons call callbacks', (
+    WidgetTester tester,
+  ) async {
     var primaryPressed = false;
     var secondaryPressed = false;
 

@@ -22,10 +22,7 @@ class SupabaseSocialService {
   }
 
   /// Update/Edit a post
-  Future<void> updatePost({
-    required String postId,
-    String? caption,
-  }) async {
+  Future<void> updatePost({required String postId, String? caption}) async {
     final updates = <String, dynamic>{
       'updated_at': DateTime.now().toIso8601String(),
     };
@@ -71,8 +68,9 @@ class SupabaseSocialService {
             final filePath = pathSegments.sublist(bucketIndex + 1).join('/');
             print('Deleting from storage: $filePath');
 
-            final result =
-                await _supabase.storage.from('post-images').remove([filePath]);
+            final result = await _supabase.storage.from('post-images').remove([
+              filePath,
+            ]);
             print('Storage deletion result: $result');
           } else {
             print('Could not find post-images bucket in URL path');

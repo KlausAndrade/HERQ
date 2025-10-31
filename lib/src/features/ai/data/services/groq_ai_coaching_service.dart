@@ -22,16 +22,18 @@ class GroqAICoachingService {
   }) async {
     try {
       // Get recent workout history
-      final workoutHistory = await (_database.select(_database.workoutSessions)
-            ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
-            ..limit(10))
-          .get();
+      final workoutHistory =
+          await (_database.select(_database.workoutSessions)
+                ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
+                ..limit(10))
+              .get();
 
       // Get user's PRs
-      final prs = await (_database.select(_database.personalRecords)
-            ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)])
-            ..limit(20))
-          .get();
+      final prs =
+          await (_database.select(_database.personalRecords)
+                ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)])
+                ..limit(20))
+              .get();
 
       const systemPrompt = '''
 You are an expert fitness coach and exercise physiologist. 
@@ -96,26 +98,28 @@ Respond with JSON array of workout recommendations:
   ) async {
     try {
       // Get exercise history
-      final exercise = await (_database.select(_database.exercises)
-            ..where((e) => e.id.equals(exerciseId)))
-          .getSingleOrNull();
+      final exercise = await (_database.select(
+        _database.exercises,
+      )..where((e) => e.id.equals(exerciseId))).getSingleOrNull();
 
       if (exercise == null) {
         throw Exception('Exercise not found');
       }
 
       // Get recent PRs for this exercise
-      final prs = await (_database.select(_database.personalRecords)
-            ..where((pr) => pr.exerciseId.equals(exerciseId))
-            ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)])
-            ..limit(5))
-          .get();
+      final prs =
+          await (_database.select(_database.personalRecords)
+                ..where((pr) => pr.exerciseId.equals(exerciseId))
+                ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)])
+                ..limit(5))
+              .get();
 
       const systemPrompt = '''
 You are a strength coach specializing in progressive overload.
 Provide evidence-based recommendations for increasing weight, reps, or volume safely.''';
 
-      final userPrompt = '''Suggest progressive overload for this exercise:
+      final userPrompt =
+          '''Suggest progressive overload for this exercise:
 
 Exercise: ${exercise.name}
 Type: ${exercise.exerciseType}
@@ -154,16 +158,18 @@ Provide 2-3 progressive overload options in JSON:
   Future<RecoveryAnalysis> getRecoveryAnalysis(String userId) async {
     try {
       // Get recent workouts
-      final recentWorkouts = await (_database.select(_database.workoutSessions)
-            ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
-            ..limit(7))
-          .get();
+      final recentWorkouts =
+          await (_database.select(_database.workoutSessions)
+                ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
+                ..limit(7))
+              .get();
 
       const systemPrompt = '''
 You are a sports recovery specialist.
 Analyze workout patterns and provide evidence-based recovery recommendations.''';
 
-      final userPrompt = '''Analyze recovery needs based on recent training:
+      final userPrompt =
+          '''Analyze recovery needs based on recent training:
 
 Last 7 Workouts:
 ${recentWorkouts.map((w) => '- ${w.startedAt.toString().split(' ')[0]}: ${(w.totalDurationSeconds ?? 0) ~/ 60} min').join('\n')}
@@ -203,10 +209,11 @@ Provide recovery analysis in JSON:
   /// Get general AI coaching suggestions
   Future<List<AISuggestion>> getGeneralSuggestions(String userId) async {
     try {
-      final workouts = await (_database.select(_database.workoutSessions)
-            ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
-            ..limit(5))
-          .get();
+      final workouts =
+          await (_database.select(_database.workoutSessions)
+                ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
+                ..limit(5))
+              .get();
 
       const systemPrompt = '''
 You are a comprehensive fitness coach.
@@ -248,9 +255,9 @@ Generate suggestions in JSON array:
     List<String>? limitedBodyParts,
   }) async {
     try {
-      final exercise = await (_database.select(_database.exercises)
-            ..where((e) => e.id.equals(exerciseId)))
-          .getSingleOrNull();
+      final exercise = await (_database.select(
+        _database.exercises,
+      )..where((e) => e.id.equals(exerciseId))).getSingleOrNull();
 
       if (exercise == null) {
         return ['No substitutions available'];
@@ -260,7 +267,8 @@ Generate suggestions in JSON array:
 You are an exercise science expert.
 Suggest equivalent exercises that target the same muscle groups.''';
 
-      final userPrompt = '''Find substitutions for: ${exercise.name}
+      final userPrompt =
+          '''Find substitutions for: ${exercise.name}
 
 Primary muscle: ${exercise.primaryMuscleGroup}
 ${availableEquipment != null ? 'Available equipment: ${availableEquipment.join(", ")}' : ''}
@@ -308,25 +316,32 @@ List 3-5 substitute exercises (just names, one per line).''';
     print('🤖 Using GROQ service for generateNextWorkout');
     try {
       // Get last 14 completed workout sessions
-      final workoutHistory = await (_database.select(_database.workoutSessions)
-            ..where((w) => w.completedAt.isNotNull())
-            ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
-            ..limit(14))
-          .get();
+      final workoutHistory =
+          await (_database.select(_database.workoutSessions)
+                ..where((w) => w.completedAt.isNotNull())
+                ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
+                ..limit(14))
+              .get();
 
       if (workoutHistory.isEmpty) {
-        throw Exception('No workout history found. Complete some workouts first!');
+        throw Exception(
+          'No workout history found. Complete some workouts first!',
+        );
       }
 
       // Build comprehensive workout history JSON
       final workoutHistoryData = <Map<String, dynamic>>[];
-      
+
       for (final session in workoutHistory) {
         // Get all set entries for this session
-        final setEntries = await (_database.select(_database.setEntries)
-              ..where((se) => se.workoutSessionId.equals(session.id))
-              ..orderBy([(se) => OrderingTerm.asc(se.exerciseId), (se) => OrderingTerm.asc(se.setNumber)]))
-            .get();
+        final setEntries =
+            await (_database.select(_database.setEntries)
+                  ..where((se) => se.workoutSessionId.equals(session.id))
+                  ..orderBy([
+                    (se) => OrderingTerm.asc(se.exerciseId),
+                    (se) => OrderingTerm.asc(se.setNumber),
+                  ]))
+                .get();
 
         // Group sets by exercise
         final exerciseGroups = <String, List<SetEntry>>{};
@@ -339,31 +354,35 @@ List 3-5 substitute exercises (just names, one per line).''';
         for (final entry in exerciseGroups.entries) {
           final exerciseId = entry.key;
           final sets = entry.value;
-          
+
           // Get exercise details
-          final exercise = await (_database.select(_database.exercises)
-                ..where((e) => e.id.equals(exerciseId)))
-              .getSingleOrNull();
+          final exercise = await (_database.select(
+            _database.exercises,
+          )..where((e) => e.id.equals(exerciseId))).getSingleOrNull();
 
           if (exercise != null) {
-            final exerciseSets = sets.map((set) => {
-              'number': set.setNumber,
-              'weight': set.weight,
-              'reps': set.reps,
-              'rpe': set.rpe,
-              'durationSeconds': set.durationSeconds,
-              'distance': set.distance,
-              'assistanceWeight': set.assistanceWeight,
-              'addedWeight': set.addedWeight,
-              'restDurationSeconds': set.restDurationSeconds,
-              'isWarmup': set.isWarmup,
-              'isDropSet': set.isDropSet,
-              'isFailure': set.isFailure,
-              'setType': set.setType,
-              'equipmentUsed': set.equipmentUsed,
-              'variantType': set.variantType,
-              'notes': set.notes,
-            }).toList();
+            final exerciseSets = sets
+                .map(
+                  (set) => {
+                    'number': set.setNumber,
+                    'weight': set.weight,
+                    'reps': set.reps,
+                    'rpe': set.rpe,
+                    'durationSeconds': set.durationSeconds,
+                    'distance': set.distance,
+                    'assistanceWeight': set.assistanceWeight,
+                    'addedWeight': set.addedWeight,
+                    'restDurationSeconds': set.restDurationSeconds,
+                    'isWarmup': set.isWarmup,
+                    'isDropSet': set.isDropSet,
+                    'isFailure': set.isFailure,
+                    'setType': set.setType,
+                    'equipmentUsed': set.equipmentUsed,
+                    'variantType': set.variantType,
+                    'notes': set.notes,
+                  },
+                )
+                .toList();
 
             exercises.add({
               'exerciseId': exerciseId,
@@ -394,24 +413,29 @@ List 3-5 substitute exercises (just names, one per line).''';
       }
 
       // Get available exercises from database
-      final availableExercises = await (_database.select(_database.exercises)
-            ..orderBy([(e) => OrderingTerm.asc(e.name)]))
-          .get();
+      final availableExercises = await (_database.select(
+        _database.exercises,
+      )..orderBy([(e) => OrderingTerm.asc(e.name)])).get();
 
       // Build available exercises data
-      final availableExercisesData = availableExercises.map((exercise) => {
-        'id': exercise.id,
-        'name': exercise.name,
-        'exerciseType': exercise.exerciseType,
-        'primaryMuscleGroup': exercise.primaryMuscleGroup,
-        'secondaryMuscleGroups': exercise.secondaryMuscleGroups,
-        'equipment': exercise.equipment,
-        'isBodyweight': exercise.isBodyweight,
-        'category': exercise.category,
-        'difficulty': exercise.difficulty,
-      }).toList();
+      final availableExercisesData = availableExercises
+          .map(
+            (exercise) => {
+              'id': exercise.id,
+              'name': exercise.name,
+              'exerciseType': exercise.exerciseType,
+              'primaryMuscleGroup': exercise.primaryMuscleGroup,
+              'secondaryMuscleGroups': exercise.secondaryMuscleGroups,
+              'equipment': exercise.equipment,
+              'isBodyweight': exercise.isBodyweight,
+              'category': exercise.category,
+              'difficulty': exercise.difficulty,
+            },
+          )
+          .toList();
 
-      final userPrompt = '''Generate my next workout based on this comprehensive workout history:
+      final userPrompt =
+          '''Generate my next workout based on this comprehensive workout history:
 
 WORKOUT HISTORY:
 ${jsonEncode({'workoutHistory': workoutHistoryData})}
@@ -438,11 +462,14 @@ Create a complete workout that builds on my training patterns and applies progre
         // Clean the response string if needed
         String cleanResponse = response.trim();
         if (cleanResponse.startsWith('```json')) {
-          cleanResponse = cleanResponse.replaceFirst('```json', '').replaceAll('```', '').trim();
+          cleanResponse = cleanResponse
+              .replaceFirst('```json', '')
+              .replaceAll('```', '')
+              .trim();
         }
-        
+
         final jsonData = jsonDecode(cleanResponse) as Map<String, dynamic>;
-        
+
         // Debug: Print the parsed JSON structure
         print('Parsed JSON keys: ${jsonData.keys.toList()}');
         if (jsonData.containsKey('exercises')) {
@@ -452,13 +479,16 @@ Create a complete workout that builds on my training patterns and applies progre
             print('First exercise: ${exercises.first}');
           }
         }
-        
+
         // Validate required fields
-        if (!jsonData.containsKey('name') || !jsonData.containsKey('exercises')) {
-          print('Missing required fields. Available keys: ${jsonData.keys.toList()}');
+        if (!jsonData.containsKey('name') ||
+            !jsonData.containsKey('exercises')) {
+          print(
+            'Missing required fields. Available keys: ${jsonData.keys.toList()}',
+          );
           throw Exception('Invalid JSON structure: missing required fields');
         }
-        
+
         // Check if exercises array is empty
         final exercises = jsonData['exercises'] as List<dynamic>?;
         if (exercises == null || exercises.isEmpty) {
@@ -490,18 +520,20 @@ Create a complete workout that builds on my training patterns and applies progre
                   'setType': 'working',
                   'equipmentUsed': 'bodyweight',
                   'variantType': 'standard',
-                  'notes': 'Fallback set'
-                }
-              ]
-            }
+                  'notes': 'Fallback set',
+                },
+              ],
+            },
           ];
         }
-        
+
         return jsonData;
       } catch (jsonError) {
         print('JSON Parse Error: $jsonError');
         print('Raw Response Length: ${response.length}');
-        print('Raw Response (first 500 chars): ${response.substring(0, response.length > 500 ? 500 : response.length)}');
+        print(
+          'Raw Response (first 500 chars): ${response.substring(0, response.length > 500 ? 500 : response.length)}',
+        );
         throw Exception('Failed to parse AI response. Please try again.');
       }
     } catch (e) {
@@ -514,42 +546,47 @@ Create a complete workout that builds on my training patterns and applies progre
     String userId, {
     String languageCode = 'en',
   }) async {
-    print('🤖 Using GROQ service for evaluateProgress (language: $languageCode)');
+    print(
+      '🤖 Using GROQ service for evaluateProgress (language: $languageCode)',
+    );
     try {
       // Get last 30 completed workout sessions for comprehensive analysis
-      final workoutHistory = await (_database.select(_database.workoutSessions)
-            ..where((w) => w.completedAt.isNotNull())
-            ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
-            ..limit(30))
-          .get();
+      final workoutHistory =
+          await (_database.select(_database.workoutSessions)
+                ..where((w) => w.completedAt.isNotNull())
+                ..orderBy([(w) => OrderingTerm.desc(w.startedAt)])
+                ..limit(30))
+              .get();
 
       if (workoutHistory.isEmpty) {
-        throw Exception('No workout history found. Complete some workouts first!');
+        throw Exception(
+          'No workout history found. Complete some workouts first!',
+        );
       }
 
       // Analyze muscle group distribution
       final muscleGroupCounts = <String, int>{};
       final exerciseFrequency = <String, int>{};
       final weeklyWorkouts = <int>[];
-      
+
       // Get detailed workout data
       for (final session in workoutHistory) {
-        final setEntries = await (_database.select(_database.setEntries)
-              ..where((se) => se.workoutSessionId.equals(session.id)))
-            .get();
+        final setEntries = await (_database.select(
+          _database.setEntries,
+        )..where((se) => se.workoutSessionId.equals(session.id))).get();
 
         for (final set in setEntries) {
-          final exercise = await (_database.select(_database.exercises)
-                ..where((e) => e.id.equals(set.exerciseId)))
-              .getSingleOrNull();
+          final exercise = await (_database.select(
+            _database.exercises,
+          )..where((e) => e.id.equals(set.exerciseId))).getSingleOrNull();
 
           if (exercise != null) {
             // Count muscle groups
-            muscleGroupCounts[exercise.primaryMuscleGroup] = 
+            muscleGroupCounts[exercise.primaryMuscleGroup] =
                 (muscleGroupCounts[exercise.primaryMuscleGroup] ?? 0) + 1;
-            
+
             // Count exercise frequency
-            exerciseFrequency[exercise.name] = 
+            exerciseFrequency[exercise.name] =
                 (exerciseFrequency[exercise.name] ?? 0) + 1;
           }
         }
@@ -560,15 +597,22 @@ Create a complete workout that builds on my training patterns and applies progre
       for (var i = 0; i < 4; i++) {
         final weekStart = now.subtract(Duration(days: 7 * (i + 1)));
         final weekEnd = weekStart.add(const Duration(days: 7));
-        final weekWorkouts = workoutHistory.where((w) => 
-          w.startedAt.isAfter(weekStart) && w.startedAt.isBefore(weekEnd)
-        ).length;
+        final weekWorkouts = workoutHistory
+            .where(
+              (w) =>
+                  w.startedAt.isAfter(weekStart) &&
+                  w.startedAt.isBefore(weekEnd),
+            )
+            .length;
         weeklyWorkouts.add(weekWorkouts);
       }
 
       // Calculate training volume trends
-      final volumeTrend = workoutHistory.take(10).map((w) => w.totalVolume).toList();
-      
+      final volumeTrend = workoutHistory
+          .take(10)
+          .map((w) => w.totalVolume)
+          .toList();
+
       // Map language codes to language names for the AI
       final languageMap = {
         'en': 'English',
@@ -576,8 +620,9 @@ Create a complete workout that builds on my training patterns and applies progre
         'es': 'Spanish',
       };
       final languageName = languageMap[languageCode] ?? 'English';
-      
-      final systemPrompt = '''You are a professional strength and conditioning coach with 15+ years of experience.
+
+      final systemPrompt =
+          '''You are a professional strength and conditioning coach with 15+ years of experience.
 You provide DIRECT, HONEST, and CONSTRUCTIVE feedback without sugar-coating.
 Your goal is to help the user improve, even if it means pointing out harsh truths about their training.
 
@@ -594,7 +639,8 @@ Format your response as a professional coach would speak to a serious athlete.
 
 IMPORTANT: Respond ENTIRELY in $languageName. All text, explanations, and recommendations must be in $languageName.''';
 
-      final userPrompt = '''Evaluate my training progress and provide professional feedback (respond in $languageName):
+      final userPrompt =
+          '''Evaluate my training progress and provide professional feedback (respond in $languageName):
 
 WORKOUT HISTORY (last 30 sessions):
 Total workouts: ${workoutHistory.length}
@@ -631,11 +677,14 @@ Remember: Be PROFESSIONAL but DIRECT. Don't be afraid to point out serious probl
       // Parse and return evaluation
       String cleanResponse = response.trim();
       if (cleanResponse.startsWith('```json')) {
-        cleanResponse = cleanResponse.replaceFirst('```json', '').replaceAll('```', '').trim();
+        cleanResponse = cleanResponse
+            .replaceFirst('```json', '')
+            .replaceAll('```', '')
+            .trim();
       }
-      
+
       final jsonData = jsonDecode(cleanResponse) as Map<String, dynamic>;
-      
+
       print('✅ Progress evaluation completed');
       return jsonData;
     } catch (e) {
@@ -647,19 +696,20 @@ Remember: Be PROFESSIONAL but DIRECT. Don't be afraid to point out serious probl
   Future<Map<String, dynamic>> optimizeWorkoutFolder(String folderId) async {
     try {
       // Get folder details
-      final folder = await (_database.select(_database.templateFolders)
-            ..where((f) => f.id.equals(folderId)))
-          .getSingleOrNull();
+      final folder = await (_database.select(
+        _database.templateFolders,
+      )..where((f) => f.id.equals(folderId))).getSingleOrNull();
 
       if (folder == null) {
         throw Exception('Folder not found');
       }
 
       // Get all templates in this folder
-      final templates = await (_database.select(_database.workoutTemplates)
-            ..where((t) => t.folderId.equals(folderId))
-            ..orderBy([(t) => OrderingTerm.asc(t.sortOrder)]))
-          .get();
+      final templates =
+          await (_database.select(_database.workoutTemplates)
+                ..where((t) => t.folderId.equals(folderId))
+                ..orderBy([(t) => OrderingTerm.asc(t.sortOrder)]))
+              .get();
 
       if (templates.isEmpty) {
         throw Exception('No templates found in this folder');
@@ -667,15 +717,15 @@ Remember: Be PROFESSIONAL but DIRECT. Don't be afraid to point out serious probl
 
       // Build comprehensive folder data with all template details
       final folderData = <Map<String, dynamic>>[];
-      
+
       for (final template in templates) {
         // Get exercise details for each template
         final exerciseDetails = <Map<String, dynamic>>[];
-        
+
         for (final exerciseId in template.exerciseIds) {
-          final exercise = await (_database.select(_database.exercises)
-                ..where((e) => e.id.equals(exerciseId)))
-              .getSingleOrNull();
+          final exercise = await (_database.select(
+            _database.exercises,
+          )..where((e) => e.id.equals(exerciseId))).getSingleOrNull();
 
           if (exercise != null) {
             exerciseDetails.add({
@@ -714,10 +764,11 @@ Remember: Be PROFESSIONAL but DIRECT. Don't be afraid to point out serious probl
           'description': folder.description,
           'color': folder.color,
           'templates': folderData,
-        }
+        },
       };
 
-      final userPrompt = '''Optimise my routine based on this folder structure:
+      final userPrompt =
+          '''Optimise my routine based on this folder structure:
 
 ${jsonEncode(folderPayload)}
 
@@ -732,40 +783,57 @@ Provide optimized versions of all templates with clear explanations of improveme
       String cleanResponse = response.trim();
       try {
         // Clean the response string more thoroughly
-        
+
         // Remove markdown code blocks
         if (cleanResponse.startsWith('```json')) {
-          cleanResponse = cleanResponse.replaceFirst('```json', '').replaceAll('```', '').trim();
+          cleanResponse = cleanResponse
+              .replaceFirst('```json', '')
+              .replaceAll('```', '')
+              .trim();
         }
         if (cleanResponse.startsWith('```')) {
-          cleanResponse = cleanResponse.replaceFirst('```', '').replaceAll('```', '').trim();
+          cleanResponse = cleanResponse
+              .replaceFirst('```', '')
+              .replaceAll('```', '')
+              .trim();
         }
-        
+
         // Remove any leading/trailing text that's not JSON
         final jsonStart = cleanResponse.indexOf('{');
         final jsonEnd = cleanResponse.lastIndexOf('}');
-        
+
         if (jsonStart != -1 && jsonEnd != -1 && jsonEnd > jsonStart) {
           cleanResponse = cleanResponse.substring(jsonStart, jsonEnd + 1);
         }
-        
-        print('Cleaned JSON response: ${cleanResponse.substring(0, cleanResponse.length > 200 ? 200 : cleanResponse.length)}...');
-        
+
+        print(
+          'Cleaned JSON response: ${cleanResponse.substring(0, cleanResponse.length > 200 ? 200 : cleanResponse.length)}...',
+        );
+
         final jsonData = jsonDecode(cleanResponse) as Map<String, dynamic>;
-        
+
         // Validate required fields
-        if (!jsonData.containsKey('folder') || !jsonData['folder'].containsKey('templates')) {
-          print('Missing required fields. Available keys: ${jsonData.keys.toList()}');
+        if (!jsonData.containsKey('folder') ||
+            !jsonData['folder'].containsKey('templates')) {
+          print(
+            'Missing required fields. Available keys: ${jsonData.keys.toList()}',
+          );
           throw Exception('Invalid JSON structure: missing required fields');
         }
-        
+
         return jsonData;
       } catch (jsonError) {
         print('JSON Parse Error: $jsonError');
         print('Raw Response Length: ${response.length}');
-        print('Raw Response (first 500 chars): ${response.substring(0, response.length > 500 ? 500 : response.length)}');
-        print('Cleaned Response (first 500 chars): ${cleanResponse.substring(0, cleanResponse.length > 500 ? 500 : cleanResponse.length)}');
-        throw Exception('Failed to parse AI response. The AI may have returned invalid JSON. Please try again.');
+        print(
+          'Raw Response (first 500 chars): ${response.substring(0, response.length > 500 ? 500 : response.length)}',
+        );
+        print(
+          'Cleaned Response (first 500 chars): ${cleanResponse.substring(0, cleanResponse.length > 500 ? 500 : cleanResponse.length)}',
+        );
+        throw Exception(
+          'Failed to parse AI response. The AI may have returned invalid JSON. Please try again.',
+        );
       }
     } catch (e) {
       throw Exception('Failed to optimize workout folder: $e');

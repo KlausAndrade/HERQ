@@ -75,11 +75,7 @@ class WebWorkoutScreen extends ConsumerWidget {
                           onUpdate: (updatedSet) {
                             ref
                                 .read(activeWorkoutWebProvider.notifier)
-                                .updateSet(
-                                  exerciseIndex,
-                                  setIndex,
-                                  updatedSet,
-                                );
+                                .updateSet(exerciseIndex, setIndex, updatedSet);
                           },
                         ),
                       ),
@@ -155,7 +151,8 @@ class _SetRow extends StatefulWidget {
     properties.add(DiagnosticsProperty<ActiveSet>('set', set));
     properties.add(StringProperty('exerciseType', exerciseType));
     properties.add(
-        ObjectFlagProperty<Function(ActiveSet p1)>.has('onUpdate', onUpdate));
+      ObjectFlagProperty<Function(ActiveSet p1)>.has('onUpdate', onUpdate),
+    );
   }
 }
 
@@ -343,17 +340,41 @@ class _SetRowState extends State<_SetRow> {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<TextEditingController>(
-        'weightController', weightController));
-    properties.add(DiagnosticsProperty<TextEditingController>(
-        'repsController', repsController));
-    properties.add(DiagnosticsProperty<TextEditingController>(
-        'durationController', durationController));
-    properties.add(DiagnosticsProperty<TextEditingController>(
-        'distanceController', distanceController));
-    properties.add(DiagnosticsProperty<TextEditingController>(
-        'assistanceWeightController', assistanceWeightController));
-    properties.add(DiagnosticsProperty<TextEditingController>(
-        'addedWeightController', addedWeightController));
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'weightController',
+        weightController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'repsController',
+        repsController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'durationController',
+        durationController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'distanceController',
+        distanceController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'assistanceWeightController',
+        assistanceWeightController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'addedWeightController',
+        addedWeightController,
+      ),
+    );
   }
 }

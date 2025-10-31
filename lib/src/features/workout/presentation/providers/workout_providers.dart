@@ -7,8 +7,9 @@ import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/user_context_service.dart';
 
 // Provider for all workout sessions (with cloud sync)
-final workoutSessionsProvider =
-    FutureProvider<List<WorkoutSession>>((ref) async {
+final workoutSessionsProvider = FutureProvider<List<WorkoutSession>>((
+  ref,
+) async {
   final database = ref.read(databaseProvider);
   final supabase = ref.read(supabaseClientProvider);
 
@@ -31,7 +32,9 @@ final workoutSessionsProvider =
       // Merge cloud data into local database
       for (final session in cloudData) {
         try {
-          await database.into(database.workoutSessions).insertOnConflictUpdate(
+          await database
+              .into(database.workoutSessions)
+              .insertOnConflictUpdate(
                 WorkoutSession(
                   id: session['id'],
                   userId: UserContextService.instance
@@ -69,10 +72,11 @@ final workoutSessionsProvider =
 
   // Return merged local + cloud data - FILTER BY CURRENT USER
   final currentUserId = UserContextService.instance.getCurrentUserId();
-  final sessions = await (database.select(database.workoutSessions)
-        ..where((tbl) => tbl.userId.equals(currentUserId))
-        ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)]))
-      .get();
+  final sessions =
+      await (database.select(database.workoutSessions)
+            ..where((tbl) => tbl.userId.equals(currentUserId))
+            ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)]))
+          .get();
 
   return sessions;
 });
@@ -80,124 +84,133 @@ final workoutSessionsProvider =
 // Provider for a single workout session by ID (current user only)
 final workoutSessionByIdProvider =
     FutureProvider.family<WorkoutSession?, String>((ref, sessionId) async {
-  final database = ref.read(databaseProvider);
-  if (database == null) {
-    return null;
-  }
+      final database = ref.read(databaseProvider);
+      if (database == null) {
+        return null;
+      }
 
-  final currentUserId = UserContextService.instance.getCurrentUserId();
-  final results = await (database.select(database.workoutSessions)
-        ..where((tbl) =>
-            tbl.id.equals(sessionId) & tbl.userId.equals(currentUserId)))
-      .get();
+      final currentUserId = UserContextService.instance.getCurrentUserId();
+      final results =
+          await (database.select(database.workoutSessions)..where(
+                (tbl) =>
+                    tbl.id.equals(sessionId) & tbl.userId.equals(currentUserId),
+              ))
+              .get();
 
-  return results.isNotEmpty ? results.first : null;
-});
+      return results.isNotEmpty ? results.first : null;
+    });
 
 // Provider for a single workout session by ID (any user - for social viewing)
 final workoutSessionByIdAnyUserProvider =
     FutureProvider.family<WorkoutSession?, String>((ref, sessionId) async {
-  final database = ref.read(databaseProvider);
-  if (database == null) {
-    return null;
-  }
+      final database = ref.read(databaseProvider);
+      if (database == null) {
+        return null;
+      }
 
-  // Don't filter by userId - allow viewing any user's workout sessions
-  final results = await (database.select(database.workoutSessions)
-        ..where((tbl) => tbl.id.equals(sessionId)))
-      .get();
+      // Don't filter by userId - allow viewing any user's workout sessions
+      final results = await (database.select(
+        database.workoutSessions,
+      )..where((tbl) => tbl.id.equals(sessionId))).get();
 
-  return results.isNotEmpty ? results.first : null;
-});
+      return results.isNotEmpty ? results.first : null;
+    });
 
 // Provider for workout template by ID
 final workoutTemplateByIdProvider =
     FutureProvider.family<WorkoutTemplate?, String>((ref, templateId) async {
-  final database = ref.read(databaseProvider);
-  if (database == null) {
-    return null;
-  }
+      final database = ref.read(databaseProvider);
+      if (database == null) {
+        return null;
+      }
 
-  final results = await (database.select(database.workoutTemplates)
-        ..where((tbl) => tbl.id.equals(templateId)))
-      .get();
+      final results = await (database.select(
+        database.workoutTemplates,
+      )..where((tbl) => tbl.id.equals(templateId))).get();
 
-  return results.isNotEmpty ? results.first : null;
-});
+      return results.isNotEmpty ? results.first : null;
+    });
 
 // Provider for set entries in a workout session (current user only)
 final setEntriesBySessionProvider =
     FutureProvider.family<List<SetEntry>, String>((ref, sessionId) async {
-  final database = ref.read(databaseProvider);
-  if (database == null) {
-    return [];
-  }
+      final database = ref.read(databaseProvider);
+      if (database == null) {
+        return [];
+      }
 
-  final sets = await (database.select(database.setEntries)
-        ..where((tbl) => tbl.workoutSessionId.equals(sessionId))
-        ..orderBy([
-          (tbl) => OrderingTerm.asc(tbl.exerciseId),
-          (tbl) => OrderingTerm.asc(tbl.setNumber),
-        ]))
-      .get();
+      final sets =
+          await (database.select(database.setEntries)
+                ..where((tbl) => tbl.workoutSessionId.equals(sessionId))
+                ..orderBy([
+                  (tbl) => OrderingTerm.asc(tbl.exerciseId),
+                  (tbl) => OrderingTerm.asc(tbl.setNumber),
+                ]))
+              .get();
 
-  return sets;
-});
+      return sets;
+    });
 
 // Provider for set entries in a workout session (any user - for social viewing)
 final setEntriesBySessionAnyUserProvider =
     FutureProvider.family<List<SetEntry>, String>((ref, sessionId) async {
-  final database = ref.read(databaseProvider);
-  if (database == null) {
-    return [];
-  }
+      final database = ref.read(databaseProvider);
+      if (database == null) {
+        return [];
+      }
 
-  // Don't filter by userId - allow viewing any user's set entries
-  final sets = await (database.select(database.setEntries)
-        ..where((tbl) => tbl.workoutSessionId.equals(sessionId))
-        ..orderBy([
-          (tbl) => OrderingTerm.asc(tbl.exerciseId),
-          (tbl) => OrderingTerm.asc(tbl.setNumber),
-        ]))
-      .get();
+      // Don't filter by userId - allow viewing any user's set entries
+      final sets =
+          await (database.select(database.setEntries)
+                ..where((tbl) => tbl.workoutSessionId.equals(sessionId))
+                ..orderBy([
+                  (tbl) => OrderingTerm.asc(tbl.exerciseId),
+                  (tbl) => OrderingTerm.asc(tbl.setNumber),
+                ]))
+              .get();
 
-  return sets;
-});
+      return sets;
+    });
 
 // Provider for set entries from Supabase (for social viewing)
 final setEntriesBySessionFromSupabaseProvider =
-    FutureProvider.family<List<Map<String, dynamic>>, String>((ref, sessionId) async {
-  final supabase = ref.read(supabaseClientProvider);
-  
-  try {
-    print('🔍 Fetching set entries from Supabase for session: $sessionId');
-    
-    final setEntriesData = await supabase
-        .from('set_entries')
-        .select()
-        .eq('workout_session_id', sessionId)
-        .order('exercise_id, set_number');
-    
-    print('📊 Found ${setEntriesData.length} set entries in Supabase');
-    
-    return setEntriesData;
-  } catch (e) {
-    print('❌ Error fetching set entries from Supabase: $e');
-    return [];
-  }
-});
+    FutureProvider.family<List<Map<String, dynamic>>, String>((
+      ref,
+      sessionId,
+    ) async {
+      final supabase = ref.read(supabaseClientProvider);
+
+      try {
+        print('🔍 Fetching set entries from Supabase for session: $sessionId');
+
+        final setEntriesData = await supabase
+            .from('set_entries')
+            .select()
+            .eq('workout_session_id', sessionId)
+            .order('exercise_id, set_number');
+
+        print('📊 Found ${setEntriesData.length} set entries in Supabase');
+
+        return setEntriesData;
+      } catch (e) {
+        print('❌ Error fetching set entries from Supabase: $e');
+        return [];
+      }
+    });
 
 // Provider for exercise count in a workout session
-final exerciseCountBySessionProvider =
-    FutureProvider.family<int, String>((ref, sessionId) async {
+final exerciseCountBySessionProvider = FutureProvider.family<int, String>((
+  ref,
+  sessionId,
+) async {
   final database = ref.read(databaseProvider);
   if (database == null) {
     return 0;
   }
 
-  final sets = await (database.select(database.setEntries)
-        ..where((tbl) => tbl.workoutSessionId.equals(sessionId)))
-      .get();
+  final sets = await (database.select(
+    database.setEntries,
+  )..where((tbl) => tbl.workoutSessionId.equals(sessionId))).get();
 
   // Get unique exercise IDs
   final uniqueExerciseIds = sets.map((set) => set.exerciseId).toSet();
@@ -212,8 +225,9 @@ final workoutStatsProvider = FutureProvider<WorkoutStats>((ref) async {
   }
 
   final sessions = await database.select(database.workoutSessions).get();
-  final completedSessions =
-      sessions.where((s) => s.completedAt != null).toList();
+  final completedSessions = sessions
+      .where((s) => s.completedAt != null)
+      .toList();
 
   if (completedSessions.isEmpty) {
     return WorkoutStats.empty();
@@ -224,11 +238,15 @@ final workoutStatsProvider = FutureProvider<WorkoutStats>((ref) async {
       .where((s) => s.totalDurationSeconds != null)
       .fold(0, (sum, s) => sum + (s.totalDurationSeconds ?? 0));
 
-  final totalVolume =
-      completedSessions.fold(0.0, (sum, s) => sum + s.totalVolume);
+  final totalVolume = completedSessions.fold(
+    0.0,
+    (sum, s) => sum + s.totalVolume,
+  );
 
-  final totalTonnage =
-      completedSessions.fold(0.0, (sum, s) => sum + s.totalTonnage);
+  final totalTonnage = completedSessions.fold(
+    0.0,
+    (sum, s) => sum + s.totalTonnage,
+  );
 
   final avgDuration = totalDuration > 0 ? totalDuration / totalWorkouts : 0;
 
@@ -282,17 +300,19 @@ final workoutStatsProvider = FutureProvider<WorkoutStats>((ref) async {
 });
 
 // Provider for recent workout sessions (last 10)
-final recentWorkoutSessionsProvider =
-    FutureProvider<List<WorkoutSession>>((ref) async {
+final recentWorkoutSessionsProvider = FutureProvider<List<WorkoutSession>>((
+  ref,
+) async {
   final database = ref.read(databaseProvider);
   if (database == null) {
     return [];
   }
 
-  final sessions = await (database.select(database.workoutSessions)
-        ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)])
-        ..limit(10))
-      .get();
+  final sessions =
+      await (database.select(database.workoutSessions)
+            ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)])
+            ..limit(10))
+          .get();
 
   return sessions;
 });
@@ -300,25 +320,25 @@ final recentWorkoutSessionsProvider =
 // Provider for workout sessions grouped by month
 final workoutSessionsByMonthProvider =
     FutureProvider<Map<String, List<WorkoutSession>>>((ref) async {
-  final database = ref.read(databaseProvider);
-  if (database == null) {
-    return {};
-  }
+      final database = ref.read(databaseProvider);
+      if (database == null) {
+        return {};
+      }
 
-  final sessions = await (database.select(database.workoutSessions)
-        ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)]))
-      .get();
+      final sessions = await (database.select(
+        database.workoutSessions,
+      )..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)])).get();
 
-  final groupedSessions = <String, List<WorkoutSession>>{};
+      final groupedSessions = <String, List<WorkoutSession>>{};
 
-  for (final session in sessions) {
-    final monthKey =
-        '${session.startedAt.year}-${session.startedAt.month.toString().padLeft(2, '0')}';
-    groupedSessions.putIfAbsent(monthKey, () => []).add(session);
-  }
+      for (final session in sessions) {
+        final monthKey =
+            '${session.startedAt.year}-${session.startedAt.month.toString().padLeft(2, '0')}';
+        groupedSessions.putIfAbsent(monthKey, () => []).add(session);
+      }
 
-  return groupedSessions;
-});
+      return groupedSessions;
+    });
 
 // Provider for this week's workout statistics
 final weeklyStatsProvider = FutureProvider<WeeklyStats>((ref) async {
@@ -330,22 +350,27 @@ final weeklyStatsProvider = FutureProvider<WeeklyStats>((ref) async {
   // Get start of current week (Monday)
   final now = DateTime.now();
   final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-  final startOfWeekDate =
-      DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+  final startOfWeekDate = DateTime(
+    startOfWeek.year,
+    startOfWeek.month,
+    startOfWeek.day,
+  );
   final endOfWeekDate = startOfWeekDate.add(const Duration(days: 7));
 
   // Get workout sessions for this week
-  final sessions = await (database.select(database.workoutSessions)
-        ..where(
-          (tbl) =>
-              tbl.startedAt.isBiggerOrEqualValue(startOfWeekDate) &
-              tbl.startedAt.isSmallerThanValue(endOfWeekDate),
-        )
-        ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)]))
-      .get();
+  final sessions =
+      await (database.select(database.workoutSessions)
+            ..where(
+              (tbl) =>
+                  tbl.startedAt.isBiggerOrEqualValue(startOfWeekDate) &
+                  tbl.startedAt.isSmallerThanValue(endOfWeekDate),
+            )
+            ..orderBy([(tbl) => OrderingTerm.desc(tbl.startedAt)]))
+          .get();
 
-  final completedSessions =
-      sessions.where((s) => s.completedAt != null).toList();
+  final completedSessions = sessions
+      .where((s) => s.completedAt != null)
+      .toList();
 
   if (completedSessions.isEmpty) {
     return WeeklyStats.empty();
@@ -356,9 +381,9 @@ final weeklyStatsProvider = FutureProvider<WeeklyStats>((ref) async {
   int totalPRs = 0;
 
   for (final session in completedSessions) {
-    final sets = await (database.select(database.setEntries)
-          ..where((tbl) => tbl.workoutSessionId.equals(session.id)))
-        .get();
+    final sets = await (database.select(
+      database.setEntries,
+    )..where((tbl) => tbl.workoutSessionId.equals(session.id))).get();
 
     for (final set in sets) {
       if (set.weight != null) {
@@ -374,8 +399,10 @@ final weeklyStatsProvider = FutureProvider<WeeklyStats>((ref) async {
   return WeeklyStats(
     workoutsCount: completedSessions.length,
     totalVolumeKg: totalVolume,
-    prsSet:
-        totalPRs.clamp(0, completedSessions.length * 2), // Cap PRs reasonably
+    prsSet: totalPRs.clamp(
+      0,
+      completedSessions.length * 2,
+    ), // Cap PRs reasonably
   );
 });
 
@@ -387,11 +414,8 @@ class WeeklyStats {
     required this.prsSet,
   });
 
-  factory WeeklyStats.empty() => const WeeklyStats(
-        workoutsCount: 0,
-        totalVolumeKg: 0,
-        prsSet: 0,
-      );
+  factory WeeklyStats.empty() =>
+      const WeeklyStats(workoutsCount: 0, totalVolumeKg: 0, prsSet: 0);
 
   final int workoutsCount;
   final double totalVolumeKg;
@@ -416,12 +440,12 @@ class WorkoutStats {
   });
 
   factory WorkoutStats.empty() => const WorkoutStats(
-        totalWorkouts: 0,
-        averageDurationMinutes: 0,
-        totalVolumeKg: 0,
-        totalTonnage: 0,
-        currentStreak: 0,
-      );
+    totalWorkouts: 0,
+    averageDurationMinutes: 0,
+    totalVolumeKg: 0,
+    totalTonnage: 0,
+    currentStreak: 0,
+  );
 
   final int totalWorkouts;
   final int averageDurationMinutes;

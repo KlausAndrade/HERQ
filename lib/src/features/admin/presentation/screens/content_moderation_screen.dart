@@ -24,14 +24,14 @@ class _ContentModerationScreenState
     'Pending',
     'Approved',
     'Rejected',
-    'Flagged'
+    'Flagged',
   ];
   final List<String> _typeOptions = ['All', 'Posts', 'Comments', 'Reports'];
   final List<String> _sortOptions = [
     'Created Date',
     'Updated Date',
     'Author',
-    'Content'
+    'Content',
   ];
 
   @override
@@ -103,7 +103,9 @@ class _ContentModerationScreenState
                             labelText: 'Status',
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                           ),
                           items: _filterOptions.map((option) {
                             return DropdownMenuItem(
@@ -128,7 +130,9 @@ class _ContentModerationScreenState
                             labelText: 'Type',
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                           ),
                           items: _typeOptions.map((option) {
                             return DropdownMenuItem(
@@ -161,7 +165,9 @@ class _ContentModerationScreenState
                             labelText: 'Sort by',
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                           ),
                           items: _sortOptions.map((option) {
                             return DropdownMenuItem(
@@ -179,9 +185,11 @@ class _ContentModerationScreenState
 
                       // Sort Direction
                       IconButton(
-                        icon: Icon(_sortAscending
-                            ? Icons.arrow_upward
-                            : Icons.arrow_downward),
+                        icon: Icon(
+                          _sortAscending
+                              ? Icons.arrow_upward
+                              : Icons.arrow_downward,
+                        ),
                         onPressed: () {
                           setState(() {
                             _sortAscending = !_sortAscending;
@@ -294,17 +302,17 @@ class _ContentList extends ConsumerWidget {
   }
 
   List<Map<String, dynamic>> _filterContent(
-      List<Map<String, dynamic>> content) {
+    List<Map<String, dynamic>> content,
+  ) {
     var filtered = content;
 
     // Apply search filter
     if (searchQuery.isNotEmpty) {
       filtered = filtered.where((item) {
         final searchLower = searchQuery.toLowerCase();
-        return (item['content']
-                    ?.toString()
-                    .toLowerCase()
-                    .contains(searchLower) ??
+        return (item['content']?.toString().toLowerCase().contains(
+                  searchLower,
+                ) ??
                 false) ||
             (item['author']?.toString().toLowerCase().contains(searchLower) ??
                 false) ||
@@ -352,19 +360,22 @@ class _ContentList extends ConsumerWidget {
       int comparison = 0;
       switch (sortBy) {
         case 'Created Date':
-          comparison =
-              (a['createdAt'] as String).compareTo(b['createdAt'] as String);
+          comparison = (a['createdAt'] as String).compareTo(
+            b['createdAt'] as String,
+          );
           break;
         case 'Updated Date':
-          comparison =
-              (a['updatedAt'] as String).compareTo(b['updatedAt'] as String);
+          comparison = (a['updatedAt'] as String).compareTo(
+            b['updatedAt'] as String,
+          );
           break;
         case 'Author':
           comparison = (a['author'] as String).compareTo(b['author'] as String);
           break;
         case 'Content':
-          comparison =
-              (a['content'] as String).compareTo(b['content'] as String);
+          comparison = (a['content'] as String).compareTo(
+            b['content'] as String,
+          );
           break;
       }
       return sortAscending ? comparison : -comparison;
@@ -374,7 +385,10 @@ class _ContentList extends ConsumerWidget {
   }
 
   void _approveContent(
-      BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> content,
+  ) {
     // TODO: Implement approve content functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Approved ${content['type']} ${content['id']}')),
@@ -383,7 +397,10 @@ class _ContentList extends ConsumerWidget {
   }
 
   void _rejectContent(
-      BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> content,
+  ) {
     // TODO: Implement reject content functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Rejected ${content['type']} ${content['id']}')),
@@ -392,7 +409,10 @@ class _ContentList extends ConsumerWidget {
   }
 
   void _flagContent(
-      BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> content,
+  ) {
     // TODO: Implement flag content functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Flagged ${content['type']} ${content['id']}')),
@@ -401,7 +421,10 @@ class _ContentList extends ConsumerWidget {
   }
 
   void _deleteContent(
-      BuildContext context, WidgetRef ref, Map<String, dynamic> content) {
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> content,
+  ) {
     // TODO: Implement delete content functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Deleted ${content['type']} ${content['id']}')),
@@ -446,8 +469,10 @@ class ContentCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _getTypeColor(type).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -464,8 +489,10 @@ class ContentCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _getStatusColor(status).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -483,8 +510,10 @@ class ContentCard extends StatelessWidget {
                 if (isFlagged) ...[
                   const SizedBox(width: 8),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.red.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -503,9 +532,9 @@ class ContentCard extends StatelessWidget {
                 const Spacer(),
                 Text(
                   _formatDate(createdAt),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -518,9 +547,9 @@ class ContentCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   'Author: $author',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ],
             ),

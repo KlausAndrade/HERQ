@@ -4,12 +4,7 @@ import '../theme/app_theme.dart';
 import 'haptic_service.dart';
 import 'notification_service.dart';
 
-enum SnackbarType {
-  success,
-  error,
-  warning,
-  info,
-}
+enum SnackbarType { success, error, warning, info }
 
 /// Centralized snackbar service for consistent feedback messages
 class SnackbarService {
@@ -50,11 +45,7 @@ class SnackbarService {
               color: _getIconBackgroundColor(type),
               borderRadius: BorderRadius.circular(AppTheme.radiusSM),
             ),
-            child: Icon(
-              _getIcon(type),
-              color: _getIconColor(type),
-              size: 20,
-            ),
+            child: Icon(_getIcon(type), color: _getIconColor(type), size: 20),
           ),
           const SizedBox(width: AppTheme.spacingMD),
           Expanded(

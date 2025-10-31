@@ -8,12 +8,12 @@ import 'package:sqlite3/sqlite3.dart';
 
 // Native-only database opener used on mobile/desktop platforms.
 LazyDatabase openConnection() => LazyDatabase(() async {
-      final dbFolder = await getApplicationDocumentsDirectory();
-      final file = File(p.join(dbFolder.path, 'herq.db'));
+  final dbFolder = await getApplicationDocumentsDirectory();
+  final file = File(p.join(dbFolder.path, 'herq.db'));
 
-      // Setup sqlite3 temp dir
-      final cachebase = (await getTemporaryDirectory()).path;
-      sqlite3.tempDirectory = cachebase;
+  // Setup sqlite3 temp dir
+  final cachebase = (await getTemporaryDirectory()).path;
+  sqlite3.tempDirectory = cachebase;
 
-      return NativeDatabase.createInBackground(file);
-    });
+  return NativeDatabase.createInBackground(file);
+});

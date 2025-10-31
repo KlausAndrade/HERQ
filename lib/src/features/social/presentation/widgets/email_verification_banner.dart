@@ -42,10 +42,7 @@ class EmailVerificationBanner extends ConsumerWidget {
                 ),
                 Text(
                   'Check your inbox for verification link',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.orange.shade800,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.orange.shade800),
                 ),
               ],
             ),

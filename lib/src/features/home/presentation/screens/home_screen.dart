@@ -101,269 +101,255 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    backgroundColor: Theme.of(context).colorScheme.surface,
+    body: SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            AnimatedListItem(
+              delay: const Duration(),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        final firstTimeUser = ref.watch(firstTimeUserProvider);
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              firstTimeUser.when(
+                                data: (isFirstTime) => isFirstTime
+                                    ? S.of(context)!.welcomeFirstTime
+                                    : S.of(context)!.welcomeBack,
+                                loading: () => S.of(context)!.welcomeBack,
+                                error: (_, __) => S.of(context)!.welcomeBack,
+                              ),
+                              style: Theme.of(context).textTheme.displayMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              firstTimeUser.when(
+                                data: (isFirstTime) => isFirstTime
+                                    ? S.of(context)!.readyForFirstWorkout
+                                    : S.of(context)!.readyForWorkout,
+                                loading: () => S.of(context)!.readyForWorkout,
+                                error: (_, __) =>
+                                    S.of(context)!.readyForWorkout,
+                              ),
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface.withOpacity(0.6),
+                                  ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Gamification badges
+                  const StreakBadge(size: 36),
+                  // const SizedBox(width: 8),
+                  // const LevelIndicator(size: 48, showProgress: false),
+                  const SizedBox(width: 2),
+                  IconButton(
+                    onPressed: () async {
+                      await HapticService.lightImpact();
+                      if (context.mounted) context.go('/settings');
+                    },
+                    icon: const Icon(Icons.settings_outlined),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacingLG),
+
+            // Quick Actions
+            AnimatedListItem(index: 1, child: _buildQuickActions(context)),
+            const SizedBox(height: AppTheme.spacingLG),
+
+            // Current Stats
+            AnimatedListItem(index: 2, child: _buildCurrentStats(context, ref)),
+            const SizedBox(height: AppTheme.spacingLG),
+
+            // Recent Workouts
+            AnimatedListItem(
+              index: 3,
+              child: _buildRecentWorkouts(context, ref),
+            ),
+          ],
+        ),
+      ),
+    ),
+    bottomNavigationBar: _buildBottomNavigation(context),
+  );
+
+  Widget _buildQuickActions(BuildContext context) => Consumer(
+    builder: (context, ref, child) {
+      final activeWorkout = ref.watch(activeWorkoutProvider);
+      final hasActiveWorkout = activeWorkout != null;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            S.of(context)!.quickActions,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          IntrinsicHeight(
+            // Ensures both cards have the same height
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Header
-                AnimatedListItem(
-                  delay: const Duration(),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Consumer(
-                          builder: (context, ref, child) {
-                            final firstTimeUser = ref.watch(firstTimeUserProvider);
-                            
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  firstTimeUser.when(
-                                    data: (isFirstTime) => isFirstTime 
-                                        ? S.of(context)!.welcomeFirstTime
-                                        : S.of(context)!.welcomeBack,
-                                    loading: () => S.of(context)!.welcomeBack,
-                                    error: (_, __) => S.of(context)!.welcomeBack,
-                                  ),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displayMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  firstTimeUser.when(
-                                    data: (isFirstTime) => isFirstTime 
-                                        ? S.of(context)!.readyForFirstWorkout
-                                        : S.of(context)!.readyForWorkout,
-                                    loading: () => S.of(context)!.readyForWorkout,
-                                    error: (_, __) => S.of(context)!.readyForWorkout,
-                                  ),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .withOpacity(0.6),
-                                      ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      // Gamification badges
-                      const StreakBadge(size: 36),
-                      // const SizedBox(width: 8),
-                      // const LevelIndicator(size: 48, showProgress: false),
-                      const SizedBox(width: 2),
-                      IconButton(
-                        onPressed: () async {
-                          await HapticService.lightImpact();
-                          if (context.mounted) context.go('/settings');
-                        },
-                        icon: const Icon(Icons.settings_outlined),
-                      ),
-                    ],
+                Expanded(
+                  child: _QuickActionCard(
+                    title: hasActiveWorkout
+                        ? S.of(context)!.resumeWorkoutTitle
+                        : S.of(context)!.startWorkout,
+                    subtitle: hasActiveWorkout
+                        ? S.of(context)!.continueWorkoutName(activeWorkout.name)
+                        : S.of(context)!.beginNewSession,
+                    icon: hasActiveWorkout
+                        ? Icons.play_circle_filled
+                        : Icons.play_arrow,
+                    color: hasActiveWorkout
+                        ? Colors.orange
+                        : AppTheme.primaryColor,
+                    onTap: () async {
+                      if (hasActiveWorkout) {
+                        // Resume active workout
+                        context.go('/active-workout');
+                      } else {
+                        // Start new workout
+                        context.go('/workout-templates?mode=start');
+                      }
+                    },
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingLG),
-
-                // Quick Actions
-                AnimatedListItem(
-                  index: 1,
-                  child: _buildQuickActions(context),
-                ),
-                const SizedBox(height: AppTheme.spacingLG),
-
-                // Current Stats
-                AnimatedListItem(
-                  index: 2,
-                  child: _buildCurrentStats(context, ref),
-                ),
-                const SizedBox(height: AppTheme.spacingLG),
-
-                // Recent Workouts
-                AnimatedListItem(
-                  index: 3,
-                  child: _buildRecentWorkouts(context, ref),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _QuickActionCard(
+                    title: S.of(context)!.achievements,
+                    subtitle: S.of(context)!.trackYourProgress,
+                    icon: Icons.emoji_events,
+                    color: Colors.amber,
+                    onTap: () => context.go('/gamification'),
+                  ),
                 ),
               ],
             ),
           ),
-        ),
-        bottomNavigationBar: _buildBottomNavigation(context),
-      );
-
-  Widget _buildQuickActions(BuildContext context) => Consumer(
-        builder: (context, ref, child) {
-          final activeWorkout = ref.watch(activeWorkoutProvider);
-          final hasActiveWorkout = activeWorkout != null;
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(height: 12),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _QuickActionCard(
+                    title: S.of(context)!.viewProgress,
+                    subtitle: S.of(context)!.checkYourStats,
+                    icon: Icons.trending_up,
+                    color: AppTheme.secondaryColor,
+                    onTap: () => context.go('/progress'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _QuickActionCard(
+                    title: S.of(context)!.exerciseLibrary,
+                    subtitle: S.of(context)!.browseExercises,
+                    icon: Icons.fitness_center,
+                    color: AppTheme.accentColor,
+                    onTap: () => context.go('/exercises'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _QuickActionCard(
+                    title: S.of(context)!.history,
+                    subtitle: S.of(context)!.pastWorkouts,
+                    icon: Icons.history,
+                    color: Colors.purple,
+                    onTap: () => context.go('/workout-history'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
             children: [
-              Text(
-                S.of(context)!.quickActions,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 12),
-              IntrinsicHeight(
-                // Ensures both cards have the same height
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: _QuickActionCard(
-                        title: hasActiveWorkout
-                            ? S.of(context)!.resumeWorkoutTitle
-                            : S.of(context)!.startWorkout,
-                        subtitle: hasActiveWorkout
-                            ? S
-                                .of(context)!
-                                .continueWorkoutName(activeWorkout.name)
-                            : S.of(context)!.beginNewSession,
-                        icon: hasActiveWorkout
-                            ? Icons.play_circle_filled
-                            : Icons.play_arrow,
-                        color: hasActiveWorkout
-                            ? Colors.orange
-                            : AppTheme.primaryColor,
-                        onTap: () async {
-                          if (hasActiveWorkout) {
-                            // Resume active workout
-                            context.go('/active-workout');
-                          } else {
-                            // Start new workout
-                            context.go('/workout-templates?mode=start');
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _QuickActionCard(
-                        title: S.of(context)!.achievements,
-                        subtitle: S.of(context)!.trackYourProgress,
-                        icon: Icons.emoji_events,
-                        color: Colors.amber,
-                        onTap: () => context.go('/gamification'),
-                      ),
-                    ),
-                  ],
+              Expanded(
+                child: _QuickActionCard(
+                  title: S.of(context)!.socialFeed,
+                  subtitle: S.of(context)!.friendsAndActivity,
+                  icon: Icons.people,
+                  color: Colors.blue,
+                  onTap: () => context.go('/social'),
                 ),
               ),
-              const SizedBox(height: 12),
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: _QuickActionCard(
-                        title: S.of(context)!.viewProgress,
-                        subtitle: S.of(context)!.checkYourStats,
-                        icon: Icons.trending_up,
-                        color: AppTheme.secondaryColor,
-                        onTap: () => context.go('/progress'),
-                      ),
-                    ),
-                  ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: _QuickActionCard(
+                  title: S.of(context)!.leaderboards,
+                  subtitle: S.of(context)!.compareCompete,
+                  icon: Icons.emoji_events,
+                  color: Colors.amber,
+                  onTap: () => context.go('/leaderboards'),
                 ),
-              ),
-              const SizedBox(height: 12),
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: _QuickActionCard(
-                        title: S.of(context)!.exerciseLibrary,
-                        subtitle: S.of(context)!.browseExercises,
-                        icon: Icons.fitness_center,
-                        color: AppTheme.accentColor,
-                        onTap: () => context.go('/exercises'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _QuickActionCard(
-                        title: S.of(context)!.history,
-                        subtitle: S.of(context)!.pastWorkouts,
-                        icon: Icons.history,
-                        color: Colors.purple,
-                        onTap: () => context.go('/workout-history'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _QuickActionCard(
-                      title: S.of(context)!.socialFeed,
-                      subtitle: S.of(context)!.friendsAndActivity,
-                      icon: Icons.people,
-                      color: Colors.blue,
-                      onTap: () => context.go('/social'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _QuickActionCard(
-                      title: S.of(context)!.leaderboards,
-                      subtitle: S.of(context)!.compareCompete,
-                      icon: Icons.emoji_events,
-                      color: Colors.amber,
-                      onTap: () => context.go('/leaderboards'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _QuickActionCard(
-                      title: S.of(context)!.aiCoach,
-                      subtitle: S.of(context)!.smartTrainingHelp,
-                      icon: Icons.psychology,
-                      color: Colors.teal,
-                      onTap: () => context.go('/ai-coach'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _QuickActionCard(
-                      title: S.of(context)!.settings,
-                      subtitle: S.of(context)!.appPreferences,
-                      icon: Icons.settings,
-                      color: Colors.grey,
-                      onTap: () => context.go('/settings'),
-                    ),
-                  ),
-                ],
               ),
             ],
-          );
-        },
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickActionCard(
+                  title: S.of(context)!.aiCoach,
+                  subtitle: S.of(context)!.smartTrainingHelp,
+                  icon: Icons.psychology,
+                  color: Colors.teal,
+                  onTap: () => context.go('/ai-coach'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _QuickActionCard(
+                  title: S.of(context)!.settings,
+                  subtitle: S.of(context)!.appPreferences,
+                  icon: Icons.settings,
+                  color: Colors.grey,
+                  onTap: () => context.go('/settings'),
+                ),
+              ),
+            ],
+          ),
+        ],
       );
+    },
+  );
 
   Widget _buildCurrentStats(BuildContext context, WidgetRef ref) {
     final weeklyStatsAsync = ref.watch(weeklyStatsProvider);
@@ -376,9 +362,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Text(
               S.of(context)!.thisWeek,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             weeklyStatsAsync.when(
@@ -474,9 +460,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Text(
               S.of(context)!.recentWorkouts,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const Spacer(),
             TextButton(
@@ -507,8 +493,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       Text(
                         S.of(context)!.startFirstWorkout,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -517,8 +503,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               );
             }
 
-            final displayWorkouts =
-                workouts.take(AppConfig.homeRecentWorkoutsLimit).toList();
+            final displayWorkouts = workouts
+                .take(AppConfig.homeRecentWorkoutsLimit)
+                .toList();
 
             return ListView.separated(
               shrinkWrap: true,
@@ -583,49 +570,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildBottomNavigation(BuildContext context) => BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) async {
-          await HapticService.selectionClick();
-          if (!context.mounted) return;
+    type: BottomNavigationBarType.fixed,
+    onTap: (index) async {
+      await HapticService.selectionClick();
+      if (!context.mounted) return;
 
-          switch (index) {
-            case 0:
-              context.go('/');
-              break;
-            case 1:
-              context.go('/workout-templates');
-              break;
-            case 2:
-              context.go('/exercises');
-              break;
-            case 3:
-              context.go('/progress');
-              break;
-          }
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home_outlined),
-            activeIcon: const Icon(Icons.home),
-            label: S.of(context)!.home,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.fitness_center_outlined),
-            activeIcon: const Icon(Icons.fitness_center),
-            label: S.of(context)!.workouts,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.search_outlined),
-            activeIcon: const Icon(Icons.search),
-            label: S.of(context)!.exercises,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.trending_up_outlined),
-            activeIcon: const Icon(Icons.trending_up),
-            label: S.of(context)!.progress,
-          ),
-        ],
-      );
+      switch (index) {
+        case 0:
+          context.go('/');
+          break;
+        case 1:
+          context.go('/workout-templates');
+          break;
+        case 2:
+          context.go('/exercises');
+          break;
+        case 3:
+          context.go('/progress');
+          break;
+      }
+    },
+    items: [
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.home_outlined),
+        activeIcon: const Icon(Icons.home),
+        label: S.of(context)!.home,
+      ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.fitness_center_outlined),
+        activeIcon: const Icon(Icons.fitness_center),
+        label: S.of(context)!.workouts,
+      ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.search_outlined),
+        activeIcon: const Icon(Icons.search),
+        label: S.of(context)!.exercises,
+      ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.trending_up_outlined),
+        activeIcon: const Icon(Icons.trending_up),
+        label: S.of(context)!.progress,
+      ),
+    ],
+  );
 }
 
 class _QuickActionCard extends StatefulWidget {
@@ -664,13 +651,11 @@ class _QuickActionCardState extends State<_QuickActionCard>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: AppDurations.fast,
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1, end: 0.95).animate(
-      CurvedAnimation(parent: _controller, curve: AppCurves.snappy),
-    );
+    _controller = AnimationController(duration: AppDurations.fast, vsync: this);
+    _scaleAnimation = Tween<double>(
+      begin: 1,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: AppCurves.snappy));
   }
 
   @override
@@ -693,88 +678,80 @@ class _QuickActionCardState extends State<_QuickActionCard>
 
   @override
   Widget build(BuildContext context) => ScaleTransition(
-        scale: _scaleAnimation,
-        child: Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+    scale: _scaleAnimation,
+    child: Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+      ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              widget.color.withOpacity(0.15),
+              widget.color.withOpacity(0.05),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  widget.color.withOpacity(0.15),
-                  widget.color.withOpacity(0.05),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(AppTheme.radiusMD),
-              border: Border.all(
-                color: widget.color.withOpacity(0.2),
-              ),
-            ),
-            child: InkWell(
-              onTap: () async {
-                await HapticService.lightImpact();
-                widget.onTap();
-              },
-              onTapDown: _handleTapDown,
-              onTapUp: _handleTapUp,
-              onTapCancel: _handleTapCancel,
-              borderRadius: BorderRadius.circular(AppTheme.radiusMD),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: 120,
-                ), // Ensure consistent height
-                child: Padding(
-                  padding: const EdgeInsets.all(AppTheme.spacingMD),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(AppTheme.spacingSM),
-                        decoration: BoxDecoration(
-                          color: widget.color.withOpacity(0.2),
-                          borderRadius:
-                              BorderRadius.circular(AppTheme.radiusSM),
-                        ),
-                        child: Icon(
-                          widget.icon,
-                          color: widget.color,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(height: AppTheme.spacingSM),
-                      Text(
-                        widget.title,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                        maxLines: 2, // Allow for two-line titles
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: AppTheme.spacingXS),
-                      Text(
-                        widget.subtitle,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.6),
-                            ),
-                        maxLines: 2, // Allow for two-line subtitles
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+          borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+          border: Border.all(color: widget.color.withOpacity(0.2)),
+        ),
+        child: InkWell(
+          onTap: () async {
+            await HapticService.lightImpact();
+            widget.onTap();
+          },
+          onTapDown: _handleTapDown,
+          onTapUp: _handleTapUp,
+          onTapCancel: _handleTapCancel,
+          borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: 120,
+            ), // Ensure consistent height
+            child: Padding(
+              padding: const EdgeInsets.all(AppTheme.spacingMD),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(AppTheme.spacingSM),
+                    decoration: BoxDecoration(
+                      color: widget.color.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+                    ),
+                    child: Icon(widget.icon, color: widget.color, size: 24),
                   ),
-                ),
+                  const SizedBox(height: AppTheme.spacingSM),
+                  Text(
+                    widget.title,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 2, // Allow for two-line titles
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: AppTheme.spacingXS),
+                  Text(
+                    widget.subtitle,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                    maxLines: 2, // Allow for two-line subtitles
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class _StatItem extends StatelessWidget {
@@ -789,34 +766,29 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        children: [
-          Icon(
-            icon,
-            size: 24,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                ),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-          ),
-        ],
-      );
+    children: [
+      Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
+      const SizedBox(height: 8),
+      Text(
+        value,
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      ),
+      const SizedBox(height: 4),
+      Text(
+        label,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+        ),
+        textAlign: TextAlign.center,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 2,
+      ),
+    ],
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -844,8 +816,9 @@ class _RecentWorkoutCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final exerciseCountAsync =
-        ref.watch(exerciseCountBySessionProvider(workoutId));
+    final exerciseCountAsync = ref.watch(
+      exerciseCountBySessionProvider(workoutId),
+    );
 
     return Card(
       elevation: 0,
@@ -922,10 +895,9 @@ class _RecentWorkoutCard extends ConsumerWidget {
           trailing: Text(
             date,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                  fontWeight: FontWeight.w500,
-                ),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              fontWeight: FontWeight.w500,
+            ),
           ),
           onTap: onTap,
         ),

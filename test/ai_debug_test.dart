@@ -26,8 +26,9 @@ void main() {
 
         // Test mock service works
         final mockService = AICoachingService();
-        final mockRecs =
-            await mockService.getWorkoutRecommendations('test_user');
+        final mockRecs = await mockService.getWorkoutRecommendations(
+          'test_user',
+        );
         print('✅ Mock service has ${mockRecs.length} recommendations');
       }
     });

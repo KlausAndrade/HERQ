@@ -42,8 +42,9 @@ class ResumeWorkoutDialog extends StatelessWidget {
     // Calculate completion stats
     final completedSets = workout.getCompletedSetsCount();
     final totalSets = workout.getTotalSetsCount();
-    final completionPercent =
-        totalSets > 0 ? (completedSets / totalSets * 100).round() : 0;
+    final completionPercent = totalSets > 0
+        ? (completedSets / totalSets * 100).round()
+        : 0;
 
     return AlertDialog(
       title: Row(
@@ -143,8 +144,10 @@ class ResumeWorkoutDialog extends StatelessWidget {
                 if (showFinishOption && minutesSinceLastSave >= 10) ...[
                   const SizedBox(height: 8),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: isCompleteForgotten
                           ? colorScheme.secondaryContainer.withOpacity(0.3)
@@ -171,12 +174,16 @@ class ResumeWorkoutDialog extends StatelessWidget {
                         Expanded(
                           child: Text(
                             isCompleteForgotten
-                                ? S.of(context)!.finishedTimeAgo(
-                                      _formatDuration(timeSinceLastSave),
-                                    )
-                                : S.of(context)!.pausedTimeAgo(
-                                      _formatDuration(timeSinceLastSave),
-                                    ),
+                                ? S
+                                      .of(context)!
+                                      .finishedTimeAgo(
+                                        _formatDuration(timeSinceLastSave),
+                                      )
+                                : S
+                                      .of(context)!
+                                      .pausedTimeAgo(
+                                        _formatDuration(timeSinceLastSave),
+                                      ),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: isCompleteForgotten
                                   ? colorScheme.secondary
@@ -350,8 +357,9 @@ class ResumeWorkoutDialog extends StatelessWidget {
     properties.add(DiagnosticsProperty<DateTime>('lastSavedAt', lastSavedAt));
     properties.add(ObjectFlagProperty<VoidCallback>.has('onResume', onResume));
     properties.add(ObjectFlagProperty<VoidCallback>.has('onFinish', onFinish));
-    properties
-        .add(ObjectFlagProperty<VoidCallback>.has('onDiscard', onDiscard));
+    properties.add(
+      ObjectFlagProperty<VoidCallback>.has('onDiscard', onDiscard),
+    );
   }
 }
 

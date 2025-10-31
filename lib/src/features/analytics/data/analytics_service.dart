@@ -13,15 +13,17 @@ class AnalyticsService {
     required DateTime to,
   }) async {
     // Query set_entries joined with workout_sessions to get completed_at
-    final query = database.select(database.setEntries).join([
-      leftOuterJoin(
-        database.workoutSessions,
-        database.workoutSessions.id
-            .equalsExp(database.setEntries.workoutSessionId),
-      ),
-    ])
-      ..where(database.setEntries.completedAt.isBiggerOrEqualValue(from))
-      ..where(database.setEntries.completedAt.isSmallerOrEqualValue(to));
+    final query =
+        database.select(database.setEntries).join([
+            leftOuterJoin(
+              database.workoutSessions,
+              database.workoutSessions.id.equalsExp(
+                database.setEntries.workoutSessionId,
+              ),
+            ),
+          ])
+          ..where(database.setEntries.completedAt.isBiggerOrEqualValue(from))
+          ..where(database.setEntries.completedAt.isSmallerOrEqualValue(to));
 
     final rows = await query.get();
 

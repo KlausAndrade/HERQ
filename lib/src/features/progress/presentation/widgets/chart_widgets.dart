@@ -6,11 +6,7 @@ import 'package:intl/intl.dart';
 import '../providers/chart_providers.dart';
 
 class VolumeChart extends StatelessWidget {
-  const VolumeChart({
-    required this.data,
-    super.key,
-    this.height = 200,
-  });
+  const VolumeChart({required this.data, super.key, this.height = 200});
 
   final List<VolumeData> data;
   final double height;
@@ -24,9 +20,7 @@ class VolumeChart extends StatelessWidget {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Center(
-          child: Text('No data available'),
-        ),
+        child: const Center(child: Text('No data available')),
       );
     }
 
@@ -65,10 +59,9 @@ class VolumeChart extends StatelessWidget {
                       child: Text(
                         DateFormat('M/d').format(date),
                         style: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.6),
                           fontSize: 11,
                         ),
                       ),
@@ -88,10 +81,9 @@ class VolumeChart extends StatelessWidget {
                   child: Text(
                     '${(value / 1000).toStringAsFixed(1)}k',
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
                       fontSize: 11,
                     ),
                   ),
@@ -114,8 +106,9 @@ class VolumeChart extends StatelessWidget {
               spots: data
                   .asMap()
                   .entries
-                  .map((entry) =>
-                      FlSpot(entry.key.toDouble(), entry.value.volume))
+                  .map(
+                    (entry) => FlSpot(entry.key.toDouble(), entry.value.volume),
+                  )
                   .toList(),
               isCurved: true,
               color: Theme.of(context).colorScheme.primary,
@@ -124,11 +117,11 @@ class VolumeChart extends StatelessWidget {
               dotData: FlDotData(
                 getDotPainter: (spot, percent, barData, index) =>
                     FlDotCirclePainter(
-                  radius: 4,
-                  color: Theme.of(context).colorScheme.primary,
-                  strokeWidth: 2,
-                  strokeColor: Theme.of(context).colorScheme.surface,
-                ),
+                      radius: 4,
+                      color: Theme.of(context).colorScheme.primary,
+                      strokeWidth: 2,
+                      strokeColor: Theme.of(context).colorScheme.surface,
+                    ),
               ),
               belowBarData: BarAreaData(
                 show: true,
@@ -139,8 +132,9 @@ class VolumeChart extends StatelessWidget {
           lineTouchData: LineTouchData(
             touchTooltipData: LineTouchTooltipData(
               tooltipBgColor: Theme.of(context).colorScheme.inverseSurface,
-              getTooltipItems: (touchedSpots) =>
-                  touchedSpots.map((LineBarSpot touchedSpot) {
+              getTooltipItems: (touchedSpots) => touchedSpots.map((
+                LineBarSpot touchedSpot,
+              ) {
                 final index = touchedSpot.x.toInt();
                 if (index >= 0 && index < data.length) {
                   final dataPoint = data[index];
@@ -170,11 +164,7 @@ class VolumeChart extends StatelessWidget {
 }
 
 class FrequencyChart extends StatelessWidget {
-  const FrequencyChart({
-    required this.data,
-    super.key,
-    this.height = 200,
-  });
+  const FrequencyChart({required this.data, super.key, this.height = 200});
 
   final List<FrequencyData> data;
   final double height;
@@ -188,9 +178,7 @@ class FrequencyChart extends StatelessWidget {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Center(
-          child: Text('No data available'),
-        ),
+        child: const Center(child: Text('No data available')),
       );
     }
 
@@ -236,10 +224,9 @@ class FrequencyChart extends StatelessWidget {
                       child: Text(
                         DateFormat('M/d').format(date),
                         style: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.6),
                           fontSize: 11,
                         ),
                       ),
@@ -259,10 +246,9 @@ class FrequencyChart extends StatelessWidget {
                   child: Text(
                     value.toInt().toString(),
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
                       fontSize: 11,
                     ),
                   ),
@@ -337,16 +323,16 @@ class ExerciseProgressChart extends StatelessWidget {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Center(
-          child: Text('No data available'),
-        ),
+        child: const Center(child: Text('No data available')),
       );
     }
 
-    final maxOneRM =
-        data.map((d) => d.oneRepMax).reduce((a, b) => a > b ? a : b);
-    final minOneRM =
-        data.map((d) => d.oneRepMax).reduce((a, b) => a < b ? a : b);
+    final maxOneRM = data
+        .map((d) => d.oneRepMax)
+        .reduce((a, b) => a > b ? a : b);
+    final minOneRM = data
+        .map((d) => d.oneRepMax)
+        .reduce((a, b) => a < b ? a : b);
     final oneRMRange = maxOneRM - minOneRM;
     // Ensure interval is never zero
     final horizontalInterval = oneRMRange > 0 ? oneRMRange / 4 : 1.0;
@@ -380,10 +366,9 @@ class ExerciseProgressChart extends StatelessWidget {
                       child: Text(
                         DateFormat('M/d').format(date),
                         style: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.6),
                           fontSize: 11,
                         ),
                       ),
@@ -403,10 +388,9 @@ class ExerciseProgressChart extends StatelessWidget {
                   child: Text(
                     value.toStringAsFixed(0),
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
                       fontSize: 11,
                     ),
                   ),
@@ -429,8 +413,10 @@ class ExerciseProgressChart extends StatelessWidget {
               spots: data
                   .asMap()
                   .entries
-                  .map((entry) =>
-                      FlSpot(entry.key.toDouble(), entry.value.oneRepMax))
+                  .map(
+                    (entry) =>
+                        FlSpot(entry.key.toDouble(), entry.value.oneRepMax),
+                  )
                   .toList(),
               isCurved: true,
               color: Theme.of(context).colorScheme.tertiary,
@@ -439,11 +425,11 @@ class ExerciseProgressChart extends StatelessWidget {
               dotData: FlDotData(
                 getDotPainter: (spot, percent, barData, index) =>
                     FlDotCirclePainter(
-                  radius: 4,
-                  color: Theme.of(context).colorScheme.tertiary,
-                  strokeWidth: 2,
-                  strokeColor: Theme.of(context).colorScheme.surface,
-                ),
+                      radius: 4,
+                      color: Theme.of(context).colorScheme.tertiary,
+                      strokeWidth: 2,
+                      strokeColor: Theme.of(context).colorScheme.surface,
+                    ),
               ),
               belowBarData: BarAreaData(
                 show: true,
@@ -454,8 +440,9 @@ class ExerciseProgressChart extends StatelessWidget {
           lineTouchData: LineTouchData(
             touchTooltipData: LineTouchTooltipData(
               tooltipBgColor: Theme.of(context).colorScheme.inverseSurface,
-              getTooltipItems: (touchedSpots) =>
-                  touchedSpots.map((LineBarSpot touchedSpot) {
+              getTooltipItems: (touchedSpots) => touchedSpots.map((
+                LineBarSpot touchedSpot,
+              ) {
                 final index = touchedSpot.x.toInt();
                 if (index >= 0 && index < data.length) {
                   final dataPoint = data[index];

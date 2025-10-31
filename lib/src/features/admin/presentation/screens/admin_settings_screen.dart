@@ -53,9 +53,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+        style: Theme.of(
+          context,
+        ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -69,9 +69,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           children: [
             Text(
               'System Settings',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
@@ -129,15 +129,16 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           children: [
             Text(
               'Feature Flags',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text('Social Features'),
-              subtitle:
-                  const Text('Enable posts, comments, and social interactions'),
+              subtitle: const Text(
+                'Enable posts, comments, and social interactions',
+              ),
               value: _socialFeaturesEnabled,
               onChanged: (value) {
                 setState(() {
@@ -185,9 +186,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           children: [
             Text(
               'Environment Information',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildInfoRow('App Version', _appVersion),
@@ -217,9 +218,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                 Text(
                   'Danger Zone',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red.shade700,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red.shade700,
+                  ),
                 ),
               ],
             ),
@@ -254,8 +255,10 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                 'Sign out all users from all devices',
                 style: TextStyle(color: Colors.orange.shade600),
               ),
-              trailing:
-                  Icon(Icons.chevron_right, color: Colors.orange.shade700),
+              trailing: Icon(
+                Icons.chevron_right,
+                color: Colors.orange.shade700,
+              ),
               onTap: () => _showForceLogoutDialog(context),
             ),
           ],
@@ -278,10 +281,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             ),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(color: Colors.grey),
-            ),
+            child: Text(value, style: const TextStyle(color: Colors.grey)),
           ),
         ],
       ),
@@ -293,7 +293,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-            enabled ? 'Enable Maintenance Mode' : 'Disable Maintenance Mode'),
+          enabled ? 'Enable Maintenance Mode' : 'Disable Maintenance Mode',
+        ),
         content: Text(
           enabled
               ? 'This will temporarily disable the app for all users. Are you sure?'
@@ -330,7 +331,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Clear All Caches'),
         content: const Text(
-            'This will clear all app caches and temporary data. Continue?'),
+          'This will clear all app caches and temporary data. Continue?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -341,7 +343,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                    content: Text('All caches cleared successfully')),
+                  content: Text('All caches cleared successfully'),
+                ),
               );
             },
             child: const Text('Clear'),
@@ -357,7 +360,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Restart Services'),
         content: const Text(
-            'This will restart all background services and sync processes. Continue?'),
+          'This will restart all background services and sync processes. Continue?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -368,7 +372,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                    content: Text('Services restarted successfully')),
+                  content: Text('Services restarted successfully'),
+                ),
               );
             },
             child: const Text('Restart'),
@@ -384,7 +389,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Reset All Settings'),
         content: const Text(
-            'This will reset all admin settings to their default values. This action cannot be undone.'),
+          'This will reset all admin settings to their default values. This action cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -418,7 +424,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Force Logout All Users'),
         content: const Text(
-            'This will sign out all users from all devices. They will need to sign in again. Continue?'),
+          'This will sign out all users from all devices. They will need to sign in again. Continue?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

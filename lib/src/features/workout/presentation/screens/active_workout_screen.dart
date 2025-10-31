@@ -25,10 +25,7 @@ import '../widgets/set_entry_widget.dart';
 import 'workout_save_screen.dart';
 
 class ActiveWorkoutScreen extends ConsumerStatefulWidget {
-  const ActiveWorkoutScreen({
-    super.key,
-    this.templateId,
-  });
+  const ActiveWorkoutScreen({super.key, this.templateId});
   final String? templateId;
 
   @override
@@ -223,12 +220,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                               children: [
                                 Text(
                                   activeWorkout.name,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                  style: Theme.of(context).textTheme.titleLarge
+                                      ?.copyWith(fontWeight: FontWeight.w600),
                                 ),
                                 _buildEditableTimer(context, activeWorkout),
                               ],
@@ -256,7 +249,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                       },
                       scrollController: _scrollController,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 8),
+                        horizontal: 8,
+                        vertical: 8,
+                      ),
                       itemCount: activeWorkout.exercises.length,
                       itemBuilder: (context, index) {
                         final exercise = activeWorkout.exercises[index];
@@ -267,7 +262,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                           index: index,
                           child: Dismissible(
                             key: Key(
-                                'exercise-dismissible-${exercise.id}-$index'),
+                              'exercise-dismissible-${exercise.id}-$index',
+                            ),
                             direction: DismissDirection.endToStart,
                             background: Container(
                               alignment: Alignment.centerRight,
@@ -298,9 +294,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                                           onPressed: () =>
                                               Navigator.of(context).pop(true),
                                           style: FilledButton.styleFrom(
-                                            backgroundColor: Theme.of(context)
-                                                .colorScheme
-                                                .error,
+                                            backgroundColor: Theme.of(
+                                              context,
+                                            ).colorScheme.error,
                                           ),
                                           child: const Text('Remove'),
                                         ),
@@ -318,8 +314,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                               // Show in-app notification with undo option
                               NotificationService()
                                   .showInAppNotification(
-                                    id: DateTime.now()
-                                        .millisecondsSinceEpoch
+                                    id: DateTime.now().millisecondsSinceEpoch
                                         .toString(),
                                     title: 'Exercise removed',
                                     body:
@@ -334,11 +329,12 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                                             index,
                                             initialWeight:
                                                 exercise.sets.isNotEmpty
-                                                    ? exercise.sets.first.weight
-                                                    : null,
+                                                ? exercise.sets.first.weight
+                                                : null,
                                             restTimerSeconds:
                                                 exercise.restTimerSeconds,
-                                            isAssisted: exercise.variantType ==
+                                            isAssisted:
+                                                exercise.variantType ==
                                                 'assisted',
                                           );
                                     },
@@ -375,8 +371,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                                   await Future.delayed(
                                     const Duration(milliseconds: 300),
                                   );
-                                  final updatedWorkout =
-                                      ref.read(activeWorkoutProvider);
+                                  final updatedWorkout = ref.read(
+                                    activeWorkoutProvider,
+                                  );
                                   if (updatedWorkout != null) {
                                     final updatedExercise =
                                         updatedWorkout.exercises[index];
@@ -514,7 +511,9 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       final restTimerSeconds = result['restTimerSeconds'] as int? ?? 90;
       final isAssisted = result['isAssisted'] as bool? ?? false;
 
-      await ref.read(activeWorkoutProvider.notifier).addExercise(
+      await ref
+          .read(activeWorkoutProvider.notifier)
+          .addExercise(
             exercise.id,
             initialWeight: initialWeight,
             restTimerSeconds: restTimerSeconds,
@@ -710,8 +709,10 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     final quickSummary = WorkoutSummary(
       workoutName: workout.name,
       duration: workout.elapsedTime,
-      totalSets: workout.exercises
-          .fold(0, (sum, e) => sum + e.sets.where((s) => s.isCompleted).length),
+      totalSets: workout.exercises.fold(
+        0,
+        (sum, e) => sum + e.sets.where((s) => s.isCompleted).length,
+      ),
       totalReps: workout.exercises
           .expand((e) => e.sets)
           .where((s) => s.isCompleted)
@@ -792,8 +793,10 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
                 // Navigate to summary screen with confetti
                 if (context.mounted) {
                   Navigator.of(context).pop(); // Close save screen
-                  context.go('/workout-summary',
-                      extra: savedSummary ?? quickSummary);
+                  context.go(
+                    '/workout-summary',
+                    extra: savedSummary ?? quickSummary,
+                  );
                 }
               } catch (e) {
                 print('❌ Error saving workout: $e');
@@ -895,20 +898,23 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           focusNode: _timerFocusNode,
           keyboardType: TextInputType.number,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           decoration: InputDecoration(
             hintText: '0m 0s',
             hintStyle: TextStyle(
               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
               fontSize: 14,
             ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 4,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
-              borderSide:
-                  BorderSide(color: Theme.of(context).colorScheme.primary),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
@@ -941,9 +947,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           Text(
             _formatDuration(workout.elapsedTime),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                ),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            ),
           ),
           const SizedBox(width: 4),
           Icon(
@@ -1054,7 +1059,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   Future<void> _saveWorkoutPhoto(String workoutName, String photoPath) async {
     try {
       print(
-          '📸 Workout photo ready for social post: $workoutName - $photoPath');
+        '📸 Workout photo ready for social post: $workoutName - $photoPath',
+      );
       // Photo is uploaded to Supabase Storage and included in the social post
       // See _uploadPostImage and _createSocialPost methods for the upload implementation
     } catch (e) {
@@ -1064,7 +1070,10 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 
   /// Create social media post
   Future<void> _createSocialPost(
-      WorkoutSummary summary, String? notes, String? photoPath) async {
+    WorkoutSummary summary,
+    String? notes,
+    String? photoPath,
+  ) async {
     try {
       print('📱 Creating social post for ${summary.workoutName}');
 
@@ -1160,14 +1169,16 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 
     if (summary.totalVolume > 0) {
       buffer.writeln(
-          '🏋️ ${summary.totalVolume.toStringAsFixed(0)} kg total volume');
+        '🏋️ ${summary.totalVolume.toStringAsFixed(0)} kg total volume',
+      );
     }
 
     // Add PRs if any
     if (summary.prs.isNotEmpty) {
       buffer.writeln();
       buffer.writeln(
-          '🏆 ${summary.prs.length} ${summary.prs.length == 1 ? "PR" : "PRs"}!');
+        '🏆 ${summary.prs.length} ${summary.prs.length == 1 ? "PR" : "PRs"}!',
+      );
     }
 
     // Add user notes if provided
@@ -1269,388 +1280,379 @@ class _ExerciseCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Card(
-        margin: const EdgeInsets.only(bottom: 4),
-        child: Column(
-          children: [
-            InkWell(
-              onTap: onTap,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: _isExerciseCompleted(exercise)
-                            ? Colors.lime.withOpacity(0.2)
-                            : Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Icon(
-                        _isExerciseCompleted(exercise)
-                            ? Icons.check_circle
-                            : Icons.fitness_center,
-                        color: _isExerciseCompleted(exercise)
-                            ? Colors.lime.shade600
-                            : Theme.of(context).colorScheme.primary,
-                        size: 18,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            exercise.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              Text(
-                                '${exercise.sets.length} sets',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.6),
-                                ),
-                              ),
-                              if (exercise.equipmentUsed != null ||
-                                  exercise.variantType != null) ...[
-                                const SizedBox(width: 6),
-                                Flexible(
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 1,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary
-                                          .withOpacity(0.12),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      [
-                                        if (exercise.equipmentUsed != null)
-                                          _getEquipmentShortName(
-                                            exercise.equipmentUsed!,
-                                          ),
-                                        if (exercise.variantType != null &&
-                                            exercise.variantType != 'standard')
-                                          _getVariantShortName(
-                                            exercise.variantType!,
-                                          ),
-                                      ].join(' • '),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Variant Picker Button
-                    ExerciseVariantPicker(
-                      currentEquipment: exercise.equipmentUsed,
-                      currentVariant: exercise.variantType,
-                      onChanged: (equipment, variant) {
-                        ref
-                            .read(activeWorkoutProvider.notifier)
-                            .updateExerciseVariant(
-                              exerciseIndex,
-                              equipmentUsed: equipment,
-                              variantType: variant,
-                            );
-                      },
-                    ),
-                    if (showDragHandle) ...[
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8, right: 4),
-                        child: Icon(
-                          Icons.drag_handle,
-                          size: 20,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.4),
-                        ),
-                      ),
-                    ],
-                    Icon(
-                      isExpanded ? Icons.expand_less : Icons.expand_more,
-                      size: 20,
-                    ),
-                  ],
+    margin: const EdgeInsets.only(bottom: 4),
+    child: Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: _isExerciseCompleted(exercise)
+                        ? Colors.lime.withOpacity(0.2)
+                        : Theme.of(
+                            context,
+                          ).colorScheme.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(
+                    _isExerciseCompleted(exercise)
+                        ? Icons.check_circle
+                        : Icons.fitness_center,
+                    color: _isExerciseCompleted(exercise)
+                        ? Colors.lime.shade600
+                        : Theme.of(context).colorScheme.primary,
+                    size: 18,
+                  ),
                 ),
-              ),
-            ),
-            if (isExpanded) ...[
-              const Divider(height: 1),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(2, 18, 2, 2),
-                child: Column(
-                  children: [
-                    // Rest Timer Controls
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .outline
-                              .withOpacity(0.15),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        exercise.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                      const SizedBox(height: 2),
+                      Row(
                         children: [
-                          Icon(
-                            Icons.timer_outlined,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(width: 10),
                           Text(
-                            'Rest',
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                    ),
-                          ),
-                          const SizedBox(width: 8),
-                          // Compact minus button
-                          InkWell(
-                            onTap: exercise.restTimerSeconds > 15
-                                ? () {
-                                    ref
-                                        .read(activeWorkoutProvider.notifier)
-                                        .updateExerciseRestTimer(
-                                          exerciseIndex,
-                                          exercise.restTimerSeconds - 15,
-                                        );
-                                  }
-                                : null,
-                            borderRadius: BorderRadius.circular(6),
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              child: Icon(
-                                Icons.remove,
-                                size: 16,
-                                color: exercise.restTimerSeconds > 15
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .outline
-                                        .withOpacity(0.3),
-                              ),
+                            '${exercise.sets.length} sets',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.6),
                             ),
                           ),
-                          // Compact value display
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              '${exercise.restTimerSeconds}s',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.primary,
-                                fontSize: 12,
-                                height: 1,
-                              ),
-                            ),
-                          ),
-                          // Compact plus button
-                          InkWell(
-                            onTap: () {
-                              ref
-                                  .read(activeWorkoutProvider.notifier)
-                                  .updateExerciseRestTimer(
-                                    exerciseIndex,
-                                    exercise.restTimerSeconds + 15,
-                                  );
-                            },
-                            borderRadius: BorderRadius.circular(6),
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              child: Icon(
-                                Icons.add,
-                                size: 16,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Sets List
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: exercise.sets.length,
-                      itemBuilder: (context, index) {
-                        final set = exercise.sets[index];
-                        return Dismissible(
-                          key: Key('set_${exerciseIndex}_$index'),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 20),
-                            color: Theme.of(context).colorScheme.error,
-                            child: Icon(
-                              Icons.delete,
-                              color: Theme.of(context).colorScheme.onError,
-                              size: 28,
-                            ),
-                          ),
-                          confirmDismiss: (direction) async {
-                            // Show confirmation dialog
-                            return await showDialog<bool>(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('Remove Set?'),
-                                    content: Text(
-                                      'Are you sure you want to remove set ${index + 1}?',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(false),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      FilledButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(true),
-                                        style: FilledButton.styleFrom(
-                                          backgroundColor: Theme.of(context)
-                                              .colorScheme
-                                              .error,
-                                        ),
-                                        child: const Text('Remove'),
-                                      ),
-                                    ],
-                                  ),
-                                ) ??
-                                false;
-                          },
-                          onDismissed: (direction) {
-                            // Remove the set
-                            ref
-                                .read(activeWorkoutProvider.notifier)
-                                .removeSet(exerciseIndex, index);
-
-                            // Show in-app notification with undo option
-                            NotificationService()
-                                .showInAppNotification(
-                                  id: DateTime.now()
-                                      .millisecondsSinceEpoch
-                                      .toString(),
-                                  title: 'Set removed',
-                                  body: 'Set ${index + 1} removed',
-                                  primaryActionLabel: 'Undo',
-                                  onPrimaryAction: () {
-                                    // Simple undo: re-add a set at this exercise
-                                    ref
-                                        .read(activeWorkoutProvider.notifier)
-                                        .addSet(exerciseIndex);
-                                  },
-                                )
-                                .catchError((_) {});
-                          },
-                          child: SetEntryWidget(
-                            set: set,
-                            setNumber: index + 1,
-                            restTimerSeconds: exercise.restTimerSeconds,
-                            exerciseName: exercise.name,
-                            exerciseType: exercise.exerciseType,
-                            variantType: exercise.variantType,
-                            totalSets: exercise.sets.length,
-                            isFirstSet: index == 0,
-                            previousSet: exercise.previousSet,
-                            onChanged: (updatedSet) {
-                              onSetChanged(index, updatedSet);
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                    // Add Set Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48, // Increased height for better touch target
-                      child: OutlinedButton(
-                        onPressed: onAddSet,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add, size: 18),
-                            SizedBox(width: 6),
+                          if (exercise.equipmentUsed != null ||
+                              exercise.variantType != null) ...[
+                            const SizedBox(width: 6),
                             Flexible(
-                              child: Text(
-                                'Add Set',
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 13),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 1,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  [
+                                    if (exercise.equipmentUsed != null)
+                                      _getEquipmentShortName(
+                                        exercise.equipmentUsed!,
+                                      ),
+                                    if (exercise.variantType != null &&
+                                        exercise.variantType != 'standard')
+                                      _getVariantShortName(
+                                        exercise.variantType!,
+                                      ),
+                                  ].join(' • '),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
                           ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Variant Picker Button
+                ExerciseVariantPicker(
+                  currentEquipment: exercise.equipmentUsed,
+                  currentVariant: exercise.variantType,
+                  onChanged: (equipment, variant) {
+                    ref
+                        .read(activeWorkoutProvider.notifier)
+                        .updateExerciseVariant(
+                          exerciseIndex,
+                          equipmentUsed: equipment,
+                          variantType: variant,
+                        );
+                  },
+                ),
+                if (showDragHandle) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 4),
+                    child: Icon(
+                      Icons.drag_handle,
+                      size: 20,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.4),
+                    ),
+                  ),
+                ],
+                Icon(
+                  isExpanded ? Icons.expand_less : Icons.expand_more,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (isExpanded) ...[
+          const Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(2, 18, 2, 2),
+            child: Column(
+              children: [
+                // Rest Timer Controls
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outline.withOpacity(0.15),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.timer_outlined,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Rest',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 12), // Space after Add Set button
-                  ],
+                      const SizedBox(width: 8),
+                      // Compact minus button
+                      InkWell(
+                        onTap: exercise.restTimerSeconds > 15
+                            ? () {
+                                ref
+                                    .read(activeWorkoutProvider.notifier)
+                                    .updateExerciseRestTimer(
+                                      exerciseIndex,
+                                      exercise.restTimerSeconds - 15,
+                                    );
+                              }
+                            : null,
+                        borderRadius: BorderRadius.circular(6),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.remove,
+                            size: 16,
+                            color: exercise.restTimerSeconds > 15
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.outline.withOpacity(0.3),
+                          ),
+                        ),
+                      ),
+                      // Compact value display
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '${exercise.restTimerSeconds}s',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 12,
+                            height: 1,
+                          ),
+                        ),
+                      ),
+                      // Compact plus button
+                      InkWell(
+                        onTap: () {
+                          ref
+                              .read(activeWorkoutProvider.notifier)
+                              .updateExerciseRestTimer(
+                                exerciseIndex,
+                                exercise.restTimerSeconds + 15,
+                              );
+                        },
+                        borderRadius: BorderRadius.circular(6),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.add,
+                            size: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ],
-        ),
-      );
+                const SizedBox(height: 16),
+                // Sets List
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: exercise.sets.length,
+                  itemBuilder: (context, index) {
+                    final set = exercise.sets[index];
+                    return Dismissible(
+                      key: Key('set_${exerciseIndex}_$index'),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        color: Theme.of(context).colorScheme.error,
+                        child: Icon(
+                          Icons.delete,
+                          color: Theme.of(context).colorScheme.onError,
+                          size: 28,
+                        ),
+                      ),
+                      confirmDismiss: (direction) async {
+                        // Show confirmation dialog
+                        return await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Remove Set?'),
+                                content: Text(
+                                  'Are you sure you want to remove set ${index + 1}?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                    ),
+                                    child: const Text('Remove'),
+                                  ),
+                                ],
+                              ),
+                            ) ??
+                            false;
+                      },
+                      onDismissed: (direction) {
+                        // Remove the set
+                        ref
+                            .read(activeWorkoutProvider.notifier)
+                            .removeSet(exerciseIndex, index);
+
+                        // Show in-app notification with undo option
+                        NotificationService()
+                            .showInAppNotification(
+                              id: DateTime.now().millisecondsSinceEpoch
+                                  .toString(),
+                              title: 'Set removed',
+                              body: 'Set ${index + 1} removed',
+                              primaryActionLabel: 'Undo',
+                              onPrimaryAction: () {
+                                // Simple undo: re-add a set at this exercise
+                                ref
+                                    .read(activeWorkoutProvider.notifier)
+                                    .addSet(exerciseIndex);
+                              },
+                            )
+                            .catchError((_) {});
+                      },
+                      child: SetEntryWidget(
+                        set: set,
+                        setNumber: index + 1,
+                        restTimerSeconds: exercise.restTimerSeconds,
+                        exerciseName: exercise.name,
+                        exerciseType: exercise.exerciseType,
+                        variantType: exercise.variantType,
+                        totalSets: exercise.sets.length,
+                        isFirstSet: index == 0,
+                        previousSet: exercise.previousSet,
+                        onChanged: (updatedSet) {
+                          onSetChanged(index, updatedSet);
+                        },
+                      ),
+                    );
+                  },
+                ),
+                // Add Set Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 48, // Increased height for better touch target
+                  child: OutlinedButton(
+                    onPressed: onAddSet,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add, size: 18),
+                        SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            'Add Set',
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12), // Space after Add Set button
+              ],
+            ),
+          ),
+        ],
+      ],
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -1661,10 +1663,8 @@ class _ExerciseCard extends ConsumerWidget {
     properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
     properties.add(
       ObjectFlagProperty<
-          Future<void> Function(int setIndex, ActiveSet updatedSet)>.has(
-        'onSetChanged',
-        onSetChanged,
-      ),
+        Future<void> Function(int setIndex, ActiveSet updatedSet)
+      >.has('onSetChanged', onSetChanged),
     );
     properties.add(ObjectFlagProperty<VoidCallback>.has('onAddSet', onAddSet));
     properties.add(DiagnosticsProperty<bool>('showDragHandle', showDragHandle));

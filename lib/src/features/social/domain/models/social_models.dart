@@ -53,39 +53,38 @@ class UserProfile extends Equatable {
     int? maxStreak,
     bool? isPublic,
     UserPreferences? preferences,
-  }) =>
-      UserProfile(
-        id: id ?? this.id,
-        displayName: displayName ?? this.displayName,
-        email: email ?? this.email,
-        avatarUrl: avatarUrl ?? this.avatarUrl,
-        bio: bio ?? this.bio,
-        location: location ?? this.location,
-        joinedAt: joinedAt ?? this.joinedAt,
-        totalWorkouts: totalWorkouts ?? this.totalWorkouts,
-        totalVolume: totalVolume ?? this.totalVolume,
-        currentStreak: currentStreak ?? this.currentStreak,
-        maxStreak: maxStreak ?? this.maxStreak,
-        isPublic: isPublic ?? this.isPublic,
-        preferences: preferences ?? this.preferences,
-      );
+  }) => UserProfile(
+    id: id ?? this.id,
+    displayName: displayName ?? this.displayName,
+    email: email ?? this.email,
+    avatarUrl: avatarUrl ?? this.avatarUrl,
+    bio: bio ?? this.bio,
+    location: location ?? this.location,
+    joinedAt: joinedAt ?? this.joinedAt,
+    totalWorkouts: totalWorkouts ?? this.totalWorkouts,
+    totalVolume: totalVolume ?? this.totalVolume,
+    currentStreak: currentStreak ?? this.currentStreak,
+    maxStreak: maxStreak ?? this.maxStreak,
+    isPublic: isPublic ?? this.isPublic,
+    preferences: preferences ?? this.preferences,
+  );
 
   @override
   List<Object?> get props => [
-        id,
-        displayName,
-        email,
-        avatarUrl,
-        bio,
-        location,
-        joinedAt,
-        totalWorkouts,
-        totalVolume,
-        currentStreak,
-        maxStreak,
-        isPublic,
-        preferences,
-      ];
+    id,
+    displayName,
+    email,
+    avatarUrl,
+    bio,
+    location,
+    joinedAt,
+    totalWorkouts,
+    totalVolume,
+    currentStreak,
+    maxStreak,
+    isPublic,
+    preferences,
+  ];
 }
 
 @JsonSerializable()
@@ -117,26 +116,24 @@ class UserPreferences extends Equatable {
     bool? showInLeaderboards,
     bool? notifyOnFriendPR,
     bool? notifyOnFriendWorkout,
-  }) =>
-      UserPreferences(
-        shareWorkouts: shareWorkouts ?? this.shareWorkouts,
-        sharePRs: sharePRs ?? this.sharePRs,
-        allowFriendRequests: allowFriendRequests ?? this.allowFriendRequests,
-        showInLeaderboards: showInLeaderboards ?? this.showInLeaderboards,
-        notifyOnFriendPR: notifyOnFriendPR ?? this.notifyOnFriendPR,
-        notifyOnFriendWorkout:
-            notifyOnFriendWorkout ?? this.notifyOnFriendWorkout,
-      );
+  }) => UserPreferences(
+    shareWorkouts: shareWorkouts ?? this.shareWorkouts,
+    sharePRs: sharePRs ?? this.sharePRs,
+    allowFriendRequests: allowFriendRequests ?? this.allowFriendRequests,
+    showInLeaderboards: showInLeaderboards ?? this.showInLeaderboards,
+    notifyOnFriendPR: notifyOnFriendPR ?? this.notifyOnFriendPR,
+    notifyOnFriendWorkout: notifyOnFriendWorkout ?? this.notifyOnFriendWorkout,
+  );
 
   @override
   List<Object?> get props => [
-        shareWorkouts,
-        sharePRs,
-        allowFriendRequests,
-        showInLeaderboards,
-        notifyOnFriendPR,
-        notifyOnFriendWorkout,
-      ];
+    shareWorkouts,
+    sharePRs,
+    allowFriendRequests,
+    showInLeaderboards,
+    notifyOnFriendPR,
+    notifyOnFriendWorkout,
+  ];
 }
 
 @JsonSerializable()
@@ -162,8 +159,14 @@ class FriendConnection extends Equatable {
   Map<String, dynamic> toJson() => _$FriendConnectionToJson(this);
 
   @override
-  List<Object?> get props =>
-      [id, userId, friendId, status, createdAt, acceptedAt];
+  List<Object?> get props => [
+    id,
+    userId,
+    friendId,
+    status,
+    createdAt,
+    acceptedAt,
+  ];
 }
 
 enum FriendStatus {
@@ -205,15 +208,15 @@ class FeedItem extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        userId,
-        type,
-        createdAt,
-        workoutId,
-        exerciseId,
-        achievement,
-        metadata,
-      ];
+    id,
+    userId,
+    type,
+    createdAt,
+    workoutId,
+    exerciseId,
+    achievement,
+    metadata,
+  ];
 }
 
 enum FeedItemType {
@@ -254,8 +257,15 @@ class Achievement extends Equatable {
   Map<String, dynamic> toJson() => _$AchievementToJson(this);
 
   @override
-  List<Object?> get props =>
-      [id, name, description, type, unlockedAt, iconUrl, badgeColor];
+  List<Object?> get props => [
+    id,
+    name,
+    description,
+    type,
+    unlockedAt,
+    iconUrl,
+    badgeColor,
+  ];
 }
 
 enum AchievementType {
@@ -342,6 +352,12 @@ class LeaderboardEntry extends Equatable {
   Map<String, dynamic> toJson() => _$LeaderboardEntryToJson(this);
 
   @override
-  List<Object?> get props =>
-      [userId, displayName, rank, score, avatarUrl, change];
+  List<Object?> get props => [
+    userId,
+    displayName,
+    rank,
+    score,
+    avatarUrl,
+    change,
+  ];
 }

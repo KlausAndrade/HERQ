@@ -18,11 +18,7 @@ import '../providers/social_providers.dart';
 import 'edit_post_dialog.dart';
 
 class PostCard extends ConsumerWidget {
-  const PostCard({
-    required this.post,
-    required this.currentUserId,
-    super.key,
-  });
+  const PostCard({required this.post, required this.currentUserId, super.key});
 
   final SupabasePost post;
   final String currentUserId;
@@ -98,22 +94,23 @@ class PostCard extends ConsumerWidget {
                   // Follow button for other users' posts
                   Consumer(
                     builder: (context, ref, _) {
-                      final isFollowingAsync =
-                          ref.watch(isFollowingProvider(post.userId));
+                      final isFollowingAsync = ref.watch(
+                        isFollowingProvider(post.userId),
+                      );
                       return isFollowingAsync.when(
                         data: (isFollowing) => OutlinedButton(
                           onPressed: () =>
                               _toggleFollow(ref, isFollowing, context),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           child: Text(
-                            isFollowing
-                                ? S.of(context)!.following
-                                : 'Follow',
+                            isFollowing ? S.of(context)!.following : 'Follow',
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
@@ -277,7 +274,10 @@ class PostCard extends ConsumerWidget {
   }
 
   Future<void> _toggleFollow(
-      WidgetRef ref, bool isFollowing, BuildContext context) async {
+    WidgetRef ref,
+    bool isFollowing,
+    BuildContext context,
+  ) async {
     final social = ref.read(supabaseSocialServiceProvider);
     final l10n = S.of(context)!;
 
@@ -348,13 +348,10 @@ class PostCard extends ConsumerWidget {
       final l10n = S.of(context)!;
       final String shareText =
           (post.caption != null && post.caption!.isNotEmpty)
-              ? '${post.caption}\n\n$webLink'
-              : '${l10n.checkOutThisPost(l10n.appTitle)}\n$webLink';
+          ? '${post.caption}\n\n$webLink'
+          : '${l10n.checkOutThisPost(l10n.appTitle)}\n$webLink';
 
-      await Share.share(
-        shareText,
-        subject: l10n.postFrom(l10n.appTitle),
-      );
+      await Share.share(shareText, subject: l10n.postFrom(l10n.appTitle));
     } catch (e) {
       if (context.mounted) {
         NotificationService()
@@ -377,8 +374,10 @@ class PostCard extends ConsumerWidget {
     if (post.workoutSessionId != null) {
       try {
         print('🔍 Fetching exercises for session: ${post.workoutSessionId}');
-        final exercises =
-            await _fetchExercisesFromSession(ref, post.workoutSessionId!);
+        final exercises = await _fetchExercisesFromSession(
+          ref,
+          post.workoutSessionId!,
+        );
         if (exercises.isNotEmpty) {
           workoutData['exercises'] = exercises;
           print('✅ Loaded ${exercises.length} exercises from workout session');
@@ -415,8 +414,9 @@ class PostCard extends ConsumerWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(20)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -426,8 +426,10 @@ class PostCard extends ConsumerWidget {
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child:
-                          const Icon(Icons.fitness_center, color: Colors.white),
+                      child: const Icon(
+                        Icons.fitness_center,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -437,9 +439,7 @@ class PostCard extends ConsumerWidget {
                           Text(
                             workoutData['workoutName'] ??
                                 S.of(context)!.workoutDetails,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
+                            style: Theme.of(context).textTheme.titleLarge
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -447,9 +447,7 @@ class PostCard extends ConsumerWidget {
                           ),
                           Text(
                             post.userName ?? S.of(context)!.user,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
+                            style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(
                                   color: Colors.white.withOpacity(0.9),
                                 ),
@@ -480,10 +478,9 @@ class PostCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .surfaceContainerHighest
-                      .withOpacity(0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -525,10 +522,8 @@ class PostCard extends ConsumerWidget {
                     children: [
                       Text(
                         S.of(context)!.exerciseBreakdown,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
                       if (workoutData['exercises'] != null &&
@@ -546,20 +541,18 @@ class PostCard extends ConsumerWidget {
                               Icon(
                                 Icons.fitness_center_outlined,
                                 size: 48,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 S.of(context)!.noExerciseDetailsAvailable,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
+                                style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                               ),
                             ],
@@ -575,8 +568,9 @@ class PostCard extends ConsumerWidget {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  borderRadius:
-                      const BorderRadius.vertical(bottom: Radius.circular(20)),
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(20),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -633,8 +627,9 @@ class PostCard extends ConsumerWidget {
     final data = <String, dynamic>{};
 
     // Extract workout name (first line after 💪)
-    final workoutNameMatch =
-        RegExp('💪 Just finished (.+)').firstMatch(caption);
+    final workoutNameMatch = RegExp(
+      '💪 Just finished (.+)',
+    ).firstMatch(caption);
     data['workoutName'] = workoutNameMatch?.group(1) ?? 'Workout';
 
     // Extract basic stats using regex patterns
@@ -652,8 +647,11 @@ class PostCard extends ConsumerWidget {
   }
 
   /// Save workout as template
-  Future<void> _saveAsTemplate(BuildContext context, WidgetRef ref,
-      Map<String, dynamic> workoutData) async {
+  Future<void> _saveAsTemplate(
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> workoutData,
+  ) async {
     Navigator.pop(context);
 
     // Show dialog to get template name
@@ -678,8 +676,10 @@ class PostCard extends ConsumerWidget {
       // If this post has a workout session ID, fetch the actual exercises
       List<String> exerciseIds = [];
       if (post.workoutSessionId != null) {
-        exerciseIds =
-            await _fetchExerciseIdsFromSession(ref, post.workoutSessionId!);
+        exerciseIds = await _fetchExerciseIdsFromSession(
+          ref,
+          post.workoutSessionId!,
+        );
       }
 
       // If no exercises found, use common exercises as fallback
@@ -689,13 +689,16 @@ class PostCard extends ConsumerWidget {
 
       // Create the template
       final templateId = 'template_${DateTime.now().millisecondsSinceEpoch}';
-      await db.into(db.workoutTemplates).insert(
+      await db
+          .into(db.workoutTemplates)
+          .insert(
             WorkoutTemplatesCompanion.insert(
               id: templateId,
               name: templateName.trim(),
               userId: Value(currentUser.id),
               description: Value(
-                  'Template created from ${post.userName ?? 'user'}\'s workout'),
+                'Template created from ${post.userName ?? 'user'}\'s workout',
+              ),
               category: const Value('Social'),
               exerciseIds: Value(exerciseIds),
               tags: const [],
@@ -719,7 +722,8 @@ class PostCard extends ConsumerWidget {
       }
 
       print(
-          '✅ Template saved: $templateName with ${exerciseIds.length} exercises');
+        '✅ Template saved: $templateName with ${exerciseIds.length} exercises',
+      );
     } catch (e) {
       print('❌ Error saving template: $e');
       if (context.mounted) {
@@ -804,7 +808,9 @@ class PostCard extends ConsumerWidget {
 
   /// Fetch exercise IDs from workout session (from Supabase)
   Future<List<String>> _fetchExerciseIdsFromSession(
-      WidgetRef ref, String sessionId) async {
+    WidgetRef ref,
+    String sessionId,
+  ) async {
     try {
       final supabase = ref.read(supabaseClientProvider);
 
@@ -837,12 +843,16 @@ class PostCard extends ConsumerWidget {
 
   /// Fetch detailed exercise data from workout session (from Supabase)
   Future<List<Map<String, dynamic>>> _fetchExercisesFromSession(
-      WidgetRef ref, String sessionId) async {
+    WidgetRef ref,
+    String sessionId,
+  ) async {
     try {
       print('🔍 Fetching exercises for session: $sessionId');
 
       // Use the new provider to fetch set entries from Supabase
-      final setEntriesAsync = ref.read(setEntriesBySessionFromSupabaseProvider(sessionId).future);
+      final setEntriesAsync = ref.read(
+        setEntriesBySessionFromSupabaseProvider(sessionId).future,
+      );
       final setEntriesData = await setEntriesAsync;
 
       print('📊 Found ${setEntriesData.length} set entries');
@@ -897,8 +907,10 @@ class PostCard extends ConsumerWidget {
         if (exerciseInfo != null) {
           // Calculate totals
           final totalSets = sets.length;
-          final totalReps =
-              sets.fold<int>(0, (sum, set) => sum + (set['reps'] as int? ?? 0));
+          final totalReps = sets.fold<int>(
+            0,
+            (sum, set) => sum + (set['reps'] as int? ?? 0),
+          );
 
           // Handle weight as either int or double from Supabase
           final maxWeight = sets
@@ -910,12 +922,15 @@ class PostCard extends ConsumerWidget {
                 return null;
               })
               .whereType<double>()
-              .fold<double?>(null,
-                  (max, weight) => max == null || weight > max ? weight : max);
+              .fold<double?>(
+                null,
+                (max, weight) => max == null || weight > max ? weight : max,
+              );
 
           final exerciseName = exerciseInfo['name'] as String;
           print(
-              '💪 Creating exercise: $exerciseName ($totalSets sets, $totalReps reps)');
+            '💪 Creating exercise: $exerciseName ($totalSets sets, $totalReps reps)',
+          );
 
           // Safely extract equipment (handle potential array or string)
           final equipment = exerciseInfo['equipment'];
@@ -955,8 +970,11 @@ class PostCard extends ConsumerWidget {
   }
 
   /// Start workout from template
-  Future<void> _startWorkout(BuildContext context, WidgetRef ref,
-      Map<String, dynamic> workoutData) async {
+  Future<void> _startWorkout(
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> workoutData,
+  ) async {
     // Store the navigator before popping
     final navigator = Navigator.of(context);
     final goRouter = GoRouter.of(context);
@@ -966,15 +984,21 @@ class PostCard extends ConsumerWidget {
 
     try {
       // Create a new workout from the template
-      final workoutName = workoutData['workoutName'] ??
+      final workoutName =
+          workoutData['workoutName'] ??
           'Workout from ${post.userName ?? 'User'}';
 
       // If this post has a workout session ID, fetch the actual workout data
       if (post.workoutSessionId != null) {
         print(
-            '🔍 Fetching workout data from session: ${post.workoutSessionId}');
+          '🔍 Fetching workout data from session: ${post.workoutSessionId}',
+        );
         await _startWorkoutFromSession(
-            goRouter, ref, workoutName, post.workoutSessionId!);
+          goRouter,
+          ref,
+          workoutName,
+          post.workoutSessionId!,
+        );
       } else {
         // Fallback: Create a basic workout with common exercises
         print('⚠️ No workout session ID, creating basic workout');
@@ -982,10 +1006,7 @@ class PostCard extends ConsumerWidget {
 
         await ref
             .read(activeWorkoutProvider.notifier)
-            .startWorkoutFromExerciseIds(
-              workoutName,
-              exerciseIds,
-            );
+            .startWorkoutFromExerciseIds(workoutName, exerciseIds);
 
         if (context.mounted) {
           final l10n = S.of(context)!;
@@ -1069,10 +1090,7 @@ class PostCard extends ConsumerWidget {
       // Start workout with the fetched exercises
       await ref
           .read(activeWorkoutProvider.notifier)
-          .startWorkoutFromExerciseIds(
-            workoutName,
-            exerciseIds,
-          );
+          .startWorkoutFromExerciseIds(workoutName, exerciseIds);
 
       // Navigate to active workout screen
       goRouter.go('/active-workout');
@@ -1110,22 +1128,25 @@ class PostCard extends ConsumerWidget {
 
       try {
         // Check if exercise already exists in local database
-        final existingExercise = await (db.select(db.exercises)
-              ..where((tbl) => tbl.id.equals(exerciseId)))
-            .getSingleOrNull();
+        final existingExercise = await (db.select(
+          db.exercises,
+        )..where((tbl) => tbl.id.equals(exerciseId))).getSingleOrNull();
 
         if (existingExercise == null) {
           // Exercise doesn't exist, copy it from Supabase data
           print(
-              '📋 Copying exercise to local database: ${exerciseData['name']}');
+            '📋 Copying exercise to local database: ${exerciseData['name']}',
+          );
 
-          await db.into(db.exercises).insert(
+          await db
+              .into(db.exercises)
+              .insert(
                 ExercisesCompanion.insert(
                   id: exerciseId,
                   name: exerciseData['name'] as String,
                   primaryMuscleGroup:
                       exerciseData['primary_muscle_group'] as String? ??
-                          'other',
+                      'other',
                   equipment:
                       exerciseData['equipment'] as String? ?? 'bodyweight',
                   instructions: '',
@@ -1133,10 +1154,12 @@ class PostCard extends ConsumerWidget {
                   tags: const [],
                   category: const Value('Other'),
                   difficulty: const Value('intermediate'),
-                  exerciseType:
-                      Value(exerciseData['exercise_type'] as String? ?? 'reps'),
-                  userId:
-                      const Value(null), // Null means accessible to all users
+                  exerciseType: Value(
+                    exerciseData['exercise_type'] as String? ?? 'reps',
+                  ),
+                  userId: const Value(
+                    null,
+                  ), // Null means accessible to all users
                 ),
                 mode: InsertMode.insertOrIgnore,
               );
@@ -1162,24 +1185,25 @@ class PostCard extends ConsumerWidget {
       }
 
       // Fetch popular compound exercises
-      final exercises = await (db.select(db.exercises)
-            ..where(
-              (tbl) => tbl.name.isIn([
-                'Squats',
-                'Barbell Squats',
-                'Back Squats',
-                'Romanian Deadlifts',
-                'Deadlifts',
-                'Bench Press',
-                'Barbell Bench Press',
-                'Overhead Press',
-                'Barbell Row',
-                'Pull-ups',
-                'Lat Pulldown',
-              ]),
-            )
-            ..limit(5))
-          .get();
+      final exercises =
+          await (db.select(db.exercises)
+                ..where(
+                  (tbl) => tbl.name.isIn([
+                    'Squats',
+                    'Barbell Squats',
+                    'Back Squats',
+                    'Romanian Deadlifts',
+                    'Deadlifts',
+                    'Bench Press',
+                    'Barbell Bench Press',
+                    'Overhead Press',
+                    'Barbell Row',
+                    'Pull-ups',
+                    'Lat Pulldown',
+                  ]),
+                )
+                ..limit(5))
+              .get();
 
       if (exercises.isEmpty) {
         // Fallback: Get any 5 exercises
@@ -1210,8 +1234,8 @@ class PostCard extends ConsumerWidget {
                 Text(
                   'Post Options',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -1242,16 +1266,19 @@ class PostCard extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.delete, color: Colors.red),
-            title:
-                const Text('Delete Post', style: TextStyle(color: Colors.red)),
+            title: const Text(
+              'Delete Post',
+              style: TextStyle(color: Colors.red),
+            ),
             onTap: () async {
               Navigator.pop(context);
               final confirm = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('Delete Post'),
-                  content:
-                      const Text('Are you sure you want to delete this post?'),
+                  content: const Text(
+                    'Are you sure you want to delete this post?',
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
@@ -1327,35 +1354,29 @@ class _StatChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext buildContext) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 20,
-            color: Theme.of(buildContext).colorScheme.primary,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: Theme.of(buildContext).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          Text(
-            label,
-            style: Theme.of(buildContext).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(buildContext).colorScheme.onSurfaceVariant,
-                ),
-          ),
-        ],
-      );
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(icon, size: 20, color: Theme.of(buildContext).colorScheme.primary),
+      const SizedBox(height: 4),
+      Text(
+        value,
+        style: Theme.of(
+          buildContext,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+      ),
+      Text(
+        label,
+        style: Theme.of(buildContext).textTheme.bodySmall?.copyWith(
+          color: Theme.of(buildContext).colorScheme.onSurfaceVariant,
+        ),
+      ),
+    ],
+  );
 }
 
 /// Exercise card widget for workout breakdown
 class _ExerciseCard extends StatelessWidget {
-  const _ExerciseCard({
-    required this.exercise,
-  });
+  const _ExerciseCard({required this.exercise});
 
   final Map<String, dynamic> exercise;
 
@@ -1367,20 +1388,21 @@ class _ExerciseCard extends StatelessWidget {
     final setsRaw = exercise['sets'];
     final repsRaw = exercise['reps'];
 
-    final sets =
-        setsRaw is int ? setsRaw : (int.tryParse(setsRaw.toString()) ?? 0);
-    final reps =
-        repsRaw is int ? repsRaw : (int.tryParse(repsRaw.toString()) ?? 0);
+    final sets = setsRaw is int
+        ? setsRaw
+        : (int.tryParse(setsRaw.toString()) ?? 0);
+    final reps = repsRaw is int
+        ? repsRaw
+        : (int.tryParse(repsRaw.toString()) ?? 0);
     final weight = exercise['weight'] as String? ?? l10n.bodyweight;
     final name = exercise['name'] as String? ?? l10n.exercise;
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context)
-            .colorScheme
-            .surfaceContainerHighest
-            .withOpacity(0.3),
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
@@ -1407,16 +1429,16 @@ class _ExerciseCard extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '$sets ${l10n.sets} × $reps ${l10n.reps}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -1430,9 +1452,9 @@ class _ExerciseCard extends StatelessWidget {
             child: Text(
               weight,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
             ),
           ),
         ],

@@ -48,8 +48,9 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.initialName);
-    _descriptionController =
-        TextEditingController(text: widget.initialDescription);
+    _descriptionController = TextEditingController(
+      text: widget.initialDescription,
+    );
   }
 
   @override
@@ -105,10 +106,7 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
               const SizedBox(height: 16),
               const Text(
                 'Folder Color',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
               Wrap(

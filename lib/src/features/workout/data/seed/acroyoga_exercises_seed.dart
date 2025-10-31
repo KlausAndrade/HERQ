@@ -232,13 +232,16 @@ const acroYogaExercises = [
 
 Future<void> seedAcroYogaExercises(AppDatabase database) async {
   for (final exercise in acroYogaExercises) {
-    await database.into(database.exercises).insertOnConflictUpdate(
+    await database
+        .into(database.exercises)
+        .insertOnConflictUpdate(
           ExercisesCompanion.insert(
             id: exercise['id']! as String,
             name: exercise['name']! as String,
             primaryMuscleGroup: exercise['primaryMuscleGroup']! as String,
-            secondaryMuscleGroups:
-                List<String>.from(exercise['secondaryMuscleGroups']! as List),
+            secondaryMuscleGroups: List<String>.from(
+              exercise['secondaryMuscleGroups']! as List,
+            ),
             equipment: exercise['equipment']! as String,
             instructions: exercise['instructions']! as String,
             tags: List<String>.from(exercise['tags']! as List),

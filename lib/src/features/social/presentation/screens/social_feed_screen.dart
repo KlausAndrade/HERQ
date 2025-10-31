@@ -268,14 +268,15 @@ Widget _buildPostList(
     },
     child: ListView.builder(
       padding: const EdgeInsets.fromLTRB(
-          16, 16, 16, 80), // Extra bottom padding for FAB
+        16,
+        16,
+        16,
+        80,
+      ), // Extra bottom padding for FAB
       itemCount: feedItems.length,
       itemBuilder: (context, index) {
         final post = feedItems[index];
-        return PostCard(
-          post: post,
-          currentUserId: currentUserId,
-        );
+        return PostCard(post: post, currentUserId: currentUserId);
       },
     ),
   );
@@ -365,9 +366,7 @@ class UserSearchSheet extends HookConsumerWidget {
                   : searchResults.when(
                       data: (users) {
                         if (users.isEmpty) {
-                          return const Center(
-                            child: Text('No users found'),
-                          );
+                          return const Center(child: Text('No users found'));
                         }
 
                         return ListView.builder(
@@ -377,8 +376,9 @@ class UserSearchSheet extends HookConsumerWidget {
                             final user = users[index];
                             final currentUser = ref.watch(currentUserProvider);
                             final isCurrentUser = user.id == currentUser?.id;
-                            final isFollowingAsync =
-                                ref.watch(isFollowingProvider(user.id));
+                            final isFollowingAsync = ref.watch(
+                              isFollowingProvider(user.id),
+                            );
 
                             return ListTile(
                               leading: CircleAvatar(
@@ -399,8 +399,9 @@ class UserSearchSheet extends HookConsumerWidget {
                                     ? user.displayName!
                                     : 'User ${user.id.substring(0, 8)}',
                               ),
-                              subtitle:
-                                  user.bio != null ? Text(user.bio!) : null,
+                              subtitle: user.bio != null
+                                  ? Text(user.bio!)
+                                  : null,
                               trailing: isCurrentUser
                                   ? null
                                   : isFollowingAsync.when(
@@ -431,8 +432,8 @@ class UserSearchSheet extends HookConsumerWidget {
                                         style: OutlinedButton.styleFrom(
                                           backgroundColor: isFollowing
                                               ? Theme.of(context)
-                                                  .colorScheme
-                                                  .surfaceContainerHighest
+                                                    .colorScheme
+                                                    .surfaceContainerHighest
                                               : null,
                                         ),
                                         child: Text(
@@ -463,9 +464,8 @@ class UserSearchSheet extends HookConsumerWidget {
                       },
                       loading: () =>
                           const Center(child: CircularProgressIndicator()),
-                      error: (error, stack) => Center(
-                        child: Text('Error: $error'),
-                      ),
+                      error: (error, stack) =>
+                          Center(child: Text('Error: $error')),
                     ),
             ),
           ],

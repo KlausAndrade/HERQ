@@ -64,17 +64,22 @@ void main() {
       print('   Category: ${templateData.category}');
     });
 
-    test('AI providers are properly configured for Apply functionality',
-        () async {
-      final container = ProviderContainer();
+    test(
+      'AI providers are properly configured for Apply functionality',
+      () async {
+        final container = ProviderContainer();
 
-      // Test that providers can be accessed without throwing
-      expect(() => container.read(aiActionsProvider), returnsNormally);
-      expect(() => container.read(aiCoachingServiceProvider), returnsNormally);
+        // Test that providers can be accessed without throwing
+        expect(() => container.read(aiActionsProvider), returnsNormally);
+        expect(
+          () => container.read(aiCoachingServiceProvider),
+          returnsNormally,
+        );
 
-      print('✅ AI providers are properly configured');
-      print('   aiActionsProvider: Available');
-      print('   aiCoachingServiceProvider: Available');
-    });
+        print('✅ AI providers are properly configured');
+        print('   aiActionsProvider: Available');
+        print('   aiCoachingServiceProvider: Available');
+      },
+    );
   });
 }

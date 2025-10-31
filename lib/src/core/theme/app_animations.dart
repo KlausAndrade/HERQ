@@ -38,15 +38,13 @@ class AppPageTransitions {
   ) {
     const begin = Offset(1, 0);
     const end = Offset.zero;
-    final tween = Tween(begin: begin, end: end).chain(
-      CurveTween(curve: AppCurves.smooth),
-    );
+    final tween = Tween(
+      begin: begin,
+      end: end,
+    ).chain(CurveTween(curve: AppCurves.smooth));
     final offsetAnimation = animation.drive(tween);
 
-    return SlideTransition(
-      position: offsetAnimation,
-      child: child,
-    );
+    return SlideTransition(position: offsetAnimation, child: child);
   }
 
   /// Slide transition from bottom
@@ -58,15 +56,13 @@ class AppPageTransitions {
   ) {
     const begin = Offset(0, 1);
     const end = Offset.zero;
-    final tween = Tween(begin: begin, end: end).chain(
-      CurveTween(curve: AppCurves.smooth),
-    );
+    final tween = Tween(
+      begin: begin,
+      end: end,
+    ).chain(CurveTween(curve: AppCurves.smooth));
     final offsetAnimation = animation.drive(tween);
 
-    return SlideTransition(
-      position: offsetAnimation,
-      child: child,
-    );
+    return SlideTransition(position: offsetAnimation, child: child);
   }
 
   /// Fade transition
@@ -75,11 +71,7 @@ class AppPageTransitions {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) =>
-      FadeTransition(
-        opacity: animation,
-        child: child,
-      );
+  ) => FadeTransition(opacity: animation, child: child);
 
   /// Scale transition (for modals)
   static Widget scale(
@@ -87,19 +79,13 @@ class AppPageTransitions {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) =>
-      ScaleTransition(
-        scale: Tween<double>(begin: 0.8, end: 1).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: AppCurves.smooth,
-          ),
-        ),
-        child: FadeTransition(
-          opacity: animation,
-          child: child,
-        ),
-      );
+  ) => ScaleTransition(
+    scale: Tween<double>(
+      begin: 0.8,
+      end: 1,
+    ).animate(CurvedAnimation(parent: animation, curve: AppCurves.smooth)),
+    child: FadeTransition(opacity: animation, child: child),
+  );
 
   /// Shared axis transition (Material Design 3 style)
   static Widget sharedAxis(
@@ -107,22 +93,16 @@ class AppPageTransitions {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) =>
-      FadeTransition(
-        opacity: animation,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.05),
-            end: Offset.zero,
-          ).animate(
-            CurvedAnimation(
-              parent: animation,
-              curve: AppCurves.smooth,
-            ),
-          ),
-          child: child,
-        ),
-      );
+  ) => FadeTransition(
+    opacity: animation,
+    child: SlideTransition(
+      position: Tween<Offset>(
+        begin: const Offset(0, 0.05),
+        end: Offset.zero,
+      ).animate(CurvedAnimation(parent: animation, curve: AppCurves.smooth)),
+      child: child,
+    ),
+  );
 }
 
 /// Staggered animation helper
@@ -194,21 +174,17 @@ class _AnimatedListItemState extends State<AnimatedListItem>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    );
+    _controller = AnimationController(duration: widget.duration, vsync: this);
 
-    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: AppCurves.easeOut),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: AppCurves.easeOut));
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.1),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _controller, curve: AppCurves.smooth),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: AppCurves.smooth));
 
     // Stagger animation based on index.
     // In widget tests (AutomatedTestWidgetsFlutterBinding) Future.delayed
@@ -216,8 +192,9 @@ class _AnimatedListItemState extends State<AnimatedListItem>
     // the test binding by checking the runtimeType string and avoid creating
     // delayed timers in that case — start the animation on the next frame.
     final bindingName = WidgetsBinding.instance.runtimeType.toString();
-    final runningInWidgetTest =
-        bindingName.contains('AutomatedTestWidgetsFlutterBinding');
+    final runningInWidgetTest = bindingName.contains(
+      'AutomatedTestWidgetsFlutterBinding',
+    );
 
     if (runningInWidgetTest) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -243,12 +220,9 @@ class _AnimatedListItemState extends State<AnimatedListItem>
 
   @override
   Widget build(BuildContext context) => FadeTransition(
-        opacity: _fadeAnimation,
-        child: SlideTransition(
-          position: _slideAnimation,
-          child: widget.child,
-        ),
-      );
+    opacity: _fadeAnimation,
+    child: SlideTransition(position: _slideAnimation, child: widget.child),
+  );
 }
 
 /// Shimmer effect for skeleton loaders
@@ -284,10 +258,8 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    )..repeat();
+    _controller = AnimationController(duration: widget.duration, vsync: this)
+      ..repeat();
   }
 
   @override
@@ -301,7 +273,8 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final baseColor =
         widget.baseColor ?? (isDark ? Colors.grey[850]! : Colors.grey[300]!);
-    final highlightColor = widget.highlightColor ??
+    final highlightColor =
+        widget.highlightColor ??
         (isDark ? Colors.grey[800]! : Colors.grey[100]!);
 
     return AnimatedBuilder(
@@ -311,11 +284,7 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
         shaderCallback: (bounds) => LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            baseColor,
-            highlightColor,
-            baseColor,
-          ],
+          colors: [baseColor, highlightColor, baseColor],
           stops: [
             _controller.value - 0.3,
             _controller.value,

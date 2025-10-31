@@ -17,9 +17,7 @@ class LiveActivityService {
   /// Initialize the live activity service
   Future<void> initialize() async {
     // Initialize the plugin
-    await _liveActivitiesPlugin.init(
-      appGroupId: 'group.com.klausandrade.herq',
-    );
+    await _liveActivitiesPlugin.init(appGroupId: 'group.com.klausandrade.herq');
 
     // Listen for URL scheme actions (button taps from the widget)
     _liveActivitiesPlugin.urlSchemeStream().listen((schemeData) {

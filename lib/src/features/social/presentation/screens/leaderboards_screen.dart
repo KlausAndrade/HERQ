@@ -14,41 +14,38 @@ class LeaderboardsScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => DefaultTabController(
-        length: 4,
-        child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => context.go('/'),
-            ),
-            title: Text(S.of(context)!.leaderboards),
-            bottom: TabBar(
-              isScrollable: true,
-              tabs: [
-                Tab(text: S.of(context)!.totalVolumeLeaderboardTitle),
-                Tab(text: S.of(context)!.workoutCountLeaderboardTitle),
-                Tab(text: S.of(context)!.streakLeaderboardTitle),
-                Tab(text: S.of(context)!.prCountLeaderboardTitle),
-              ],
-            ),
-          ),
-          body: const TabBarView(
-            children: [
-              LeaderboardTab(type: LeaderboardType.totalVolume),
-              LeaderboardTab(type: LeaderboardType.workoutCount),
-              LeaderboardTab(type: LeaderboardType.streak),
-              LeaderboardTab(type: LeaderboardType.prCount),
-            ],
-          ),
+    length: 4,
+    child: Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
         ),
-      );
+        title: Text(S.of(context)!.leaderboards),
+        bottom: TabBar(
+          isScrollable: true,
+          tabs: [
+            Tab(text: S.of(context)!.totalVolumeLeaderboardTitle),
+            Tab(text: S.of(context)!.workoutCountLeaderboardTitle),
+            Tab(text: S.of(context)!.streakLeaderboardTitle),
+            Tab(text: S.of(context)!.prCountLeaderboardTitle),
+          ],
+        ),
+      ),
+      body: const TabBarView(
+        children: [
+          LeaderboardTab(type: LeaderboardType.totalVolume),
+          LeaderboardTab(type: LeaderboardType.workoutCount),
+          LeaderboardTab(type: LeaderboardType.streak),
+          LeaderboardTab(type: LeaderboardType.prCount),
+        ],
+      ),
+    ),
+  );
 }
 
 class LeaderboardTab extends HookConsumerWidget {
-  const LeaderboardTab({
-    required this.type,
-    super.key,
-  });
+  const LeaderboardTab({required this.type, super.key});
 
   final LeaderboardType type;
 
@@ -57,18 +54,17 @@ class LeaderboardTab extends HookConsumerWidget {
     final selectedPeriod = useState<Period>(Period.monthly);
 
     // Force refresh on first build
-    useEffect(
-      () {
-        print('🎯 LeaderboardTab mounted for type: $type');
-        Future.microtask(() {
-          final params =
-              LeaderboardParams(type: type, period: selectedPeriod.value);
-          ref.invalidate(leaderboardProvider(params));
-        });
-        return null;
-      },
-      [type],
-    );
+    useEffect(() {
+      print('🎯 LeaderboardTab mounted for type: $type');
+      Future.microtask(() {
+        final params = LeaderboardParams(
+          type: type,
+          period: selectedPeriod.value,
+        );
+        ref.invalidate(leaderboardProvider(params));
+      });
+      return null;
+    }, [type]);
 
     final params = LeaderboardParams(type: type, period: selectedPeriod.value);
     final leaderboardAsync = ref.watch(leaderboardProvider(params));
@@ -125,38 +121,35 @@ class LeaderboardTab extends HookConsumerWidget {
     );
   }
 
-  Widget _buildPeriodSelector(ValueNotifier<Period> selectedPeriod) =>
-      Container(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: Period.values.map((period) {
-            final isSelected = selectedPeriod.value == period;
-            return GestureDetector(
-              onTap: () => selectedPeriod.value = period,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.blue : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isSelected ? Colors.blue : Colors.grey,
-                  ),
-                ),
-                child: Text(
-                  _formatPeriod(period),
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.grey[700],
-                    fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
-                ),
+  Widget _buildPeriodSelector(
+    ValueNotifier<Period> selectedPeriod,
+  ) => Container(
+    padding: const EdgeInsets.all(16),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: Period.values.map((period) {
+        final isSelected = selectedPeriod.value == period;
+        return GestureDetector(
+          onTap: () => selectedPeriod.value = period,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.blue : Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: isSelected ? Colors.blue : Colors.grey),
+            ),
+            child: Text(
+              _formatPeriod(period),
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.grey[700],
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
-            );
-          }).toList(),
-        ),
-      );
+            ),
+          ),
+        );
+      }).toList(),
+    ),
+  );
 
   Widget _buildLeaderboard(
     BuildContext context,
@@ -179,11 +172,7 @@ class LeaderboardTab extends HookConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.emoji_events,
-                      size: 64,
-                      color: Colors.grey,
-                    ),
+                    Icon(Icons.emoji_events, size: 64, color: Colors.grey),
                     SizedBox(height: 16),
                     Text(
                       'No data available',
@@ -280,7 +269,7 @@ class LeaderboardTab extends HookConsumerWidget {
   ) {
     final isCurrentUser =
         DisplayNameSanitizer.sanitize(entry.displayName) == 'You' ||
-            entry.userId.contains('default');
+        entry.userId.contains('default');
 
     Color podiumColor;
     IconData medalIcon;
@@ -329,8 +318,9 @@ class LeaderboardTab extends HookConsumerWidget {
                     : null,
                 child: entry.avatarUrl == null
                     ? Text(
-                        DisplayNameSanitizer.sanitize(entry.displayName)[0]
-                            .toUpperCase(),
+                        DisplayNameSanitizer.sanitize(
+                          entry.displayName,
+                        )[0].toUpperCase(),
                         style: TextStyle(
                           fontSize: place == 1 ? 20 : 16,
                           fontWeight: FontWeight.bold,
@@ -400,12 +390,10 @@ class LeaderboardTab extends HookConsumerWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(12)),
-              border: Border.all(
-                color: podiumColor,
-                width: 2.5,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12),
               ),
+              border: Border.all(color: podiumColor, width: 2.5),
               boxShadow: [
                 BoxShadow(
                   color: podiumColor.withOpacity(0.3),
@@ -419,8 +407,8 @@ class LeaderboardTab extends HookConsumerWidget {
                 place == 1
                     ? '🥇'
                     : place == 2
-                        ? '🥈'
-                        : '🥉',
+                    ? '🥈'
+                    : '🥉',
                 style: const TextStyle(fontSize: 32),
               ),
             ),
@@ -441,7 +429,7 @@ class LeaderboardTab extends HookConsumerWidget {
 
     final isCurrentUser =
         DisplayNameSanitizer.sanitize(entry.displayName) == 'You' ||
-            entry.userId.contains('default');
+        entry.userId.contains('default');
     final theme = Theme.of(context);
 
     // Get rank color
@@ -513,12 +501,14 @@ class LeaderboardTab extends HookConsumerWidget {
                       : null,
                   child: entry.avatarUrl == null
                       ? Text(
-                          DisplayNameSanitizer.sanitize(entry.displayName)[0]
-                              .toUpperCase(),
+                          DisplayNameSanitizer.sanitize(
+                            entry.displayName,
+                          )[0].toUpperCase(),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color:
-                                isCurrentUser ? Colors.white : Colors.black54,
+                            color: isCurrentUser
+                                ? Colors.white
+                                : Colors.black54,
                             fontSize: 14,
                           ),
                         )
@@ -551,8 +541,8 @@ class LeaderboardTab extends HookConsumerWidget {
                           entry.rank == 1
                               ? '🏆'
                               : entry.rank == 2
-                                  ? '🥈'
-                                  : '🥉',
+                              ? '🥈'
+                              : '🥉',
                           style: const TextStyle(fontSize: 16),
                         ),
                       ],

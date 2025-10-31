@@ -44,7 +44,7 @@ class NotificationCard extends StatelessWidget {
     // Determine if we have actions
     final hasActions =
         (primaryActionLabel != null && onPrimaryAction != null) ||
-            (secondaryActionLabel != null && onSecondaryAction != null);
+        (secondaryActionLabel != null && onSecondaryAction != null);
 
     return Dismissible(
       key: Key(id),
@@ -68,7 +68,8 @@ class NotificationCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         decoration: BoxDecoration(
-          color: backgroundColor ??
+          color:
+              backgroundColor ??
               (isDark
                   ? theme.colorScheme.surfaceContainerHighest.withOpacity(0.95)
                   : Colors.white.withOpacity(0.95)),
@@ -202,15 +203,22 @@ class NotificationCard extends StatelessWidget {
     properties.add(StringProperty('title', title));
     properties.add(StringProperty('body', body));
     properties.add(StringProperty('primaryActionLabel', primaryActionLabel));
-    properties.add(ObjectFlagProperty<VoidCallback?>.has(
-        'onPrimaryAction', onPrimaryAction));
-    properties
-        .add(StringProperty('secondaryActionLabel', secondaryActionLabel));
-    properties.add(ObjectFlagProperty<VoidCallback?>.has(
-        'onSecondaryAction', onSecondaryAction));
+    properties.add(
+      ObjectFlagProperty<VoidCallback?>.has('onPrimaryAction', onPrimaryAction),
+    );
+    properties.add(
+      StringProperty('secondaryActionLabel', secondaryActionLabel),
+    );
+    properties.add(
+      ObjectFlagProperty<VoidCallback?>.has(
+        'onSecondaryAction',
+        onSecondaryAction,
+      ),
+    );
     properties.add(ColorProperty('backgroundColor', backgroundColor));
-    properties
-        .add(ObjectFlagProperty<VoidCallback?>.has('onDismiss', onDismiss));
+    properties.add(
+      ObjectFlagProperty<VoidCallback?>.has('onDismiss', onDismiss),
+    );
   }
 }
 
@@ -262,8 +270,9 @@ class _CompactActionButton extends StatelessWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(StringProperty('label', label));
-    properties
-        .add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+    properties.add(
+      ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed),
+    );
     properties.add(DiagnosticsProperty<bool>('isPrimary', isPrimary));
   }
 }

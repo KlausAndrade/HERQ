@@ -56,8 +56,10 @@ void main() {
         print('   Trying Groq first...');
         final groqService = GroqService();
         // This will fail if there's an issue
-        final response =
-            await groqService.chat(prompt: 'test', systemPrompt: 'test');
+        final response = await groqService.chat(
+          prompt: 'test',
+          systemPrompt: 'test',
+        );
         print('✅ Groq working: $response');
 
         // If we get here, Groq should work
@@ -67,8 +69,9 @@ void main() {
         print('   Should fallback to mock service...');
 
         final mockService = AICoachingService();
-        final recommendations =
-            await mockService.getWorkoutRecommendations('default_user');
+        final recommendations = await mockService.getWorkoutRecommendations(
+          'default_user',
+        );
         print(
           '✅ Mock fallback working: ${recommendations.length} recommendations',
         );

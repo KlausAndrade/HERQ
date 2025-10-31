@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/auth_provider.dart';
 
 /// Recent workout sessions (web-only)
-final recentSessionsWebProvider =
-    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final recentSessionsWebProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   if (!kIsWeb) {
     throw UnimplementedError(
       'Use mobile sessions provider for non-web platforms',
@@ -28,8 +29,9 @@ final recentSessionsWebProvider =
 });
 
 /// All workout sessions (web-only)
-final allSessionsWebProvider =
-    StreamProvider<List<Map<String, dynamic>>>((ref) {
+final allSessionsWebProvider = StreamProvider<List<Map<String, dynamic>>>((
+  ref,
+) {
   if (!kIsWeb) {
     throw UnimplementedError(
       'Use mobile sessions provider for non-web platforms',

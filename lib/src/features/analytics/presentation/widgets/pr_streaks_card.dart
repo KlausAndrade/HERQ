@@ -5,10 +5,7 @@ import '../../domain/models/analytics_models.dart';
 
 /// Card displaying PR streaks with fire icons
 class PRStreaksCard extends StatelessWidget {
-  const PRStreaksCard({
-    required this.streaks,
-    super.key,
-  });
+  const PRStreaksCard({required this.streaks, super.key});
   final List<PRStreak> streaks;
 
   @override
@@ -25,17 +22,11 @@ class PRStreaksCard extends StatelessWidget {
           children: [
             const Row(
               children: [
-                Text(
-                  '🔥',
-                  style: TextStyle(fontSize: 24),
-                ),
+                Text('🔥', style: TextStyle(fontSize: 24)),
                 SizedBox(width: 8),
                 Text(
                   'PR Streaks',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),

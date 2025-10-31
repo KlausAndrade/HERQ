@@ -23,8 +23,9 @@ class WorkoutForegroundService {
 
   Future<void> initialize() async {
     if (Platform.isAndroid) {
-      const androidSettings =
-          AndroidInitializationSettings('@mipmap/ic_launcher');
+      const androidSettings = AndroidInitializationSettings(
+        '@mipmap/ic_launcher',
+      );
       const initSettings = InitializationSettings(android: androidSettings);
       await _notifications.initialize(initSettings);
     }

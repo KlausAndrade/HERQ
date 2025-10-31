@@ -21,13 +21,7 @@ class Achievement {
   final AchievementCategory category;
 }
 
-enum AchievementCategory {
-  workouts,
-  streaks,
-  volume,
-  consistency,
-  milestones,
-}
+enum AchievementCategory { workouts, streaks, volume, consistency, milestones }
 
 // Predefined achievements
 class Achievements {

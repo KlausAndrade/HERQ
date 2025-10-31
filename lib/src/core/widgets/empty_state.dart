@@ -50,10 +50,7 @@ class _EmptyStateState extends State<EmptyState>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: AppDurations.slow,
-      vsync: this,
-    );
+    _controller = AnimationController(duration: AppDurations.slow, vsync: this);
 
     _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
@@ -62,15 +59,13 @@ class _EmptyStateState extends State<EmptyState>
       ),
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.2, 1, curve: AppCurves.smooth),
-      ),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.2, 1, curve: AppCurves.smooth),
+          ),
+        );
 
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1).animate(
       CurvedAnimation(
@@ -90,88 +85,83 @@ class _EmptyStateState extends State<EmptyState>
 
   @override
   Widget build(BuildContext context) => FadeTransition(
-        opacity: _fadeAnimation,
-        child: SlideTransition(
-          position: _slideAnimation,
-          child: Padding(
-            padding: widget.padding ?? const EdgeInsets.all(AppTheme.spacingXL),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icon or Illustration
-                ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: widget.illustration ??
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withAlpha((0.1 * 255).round()),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          widget.icon ?? Icons.inbox_outlined,
-                          size: 60,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withAlpha((0.6 * 255).round()),
-                        ),
-                      ),
-                ),
-                const SizedBox(height: AppTheme.spacingXL),
-
-                // Title
-                Text(
-                  widget.title,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-
-                // Subtitle
-                if (widget.subtitle != null) ...[
-                  const SizedBox(height: AppTheme.spacingMD),
-                  Text(
-                    widget.subtitle!,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.6),
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-
-                // Action Button
-                if (widget.actionText != null && widget.onAction != null) ...[
-                  const SizedBox(height: AppTheme.spacingXL),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: _PulsingButton(
-                      onPressed: widget.onAction!,
-                      child: Text(widget.actionText!),
+    opacity: _fadeAnimation,
+    child: SlideTransition(
+      position: _slideAnimation,
+      child: Padding(
+        padding: widget.padding ?? const EdgeInsets.all(AppTheme.spacingXL),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Icon or Illustration
+            ScaleTransition(
+              scale: _scaleAnimation,
+              child:
+                  widget.illustration ??
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withAlpha((0.1 * 255).round()),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      widget.icon ?? Icons.inbox_outlined,
+                      size: 60,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withAlpha((0.6 * 255).round()),
                     ),
                   ),
-                ],
-              ],
             ),
-          ),
+            const SizedBox(height: AppTheme.spacingXL),
+
+            // Title
+            Text(
+              widget.title,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+
+            // Subtitle
+            if (widget.subtitle != null) ...[
+              const SizedBox(height: AppTheme.spacingMD),
+              Text(
+                widget.subtitle!,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+
+            // Action Button
+            if (widget.actionText != null && widget.onAction != null) ...[
+              const SizedBox(height: AppTheme.spacingXL),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: _PulsingButton(
+                  onPressed: widget.onAction!,
+                  child: Text(widget.actionText!),
+                ),
+              ),
+            ],
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class _PulsingButton extends StatefulWidget {
-  const _PulsingButton({
-    required this.onPressed,
-    required this.child,
-  });
+  const _PulsingButton({required this.onPressed, required this.child});
 
   final VoidCallback onPressed;
   final Widget child;
@@ -182,8 +172,9 @@ class _PulsingButton extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+    properties.add(
+      ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed),
+    );
   }
 }
 
@@ -199,12 +190,10 @@ class _PulsingButtonState extends State<_PulsingButton>
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    _pulseAnimation = Tween<double>(begin: 1, end: 1.05).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _pulseAnimation = Tween<double>(
+      begin: 1,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     // Start pulsing after a delay
     Future.delayed(const Duration(seconds: 1), () {
@@ -222,14 +211,14 @@ class _PulsingButtonState extends State<_PulsingButton>
 
   @override
   Widget build(BuildContext context) => ScaleTransition(
-        scale: _pulseAnimation,
-        child: SizedBox(
-          width: double.infinity, // Full width to prevent clipping
-          child: AppButton(
-            onPressed: widget.onPressed,
-            size: AppButtonSize.large,
-            child: widget.child,
-          ),
-        ),
-      );
+    scale: _pulseAnimation,
+    child: SizedBox(
+      width: double.infinity, // Full width to prevent clipping
+      child: AppButton(
+        onPressed: widget.onPressed,
+        size: AppButtonSize.large,
+        child: widget.child,
+      ),
+    ),
+  );
 }

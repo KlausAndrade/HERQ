@@ -105,7 +105,7 @@ REMEMBER:
 - Never create new exercises or use names not in the available list
 - ALWAYS include a detailed "reasoning" field explaining your workout choices
 ''';
-  
+
   /// System prompt for optimizing existing workout routines
   static const String SYSTEM_PROMPT_OPTIMIZE_ROUTINE = '''
 You are an advanced fitness programming AI. Your task is to analyze a user's workout folder and provide optimized versions of these templates.

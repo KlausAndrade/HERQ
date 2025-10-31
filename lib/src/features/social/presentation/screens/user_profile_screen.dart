@@ -9,10 +9,7 @@ import '../../../../core/providers/database_provider.dart';
 import '../../../../core/utils/display_name_sanitizer.dart';
 
 class UserProfileScreen extends ConsumerWidget {
-  const UserProfileScreen({
-    required this.userId,
-    super.key,
-  });
+  const UserProfileScreen({required this.userId, super.key});
   final String userId;
 
   @override
@@ -48,18 +45,11 @@ class UserProfileScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.person_off,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.person_off, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
                     'User not found',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
@@ -119,10 +109,7 @@ class UserProfileScreen extends ConsumerWidget {
                 if (stats != null) ...[
                   const Text(
                     'Statistics',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -171,10 +158,7 @@ class UserProfileScreen extends ConsumerWidget {
                 ] else ...[
                   Text(
                     'No data available',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                 ],
               ],
@@ -245,34 +229,27 @@ class UserProfileScreen extends ConsumerWidget {
     String emoji,
     String value,
     String label,
-  ) =>
-      Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text(emoji, style: const TextStyle(fontSize: 32)),
-              const SizedBox(height: 8),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+  ) => Card(
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 32)),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-        ),
-      );
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ),
+  );
 
   Future<Map<String, dynamic>> _loadUserData(
     AppDatabase? db,
@@ -327,11 +304,7 @@ class UserProfileScreen extends ConsumerWidget {
       print('  ✅ Loaded from Supabase: $displayName');
 
       return {
-        'user': {
-          'id': userId,
-          'displayName': displayName,
-          'email': email,
-        },
+        'user': {'id': userId, 'displayName': displayName, 'email': email},
         'stats': {
           'totalWorkouts': statsResponse['total_workouts'] ?? 0,
           'totalVolumeLifted':
@@ -353,8 +326,9 @@ class UserProfileScreen extends ConsumerWidget {
     if (db == null) throw Exception('Database not available');
 
     try {
-      final users =
-          await (db.select(db.users)..where((u) => u.id.equals(userId))).get();
+      final users = await (db.select(
+        db.users,
+      )..where((u) => u.id.equals(userId))).get();
 
       final user = users.isNotEmpty ? users.first : null;
 
@@ -364,9 +338,9 @@ class UserProfileScreen extends ConsumerWidget {
         print('  ⚠️ User not found in local DB');
       }
 
-      final stats = await (db.select(db.userStats)
-            ..where((s) => s.userId.equals(userId)))
-          .get();
+      final stats = await (db.select(
+        db.userStats,
+      )..where((s) => s.userId.equals(userId))).get();
 
       final userStats = stats.isNotEmpty ? stats.first : null;
 
@@ -374,10 +348,7 @@ class UserProfileScreen extends ConsumerWidget {
         throw Exception('User not found');
       }
 
-      return {
-        'user': user,
-        'stats': userStats,
-      };
+      return {'user': user, 'stats': userStats};
     } catch (e) {
       print('❌ Error loading from local DB: $e');
       rethrow;

@@ -58,7 +58,9 @@ void main() {
       test('should update exercise', () async {
         // Insert exercise
         final exerciseId = const Uuid().v4();
-        await database.into(database.exercises).insert(
+        await database
+            .into(database.exercises)
+            .insert(
               ExercisesCompanion.insert(
                 id: exerciseId,
                 name: 'Test Squat',
@@ -71,9 +73,9 @@ void main() {
             );
 
         // Update exercise
-        await (database.update(database.exercises)
-              ..where((e) => e.id.equals(exerciseId)))
-            .write(
+        await (database.update(
+          database.exercises,
+        )..where((e) => e.id.equals(exerciseId))).write(
           const ExercisesCompanion(
             name: Value('Updated Squat'),
             difficulty: Value('advanced'),
@@ -81,9 +83,9 @@ void main() {
         );
 
         // Verify update
-        final updated = await (database.select(database.exercises)
-              ..where((e) => e.id.equals(exerciseId)))
-            .getSingle();
+        final updated = await (database.select(
+          database.exercises,
+        )..where((e) => e.id.equals(exerciseId))).getSingle();
         expect(updated.name, equals('Updated Squat'));
         expect(updated.difficulty, equals('advanced'));
       });
@@ -91,7 +93,9 @@ void main() {
       test('should delete exercise', () async {
         // Insert exercise
         final exerciseId = const Uuid().v4();
-        await database.into(database.exercises).insert(
+        await database
+            .into(database.exercises)
+            .insert(
               ExercisesCompanion.insert(
                 id: exerciseId,
                 name: 'Test Deadlift',
@@ -104,14 +108,14 @@ void main() {
             );
 
         // Delete exercise
-        await (database.delete(database.exercises)
-              ..where((e) => e.id.equals(exerciseId)))
-            .go();
+        await (database.delete(
+          database.exercises,
+        )..where((e) => e.id.equals(exerciseId))).go();
 
         // Verify deletion
-        final exercises = await (database.select(database.exercises)
-              ..where((e) => e.id.equals(exerciseId)))
-            .get();
+        final exercises = await (database.select(
+          database.exercises,
+        )..where((e) => e.id.equals(exerciseId))).get();
         expect(exercises, isEmpty);
       });
     });
@@ -135,9 +139,9 @@ void main() {
         await database.into(database.workoutSessions).insert(session);
 
         // Retrieve session
-        final sessions = await (database.select(database.workoutSessions)
-              ..where((s) => s.id.equals(sessionId)))
-            .get();
+        final sessions = await (database.select(
+          database.workoutSessions,
+        )..where((s) => s.id.equals(sessionId))).get();
 
         expect(sessions.length, equals(1));
         expect(sessions.first.name, equals('Test Workout'));
@@ -148,7 +152,9 @@ void main() {
       test('should update workout session stats', () async {
         // Create session
         final sessionId = const Uuid().v4();
-        await database.into(database.workoutSessions).insert(
+        await database
+            .into(database.workoutSessions)
+            .insert(
               WorkoutSessionsCompanion.insert(
                 id: sessionId,
                 userId: 'test_user', // ✅ USER ISOLATION
@@ -158,9 +164,9 @@ void main() {
             );
 
         // Update stats
-        await (database.update(database.workoutSessions)
-              ..where((s) => s.id.equals(sessionId)))
-            .write(
+        await (database.update(
+          database.workoutSessions,
+        )..where((s) => s.id.equals(sessionId))).write(
           const WorkoutSessionsCompanion(
             totalVolume: Value(7500),
             totalSets: Value(20),
@@ -169,9 +175,9 @@ void main() {
         );
 
         // Verify update
-        final updated = await (database.select(database.workoutSessions)
-              ..where((s) => s.id.equals(sessionId)))
-            .getSingle();
+        final updated = await (database.select(
+          database.workoutSessions,
+        )..where((s) => s.id.equals(sessionId))).getSingle();
         expect(updated.totalVolume, equals(7500.0));
         expect(updated.totalSets, equals(20));
         expect(updated.totalReps, equals(100));
@@ -180,7 +186,9 @@ void main() {
       test('should handle workout session with sets', () async {
         // Create exercise first
         final exerciseId = const Uuid().v4();
-        await database.into(database.exercises).insert(
+        await database
+            .into(database.exercises)
+            .insert(
               ExercisesCompanion.insert(
                 id: exerciseId,
                 name: 'Test Press',
@@ -194,7 +202,9 @@ void main() {
 
         // Create session
         final sessionId = const Uuid().v4();
-        await database.into(database.workoutSessions).insert(
+        await database
+            .into(database.workoutSessions)
+            .insert(
               WorkoutSessionsCompanion.insert(
                 id: sessionId,
                 userId: 'test_user', // ✅ USER ISOLATION
@@ -205,7 +215,9 @@ void main() {
 
         // Add sets to session
         for (int i = 1; i <= 3; i++) {
-          await database.into(database.setEntries).insert(
+          await database
+              .into(database.setEntries)
+              .insert(
                 SetEntriesCompanion.insert(
                   id: const Uuid().v4(),
                   userId: 'test_user',
@@ -220,9 +232,9 @@ void main() {
         }
 
         // Verify sets were created
-        final sets = await (database.select(database.setEntries)
-              ..where((s) => s.workoutSessionId.equals(sessionId)))
-            .get();
+        final sets = await (database.select(
+          database.setEntries,
+        )..where((s) => s.workoutSessionId.equals(sessionId))).get();
 
         expect(sets.length, equals(3));
         expect(sets.first.exerciseId, equals(exerciseId));
@@ -234,7 +246,9 @@ void main() {
       test('should create and retrieve personal record', () async {
         // Create exercise
         final exerciseId = const Uuid().v4();
-        await database.into(database.exercises).insert(
+        await database
+            .into(database.exercises)
+            .insert(
               ExercisesCompanion.insert(
                 id: exerciseId,
                 name: 'Test Squat',
@@ -248,7 +262,9 @@ void main() {
 
         // Create PR
         final prId = const Uuid().v4();
-        await database.into(database.personalRecords).insert(
+        await database
+            .into(database.personalRecords)
+            .insert(
               PersonalRecordsCompanion.insert(
                 id: prId,
                 userId: 'test_user', // ✅ USER ISOLATION
@@ -263,9 +279,9 @@ void main() {
             );
 
         // Retrieve PR
-        final prs = await (database.select(database.personalRecords)
-              ..where((pr) => pr.exerciseId.equals(exerciseId)))
-            .get();
+        final prs = await (database.select(
+          database.personalRecords,
+        )..where((pr) => pr.exerciseId.equals(exerciseId))).get();
 
         expect(prs.length, equals(1));
         expect(prs.first.weight, equals(200.0));
@@ -277,7 +293,9 @@ void main() {
       test('should favorite and unfavorite exercise', () async {
         // Create exercise
         final exerciseId = const Uuid().v4();
-        await database.into(database.exercises).insert(
+        await database
+            .into(database.exercises)
+            .insert(
               ExercisesCompanion.insert(
                 id: exerciseId,
                 name: 'Favorite Exercise',
@@ -291,7 +309,9 @@ void main() {
 
         // Add to favorites
         const userId = 'test-user-id';
-        await database.into(database.exerciseFavorites).insert(
+        await database
+            .into(database.exerciseFavorites)
+            .insert(
               ExerciseFavoritesCompanion.insert(
                 userId: userId,
                 exerciseId: exerciseId,
@@ -299,18 +319,20 @@ void main() {
             );
 
         // Verify favorite exists
-        final favorites =
-            await database.select(database.exerciseFavorites).get();
+        final favorites = await database
+            .select(database.exerciseFavorites)
+            .get();
         expect(favorites.any((f) => f.exerciseId == exerciseId), isTrue);
 
         // Remove from favorites
-        await (database.delete(database.exerciseFavorites)
-              ..where((f) => f.exerciseId.equals(exerciseId)))
-            .go();
+        await (database.delete(
+          database.exerciseFavorites,
+        )..where((f) => f.exerciseId.equals(exerciseId))).go();
 
         // Verify removed
-        final afterRemoval =
-            await database.select(database.exerciseFavorites).get();
+        final afterRemoval = await database
+            .select(database.exerciseFavorites)
+            .get();
         expect(afterRemoval.any((f) => f.exerciseId == exerciseId), isFalse);
       });
     });
@@ -319,7 +341,9 @@ void main() {
       test('should create and update user stats', () async {
         // Create user stats
         final userId = const Uuid().v4();
-        await database.into(database.userStats).insert(
+        await database
+            .into(database.userStats)
+            .insert(
               UserStatsCompanion.insert(
                 userId: userId,
                 totalWorkouts: const Value(10),
@@ -332,18 +356,18 @@ void main() {
             );
 
         // Retrieve and verify
-        final stats = await (database.select(database.userStats)
-              ..where((s) => s.userId.equals(userId)))
-            .getSingle();
+        final stats = await (database.select(
+          database.userStats,
+        )..where((s) => s.userId.equals(userId))).getSingle();
 
         expect(stats.totalWorkouts, equals(10));
         expect(stats.currentStreak, equals(5));
         expect(stats.level, equals(5));
 
         // Update stats
-        await (database.update(database.userStats)
-              ..where((s) => s.userId.equals(userId)))
-            .write(
+        await (database.update(
+          database.userStats,
+        )..where((s) => s.userId.equals(userId))).write(
           const UserStatsCompanion(
             totalWorkouts: Value(15),
             currentStreak: Value(6),
@@ -352,9 +376,9 @@ void main() {
         );
 
         // Verify update
-        final updated = await (database.select(database.userStats)
-              ..where((s) => s.userId.equals(userId)))
-            .getSingle();
+        final updated = await (database.select(
+          database.userStats,
+        )..where((s) => s.userId.equals(userId))).getSingle();
         expect(updated.totalWorkouts, equals(15));
         expect(updated.currentStreak, equals(6));
         expect(updated.experiencePoints, equals(750));
@@ -365,7 +389,9 @@ void main() {
         final userId = const Uuid().v4();
         const achievementId = 'first_workout';
 
-        await database.into(database.userAchievements).insert(
+        await database
+            .into(database.userAchievements)
+            .insert(
               UserAchievementsCompanion.insert(
                 userId: userId,
                 achievementId: achievementId,
@@ -374,9 +400,9 @@ void main() {
             );
 
         // Verify achievement
-        final achievements = await (database.select(database.userAchievements)
-              ..where((a) => a.userId.equals(userId)))
-            .get();
+        final achievements = await (database.select(
+          database.userAchievements,
+        )..where((a) => a.userId.equals(userId))).get();
 
         expect(achievements.length, equals(1));
         expect(achievements.first.achievementId, equals(achievementId));
@@ -387,7 +413,9 @@ void main() {
       test('should create workout template', () async {
         // Create template
         final templateId = const Uuid().v4();
-        await database.into(database.workoutTemplates).insert(
+        await database
+            .into(database.workoutTemplates)
+            .insert(
               WorkoutTemplatesCompanion.insert(
                 id: templateId,
                 userId: 'test_user', // ✅ USER ISOLATION
@@ -399,9 +427,9 @@ void main() {
             );
 
         // Retrieve template
-        final templates = await (database.select(database.workoutTemplates)
-              ..where((t) => t.id.equals(templateId)))
-            .get();
+        final templates = await (database.select(
+          database.workoutTemplates,
+        )..where((t) => t.id.equals(templateId))).get();
 
         expect(templates.length, equals(1));
         expect(templates.first.name, equals('Push Day Template'));
@@ -410,7 +438,9 @@ void main() {
       test('should update template', () async {
         // Create template
         final templateId = const Uuid().v4();
-        await database.into(database.workoutTemplates).insert(
+        await database
+            .into(database.workoutTemplates)
+            .insert(
               WorkoutTemplatesCompanion.insert(
                 id: templateId,
                 userId: 'test_user', // ✅ USER ISOLATION
@@ -421,9 +451,9 @@ void main() {
             );
 
         // Update template
-        await (database.update(database.workoutTemplates)
-              ..where((t) => t.id.equals(templateId)))
-            .write(
+        await (database.update(
+          database.workoutTemplates,
+        )..where((t) => t.id.equals(templateId))).write(
           const WorkoutTemplatesCompanion(
             name: Value('Updated Template'),
             description: Value('Updated description'),
@@ -431,9 +461,9 @@ void main() {
         );
 
         // Verify update
-        final updated = await (database.select(database.workoutTemplates)
-              ..where((t) => t.id.equals(templateId)))
-            .getSingle();
+        final updated = await (database.select(
+          database.workoutTemplates,
+        )..where((t) => t.id.equals(templateId))).getSingle();
         expect(updated.name, equals('Updated Template'));
         expect(updated.description, equals('Updated description'));
       });

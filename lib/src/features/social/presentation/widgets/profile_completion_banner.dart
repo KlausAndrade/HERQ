@@ -18,7 +18,8 @@ class ProfileCompletionBanner extends ConsumerWidget {
     return profileAsync.when(
       data: (profile) {
         // Check if profile is incomplete
-        final isIncomplete = profile == null ||
+        final isIncomplete =
+            profile == null ||
             profile.displayName == null ||
             profile.displayName!.isEmpty ||
             profile.displayName == currentUser.email;
@@ -50,21 +51,18 @@ class ProfileCompletionBanner extends ConsumerWidget {
                     Text(
                       'Complete your profile',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Add a display name and profile picture',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer
-                                .withOpacity(0.8),
-                          ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onPrimaryContainer.withOpacity(0.8),
+                      ),
                     ),
                   ],
                 ),

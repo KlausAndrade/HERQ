@@ -26,7 +26,8 @@ import 'workout_summary_provider.dart';
 // Provider for tracking workout modifications
 final workoutModificationsProvider =
     StateNotifierProvider<WorkoutModificationsNotifier, bool>(
-        (ref) => WorkoutModificationsNotifier());
+      (ref) => WorkoutModificationsNotifier(),
+    );
 
 class WorkoutModificationsNotifier extends StateNotifier<bool> {
   WorkoutModificationsNotifier() : super(false);
@@ -43,9 +44,9 @@ class WorkoutModificationsNotifier extends StateNotifier<bool> {
 // Provider for active workout state with real template data
 final activeWorkoutProvider =
     StateNotifierProvider<ActiveWorkoutNotifier, ActiveWorkout?>((ref) {
-  final database = ref.watch(databaseProvider);
-  return ActiveWorkoutNotifier(database, ref);
-});
+      final database = ref.watch(databaseProvider);
+      return ActiveWorkoutNotifier(database, ref);
+    });
 
 class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   ActiveWorkoutNotifier(this.database, this._ref) : super(null) {
@@ -171,8 +172,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
   }
 
   Future<void> startWorkoutFromTemplate(String templateId) async {
-    print('🔍 startWorkoutFromTemplate - Starting with templateId: $templateId');
-    
+    print(
+      '🔍 startWorkoutFromTemplate - Starting with templateId: $templateId',
+    );
+
     // First, clear any existing workout
     await _clearActiveWorkout();
 
@@ -181,33 +184,45 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       print('🔍 startWorkoutFromTemplate - Database not available');
       throw Exception('Database not available');
     }
-    
-    print('🔍 startWorkoutFromTemplate - Database available, proceeding with template lookup');
+
+    print(
+      '🔍 startWorkoutFromTemplate - Database available, proceeding with template lookup',
+    );
 
     try {
       print('🔍 startWorkoutFromTemplate - Fetching template from database');
       // Fetch template from database
-      final template = await (db.select(db.workoutTemplates)
-            ..where((tbl) => tbl.id.equals(templateId)))
-          .getSingleOrNull();
+      final template = await (db.select(
+        db.workoutTemplates,
+      )..where((tbl) => tbl.id.equals(templateId))).getSingleOrNull();
 
       if (template == null) {
         print('🔍 startWorkoutFromTemplate - Template not found: $templateId');
-        print('🔍 startWorkoutFromTemplate - Available templates: ${await (db.select(db.workoutTemplates)).get().then((t) => t.map((e) => e.id).toList())}');
+        print(
+          '🔍 startWorkoutFromTemplate - Available templates: ${await (db.select(db.workoutTemplates)).get().then((t) => t.map((e) => e.id).toList())}',
+        );
         throw Exception('Template not found: $templateId');
       }
-      
+
       print('🔍 startWorkoutFromTemplate - Template found: ${template.name}');
-      print('🔍 startWorkoutFromTemplate - Template exerciseIds: ${template.exerciseIds}');
-      print('🔍 startWorkoutFromTemplate - Template exerciseIds count: ${template.exerciseIds.length}');
+      print(
+        '🔍 startWorkoutFromTemplate - Template exerciseIds: ${template.exerciseIds}',
+      );
+      print(
+        '🔍 startWorkoutFromTemplate - Template exerciseIds count: ${template.exerciseIds.length}',
+      );
 
       // Fetch all exercises for this template
-      final exercisesList = await (db.select(db.exercises)
-            ..where((tbl) => tbl.id.isIn(template.exerciseIds)))
-          .get();
+      final exercisesList = await (db.select(
+        db.exercises,
+      )..where((tbl) => tbl.id.isIn(template.exerciseIds))).get();
 
-      print('🔍 startWorkoutFromTemplate - Found ${exercisesList.length} exercises');
-      print('🔍 startWorkoutFromTemplate - Exercise IDs: ${exercisesList.map((e) => e.id).toList()}');
+      print(
+        '🔍 startWorkoutFromTemplate - Found ${exercisesList.length} exercises',
+      );
+      print(
+        '🔍 startWorkoutFromTemplate - Exercise IDs: ${exercisesList.map((e) => e.id).toList()}',
+      );
 
       // Create exercise map for ordering
       final exerciseMap = {for (final ex in exercisesList) ex.id: ex};
@@ -227,7 +242,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Get timer preferences
       final timerPrefs = _ref.read(exerciseTimerPreferencesProvider);
-      
+
       // Get variant preferences
       final variantPrefs = _ref.read(exerciseVariantPreferencesProvider);
 
@@ -243,23 +258,24 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
         // Load saved timer preference or use default (90s)
         final savedTimer = timerPrefs[exercise.id] ?? 90;
-        
+
         // Load saved variant preference or use exercise defaults
         final savedVariant = variantPrefs[exercise.id];
         final equipmentUsed = savedVariant?.equipmentUsed ?? exercise.equipment;
         final variantType = savedVariant?.variantType;
 
         // Try to fetch last completed set for this exercise from DB and prefill
-        final lastSet = await (db.select(db.setEntries)
-              ..where((tbl) => tbl.exerciseId.equals(exercise.id))
-              ..orderBy([
-                (t) => OrderingTerm(
+        final lastSet =
+            await (db.select(db.setEntries)
+                  ..where((tbl) => tbl.exerciseId.equals(exercise.id))
+                  ..orderBy([
+                    (t) => OrderingTerm(
                       expression: t.completedAt,
                       mode: OrderingMode.desc,
                     ),
-              ])
-              ..limit(1))
-            .getSingleOrNull();
+                  ])
+                  ..limit(1))
+                .getSingleOrNull();
 
         final initialWeight = lastSet?.weight;
         final initialReps = lastSet?.reps ?? 0;
@@ -283,8 +299,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         // Start with 3 prefilled sets using last completed values (if any)
         // Prefill based on exercise type
         final isDuration = exercise.exerciseType == 'duration';
-        final initialDuration =
-            isDuration ? (lastSet?.durationSeconds ?? 30) : null;
+        final initialDuration = isDuration
+            ? (lastSet?.durationSeconds ?? 30)
+            : null;
 
         activeExercises.add(
           ActiveExercise(
@@ -329,7 +346,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       print('🔍 startWorkoutFromTemplate - Workout state set successfully');
       print('🔍 startWorkoutFromTemplate - Workout name: ${state?.name}');
-      print('🔍 startWorkoutFromTemplate - Exercise count: ${state?.exercises.length}');
+      print(
+        '🔍 startWorkoutFromTemplate - Exercise count: ${state?.exercises.length}',
+      );
       print('🏁 New workout created: ${template.name}');
 
       // Start the workout duration timer
@@ -352,7 +371,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     } catch (e) {
       print('🔍 startWorkoutFromTemplate - Error occurred: $e');
       print('🔍 startWorkoutFromTemplate - Error type: ${e.runtimeType}');
-      
+
       // Fallback to empty workout if template fetch fails
       state = ActiveWorkout(
         id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
@@ -398,16 +417,16 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     try {
       // Fetch exercises for the provided IDs
       final exercisesList = exerciseIds.isNotEmpty
-          ? await (db.select(db.exercises)
-                ..where((tbl) => tbl.id.isIn(exerciseIds)))
-              .get()
+          ? await (db.select(
+              db.exercises,
+            )..where((tbl) => tbl.id.isIn(exerciseIds))).get()
           : <Exercise>[];
 
       final exerciseMap = {for (final ex in exercisesList) ex.id: ex};
 
       // Get timer preferences
       final timerPrefs = _ref.read(exerciseTimerPreferencesProvider);
-      
+
       // Get variant preferences
       final variantPrefs = _ref.read(exerciseVariantPreferencesProvider);
 
@@ -416,22 +435,23 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       for (final id in exerciseIds.where(exerciseMap.containsKey)) {
         final exercise = exerciseMap[id]!;
         final savedTimer = timerPrefs[exercise.id] ?? 90;
-        
+
         // Load saved variant preference or use exercise defaults
         final savedVariant = variantPrefs[exercise.id];
         final equipmentUsed = savedVariant?.equipmentUsed ?? exercise.equipment;
         final variantType = savedVariant?.variantType;
 
-        final lastSet = await (db.select(db.setEntries)
-              ..where((tbl) => tbl.exerciseId.equals(exercise.id))
-              ..orderBy([
-                (t) => OrderingTerm(
+        final lastSet =
+            await (db.select(db.setEntries)
+                  ..where((tbl) => tbl.exerciseId.equals(exercise.id))
+                  ..orderBy([
+                    (t) => OrderingTerm(
                       expression: t.completedAt,
                       mode: OrderingMode.desc,
                     ),
-              ])
-              ..limit(1))
-            .getSingleOrNull();
+                  ])
+                  ..limit(1))
+                .getSingleOrNull();
 
         final initialWeight = lastSet?.weight;
         final initialReps = lastSet?.reps ?? 0;
@@ -453,8 +473,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         }
 
         final isDuration = exercise.exerciseType == 'duration';
-        final initialDuration =
-            isDuration ? (lastSet?.durationSeconds ?? 30) : null;
+        final initialDuration = isDuration
+            ? (lastSet?.durationSeconds ?? 30)
+            : null;
 
         activeExercises.add(
           ActiveExercise(
@@ -637,8 +658,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           '  Updated set values: weight=${updatedSet.weight}, reps=${updatedSet.reps}, duration=${updatedSet.durationSeconds}, distance=${updatedSet.distance}, assistance=${updatedSet.assistanceWeight}, added=${updatedSet.addedWeight}',
         );
 
-        final hadOtherCompleted =
-            sets.any((s) => s.isCompleted && s.number != updatedSet.number);
+        final hadOtherCompleted = sets.any(
+          (s) => s.isCompleted && s.number != updatedSet.number,
+        );
         if (!hadOtherCompleted) {
           print('  ✅ No other completed sets - AUTO-FILL TRIGGERED!');
           for (int i = 0; i < sets.length; i++) {
@@ -659,7 +681,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                   s.assistanceWeight != null && s.assistanceWeight! != 0;
               final hasAdded = s.addedWeight != null && s.addedWeight! > 0;
 
-              final isEmpty = !hasWeight &&
+              final isEmpty =
+                  !hasWeight &&
                   !hasReps &&
                   !hasDuration &&
                   !hasDistance &&
@@ -859,20 +882,16 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     if (state != null && db != null) {
       try {
         // Find exercise by ID
-        final exercise = await (db.select(db.exercises)
-              ..where((tbl) => tbl.id.equals(exerciseId)))
-            .getSingleOrNull();
+        final exercise = await (db.select(
+          db.exercises,
+        )..where((tbl) => tbl.id.equals(exerciseId))).getSingleOrNull();
 
         final exercises = List<ActiveExercise>.from(state!.exercises);
 
         if (exercise != null) {
           // Add exercise from database with initial weight if provided
           final initialSet = initialWeight != null
-              ? ActiveSet(
-                  number: 1,
-                  weight: initialWeight,
-                  reps: 0,
-                )
+              ? ActiveSet(number: 1, weight: initialWeight, reps: 0)
               : const ActiveSet(number: 1, reps: 0);
 
           exercises.add(
@@ -966,10 +985,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       );
 
       // Save timer preference for this exercise
-      _ref.read(exerciseTimerPreferencesProvider.notifier).setTimerForExercise(
-            exercise.id,
-            newRestTimerSeconds,
-          );
+      _ref
+          .read(exerciseTimerPreferencesProvider.notifier)
+          .setTimerForExercise(exercise.id, newRestTimerSeconds);
     }
   }
 
@@ -994,14 +1012,17 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         '   Old equipment: ${exercise.equipmentUsed} → New: $equipmentUsed',
       );
       print('   Old variant: ${exercise.variantType} → New: $variantType');
-      print('   Old exerciseType: ${exercise.exerciseType} → New: $newExerciseType');
+      print(
+        '   Old exerciseType: ${exercise.exerciseType} → New: $newExerciseType',
+      );
 
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
         name: exercise.name,
         sets: exercise.sets,
         restTimerSeconds: exercise.restTimerSeconds,
-        exerciseType: newExerciseType, // ✅ Update exerciseType to match execution type
+        exerciseType:
+            newExerciseType, // ✅ Update exerciseType to match execution type
         equipmentUsed: equipmentUsed, // Use new value directly (can be null)
         variantType: variantType, // Use new value directly (can be null)
         previousSet: exercise.previousSet, // ✅ FIX: Preserve previous set data!
@@ -1019,11 +1040,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
       // Save variant preference for this exercise
       if (equipmentUsed != null) {
-        _ref.read(exerciseVariantPreferencesProvider.notifier).setVariantForExercise(
-          exercise.id,
-          equipmentUsed,
-          variantType,
-        );
+        _ref
+            .read(exerciseVariantPreferencesProvider.notifier)
+            .setVariantForExercise(exercise.id, equipmentUsed, variantType);
       }
 
       // Mark as modified
@@ -1122,17 +1141,17 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       try {
         summary = summaryService != null
             ? await summaryService
-                .calculateSummary(
-                workout: workout,
-                duration: workout.elapsedTime,
-              )
-                .timeout(
-                const Duration(seconds: 5),
-                onTimeout: () {
-                  print('⚠️ Summary calculation timed out after 5s');
-                  throw TimeoutException('Summary calculation timed out');
-                },
-              )
+                  .calculateSummary(
+                    workout: workout,
+                    duration: workout.elapsedTime,
+                  )
+                  .timeout(
+                    const Duration(seconds: 5),
+                    onTimeout: () {
+                      print('⚠️ Summary calculation timed out after 5s');
+                      throw TimeoutException('Summary calculation timed out');
+                    },
+                  )
             : null;
       } catch (e) {
         print('⚠️ Error calculating summary: $e');
@@ -1210,7 +1229,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       // Save workout session to database
       print('💾 Saving workout session to local DB...');
       try {
-        await db.into(db.workoutSessions).insert(
+        await db
+            .into(db.workoutSessions)
+            .insert(
               WorkoutSessionsCompanion.insert(
                 id: sessionId,
                 userId: UserContextService.instance
@@ -1239,7 +1260,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         for (final exercise in workout.exercises) {
           for (final set in exercise.sets.where((s) => s.isCompleted)) {
             print('  💾 Saving ${exercise.name} set ${set.number}...');
-            await db.into(db.setEntries).insert(
+            await db
+                .into(db.setEntries)
+                .insert(
                   SetEntriesCompanion.insert(
                     id: const Uuid().v4(),
                     userId: UserContextService.instance
@@ -1296,11 +1319,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             });
 
             // Sync exercises first (if they don't exist in Supabase)
-            print('☁️ Syncing ${workout.exercises.length} exercises to Supabase...');
+            print(
+              '☁️ Syncing ${workout.exercises.length} exercises to Supabase...',
+            );
             for (final exercise in workout.exercises) {
               try {
-                print('  🔍 Checking if exercise exists: ${exercise.id} (${exercise.name})');
-                
+                print(
+                  '  🔍 Checking if exercise exists: ${exercise.id} (${exercise.name})',
+                );
+
                 // Check if exercise exists in Supabase
                 final existingExercise = await supabase
                     .from('exercises')
@@ -1311,7 +1338,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                 if (existingExercise == null) {
                   // Exercise doesn't exist, create it
                   print('  📝 Creating new exercise: ${exercise.id}');
-                  
+
                   await supabase.from('exercises').insert({
                     'id': exercise.id,
                     'name': exercise.name,
@@ -1326,12 +1353,18 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
                     'tags': '{}', // PostgreSQL array format
                     'user_id': null,
                   });
-                  print('  ✅ Synced exercise: ${exercise.name} (${exercise.id})');
+                  print(
+                    '  ✅ Synced exercise: ${exercise.name} (${exercise.id})',
+                  );
                 } else {
-                  print('  ✓ Exercise already exists: ${exercise.name} (${exercise.id})');
+                  print(
+                    '  ✓ Exercise already exists: ${exercise.name} (${exercise.id})',
+                  );
                 }
               } catch (e, stackTrace) {
-                print('  ❌ ERROR syncing exercise ${exercise.name} (${exercise.id}): $e');
+                print(
+                  '  ❌ ERROR syncing exercise ${exercise.name} (${exercise.id}): $e',
+                );
                 print('  Stack: $stackTrace');
                 // Continue with other exercises even if one fails
               }
@@ -1394,19 +1427,19 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           final uid = currentUser?.id;
           await gamificationService
               .onWorkoutCompleted(
-            workoutId: 0, // Using 0 as placeholder
-            setsCompleted: totalSets,
-            volumeLifted: totalVolume,
-            durationMinutes: workout.elapsedTime.inMinutes,
-            userId: uid,
-          )
+                workoutId: 0, // Using 0 as placeholder
+                setsCompleted: totalSets,
+                volumeLifted: totalVolume,
+                durationMinutes: workout.elapsedTime.inMinutes,
+                userId: uid,
+              )
               .timeout(
-            const Duration(seconds: 5),
-            onTimeout: () {
-              print('⚠️ Gamification update timed out after 5s');
-              throw TimeoutException('Gamification update timed out');
-            },
-          );
+                const Duration(seconds: 5),
+                onTimeout: () {
+                  print('⚠️ Gamification update timed out after 5s');
+                  throw TimeoutException('Gamification update timed out');
+                },
+              );
           print('✅ Gamification stats updated');
 
           // Sync stats to Supabase for multi-user leaderboards
@@ -1415,13 +1448,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
             try {
               final syncService = _ref.read(workoutSyncServiceProvider);
               if (syncService != null) {
-                await syncService.syncUserStats(uid).timeout(
-                  const Duration(seconds: 5),
-                  onTimeout: () {
-                    print('⚠️ Supabase sync timed out after 5s');
-                    throw TimeoutException('Supabase sync timed out');
-                  },
-                );
+                await syncService
+                    .syncUserStats(uid)
+                    .timeout(
+                      const Duration(seconds: 5),
+                      onTimeout: () {
+                        print('⚠️ Supabase sync timed out after 5s');
+                        throw TimeoutException('Supabase sync timed out');
+                      },
+                    );
                 print('✅ Stats synced to Supabase');
               } else {
                 print('⚠️ Sync service not available');
@@ -1453,9 +1488,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
         try {
           // Stop foreground service
-          await _foregroundService
-              .stopService()
-              .timeout(const Duration(seconds: 3));
+          await _foregroundService.stopService().timeout(
+            const Duration(seconds: 3),
+          );
           print('✅ Foreground service stopped');
         } catch (e) {
           print('⚠️ Error stopping foreground service: $e');
@@ -1464,9 +1499,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         try {
           // Stop auto-save and delete checkpoint
           final checkpointService = _ref.read(workoutCheckpointServiceProvider);
-          await checkpointService
-              ?.stopAutoSave()
-              .timeout(const Duration(seconds: 3));
+          await checkpointService?.stopAutoSave().timeout(
+            const Duration(seconds: 3),
+          );
           print('✅ Checkpoint cleared');
         } catch (e) {
           print('⚠️ Error clearing checkpoint: $e');
@@ -1531,7 +1566,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 
   /// Remove an exercise from the active workout
   void removeExercise(int exerciseIndex) {
-    if (state != null && exerciseIndex >= 0 && exerciseIndex < state!.exercises.length) {
+    if (state != null &&
+        exerciseIndex >= 0 &&
+        exerciseIndex < state!.exercises.length) {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       exercises.removeAt(exerciseIndex);
 
@@ -1540,7 +1577,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       if (exerciseIndex == currentIndex) {
         // If we removed the current exercise, move to the next one or previous one
         if (exercises.isNotEmpty) {
-          currentIndex = currentIndex >= exercises.length ? exercises.length - 1 : currentIndex;
+          currentIndex = currentIndex >= exercises.length
+              ? exercises.length - 1
+              : currentIndex;
         } else {
           currentIndex = 0;
         }
@@ -1575,9 +1614,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     if (state != null && db != null) {
       try {
         // Find exercise by ID
-        final exercise = await (db.select(db.exercises)
-              ..where((tbl) => tbl.id.equals(exerciseId)))
-            .getSingleOrNull();
+        final exercise = await (db.select(
+          db.exercises,
+        )..where((tbl) => tbl.id.equals(exerciseId))).getSingleOrNull();
 
         if (exercise == null) {
           print('❌ Exercise not found: $exerciseId');
@@ -1585,13 +1624,18 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
         }
 
         // Get the last completed set for this exercise to use as template
-        final lastSet = await (db.select(db.setEntries)
-              ..where((tbl) =>
-                  tbl.exerciseId.equals(exerciseId) &
-                  tbl.userId.equals(UserContextService.instance.getCurrentUserId()))
-              ..orderBy([(tbl) => OrderingTerm.desc(tbl.completedAt)])
-              ..limit(1))
-            .getSingleOrNull();
+        final lastSet =
+            await (db.select(db.setEntries)
+                  ..where(
+                    (tbl) =>
+                        tbl.exerciseId.equals(exerciseId) &
+                        tbl.userId.equals(
+                          UserContextService.instance.getCurrentUserId(),
+                        ),
+                  )
+                  ..orderBy([(tbl) => OrderingTerm.desc(tbl.completedAt)])
+                  ..limit(1))
+                .getSingleOrNull();
 
         // Create initial set based on last completed set or defaults
         final initialSet = ActiveSet(
@@ -1600,7 +1644,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
           reps: lastSet?.reps ?? 0,
           durationSeconds: lastSet?.durationSeconds,
           distance: lastSet?.distance,
-          assistanceWeight: isAssisted ? (lastSet?.assistanceWeight ?? -10.0) : null,
+          assistanceWeight: isAssisted
+              ? (lastSet?.assistanceWeight ?? -10.0)
+              : null,
           addedWeight: lastSet?.addedWeight,
         );
 
@@ -1640,8 +1686,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
 // Rest timer provider
 final restTimerProvider =
     StateNotifierProvider<RestTimerNotifier, RestTimerState>(
-  (ref) => RestTimerNotifier(),
-);
+      (ref) => RestTimerNotifier(),
+    );
 
 class RestTimerNotifier extends StateNotifier<RestTimerState> {
   RestTimerNotifier() : super(const RestTimerState()) {
@@ -1830,8 +1876,10 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
   /// Subtract 15 seconds from the timer (minimum 0)
   void subtractTime(int seconds) {
     if (state.isActive) {
-      final newRemainingSeconds =
-          (state.remainingSeconds - seconds).clamp(0, state.totalSeconds);
+      final newRemainingSeconds = (state.remainingSeconds - seconds).clamp(
+        0,
+        state.totalSeconds,
+      );
 
       if (newRemainingSeconds == 0) {
         // Timer completed by user action

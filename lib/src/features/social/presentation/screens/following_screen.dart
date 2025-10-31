@@ -7,10 +7,7 @@ import '../../../../core/providers/auth_provider.dart';
 import '../providers/social_providers.dart';
 
 class FollowingScreen extends ConsumerWidget {
-  const FollowingScreen({
-    required this.userId,
-    super.key,
-  });
+  const FollowingScreen({required this.userId, super.key});
 
   final String userId;
 
@@ -20,9 +17,7 @@ class FollowingScreen extends ConsumerWidget {
     final currentUser = ref.watch(currentUserProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Following'),
-      ),
+      appBar: AppBar(title: const Text('Following')),
       body: followingAsync.when(
         data: (following) {
           if (following.isEmpty) {
@@ -30,11 +25,7 @@ class FollowingScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.people_outline,
-                    size: 64,
-                    color: Colors.grey,
-                  ),
+                  Icon(Icons.people_outline, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
                   Text(
                     'Not following anyone yet',
@@ -87,9 +78,9 @@ class FollowingScreen extends ConsumerWidget {
                     : OutlinedButton(
                         onPressed: () => _unfollow(ref, user.id),
                         style: OutlinedButton.styleFrom(
-                          backgroundColor: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
                         ),
                         child: const Text('Following'),
                       ),

@@ -110,35 +110,36 @@ class _WorkoutTemplatesScreenState
   }
 
   Widget _buildCategoryTabs(List<String> categories) => Container(
-        height: 48,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: categories.length + 1, // +1 for "All" tab
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return _buildCategoryTab('All', _selectedCategory == null);
-            }
+    height: 48,
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: categories.length + 1, // +1 for "All" tab
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return _buildCategoryTab('All', _selectedCategory == null);
+        }
 
-            final category = categories[index - 1];
-            return _buildCategoryTab(category, _selectedCategory == category);
-          },
-        ),
-      );
+        final category = categories[index - 1];
+        return _buildCategoryTab(category, _selectedCategory == category);
+      },
+    ),
+  );
 
   Widget _buildCategoryTab(String category, bool isSelected) => Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: FilterChip(
-          label: Text(category),
-          selected: isSelected,
-          onSelected: (selected) {
-            setState(() {
-              _selectedCategory =
-                  selected ? (category == 'All' ? null : category) : null;
-            });
-          },
-        ),
-      );
+    padding: const EdgeInsets.only(right: 8),
+    child: FilterChip(
+      label: Text(category),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() {
+          _selectedCategory = selected
+              ? (category == 'All' ? null : category)
+              : null;
+        });
+      },
+    ),
+  );
 
   Widget _buildAllTemplates(
     Map<String, List<WorkoutTemplate>> templatesByCategory,
@@ -160,67 +161,66 @@ class _WorkoutTemplatesScreenState
   Widget _buildCategorySection(
     String category,
     List<WorkoutTemplate> templates,
-  ) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              children: [
-                Text(
-                  category,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                const Spacer(),
-                if (_isEditing)
-                  IconButton(
-                    onPressed: () => _showCategoryMenu(context, category),
-                    icon: const Icon(Icons.more_vert),
-                    iconSize: 20,
-                  ),
-              ],
+  ) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Text(
+              category,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
             ),
+            const Spacer(),
+            if (_isEditing)
+              IconButton(
+                onPressed: () => _showCategoryMenu(context, category),
+                icon: const Icon(Icons.more_vert),
+                iconSize: 20,
+              ),
+          ],
+        ),
+      ),
+      if (_isEditing)
+        ReorderableListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: templates.length,
+          onReorder: (oldIndex, newIndex) async {
+            if (newIndex > oldIndex) newIndex--;
+
+            // Create mutable copy for reordering
+            final reorderedList = List<WorkoutTemplate>.from(templates);
+            final item = reorderedList.removeAt(oldIndex);
+            reorderedList.insert(newIndex, item);
+
+            // Persist the new order in background (no need to invalidate - ReorderableListView handles UI)
+            final actions = ref.read(templateActionsProvider);
+            actions.reorderTemplates(reorderedList, category);
+          },
+          itemBuilder: (context, index) => _buildTemplateCard(
+            templates[index],
+            key: ValueKey(
+              '$category-edit-${templates[index].id}',
+            ), // Unique key per category
+            index: index,
           ),
-          if (_isEditing)
-            ReorderableListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: templates.length,
-              onReorder: (oldIndex, newIndex) async {
-                if (newIndex > oldIndex) newIndex--;
-
-                // Create mutable copy for reordering
-                final reorderedList = List<WorkoutTemplate>.from(templates);
-                final item = reorderedList.removeAt(oldIndex);
-                reorderedList.insert(newIndex, item);
-
-                // Persist the new order in background (no need to invalidate - ReorderableListView handles UI)
-                final actions = ref.read(templateActionsProvider);
-                actions.reorderTemplates(reorderedList, category);
-              },
-              itemBuilder: (context, index) => _buildTemplateCard(
-                templates[index],
-                key: ValueKey(
-                  '$category-edit-${templates[index].id}',
-                ), // Unique key per category
-                index: index,
-              ),
-            )
-          else
-            ...templates.map(
-              (template) => _buildTemplateCard(
-                template,
-                key: ValueKey(
-                  '$category-view-${template.id}',
-                ), // Unique key per category
-              ),
-            ),
-          const SizedBox(height: 16),
-        ],
-      );
+        )
+      else
+        ...templates.map(
+          (template) => _buildTemplateCard(
+            template,
+            key: ValueKey(
+              '$category-view-${template.id}',
+            ), // Unique key per category
+          ),
+        ),
+      const SizedBox(height: 16),
+    ],
+  );
 
   Widget _buildCategoryTemplates(List<WorkoutTemplate> templates) {
     if (templates.isEmpty) {
@@ -242,11 +242,8 @@ class _WorkoutTemplatesScreenState
             Text(
               'Create a new template to get started',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
-                  ),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              ),
             ),
           ],
         ),
@@ -285,8 +282,9 @@ class _WorkoutTemplatesScreenState
       itemCount: templates.length,
       itemBuilder: (context, index) => _buildTemplateCard(
         templates[index],
-        key:
-            ValueKey('view-${templates[index].id}'), // Unique key for view mode
+        key: ValueKey(
+          'view-${templates[index].id}',
+        ), // Unique key for view mode
       ),
     );
   }
@@ -295,217 +293,202 @@ class _WorkoutTemplatesScreenState
     WorkoutTemplate template, {
     Key? key,
     int? index,
-  }) =>
-      AppCard(
-        key: key,
-        heroTag: 'template-${template.id}',
-        onTap: _isEditing ? null : () => _startWorkout(template.id),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  }) => AppCard(
+    key: key,
+    heroTag: 'template-${template.id}',
+    onTap: _isEditing ? null : () => _startWorkout(template.id),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color:
-                          _getCategoryColor(template.category).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      _getCategoryIcon(template.category),
-                      color: _getCategoryColor(template.category),
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          template.name,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                        ),
-                        if (template.description?.isNotEmpty ?? false) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            template.description!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.7),
-                                ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (_isEditing) ...[
-                    if (index != null)
-                      ReorderableDragStartListener(
-                        index: index,
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: Icon(
-                            Icons.drag_handle,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    IconButton(
-                      onPressed: () => _showTemplateMenu(context, template),
-                      icon: const Icon(Icons.more_vert),
-                      iconSize: 20,
-                    ),
-                  ] else
-                    Icon(
-                      Icons.play_arrow,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                ],
-              ),
-              if (template.tags.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: template.tags
-                      .take(3)
-                      .map(
-                        (tag) => Chip(
-                          label: Text(
-                            tag,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        ),
-                      )
-                      .toList(),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _getCategoryColor(template.category).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ],
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    Icons.schedule,
-                    size: 16,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    template.estimatedDurationMinutes != null
-                        ? '${template.estimatedDurationMinutes} min'
-                        : 'No duration set',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.7),
-                        ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${template.exerciseIds.length} exercises',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.7),
-                        ),
-                  ),
-                  if (template.isDefault) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .secondary
-                            .withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'DEFAULT',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontWeight: FontWeight.w600,
-                            ),
+                child: Icon(
+                  _getCategoryIcon(template.category),
+                  color: _getCategoryColor(template.category),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      template.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
+                    if (template.description?.isNotEmpty ?? false) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        template.description!,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
+              if (_isEditing) ...[
+                if (index != null)
+                  ReorderableDragStartListener(
+                    index: index,
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Icon(Icons.drag_handle, color: Colors.grey),
+                    ),
+                  ),
+                IconButton(
+                  onPressed: () => _showTemplateMenu(context, template),
+                  icon: const Icon(Icons.more_vert),
+                  iconSize: 20,
+                ),
+              ] else
+                Icon(
+                  Icons.play_arrow,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
             ],
           ),
-        ),
-      );
-
-  Widget _buildEmptyState(BuildContext context) => EmptyState(
-        title: 'No Workout Templates',
-        subtitle:
-            'Create your first template to get started with structured workouts',
-        icon: Icons.fitness_center_outlined,
-        actionText: 'Create Template',
-        onAction: () => context.push('/template-builder'),
-      );
-
-  Widget _buildBottomNavigation(BuildContext context) => BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 1,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              context.go('/');
-              break;
-            case 1:
-              // Already on templates screen
-              break;
-            case 2:
-              context.go('/exercises');
-              break;
-            case 3:
-              context.go('/progress');
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center_outlined),
-            activeIcon: Icon(Icons.fitness_center),
-            label: 'Workouts',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Exercises',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up_outlined),
-            activeIcon: Icon(Icons.trending_up),
-            label: 'Progress',
+          if (template.tags.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: template.tags
+                  .take(3)
+                  .map(
+                    (tag) => Chip(
+                      label: Text(
+                        tag,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(
+                Icons.schedule,
+                size: 16,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                template.estimatedDurationMinutes != null
+                    ? '${template.estimatedDurationMinutes} min'
+                    : 'No duration set',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${template.exerciseIds.length} exercises',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
+                ),
+              ),
+              if (template.isDefault) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.secondary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'DEFAULT',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
-      );
+      ),
+    ),
+  );
+
+  Widget _buildEmptyState(BuildContext context) => EmptyState(
+    title: 'No Workout Templates',
+    subtitle:
+        'Create your first template to get started with structured workouts',
+    icon: Icons.fitness_center_outlined,
+    actionText: 'Create Template',
+    onAction: () => context.push('/template-builder'),
+  );
+
+  Widget _buildBottomNavigation(BuildContext context) => BottomNavigationBar(
+    type: BottomNavigationBarType.fixed,
+    currentIndex: 1,
+    onTap: (index) {
+      switch (index) {
+        case 0:
+          context.go('/');
+          break;
+        case 1:
+          // Already on templates screen
+          break;
+        case 2:
+          context.go('/exercises');
+          break;
+        case 3:
+          context.go('/progress');
+          break;
+      }
+    },
+    items: const [
+      BottomNavigationBarItem(
+        icon: Icon(Icons.home_outlined),
+        activeIcon: Icon(Icons.home),
+        label: 'Home',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.fitness_center_outlined),
+        activeIcon: Icon(Icons.fitness_center),
+        label: 'Workouts',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.search_outlined),
+        activeIcon: Icon(Icons.search),
+        label: 'Exercises',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.trending_up_outlined),
+        activeIcon: Icon(Icons.trending_up),
+        label: 'Progress',
+      ),
+    ],
+  );
 
   void _startWorkout(String templateId) {
     context.go('/active-workout?templateId=$templateId');
@@ -526,8 +509,8 @@ class _WorkoutTemplatesScreenState
                 Text(
                   'Template Options',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -597,8 +580,8 @@ class _WorkoutTemplatesScreenState
                 Text(
                   'Category Options',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -629,9 +612,7 @@ class _WorkoutTemplatesScreenState
         title: const Text('Rename Template'),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'New Name',
-          ),
+          decoration: const InputDecoration(labelText: 'New Name'),
           autofocus: true,
         ),
         actions: [
@@ -662,9 +643,7 @@ class _WorkoutTemplatesScreenState
         title: const Text('Duplicate Template'),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'New Name',
-          ),
+          decoration: const InputDecoration(labelText: 'New Name'),
           autofocus: true,
         ),
         actions: [
@@ -696,22 +675,23 @@ class _WorkoutTemplatesScreenState
           title: const Text('Move to Category'),
           content: DropdownButtonFormField<String>(
             initialValue: selectedCategory,
-            items: [
-              'Custom',
-              'Push Pull Legs',
-              'Full Body',
-              'Upper Lower',
-              'PHUL',
-              'Strength',
-              'Bodybuilding',
-            ]
-                .map(
-                  (category) => DropdownMenuItem(
-                    value: category,
-                    child: Text(category),
-                  ),
-                )
-                .toList(),
+            items:
+                [
+                      'Custom',
+                      'Push Pull Legs',
+                      'Full Body',
+                      'Upper Lower',
+                      'PHUL',
+                      'Strength',
+                      'Bodybuilding',
+                    ]
+                    .map(
+                      (category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      ),
+                    )
+                    .toList(),
             onChanged: (value) {
               if (value != null) {
                 setState(() => selectedCategory = value);
@@ -898,24 +878,37 @@ class _WorkoutTemplatesScreenState
   bool _canDeleteTemplate(WorkoutTemplate template) {
     // System template IDs that should not be deletable
     const systemTemplateIds = {
-      'ppl_push', 'ppl_pull', 'ppl_legs',
-      'phul_upper_power', 'phul_lower_power', 'phul_upper_hyp', 'phul_lower_hyp',
-      'full_body_beginner', 'full_body_intermediate', 'full_body_advanced',
-      'upper_lower_upper', 'upper_lower_lower',
-      'strength_beginner', 'strength_intermediate', 'strength_advanced',
-      'bodybuilding_chest', 'bodybuilding_back', 'bodybuilding_legs', 'bodybuilding_arms',
+      'ppl_push',
+      'ppl_pull',
+      'ppl_legs',
+      'phul_upper_power',
+      'phul_lower_power',
+      'phul_upper_hyp',
+      'phul_lower_hyp',
+      'full_body_beginner',
+      'full_body_intermediate',
+      'full_body_advanced',
+      'upper_lower_upper',
+      'upper_lower_lower',
+      'strength_beginner',
+      'strength_intermediate',
+      'strength_advanced',
+      'bodybuilding_chest',
+      'bodybuilding_back',
+      'bodybuilding_legs',
+      'bodybuilding_arms',
     };
-    
+
     // Don't allow deletion of system templates
     if (systemTemplateIds.contains(template.id)) {
       return false;
     }
-    
+
     // Allow deletion of AI-generated templates (start with 'ai_gen_')
     if (template.id.startsWith('ai_gen_')) {
       return true;
     }
-    
+
     // Allow deletion of user-created templates (not system templates)
     // This is a fallback for any other user-created templates
     return true;

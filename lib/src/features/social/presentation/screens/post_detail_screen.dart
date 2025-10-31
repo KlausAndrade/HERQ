@@ -7,10 +7,7 @@ import '../providers/social_providers.dart';
 import '../widgets/post_card.dart';
 
 class PostDetailScreen extends ConsumerWidget {
-  const PostDetailScreen({
-    required this.postId,
-    super.key,
-  });
+  const PostDetailScreen({required this.postId, super.key});
 
   final String postId;
 
@@ -20,28 +17,20 @@ class PostDetailScreen extends ConsumerWidget {
     final currentUser = ref.watch(currentUserProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Post'),
-      ),
+      appBar: AppBar(title: const Text('Post')),
       body: postAsync.when(
         data: (post) {
           if (post == null) {
-            return const Center(
-              child: Text('Post not found'),
-            );
+            return const Center(child: Text('Post not found'));
           }
 
           return SingleChildScrollView(
-            child: PostCard(
-              post: post,
-              currentUserId: currentUser?.id ?? '',
-            ),
+            child: PostCard(post: post, currentUserId: currentUser?.id ?? ''),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('Error loading post: $error'),
-        ),
+        error: (error, stack) =>
+            Center(child: Text('Error loading post: $error')),
       ),
     );
   }

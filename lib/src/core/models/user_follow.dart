@@ -14,9 +14,9 @@ class UserFollows extends Table {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {
-          followerId,
-          followingId,
-        }, // Ensure a user can only follow another user once
-      ];
+    {
+      followerId,
+      followingId,
+    }, // Ensure a user can only follow another user once
+  ];
 }

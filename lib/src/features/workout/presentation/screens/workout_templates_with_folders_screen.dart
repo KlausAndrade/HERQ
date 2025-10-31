@@ -16,7 +16,7 @@ enum _DragItemType { exercise }
 /// Data class describing a dragged item. For now only exercises are draggable.
 class _DragItemData {
   const _DragItemData.exercise(this.templateId, this.sourceFolderId)
-      : type = _DragItemType.exercise;
+    : type = _DragItemType.exercise;
 
   final _DragItemType type;
   final String templateId;
@@ -29,10 +29,7 @@ class _DragItemData {
 /// folder will remove it from its current folder (if any) and add it to the new one.
 /// Folder reordering and root-level reordering still use ReorderableListView in edit mode.
 class WorkoutTemplatesWithFoldersScreen extends ConsumerStatefulWidget {
-  const WorkoutTemplatesWithFoldersScreen({
-    super.key,
-    this.isEditing = true,
-  });
+  const WorkoutTemplatesWithFoldersScreen({super.key, this.isEditing = true});
 
   final bool isEditing;
 
@@ -151,8 +148,9 @@ class _WorkoutTemplatesWithFoldersScreenState
                   itemCount: foldersList.length,
                   onReorder: (oldIndex, newIndex) async {
                     if (newIndex > oldIndex) newIndex--;
-                    final reorderedList =
-                        List<TemplateFolder>.from(foldersList);
+                    final reorderedList = List<TemplateFolder>.from(
+                      foldersList,
+                    );
                     final item = reorderedList.removeAt(oldIndex);
                     reorderedList.insert(newIndex, item);
                     final actions = ref.read(templateActionsProvider);
@@ -173,7 +171,9 @@ class _WorkoutTemplatesWithFoldersScreenState
                 ),
               // Unfoldered Templates - wrapped in DragTarget to allow dropping
               unfoldered.when(
-                data: (templates) => _buildUncategorizedSection(templates as List<WorkoutTemplate>),
+                data: (templates) => _buildUncategorizedSection(
+                  templates as List<WorkoutTemplate>,
+                ),
                 loading: () => const SizedBox.shrink(),
                 error: (_, __) => const SizedBox.shrink(),
               ),
@@ -189,11 +189,7 @@ class _WorkoutTemplatesWithFoldersScreenState
     );
   }
 
-  Widget _buildFolderSection(
-    TemplateFolder folder, {
-    Key? key,
-    int? index,
-  }) {
+  Widget _buildFolderSection(TemplateFolder folder, {Key? key, int? index}) {
     final isExpanded = _expandedFolders.contains(folder.id);
     final templatesAsync = ref.watch(templatesInFolderProvider(folder.id));
     Color folderColor;
@@ -234,15 +230,13 @@ class _WorkoutTemplatesWithFoldersScreenState
                     }
                   });
                 },
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
                 child: DecoratedBox(
                   decoration: isDraggingOver
                       ? BoxDecoration(
-                          border: Border.all(
-                            color: folderColor,
-                            width: 2,
-                          ),
+                          border: Border.all(color: folderColor, width: 2),
                           borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(12),
                           ),
@@ -264,9 +258,7 @@ class _WorkoutTemplatesWithFoldersScreenState
                             children: [
                               Text(
                                 folder.name,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
+                                style: Theme.of(context).textTheme.titleMedium
                                     ?.copyWith(fontWeight: FontWeight.w600),
                               ),
                               if (folder.description != null &&
@@ -275,9 +267,7 @@ class _WorkoutTemplatesWithFoldersScreenState
                                   padding: const EdgeInsets.only(top: 4),
                                   child: Text(
                                     folder.description!,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
+                                    style: Theme.of(context).textTheme.bodySmall
                                         ?.copyWith(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -324,10 +314,9 @@ class _WorkoutTemplatesWithFoldersScreenState
                         ] else
                           Icon(
                             isExpanded ? Icons.expand_less : Icons.expand_more,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.5),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.5),
                           ),
                       ],
                     ),
@@ -346,22 +335,20 @@ class _WorkoutTemplatesWithFoldersScreenState
                             children: [
                               Text(
                                 'No templates in this folder',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
+                                style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withOpacity(0.5),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withOpacity(0.5),
                                     ),
                               ),
                               const SizedBox(height: 12),
                               ElevatedButton.icon(
                                 onPressed: () {
                                   // Navigate to template builder with folder preselected
-                                  final folderId =
-                                      Uri.encodeComponent(folder.id);
+                                  final folderId = Uri.encodeComponent(
+                                    folder.id,
+                                  );
                                   context.push(
                                     '/template-builder?folderId=$folderId',
                                   );
@@ -381,8 +368,9 @@ class _WorkoutTemplatesWithFoldersScreenState
                         itemCount: templates.length,
                         onReorder: (oldIndex, newIndex) async {
                           if (newIndex > oldIndex) newIndex--;
-                          final reorderedList =
-                              List<WorkoutTemplate>.from(templates);
+                          final reorderedList = List<WorkoutTemplate>.from(
+                            templates,
+                          );
                           final item = reorderedList.removeAt(oldIndex);
                           reorderedList.insert(newIndex, item);
                           final actions = ref.read(templateActionsProvider);
@@ -401,10 +389,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                     return Column(
                       children: templates
                           .map(
-                            (template) => _buildTemplateCard(
-                              template,
-                              folder.id,
-                            ),
+                            (template) =>
+                                _buildTemplateCard(template, folder.id),
                           )
                           .toList(),
                     );
@@ -471,10 +457,9 @@ class _WorkoutTemplatesWithFoldersScreenState
                         Icons.folder_open_outlined,
                         color: isDraggingOver
                             ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.7),
+                            : Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.7),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -482,18 +467,17 @@ class _WorkoutTemplatesWithFoldersScreenState
                           isDraggingOver
                               ? 'Drop to move to Uncategorized'
                               : 'Uncategorized',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: isDraggingOver
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .withOpacity(0.7),
-                                    fontWeight: isDraggingOver
-                                        ? FontWeight.w600
-                                        : FontWeight.w500,
-                                  ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: isDraggingOver
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withOpacity(0.7),
+                                fontWeight: isDraggingOver
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                              ),
                         ),
                       ),
                       if (templates.isNotEmpty)
@@ -512,8 +496,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                       child: Text(
                         'Drop here to remove from folder',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                     ),
                   )
@@ -525,8 +509,9 @@ class _WorkoutTemplatesWithFoldersScreenState
                       itemCount: templates.length,
                       onReorder: (oldIndex, newIndex) async {
                         if (newIndex > oldIndex) newIndex--;
-                        final reorderedList =
-                            List<WorkoutTemplate>.from(templates);
+                        final reorderedList = List<WorkoutTemplate>.from(
+                          templates,
+                        );
                         final item = reorderedList.removeAt(oldIndex);
                         reorderedList.insert(newIndex, item);
                         final actions = ref.read(templateActionsProvider);
@@ -540,8 +525,9 @@ class _WorkoutTemplatesWithFoldersScreenState
                       ),
                     )
                   else
-                    ...templates
-                        .map((template) => _buildTemplateCard(template, null)),
+                    ...templates.map(
+                      (template) => _buildTemplateCard(template, null),
+                    ),
                 ],
               ],
             ),
@@ -591,8 +577,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                 child: Text(
                   template.name,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                    fontWeight: FontWeight.w500,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -644,10 +630,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                       Expanded(
                         child: Text(
                           template.name,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w500),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -668,10 +652,7 @@ class _WorkoutTemplatesWithFoldersScreenState
             index: index,
             child: Container(
               padding: const EdgeInsets.all(12),
-              child: Icon(
-                Icons.drag_handle,
-                color: Colors.grey.shade600,
-              ),
+              child: Icon(Icons.drag_handle, color: Colors.grey.shade600),
             ),
           ),
         ],
@@ -682,158 +663,146 @@ class _WorkoutTemplatesWithFoldersScreenState
   Widget _buildEditModeCardContent(
     WorkoutTemplate template,
     String? folderId,
-  ) =>
-      InkWell(
-        onTap: () {
-          context.push('/template-builder?templateId=${template.id}');
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: _getCategoryColor(template.category).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  _getCategoryIcon(template.category),
-                  color: _getCategoryColor(template.category),
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      template.name,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    if (template.description?.isNotEmpty ?? false)
-                      Text(
-                        template.description!,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.7),
-                            ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
-                ),
-              ),
-            ],
+  ) => InkWell(
+    onTap: () {
+      context.push('/template-builder?templateId=${template.id}');
+    },
+    borderRadius: BorderRadius.circular(12),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: _getCategoryColor(template.category).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              _getCategoryIcon(template.category),
+              color: _getCategoryColor(template.category),
+              size: 20,
+            ),
           ),
-        ),
-      );
-
-  Widget _buildTemplateCardContent(
-    WorkoutTemplate template,
-    String? folderId,
-  ) =>
-      Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: InkWell(
-          onTap: _isEditing ? null : () => _startWorkout(template.id),
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color:
-                        _getCategoryColor(template.category).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    _getCategoryIcon(template.category),
-                    color: _getCategoryColor(template.category),
-                    size: 20,
+                Text(
+                  template.name,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        template.name,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w500),
-                      ),
-                      if (template.description != null &&
-                          template.description!.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            template.description!,
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withOpacity(0.6),
-                                    ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      if (template.estimatedDurationMinutes != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.access_time,
-                                size: 14,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(0.5),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${template.estimatedDurationMinutes} min',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withOpacity(0.5),
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                if (_isEditing)
-                  IconButton(
-                    onPressed: () => _showTemplateMenu(context, template),
-                    icon: const Icon(Icons.more_vert),
-                    iconSize: 20,
+                if (template.description?.isNotEmpty ?? false)
+                  Text(
+                    template.description!,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.7),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
               ],
             ),
           ),
+        ],
+      ),
+    ),
+  );
+
+  Widget _buildTemplateCardContent(
+    WorkoutTemplate template,
+    String? folderId,
+  ) => Card(
+    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: InkWell(
+      onTap: _isEditing ? null : () => _startWorkout(template.id),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _getCategoryColor(template.category).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                _getCategoryIcon(template.category),
+                color: _getCategoryColor(template.category),
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    template.name,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  if (template.description != null &&
+                      template.description!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        template.description!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.6),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  if (template.estimatedDurationMinutes != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            size: 14,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.5),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${template.estimatedDurationMinutes} min',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.5),
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            if (_isEditing)
+              IconButton(
+                onPressed: () => _showTemplateMenu(context, template),
+                icon: const Icon(Icons.more_vert),
+                iconSize: 20,
+              ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 
   Future<void> _createNewFolder() async {
     final result = await showDialog<Map<String, dynamic>>(
@@ -842,7 +811,9 @@ class _WorkoutTemplatesWithFoldersScreenState
     );
     if (result != null && mounted) {
       try {
-        await ref.read(templateFolderNotifierProvider.notifier).createFolder(
+        await ref
+            .read(templateFolderNotifierProvider.notifier)
+            .createFolder(
               name: result['name'],
               description: result['description'],
               color: result['color'],
@@ -913,7 +884,9 @@ class _WorkoutTemplatesWithFoldersScreenState
     );
     if (result != null && mounted) {
       try {
-        await ref.read(templateFolderNotifierProvider.notifier).updateFolder(
+        await ref
+            .read(templateFolderNotifierProvider.notifier)
+            .updateFolder(
               folderId: folder.id,
               name: result['name'],
               description: result['description'],
@@ -958,15 +931,13 @@ class _WorkoutTemplatesWithFoldersScreenState
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Delete'),
           ),
         ],
       ),
     );
-    
+
     if (confirmed == true && mounted) {
       try {
         await ref
@@ -1000,10 +971,7 @@ class _WorkoutTemplatesWithFoldersScreenState
     try {
       await ref
           .read(templateFolderNotifierProvider.notifier)
-          .moveTemplateToFolder(
-            templateId: templateId,
-            folderId: folder?.id,
-          );
+          .moveTemplateToFolder(templateId: templateId, folderId: folder?.id);
       if (mounted) {
         // Publish a curated in-app notification for template moves. We intentionally
         // avoid the SnackBar fallback here to make the in-app overlay the primary
@@ -1087,8 +1055,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                 Text(
                   'Template Options',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -1145,7 +1113,7 @@ class _WorkoutTemplatesWithFoldersScreenState
 
   void _showRenameDialog(BuildContext context, WorkoutTemplate template) {
     final controller = TextEditingController(text: template.name);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1178,7 +1146,7 @@ class _WorkoutTemplatesWithFoldersScreenState
 
   void _showDuplicateDialog(BuildContext context, WorkoutTemplate template) {
     final controller = TextEditingController(text: '${template.name} (Copy)');
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1224,17 +1192,23 @@ class _WorkoutTemplatesWithFoldersScreenState
                 _moveTemplate(template.id, null);
               },
             ),
-            ...ref.read(templateFoldersProvider).when(
-              data: (folders) => folders.map((folder) => ListTile(
-                title: Text(folder.name),
-                onTap: () {
-                  Navigator.pop(context);
-                  _moveTemplate(template.id, folder);
-                },
-              )),
-              loading: () => [const ListTile(title: Text('Loading...'))],
-              error: (_, __) => [const ListTile(title: Text('Error loading folders'))],
-            ),
+            ...ref
+                .read(templateFoldersProvider)
+                .when(
+                  data: (folders) => folders.map(
+                    (folder) => ListTile(
+                      title: Text(folder.name),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _moveTemplate(template.id, folder);
+                      },
+                    ),
+                  ),
+                  loading: () => [const ListTile(title: Text('Loading...'))],
+                  error: (_, __) => [
+                    const ListTile(title: Text('Error loading folders')),
+                  ],
+                ),
           ],
         ),
         actions: [
@@ -1330,24 +1304,37 @@ class _WorkoutTemplatesWithFoldersScreenState
   bool _canDeleteTemplate(WorkoutTemplate template) {
     // System template IDs that should not be deletable
     const systemTemplateIds = {
-      'ppl_push', 'ppl_pull', 'ppl_legs',
-      'phul_upper_power', 'phul_lower_power', 'phul_upper_hyp', 'phul_lower_hyp',
-      'full_body_beginner', 'full_body_intermediate', 'full_body_advanced',
-      'upper_lower_upper', 'upper_lower_lower',
-      'strength_beginner', 'strength_intermediate', 'strength_advanced',
-      'bodybuilding_chest', 'bodybuilding_back', 'bodybuilding_legs', 'bodybuilding_arms',
+      'ppl_push',
+      'ppl_pull',
+      'ppl_legs',
+      'phul_upper_power',
+      'phul_lower_power',
+      'phul_upper_hyp',
+      'phul_lower_hyp',
+      'full_body_beginner',
+      'full_body_intermediate',
+      'full_body_advanced',
+      'upper_lower_upper',
+      'upper_lower_lower',
+      'strength_beginner',
+      'strength_intermediate',
+      'strength_advanced',
+      'bodybuilding_chest',
+      'bodybuilding_back',
+      'bodybuilding_legs',
+      'bodybuilding_arms',
     };
-    
+
     // Don't allow deletion of system templates
     if (systemTemplateIds.contains(template.id)) {
       return false;
     }
-    
+
     // Allow deletion of AI-generated templates (start with 'ai_gen_')
     if (template.id.startsWith('ai_gen_')) {
       return true;
     }
-    
+
     // Allow deletion of user-created templates (not system templates)
     // This is a fallback for any other user-created templates
     return true;

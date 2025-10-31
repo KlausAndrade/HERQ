@@ -12,8 +12,9 @@ void main() {
       final mockService = AICoachingService();
 
       // Test workout recommendations
-      final recommendations =
-          await mockService.getWorkoutRecommendations('default_user');
+      final recommendations = await mockService.getWorkoutRecommendations(
+        'default_user',
+      );
       print('✅ Mock recommendations: ${recommendations.length} workouts');
       expect(recommendations.length, greaterThan(0));
 
@@ -33,8 +34,9 @@ void main() {
       expect(overload.length, greaterThan(0));
 
       // Test general suggestions
-      final suggestions =
-          await mockService.getGeneralSuggestions('default_user');
+      final suggestions = await mockService.getGeneralSuggestions(
+        'default_user',
+      );
       print('✅ Mock suggestions: ${suggestions.length} tips');
       expect(suggestions.length, greaterThan(0));
 

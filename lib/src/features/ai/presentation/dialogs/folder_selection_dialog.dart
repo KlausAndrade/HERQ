@@ -24,11 +24,7 @@ class FolderSelectionDialog extends HookConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.folder_open,
-                      size: 64,
-                      color: Colors.grey,
-                    ),
+                    Icon(Icons.folder_open, size: 64, color: Colors.grey),
                     SizedBox(height: 16),
                     Text(
                       'No folders found',
@@ -62,11 +58,7 @@ class FolderSelectionDialog extends HookConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.error_outline,
-                  size: 64,
-                  color: Colors.red,
-                ),
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
                 const SizedBox(height: 16),
                 Text(
                   'Failed to load folders',
@@ -96,7 +88,11 @@ class FolderSelectionDialog extends HookConsumerWidget {
     );
   }
 
-  Widget _buildFolderItem(BuildContext context, WidgetRef ref, TemplateFolder folder) {
+  Widget _buildFolderItem(
+    BuildContext context,
+    WidgetRef ref,
+    TemplateFolder folder,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -104,16 +100,12 @@ class FolderSelectionDialog extends HookConsumerWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: folder.color != null 
+            color: folder.color != null
                 ? Color(int.parse(folder.color!.replaceFirst('#', '0xff')))
                 : Colors.blue,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(
-            Icons.folder,
-            color: Colors.white,
-            size: 20,
-          ),
+          child: const Icon(Icons.folder, color: Colors.white, size: 20),
         ),
         title: Text(
           folder.name,

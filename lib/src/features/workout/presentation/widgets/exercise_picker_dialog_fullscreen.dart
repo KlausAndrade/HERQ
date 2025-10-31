@@ -123,21 +123,20 @@ class _ExercisePickerDialogFullscreenState
           Expanded(
             child: exercisesAsync.when(
               data: (exercises) {
-                final filteredExercises = _selectedCategory == null ||
+                final filteredExercises =
+                    _selectedCategory == null ||
                         _selectedCategory == S.of(context)!.all
                     ? exercises
                     : exercises
-                        .where(
-                          (e) =>
-                              e.category.toLowerCase() ==
-                              _selectedCategory!.toLowerCase(),
-                        )
-                        .toList();
+                          .where(
+                            (e) =>
+                                e.category.toLowerCase() ==
+                                _selectedCategory!.toLowerCase(),
+                          )
+                          .toList();
 
                 if (filteredExercises.isEmpty) {
-                  return Center(
-                    child: Text(S.of(context)!.noExercisesFound),
-                  );
+                  return Center(child: Text(S.of(context)!.noExercisesFound));
                 }
 
                 return ListView.builder(
@@ -152,10 +151,9 @@ class _ExercisePickerDialogFullscreenState
                         decoration: BoxDecoration(
                           color: isSelected
                               ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withAlpha((0.1 * 255).round()),
+                              : Theme.of(context).colorScheme.primary.withAlpha(
+                                  (0.1 * 255).round(),
+                                ),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
@@ -169,8 +167,9 @@ class _ExercisePickerDialogFullscreenState
                       title: Text(
                         exercise.name,
                         style: TextStyle(
-                          fontWeight:
-                              isSelected ? FontWeight.w600 : FontWeight.normal,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.normal,
                         ),
                       ),
                       subtitle: Text(

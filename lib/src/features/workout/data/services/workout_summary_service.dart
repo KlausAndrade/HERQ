@@ -34,10 +34,7 @@ class WorkoutSummaryService {
     final totalVolume = workout.exercises
         .expand((e) => e.sets)
         .where((s) => s.isCompleted && s.weight != null)
-        .fold(
-          0.0,
-          (sum, set) => sum + (set.weight! * set.reps),
-        );
+        .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
 
     final totalTonnage = totalVolume; // Same calculation for now
 
@@ -69,9 +66,9 @@ class WorkoutSummaryService {
       final maxWeight = completedSets
           .where((s) => s.weight != null)
           .fold<double?>(null, (max, set) {
-        if (max == null || set.weight! > max) return set.weight;
-        return max;
-      });
+            if (max == null || set.weight! > max) return set.weight;
+            return max;
+          });
       final totalVolume = completedSets
           .where((s) => s.weight != null)
           .fold(0.0, (sum, set) => sum + (set.weight! * set.reps));
@@ -158,14 +155,15 @@ class WorkoutSummaryService {
       }
 
       // Check max reps PR (for bodyweight exercises or same weight)
-      final exercise = workout.exercises
-          .firstWhere((e) => e.id == exerciseSummary.exerciseId);
+      final exercise = workout.exercises.firstWhere(
+        (e) => e.id == exerciseSummary.exerciseId,
+      );
       final maxRepsSet = exercise.sets
           .where((s) => s.isCompleted)
           .fold<ActiveSet?>(null, (max, set) {
-        if (max == null || set.reps > max.reps) return set;
-        return max;
-      });
+            if (max == null || set.reps > max.reps) return set;
+            return max;
+          });
 
       if (maxRepsSet != null) {
         final previousMaxReps = await _getPreviousMaxReps(
@@ -221,18 +219,21 @@ class WorkoutSummaryService {
 
     // Check if this is a personal best workout
     final previousBestVolume = await _getPreviousBestTotalVolume();
-    final isPersonalBest = totalVolume > 0 &&
+    final isPersonalBest =
+        totalVolume > 0 &&
         (previousBestVolume == null || totalVolume > previousBestVolume);
 
     // Check if longest workout
     final previousLongestDuration = await _getPreviousLongestDuration();
-    final isLongestWorkout = duration.inSeconds > 0 &&
+    final isLongestWorkout =
+        duration.inSeconds > 0 &&
         (previousLongestDuration == null ||
             duration.inSeconds > previousLongestDuration);
 
     // Check if most sets
     final previousMostSets = await _getPreviousMostSets();
-    final isMostSets = completedSets > 0 &&
+    final isMostSets =
+        completedSets > 0 &&
         (previousMostSets == null || completedSets > previousMostSets);
 
     // Calculate workout streak (placeholder - would need date-based logic)
@@ -250,80 +251,87 @@ class WorkoutSummaryService {
   // Helper methods to query previous records
 
   Future<double?> _getPreviousMaxWeight(String exerciseId) async {
-    final records = await (database.select(database.personalRecords)
-          ..where(
-            (tbl) =>
-                tbl.exerciseId.equals(exerciseId) &
-                tbl.recordType.equals('max_weight'),
-          )
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.achievedAt)])
-          ..limit(1))
-        .get();
+    final records =
+        await (database.select(database.personalRecords)
+              ..where(
+                (tbl) =>
+                    tbl.exerciseId.equals(exerciseId) &
+                    tbl.recordType.equals('max_weight'),
+              )
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.achievedAt)])
+              ..limit(1))
+            .get();
 
     return records.isNotEmpty ? records.first.value : null;
   }
 
   Future<double?> _getPreviousMaxVolume(String exerciseId) async {
-    final records = await (database.select(database.personalRecords)
-          ..where(
-            (tbl) =>
-                tbl.exerciseId.equals(exerciseId) &
-                tbl.recordType.equals('total_volume'),
-          )
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.achievedAt)])
-          ..limit(1))
-        .get();
+    final records =
+        await (database.select(database.personalRecords)
+              ..where(
+                (tbl) =>
+                    tbl.exerciseId.equals(exerciseId) &
+                    tbl.recordType.equals('total_volume'),
+              )
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.achievedAt)])
+              ..limit(1))
+            .get();
 
     return records.isNotEmpty ? records.first.value : null;
   }
 
   Future<int?> _getPreviousMaxReps(String exerciseId, double? weight) async {
-    final records = await (database.select(database.personalRecords)
-          ..where(
-            (tbl) =>
-                tbl.exerciseId.equals(exerciseId) &
-                tbl.recordType.equals('max_reps'),
-          )
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.achievedAt)])
-          ..limit(1))
-        .get();
+    final records =
+        await (database.select(database.personalRecords)
+              ..where(
+                (tbl) =>
+                    tbl.exerciseId.equals(exerciseId) &
+                    tbl.recordType.equals('max_reps'),
+              )
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.achievedAt)])
+              ..limit(1))
+            .get();
 
     return records.isNotEmpty ? records.first.reps : null;
   }
 
   Future<double?> _getPreviousBestTotalVolume() async {
-    final sessions = await (database.select(database.workoutSessions)
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.totalVolume)])
-          ..limit(1))
-        .get();
+    final sessions =
+        await (database.select(database.workoutSessions)
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.totalVolume)])
+              ..limit(1))
+            .get();
 
     return sessions.isNotEmpty ? sessions.first.totalVolume : null;
   }
 
   Future<int?> _getPreviousLongestDuration() async {
-    final sessions = await (database.select(database.workoutSessions)
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.totalDurationSeconds)])
-          ..limit(1))
-        .get();
+    final sessions =
+        await (database.select(database.workoutSessions)
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.totalDurationSeconds)])
+              ..limit(1))
+            .get();
 
     return sessions.isNotEmpty ? sessions.first.totalDurationSeconds : null;
   }
 
   Future<int?> _getPreviousMostSets() async {
-    final sessions = await (database.select(database.workoutSessions)
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.totalSets)])
-          ..limit(1))
-        .get();
+    final sessions =
+        await (database.select(database.workoutSessions)
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.totalSets)])
+              ..limit(1))
+            .get();
 
     return sessions.isNotEmpty ? sessions.first.totalSets : null;
   }
 
   Future<int> _calculateWorkoutStreak() async {
     final now = DateTime.now();
-    final sessions = await (database.select(database.workoutSessions)
-          ..where((tbl) => tbl.completedAt.isNotNull())
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.completedAt)]))
-        .get();
+    final sessions =
+        await (database.select(database.workoutSessions)
+              ..where((tbl) => tbl.completedAt.isNotNull())
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.completedAt)]))
+            .get();
 
     if (sessions.isEmpty) return 1;
 
@@ -361,7 +369,9 @@ class WorkoutSummaryService {
     double? weight,
     int? reps,
   }) async {
-    await database.into(database.personalRecords).insert(
+    await database
+        .into(database.personalRecords)
+        .insert(
           PersonalRecordsCompanion.insert(
             id: const Uuid().v4(),
             userId: UserContextService.instance

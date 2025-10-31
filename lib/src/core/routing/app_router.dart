@@ -146,9 +146,9 @@ final routerProvider = Provider<GoRouter>(
         name: 'workout-history',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const WorkoutHistoryScreen(),
-          key: state.pageKey,
-        ),
+              const WorkoutHistoryScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/exercises',
@@ -272,45 +272,45 @@ final routerProvider = Provider<GoRouter>(
         name: 'leaderboards',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const LeaderboardsScreen(),
-          key: state.pageKey,
-        ),
+              const LeaderboardsScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/ai-coach',
         name: 'ai-coach',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const AICoachingScreen(),
-          key: state.pageKey,
-        ),
+              const AICoachingScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/settings',
         name: 'settings',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const SettingsScreen(),
-          key: state.pageKey,
-        ),
+              const SettingsScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/about-herq',
         name: 'about-herq',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const AboutHerqScreen(),
-          key: state.pageKey,
-        ),
+              const AboutHerqScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/gamification',
         name: 'gamification',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const GamificationScreen(),
-          key: state.pageKey,
-        ),
+              const GamificationScreen(),
+              key: state.pageKey,
+            ),
       ),
       // Admin Routes
       GoRoute(
@@ -318,81 +318,81 @@ final routerProvider = Provider<GoRouter>(
         name: 'admin-dashboard',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const AdminDashboardScreen(),
-          key: state.pageKey,
-        ),
+              const AdminDashboardScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/admin/users',
         name: 'admin-users',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const UserManagementScreen(),
-          key: state.pageKey,
-        ),
+              const UserManagementScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/admin/content',
         name: 'admin-content',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const ContentModerationScreen(),
-          key: state.pageKey,
-        ),
+              const ContentModerationScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/admin/analytics',
         name: 'admin-analytics',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const AnalyticsScreen(),
-          key: state.pageKey,
-        ),
+              const AnalyticsScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/admin/system',
         name: 'admin-system',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const SystemAdminScreen(),
-          key: state.pageKey,
-        ),
+              const SystemAdminScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/admin/data',
         name: 'admin-data',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const DataOperationsScreen(),
-          key: state.pageKey,
-        ),
+              const DataOperationsScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/admin/sync',
         name: 'admin-sync',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const DataSyncScreen(),
-          key: state.pageKey,
-        ),
+              const DataSyncScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/admin/test',
         name: 'admin-test',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const DatabaseTestScreen(),
-          key: state.pageKey,
-        ),
+              const DatabaseTestScreen(),
+              key: state.pageKey,
+            ),
       ),
       GoRoute(
         path: '/admin/settings',
         name: 'admin-settings',
         pageBuilder: (context, state) =>
             AppPageTransitions.slideRightTransition(
-          const AdminSettingsScreen(),
-          key: state.pageKey,
-        ),
+              const AdminSettingsScreen(),
+              key: state.pageKey,
+            ),
       ),
     ],
   ),

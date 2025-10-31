@@ -5,33 +5,37 @@ import '../../../../core/services/unified_storage_service.dart';
 
 /// Provider for managing per-exercise variant preferences (equipment and variant type)
 final exerciseVariantPreferencesProvider =
-    StateNotifierProvider<ExerciseVariantPreferencesNotifier, Map<String, ExerciseVariantPreference>>(
-        (ref) {
-  final storage = ref.watch(unifiedStorageProvider);
-  return ExerciseVariantPreferencesNotifier(storage, ref);
-});
+    StateNotifierProvider<
+      ExerciseVariantPreferencesNotifier,
+      Map<String, ExerciseVariantPreference>
+    >((ref) {
+      final storage = ref.watch(unifiedStorageProvider);
+      return ExerciseVariantPreferencesNotifier(storage, ref);
+    });
 
 class ExerciseVariantPreference {
   const ExerciseVariantPreference({
     required this.equipmentUsed,
     this.variantType,
   });
-  
+
   final String equipmentUsed;
   final String? variantType;
-  
+
   Map<String, dynamic> toJson() => {
     'equipmentUsed': equipmentUsed,
     'variantType': variantType,
   };
-  
-  factory ExerciseVariantPreference.fromJson(Map<String, dynamic> json) => ExerciseVariantPreference(
-    equipmentUsed: json['equipmentUsed'] as String,
-    variantType: json['variantType'] as String?,
-  );
+
+  factory ExerciseVariantPreference.fromJson(Map<String, dynamic> json) =>
+      ExerciseVariantPreference(
+        equipmentUsed: json['equipmentUsed'] as String,
+        variantType: json['variantType'] as String?,
+      );
 }
 
-class ExerciseVariantPreferencesNotifier extends StateNotifier<Map<String, ExerciseVariantPreference>> {
+class ExerciseVariantPreferencesNotifier
+    extends StateNotifier<Map<String, ExerciseVariantPreference>> {
   ExerciseVariantPreferencesNotifier(this._storage, this._ref) : super({}) {
     _loadPreferences();
   }
@@ -69,23 +73,24 @@ class ExerciseVariantPreferencesNotifier extends StateNotifier<Map<String, Exerc
   }
 
   /// Get variant preference for a specific exercise
-  ExerciseVariantPreference? getVariantForExercise(String exerciseId) => state[exerciseId];
+  ExerciseVariantPreference? getVariantForExercise(String exerciseId) =>
+      state[exerciseId];
 
   /// Set variant preference for a specific exercise
   Future<void> setVariantForExercise(
-    String exerciseId, 
-    String equipmentUsed, 
+    String exerciseId,
+    String equipmentUsed,
     String? variantType,
   ) async {
     final preference = ExerciseVariantPreference(
       equipmentUsed: equipmentUsed,
       variantType: variantType,
     );
-    
+
     await _storage.updatePreferences({
       '$_keyPrefix$exerciseId': preference.toJson(),
     });
-    
+
     state = {...state, exerciseId: preference};
     // Invalidate preferences to refresh
     _ref.invalidate(userPreferencesProvider);
@@ -96,21 +101,21 @@ class ExerciseVariantPreferencesNotifier extends StateNotifier<Map<String, Exerc
     final newState = Map<String, ExerciseVariantPreference>.from(state);
     newState.remove(exerciseId);
     state = newState;
-    
+
     // Remove from storage
     final prefs = await _storage.getUserPreferences();
     prefs.remove('$_keyPrefix$exerciseId');
     await _storage.updatePreferences(prefs);
-    
+
     _ref.invalidate(userPreferencesProvider);
   }
 
   /// Get variant for exercise with fallback to defaults
   ExerciseVariantPreference getVariantWithDefault(
-    String exerciseId, 
-    String defaultEquipment, 
-    {String? defaultVariant}
-  ) {
+    String exerciseId,
+    String defaultEquipment, {
+    String? defaultVariant,
+  }) {
     final saved = state[exerciseId];
     if (saved != null) {
       return saved;

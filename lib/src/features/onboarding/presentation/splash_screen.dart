@@ -15,8 +15,9 @@ class SplashScreen extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(ObjectFlagProperty<VoidCallback>.has('onFinished', onFinished));
+    properties.add(
+      ObjectFlagProperty<VoidCallback>.has('onFinished', onFinished),
+    );
   }
 }
 

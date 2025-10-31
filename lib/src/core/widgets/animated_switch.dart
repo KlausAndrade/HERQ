@@ -35,7 +35,8 @@ class AnimatedSwitch extends StatefulWidget {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<bool>('value', value));
     properties.add(
-        ObjectFlagProperty<ValueChanged<bool>?>.has('onChanged', onChanged));
+      ObjectFlagProperty<ValueChanged<bool>?>.has('onChanged', onChanged),
+    );
     properties.add(ColorProperty('activeColor', activeColor));
     properties.add(ColorProperty('inactiveColor', inactiveColor));
     properties.add(ColorProperty('thumbColor', thumbColor));
@@ -61,12 +62,7 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
     _scaleAnimation = Tween<double>(
       begin: 1,
       end: 1.1,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     if (widget.value) {
       _controller.value = 1.0;
@@ -134,8 +130,9 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
               AnimatedAlign(
                 duration: AppDurations.normal,
                 curve: AppCurves.bounceOut,
-                alignment:
-                    widget.value ? Alignment.centerRight : Alignment.centerLeft,
+                alignment: widget.value
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
                 child: Transform.scale(
                   scale: _scaleAnimation.value,
                   child: Container(
@@ -198,7 +195,8 @@ class AnimatedCheckbox extends StatefulWidget {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<bool>('value', value));
     properties.add(
-        ObjectFlagProperty<ValueChanged<bool>?>.has('onChanged', onChanged));
+      ObjectFlagProperty<ValueChanged<bool>?>.has('onChanged', onChanged),
+    );
     properties.add(ColorProperty('activeColor', activeColor));
     properties.add(ColorProperty('checkColor', checkColor));
     properties.add(DoubleProperty('size', size));
@@ -223,28 +221,12 @@ class _AnimatedCheckboxState extends State<AnimatedCheckbox>
     _checkAnimation = Tween<double>(
       begin: 0,
       end: 1,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: AppCurves.bounceOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: AppCurves.bounceOut));
 
     _scaleAnimation = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 1, end: 0.85),
-        weight: 30,
-      ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 0.85, end: 1),
-        weight: 70,
-      ),
-    ]).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOut,
-      ),
-    );
+      TweenSequenceItem(tween: Tween<double>(begin: 1, end: 0.85), weight: 30),
+      TweenSequenceItem(tween: Tween<double>(begin: 0.85, end: 1), weight: 70),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     if (widget.value) {
       _controller.value = 1.0;
@@ -328,10 +310,7 @@ class _AnimatedCheckboxState extends State<AnimatedCheckbox>
 }
 
 class _CheckmarkPainter extends CustomPainter {
-  const _CheckmarkPainter({
-    required this.color,
-    required this.progress,
-  });
+  const _CheckmarkPainter({required this.color, required this.progress});
 
   final Color color;
   final double progress;

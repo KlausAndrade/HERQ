@@ -15,7 +15,7 @@ class PRDetectionService {
     required double? weight,
     required int reps,
     List<Map<String, dynamic>>?
-        currentWorkoutSets, // Sets from current workout to exclude
+    currentWorkoutSets, // Sets from current workout to exclude
   }) async {
     // If no weight or reps, can't be a PR
     if (weight == null || weight <= 0 || reps <= 0) {
@@ -24,25 +24,28 @@ class PRDetectionService {
 
     try {
       // Get all previous sets for this exercise across all COMPLETED workouts only
-      final query = database.select(database.setEntries).join([
-        innerJoin(
-          database.workoutSessions,
-          database.workoutSessions.id
-              .equalsExp(database.setEntries.workoutSessionId),
-        ),
-      ])
-        ..where(database.setEntries.exerciseId.equals(exerciseId))
-        ..where(database.workoutSessions.completedAt.isNotNull())
-        ..orderBy([
-          OrderingTerm(
-            expression: database.workoutSessions.startedAt,
-            mode: OrderingMode.desc,
-          ),
-        ]);
+      final query =
+          database.select(database.setEntries).join([
+              innerJoin(
+                database.workoutSessions,
+                database.workoutSessions.id.equalsExp(
+                  database.setEntries.workoutSessionId,
+                ),
+              ),
+            ])
+            ..where(database.setEntries.exerciseId.equals(exerciseId))
+            ..where(database.workoutSessions.completedAt.isNotNull())
+            ..orderBy([
+              OrderingTerm(
+                expression: database.workoutSessions.startedAt,
+                mode: OrderingMode.desc,
+              ),
+            ]);
 
       final results = await query.get();
-      final previousSets =
-          results.map((row) => row.readTable(database.setEntries)).toList();
+      final previousSets = results
+          .map((row) => row.readTable(database.setEntries))
+          .toList();
 
       // Also consider completed sets from current workout
       double maxWeight = 0;
@@ -101,10 +104,7 @@ class PRDetectionService {
       final isPRReps =
           hasDataAtCurrentOrHigherWeight && reps > maxRepsAtCurrentWeight;
 
-      return {
-        'isPRWeight': isPRWeight,
-        'isPRReps': isPRReps,
-      };
+      return {'isPRWeight': isPRWeight, 'isPRReps': isPRReps};
     } catch (e) {
       // On error, assume no PR
       return {'isPRWeight': false, 'isPRReps': false};

@@ -41,8 +41,9 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserProvider);
-    final currentUserProfile =
-        ref.watch(userProfileProvider(currentUser?.id ?? ''));
+    final currentUserProfile = ref.watch(
+      userProfileProvider(currentUser?.id ?? ''),
+    );
 
     return Padding(
       padding: EdgeInsets.only(
@@ -60,9 +61,9 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
             children: [
               Text(
                 'Create Post',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
@@ -96,15 +97,15 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                     Text(
                       DisplayNameSanitizer.sanitize(profile?.displayName),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     if (profile?.bio != null && profile!.bio!.isNotEmpty)
                       Text(
                         profile.bio!,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey,
-                            ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -140,16 +141,13 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
             ),
             error: (_, __) => Row(
               children: [
-                const CircleAvatar(
-                  radius: 20,
-                  child: Text('U'),
-                ),
+                const CircleAvatar(radius: 20, child: Text('U')),
                 const SizedBox(width: 12),
                 Text(
                   S.of(context)!.unknownAthlete,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -194,9 +192,7 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
                             }
                             return const SizedBox(
                               height: 200,
-                              child: Center(
-                                child: CircularProgressIndicator(),
-                              ),
+                              child: Center(child: CircularProgressIndicator()),
                             );
                           },
                         ),
@@ -267,33 +263,37 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
       print('📸 Opening image picker...');
       image = await _imagePicker
           .pickImage(
-        source: ImageSource.gallery,
-        maxWidth: _maxDimension.toDouble(),
-        maxHeight: _maxDimension.toDouble(),
-        imageQuality: 60, // Very low quality for faster iOS HEIC conversion
-        requestFullMetadata: false, // Faster on iOS
-      )
+            source: ImageSource.gallery,
+            maxWidth: _maxDimension.toDouble(),
+            maxHeight: _maxDimension.toDouble(),
+            imageQuality: 60, // Very low quality for faster iOS HEIC conversion
+            requestFullMetadata: false, // Faster on iOS
+          )
           .timeout(
-        const Duration(
-            seconds: 45), // Shorter timeout - if it takes this long, it's stuck
-        onTimeout: () {
-          print('⚠️ Image picker timed out after 45s - HEIC conversion failed');
-          if (mounted) {
-            NotificationService()
-                .showInAppNotification(
-                  id: DateTime.now().millisecondsSinceEpoch.toString(),
-                  title: 'Photo upload failed',
-                  body:
-                      'iPhone camera photos (HEIC) are not supported. Please use: Screenshots (PNG) or Edit the photo first in Photos app.',
-                )
-                .catchError((_) {});
-          }
-          return null;
-        },
-      );
+            const Duration(
+              seconds: 45,
+            ), // Shorter timeout - if it takes this long, it's stuck
+            onTimeout: () {
+              print(
+                '⚠️ Image picker timed out after 45s - HEIC conversion failed',
+              );
+              if (mounted) {
+                NotificationService()
+                    .showInAppNotification(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Photo upload failed',
+                      body:
+                          'iPhone camera photos (HEIC) are not supported. Please use: Screenshots (PNG) or Edit the photo first in Photos app.',
+                    )
+                    .catchError((_) {});
+              }
+              return null;
+            },
+          );
 
       print(
-          '📸 Image picker result: ${image != null ? "image selected" : "cancelled"}');
+        '📸 Image picker result: ${image != null ? "image selected" : "cancelled"}',
+      );
       if (image != null) {
         print('📸 Image path: ${image.path}');
         print('📸 Image name: ${image.name}');
@@ -332,7 +332,8 @@ class _CreatePostSheetState extends ConsumerState<CreatePostSheet> {
         final fileSizeMB = (fileSize / (1024 * 1024)).toStringAsFixed(2);
 
         print(
-            '📸 Image size: ${fileSizeMB}MB (${image.path.split('.').last} format)');
+          '📸 Image size: ${fileSizeMB}MB (${image.path.split('.').last} format)',
+        );
 
         if (fileSize > _maxImageSizeBytes) {
           print('⚠️ Image too large: ${fileSizeMB}MB > 10MB');

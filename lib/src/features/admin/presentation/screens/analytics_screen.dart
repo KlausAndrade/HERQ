@@ -14,9 +14,7 @@ class AnalyticsScreen extends ConsumerWidget {
     // Gate access
     final isAdmin = ref.watch(isAdminProvider);
     if (!isAdmin) {
-      return const Scaffold(
-        body: Center(child: Text('Access denied')),
-      );
+      return const Scaffold(body: Center(child: Text('Access denied')));
     }
 
     final analyticsData = ref.watch(analyticsProvider);
@@ -48,7 +46,11 @@ class AnalyticsScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               _buildUserMetrics(context, data),
               const SizedBox(height: 24),
-              _buildSectionHeader(context, 'Recent Events (Last 100)', Colors.teal),
+              _buildSectionHeader(
+                context,
+                'Recent Events (Last 100)',
+                Colors.teal,
+              ),
               const SizedBox(height: 12),
               recentEvents.when(
                 data: (events) => _buildEventsList(context, events),
@@ -71,7 +73,10 @@ class AnalyticsScreen extends ConsumerWidget {
               _buildWorkoutMetrics(context, data),
               const SizedBox(height: 24),
               _buildSectionHeader(
-                  context, 'User Growth Over Time', Colors.purple),
+                context,
+                'User Growth Over Time',
+                Colors.purple,
+              ),
               const SizedBox(height: 12),
               _buildUserGrowthChart(context, data),
               const SizedBox(height: 24),
@@ -116,9 +121,9 @@ class AnalyticsScreen extends ConsumerWidget {
         ),
         Text(
           title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -313,7 +318,9 @@ class AnalyticsScreen extends ConsumerWidget {
   }
 
   Widget _buildUserGrowthChart(
-      BuildContext context, Map<String, dynamic> data) {
+    BuildContext context,
+    Map<String, dynamic> data,
+  ) {
     final dailyWorkouts = data['dailyWorkouts'] as Map<String, int>? ?? {};
     final List<FlSpot> spots = [];
     final List<String> dates = dailyWorkouts.keys.toList()..sort();
@@ -339,9 +346,9 @@ class AnalyticsScreen extends ConsumerWidget {
           children: [
             Text(
               'User Activity (Last 30 Days)',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -358,8 +365,9 @@ class AnalyticsScreen extends ConsumerWidget {
                           if (value.toInt() < dates.length) {
                             return SideTitleWidget(
                               axisSide: meta.axisSide,
-                              child: Text(dates[value.toInt()]
-                                  .substring(5)), // Show MM-DD
+                              child: Text(
+                                dates[value.toInt()].substring(5),
+                              ), // Show MM-DD
                             );
                           }
                           return const Text('');
@@ -369,21 +377,24 @@ class AnalyticsScreen extends ConsumerWidget {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: (spots
-                                    .map((e) => e.y)
-                                    .reduce((a, b) => a > b ? a : b) /
-                                4)
-                            .ceil()
-                            .toDouble(),
+                        interval:
+                            (spots
+                                        .map((e) => e.y)
+                                        .reduce((a, b) => a > b ? a : b) /
+                                    4)
+                                .ceil()
+                                .toDouble(),
                         getTitlesWidget: (value, meta) {
                           return Text(value.toInt().toString());
                         },
                       ),
                     ),
                     topTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                     rightTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   borderData: FlBorderData(
                     show: true,
@@ -398,7 +409,9 @@ class AnalyticsScreen extends ConsumerWidget {
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
-                          show: true, color: Colors.purple.withOpacity(0.3)),
+                        show: true,
+                        color: Colors.purple.withOpacity(0.3),
+                      ),
                     ),
                   ],
                 ),
@@ -411,7 +424,9 @@ class AnalyticsScreen extends ConsumerWidget {
   }
 
   Widget _buildWorkoutTrendChart(
-      BuildContext context, Map<String, dynamic> data) {
+    BuildContext context,
+    Map<String, dynamic> data,
+  ) {
     final dailyWorkouts = data['dailyWorkouts'] as Map<String, int>? ?? {};
     final List<FlSpot> spots = [];
     final List<String> dates = dailyWorkouts.keys.toList()..sort();
@@ -437,9 +452,9 @@ class AnalyticsScreen extends ConsumerWidget {
           children: [
             Text(
               'Workouts Completed (Last 30 Days)',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -456,8 +471,9 @@ class AnalyticsScreen extends ConsumerWidget {
                           if (value.toInt() < dates.length) {
                             return SideTitleWidget(
                               axisSide: meta.axisSide,
-                              child: Text(dates[value.toInt()]
-                                  .substring(5)), // Show MM-DD
+                              child: Text(
+                                dates[value.toInt()].substring(5),
+                              ), // Show MM-DD
                             );
                           }
                           return const Text('');
@@ -467,21 +483,24 @@ class AnalyticsScreen extends ConsumerWidget {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: (spots
-                                    .map((e) => e.y)
-                                    .reduce((a, b) => a > b ? a : b) /
-                                4)
-                            .ceil()
-                            .toDouble(),
+                        interval:
+                            (spots
+                                        .map((e) => e.y)
+                                        .reduce((a, b) => a > b ? a : b) /
+                                    4)
+                                .ceil()
+                                .toDouble(),
                         getTitlesWidget: (value, meta) {
                           return Text(value.toInt().toString());
                         },
                       ),
                     ),
                     topTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                     rightTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   borderData: FlBorderData(
                     show: true,
@@ -496,7 +515,9 @@ class AnalyticsScreen extends ConsumerWidget {
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
-                          show: true, color: Colors.orange.withOpacity(0.3)),
+                        show: true,
+                        color: Colors.orange.withOpacity(0.3),
+                      ),
                     ),
                   ],
                 ),
@@ -528,9 +549,9 @@ class AnalyticsScreen extends ConsumerWidget {
           children: [
             Text(
               'Most Popular Exercises',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ListView.builder(
@@ -542,8 +563,10 @@ class AnalyticsScreen extends ConsumerWidget {
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundColor: Colors.red.withOpacity(0.1),
-                    child: Text('${index + 1}',
-                        style: TextStyle(color: Colors.red.shade700)),
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(color: Colors.red.shade700),
+                    ),
                   ),
                   title: Text(exercise['name']),
                   trailing: Text('${exercise['count']} uses'),
@@ -588,9 +611,9 @@ class _MetricCard extends StatelessWidget {
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
-                        ),
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -600,16 +623,16 @@ class _MetricCard extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
             Text(
               change,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[500],
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -619,7 +642,10 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-Widget _buildEventsList(BuildContext context, List<Map<String, dynamic>> events) {
+Widget _buildEventsList(
+  BuildContext context,
+  List<Map<String, dynamic>> events,
+) {
   if (events.isEmpty) {
     return const Card(
       child: Padding(
@@ -646,20 +672,27 @@ Widget _buildEventsList(BuildContext context, List<Map<String, dynamic>> events)
           return ListTile(
             dense: true,
             leading: const Icon(Icons.bolt, color: Colors.teal),
-            title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+            title: Text(
+              name,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
             subtitle: Text(
               props is Map<String, dynamic>
                   ? props.entries
-                      .take(3)
-                      .map((kv) => '${kv.key}: ${kv.value}')
-                      .join(' • ')
+                        .take(3)
+                        .map((kv) => '${kv.key}: ${kv.value}')
+                        .join(' • ')
                   : props?.toString() ?? '-',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             trailing: Text(
-              createdAt != null ? createdAt.substring(0, 19).replaceFirst('T', ' ') : '',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+              createdAt != null
+                  ? createdAt.substring(0, 19).replaceFirst('T', ' ')
+                  : '',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
             ),
           );
         },

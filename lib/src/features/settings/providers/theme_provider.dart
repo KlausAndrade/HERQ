@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/preferences_provider.dart';
 
-final themeModeProvider =
-    StateNotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
+  ThemeModeNotifier.new,
+);
 
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   ThemeModeNotifier(this._ref) : super(ThemeMode.dark) {
@@ -69,7 +70,8 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 /// Provider for theme variant selection (Default vs HERQ)
 final themeVariantProvider =
     StateNotifierProvider<ThemeVariantNotifier, String>(
-        ThemeVariantNotifier.new);
+      ThemeVariantNotifier.new,
+    );
 
 class ThemeVariantNotifier extends StateNotifier<String> {
   ThemeVariantNotifier(this._ref) : super('herq') {

@@ -27,8 +27,10 @@ class WebStorageService {
   static Future<int> getStorageQuota() async => 0;
 
   /// Get storage info (always empty on mobile)
-  static Map<String, dynamic> getStorageInfo() =>
-      {'supported': false, 'platform': 'mobile'};
+  static Map<String, dynamic> getStorageInfo() => {
+    'supported': false,
+    'platform': 'mobile',
+  };
 
   /// Get workout sessions (always empty on mobile)
   static Future<List<Map<String, dynamic>>> getWorkoutSessions() async => [];
@@ -36,8 +38,7 @@ class WebStorageService {
   /// Save workout sessions (no-op on mobile)
   static Future<bool> saveWorkoutSessions(
     List<Map<String, dynamic>> sessions,
-  ) async =>
-      true;
+  ) async => true;
 
   /// Get exercises (always empty on mobile)
   static Future<List<Map<String, dynamic>>> getExercises() async => [];
@@ -45,8 +46,7 @@ class WebStorageService {
   /// Save exercises (no-op on mobile)
   static Future<bool> saveExercises(
     List<Map<String, dynamic>> exercises,
-  ) async =>
-      true;
+  ) async => true;
 
   /// Get templates (always empty on mobile)
   static Future<List<Map<String, dynamic>>> getTemplates() async => [];
@@ -54,8 +54,7 @@ class WebStorageService {
   /// Save templates (no-op on mobile)
   static Future<bool> saveTemplates(
     List<Map<String, dynamic>> templates,
-  ) async =>
-      true;
+  ) async => true;
 
   /// Get user preferences (always empty on mobile)
   static Future<Map<String, dynamic>> getUserPreferences() async => {};
@@ -63,8 +62,7 @@ class WebStorageService {
   /// Save user preferences (no-op on mobile)
   static Future<bool> saveUserPreferences(
     Map<String, dynamic> preferences,
-  ) async =>
-      true;
+  ) async => true;
 
   /// Get personal records (always empty on mobile)
   static Future<List<Map<String, dynamic>>> getPersonalRecords() async => [];
@@ -72,8 +70,7 @@ class WebStorageService {
   /// Save personal records (no-op on mobile)
   static Future<bool> savePersonalRecords(
     List<Map<String, dynamic>> records,
-  ) async =>
-      true;
+  ) async => true;
 
   /// Get app metadata (always empty on mobile)
   static Future<Map<String, dynamic>> getAppMetadata() async => {};

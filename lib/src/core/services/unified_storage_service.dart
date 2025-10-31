@@ -189,8 +189,9 @@ class WebStorageServiceImpl implements UnifiedStorageService {
   @override
   Future<bool> saveExercise(Map<String, dynamic> exercise) async {
     final exercises = await getExercises();
-    final existingIndex =
-        exercises.indexWhere((e) => e['id'] == exercise['id']);
+    final existingIndex = exercises.indexWhere(
+      (e) => e['id'] == exercise['id'],
+    );
 
     if (existingIndex >= 0) {
       exercises[existingIndex] = exercise;
@@ -208,8 +209,9 @@ class WebStorageServiceImpl implements UnifiedStorageService {
   @override
   Future<bool> saveTemplate(Map<String, dynamic> template) async {
     final templates = await getTemplates();
-    final existingIndex =
-        templates.indexWhere((t) => t['id'] == template['id']);
+    final existingIndex = templates.indexWhere(
+      (t) => t['id'] == template['id'],
+    );
 
     if (existingIndex >= 0) {
       templates[existingIndex] = template;

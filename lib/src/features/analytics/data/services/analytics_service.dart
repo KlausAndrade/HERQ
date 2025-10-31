@@ -38,9 +38,9 @@ class AnalyticsService {
     // Get all PRs from last 30 days
     final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
 
-    final recentPRs = await (database.select(database.personalRecords)
-          ..where((pr) => pr.achievedAt.isBiggerOrEqualValue(thirtyDaysAgo)))
-        .get();
+    final recentPRs = await (database.select(
+      database.personalRecords,
+    )..where((pr) => pr.achievedAt.isBiggerOrEqualValue(thirtyDaysAgo))).get();
 
     // Calculate power score based on:
     // - Number of PRs
@@ -63,7 +63,8 @@ class AnalyticsService {
     current = (current / 100).roundToDouble();
 
     // Calculate 30-day change
-    final thirtyDayScore = recentPRs.fold<double>(
+    final thirtyDayScore =
+        recentPRs.fold<double>(
           0,
           (sum, pr) => sum + (pr.weight ?? 0) * (pr.reps ?? 1) * 0.5,
         ) /
@@ -94,10 +95,12 @@ class AnalyticsService {
     int rank = 0;
     if (userId != null) {
       // Order users by total_volume desc and find the position of this user
-      final rows = await database.customSelect(
-        'SELECT user_id FROM user_stats ORDER BY total_volume DESC',
-        readsFrom: {database.userStats},
-      ).get();
+      final rows = await database
+          .customSelect(
+            'SELECT user_id FROM user_stats ORDER BY total_volume DESC',
+            readsFrom: {database.userStats},
+          )
+          .get();
 
       for (var i = 0; i < rows.length; i++) {
         final uid = rows[i].read<String>('user_id');
@@ -125,10 +128,11 @@ class AnalyticsService {
 
     for (final exercise in exercises) {
       // Get all PRs for this exercise, ordered by date
-      final prs = await (database.select(database.personalRecords)
-            ..where((pr) => pr.exerciseId.equals(exercise.id))
-            ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)]))
-          .get();
+      final prs =
+          await (database.select(database.personalRecords)
+                ..where((pr) => pr.exerciseId.equals(exercise.id))
+                ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)]))
+              .get();
 
       if (prs.isEmpty) continue;
 
@@ -148,8 +152,9 @@ class AnalyticsService {
           tempStreak = 1;
           currentStreak = 1;
         } else {
-          final daysBetween =
-              prs[i - 1].achievedAt.difference(pr.achievedAt).inDays;
+          final daysBetween = prs[i - 1].achievedAt
+              .difference(pr.achievedAt)
+              .inDays;
 
           // If PRs are within 14 days of each other, streak continues
           if (daysBetween <= 14) {
@@ -201,19 +206,21 @@ class AnalyticsService {
 
     for (final exercise in exercises) {
       // Get current PR
-      final currentPR = await (database.select(database.personalRecords)
-            ..where((pr) => pr.exerciseId.equals(exercise.id))
-            ..orderBy([(pr) => OrderingTerm.desc(pr.weight)])
-            ..limit(1))
-          .getSingleOrNull();
+      final currentPR =
+          await (database.select(database.personalRecords)
+                ..where((pr) => pr.exerciseId.equals(exercise.id))
+                ..orderBy([(pr) => OrderingTerm.desc(pr.weight)])
+                ..limit(1))
+              .getSingleOrNull();
 
       if (currentPR == null) continue;
 
       // Get recent attempts (last 30 days)
       final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
 
-      final recentSets = await database.customSelect(
-        '''
+      final recentSets = await database
+          .customSelect(
+            '''
         SELECT se.*, ws.completed_at
         FROM set_entries se
         JOIN workout_sessions ws ON se.workout_session_id = ws.id
@@ -222,14 +229,19 @@ class AnalyticsService {
         ORDER BY se.weight DESC, se.reps DESC
         LIMIT 10
         ''',
-        variables: [
-          Variable.withString(exercise.id),
-          Variable.withDateTime(thirtyDaysAgo),
-          Variable.withString(UserContextService.instance.getCurrentUserId()),
-          Variable.withString(UserContextService.instance.getCurrentUserId()),
-        ],
-        readsFrom: {database.setEntries, database.workoutSessions},
-      ).get();
+            variables: [
+              Variable.withString(exercise.id),
+              Variable.withDateTime(thirtyDaysAgo),
+              Variable.withString(
+                UserContextService.instance.getCurrentUserId(),
+              ),
+              Variable.withString(
+                UserContextService.instance.getCurrentUserId(),
+              ),
+            ],
+            readsFrom: {database.setEntries, database.workoutSessions},
+          )
+          .get();
 
       for (final row in recentSets) {
         final weight = row.read<double?>('weight');
@@ -288,10 +300,11 @@ class AnalyticsService {
 
     for (final exercise in exercises) {
       // Get PR history for this exercise
-      final prs = await (database.select(database.personalRecords)
-            ..where((pr) => pr.exerciseId.equals(exercise.id))
-            ..orderBy([(pr) => OrderingTerm.asc(pr.achievedAt)]))
-          .get();
+      final prs =
+          await (database.select(database.personalRecords)
+                ..where((pr) => pr.exerciseId.equals(exercise.id))
+                ..orderBy([(pr) => OrderingTerm.asc(pr.achievedAt)]))
+              .get();
 
       if (prs.length < 3) continue; // Need at least 3 PRs to predict
 
@@ -299,15 +312,15 @@ class AnalyticsService {
       if (prs.every((pr) => pr.weight == null || pr.weight == 0)) continue;
 
       // Calculate linear regression for weight progression
-      final dataPoints =
-          prs.where((pr) => pr.weight != null && pr.weight! > 0).map((pr) {
-        final daysSinceFirst =
-            pr.achievedAt.difference(prs.first.achievedAt).inDays;
-        return {
-          'x': daysSinceFirst.toDouble(),
-          'y': pr.weight!.toDouble(),
-        };
-      }).toList();
+      final dataPoints = prs
+          .where((pr) => pr.weight != null && pr.weight! > 0)
+          .map((pr) {
+            final daysSinceFirst = pr.achievedAt
+                .difference(prs.first.achievedAt)
+                .inDays;
+            return {'x': daysSinceFirst.toDouble(), 'y': pr.weight!.toDouble()};
+          })
+          .toList();
 
       // Need at least 3 valid data points
       if (dataPoints.length < 3) continue;
@@ -324,8 +337,9 @@ class AnalyticsService {
 
       // Predict next PR (assume in 30 days)
       final lastPR = prs.last;
-      final daysSinceStart =
-          DateTime.now().difference(prs.first.achievedAt).inDays;
+      final daysSinceStart = DateTime.now()
+          .difference(prs.first.achievedAt)
+          .inDays;
       const daysToPredict = 30;
       final predictedX = daysSinceStart + daysToPredict;
 
@@ -346,8 +360,9 @@ class AnalyticsService {
 
       // Calculate confidence based on R² (how well data fits the line)
       final rSquared = regression['rSquared']!;
-      final confidence =
-          (rSquared * 100).clamp(0, 95).toDouble(); // Max 95% confidence
+      final confidence = (rSquared * 100)
+          .clamp(0, 95)
+          .toDouble(); // Max 95% confidence
 
       // Generate recommendations
       final recommendations = _generatePRRecommendations(
@@ -363,8 +378,9 @@ class AnalyticsService {
           exerciseName: exercise.name,
           currentPR: currentWeight,
           predictedPR: predictedWeight,
-          predictedDate:
-              DateTime.now().add(const Duration(days: daysToPredict)),
+          predictedDate: DateTime.now().add(
+            const Duration(days: daysToPredict),
+          ),
           confidence: confidence,
           reasoning:
               'Based on your consistent ${regression['slope']!.toStringAsFixed(2)}kg/week progress',
@@ -386,20 +402,20 @@ class AnalyticsService {
     final n = data.length.toDouble();
     final sumX = data.fold<double>(0, (sum, point) => sum + point['x']!);
     final sumY = data.fold<double>(0, (sum, point) => sum + point['y']!);
-    final sumXY =
-        data.fold<double>(0, (sum, point) => sum + point['x']! * point['y']!);
-    final sumX2 =
-        data.fold<double>(0, (sum, point) => sum + point['x']! * point['x']!);
+    final sumXY = data.fold<double>(
+      0,
+      (sum, point) => sum + point['x']! * point['y']!,
+    );
+    final sumX2 = data.fold<double>(
+      0,
+      (sum, point) => sum + point['x']! * point['x']!,
+    );
 
     final denominator = n * sumX2 - sumX * sumX;
 
     // Prevent division by zero
     if (denominator == 0 || denominator.isNaN) {
-      return {
-        'slope': 0.0,
-        'intercept': 0.0,
-        'rSquared': 0.0,
-      };
+      return {'slope': 0.0, 'intercept': 0.0, 'rSquared': 0.0};
     }
 
     final slope = (n * sumXY - sumX * sumY) / denominator;
@@ -410,17 +426,15 @@ class AnalyticsService {
         slope.isInfinite ||
         intercept.isNaN ||
         intercept.isInfinite) {
-      return {
-        'slope': 0.0,
-        'intercept': 0.0,
-        'rSquared': 0.0,
-      };
+      return {'slope': 0.0, 'intercept': 0.0, 'rSquared': 0.0};
     }
 
     // Calculate R² (coefficient of determination)
     final yMean = sumY / n;
-    final ssTotal =
-        data.fold<double>(0, (sum, point) => sum + pow(point['y']! - yMean, 2));
+    final ssTotal = data.fold<double>(
+      0,
+      (sum, point) => sum + pow(point['y']! - yMean, 2),
+    );
 
     // Prevent division by zero in R² calculation
     if (ssTotal == 0 || ssTotal.isNaN) {
@@ -462,8 +476,9 @@ class AnalyticsService {
     );
 
     if (weeklyGain < 1) {
-      recommendations
-          .add('📈 Consider a deload week to reset for bigger gains');
+      recommendations.add(
+        '📈 Consider a deload week to reset for bigger gains',
+      );
     } else {
       recommendations.add('🔥 You\'re on fire! Maintain this momentum');
     }
@@ -482,8 +497,9 @@ class AnalyticsService {
       final weekEnd = now.subtract(Duration(days: 7 * i));
 
       // Calculate total volume for this week
-      final volumeData = await database.customSelect(
-        '''
+      final volumeData = await database
+          .customSelect(
+            '''
         SELECT 
           e.primary_muscle_group,
           SUM(se.weight * se.reps) as volume
@@ -494,18 +510,23 @@ class AnalyticsService {
         AND se.user_id = ? AND ws.user_id = ?
         GROUP BY e.primary_muscle_group
         ''',
-        variables: [
-          Variable.withDateTime(weekStart),
-          Variable.withDateTime(weekEnd),
-          Variable.withString(UserContextService.instance.getCurrentUserId()),
-          Variable.withString(UserContextService.instance.getCurrentUserId()),
-        ],
-        readsFrom: {
-          database.setEntries,
-          database.workoutSessions,
-          database.exercises,
-        },
-      ).get();
+            variables: [
+              Variable.withDateTime(weekStart),
+              Variable.withDateTime(weekEnd),
+              Variable.withString(
+                UserContextService.instance.getCurrentUserId(),
+              ),
+              Variable.withString(
+                UserContextService.instance.getCurrentUserId(),
+              ),
+            ],
+            readsFrom: {
+              database.setEntries,
+              database.workoutSessions,
+              database.exercises,
+            },
+          )
+          .get();
 
       final volumeByMuscle = <String, double>{};
       double totalVolume = 0;
@@ -547,8 +568,9 @@ class AnalyticsService {
 
     for (final exercise in exercises) {
       // Get all sets for this exercise
-      final sets = await database.customSelect(
-        '''
+      final sets = await database
+          .customSelect(
+            '''
         SELECT se.*, ws.completed_at
         FROM set_entries se
         JOIN workout_sessions ws ON se.workout_session_id = ws.id
@@ -556,13 +578,18 @@ class AnalyticsService {
         AND se.user_id = ? AND ws.user_id = ?
         ORDER BY ws.completed_at ASC
         ''',
-        variables: [
-          Variable.withString(exercise.id),
-          Variable.withString(UserContextService.instance.getCurrentUserId()),
-          Variable.withString(UserContextService.instance.getCurrentUserId()),
-        ],
-        readsFrom: {database.setEntries, database.workoutSessions},
-      ).get();
+            variables: [
+              Variable.withString(exercise.id),
+              Variable.withString(
+                UserContextService.instance.getCurrentUserId(),
+              ),
+              Variable.withString(
+                UserContextService.instance.getCurrentUserId(),
+              ),
+            ],
+            readsFrom: {database.setEntries, database.workoutSessions},
+          )
+          .get();
 
       if (sets.isEmpty) continue;
 
@@ -581,9 +608,9 @@ class AnalyticsService {
       final percentageGain = (totalGain / startWeight) * 100;
 
       // Get personal records for this exercise to mark PRs in history
-      final prsForExercise = await (database.select(database.personalRecords)
-            ..where((pr) => pr.exerciseId.equals(exercise.id)))
-          .get();
+      final prsForExercise = await (database.select(
+        database.personalRecords,
+      )..where((pr) => pr.exerciseId.equals(exercise.id))).get();
 
       // Build history and mark PRs when a set matches a personal record
       final history = sets.map((row) {
@@ -602,7 +629,8 @@ class AnalyticsService {
 
           final weightMatches = (prWeight - setWeight).abs() <= weightTolerance;
           final repsMatches = prReps == setReps;
-          final timeMatches = prDate.difference(setDate).inSeconds.abs() <=
+          final timeMatches =
+              prDate.difference(setDate).inSeconds.abs() <=
               timeToleranceSeconds;
 
           return weightMatches && repsMatches && timeMatches;
@@ -673,11 +701,12 @@ class AnalyticsService {
 
     for (final exercise in exercises) {
       // Get last PR date
-      final lastPR = await (database.select(database.personalRecords)
-            ..where((pr) => pr.exerciseId.equals(exercise.id))
-            ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)])
-            ..limit(1))
-          .getSingleOrNull();
+      final lastPR =
+          await (database.select(database.personalRecords)
+                ..where((pr) => pr.exerciseId.equals(exercise.id))
+                ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)])
+                ..limit(1))
+              .getSingleOrNull();
 
       if (lastPR == null) continue;
 
@@ -702,17 +731,19 @@ class AnalyticsService {
             currentWeight: lastPR.weight ?? 0,
             startDate: lastPR.achievedAt,
             severity: severity,
-            recommendations:
-                _getPlateauRecommendations(severity, exercise.name),
+            recommendations: _getPlateauRecommendations(
+              severity,
+              exercise.name,
+            ),
           ),
         );
       }
     }
 
     // Get last time any plateau was broken
-    final allPRs = await (database.select(database.personalRecords)
-          ..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)]))
-        .get();
+    final allPRs = await (database.select(
+      database.personalRecords,
+    )..orderBy([(pr) => OrderingTerm.desc(pr.achievedAt)])).get();
 
     DateTime? lastPlateauBroken;
     if (allPRs.isNotEmpty) {
@@ -757,8 +788,9 @@ class AnalyticsService {
     // Get volume distribution by muscle group over last 30 days
     final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
 
-    final volumeData = await database.customSelect(
-      '''
+    final volumeData = await database
+        .customSelect(
+          '''
       SELECT 
         e.primary_muscle_group,
         SUM(se.weight * se.reps) as total_volume
@@ -769,17 +801,18 @@ class AnalyticsService {
       AND se.user_id = ? AND ws.user_id = ?
       GROUP BY e.primary_muscle_group
       ''',
-      variables: [
-        Variable.withDateTime(thirtyDaysAgo),
-        Variable.withString(UserContextService.instance.getCurrentUserId()),
-        Variable.withString(UserContextService.instance.getCurrentUserId()),
-      ],
-      readsFrom: {
-        database.setEntries,
-        database.workoutSessions,
-        database.exercises,
-      },
-    ).get();
+          variables: [
+            Variable.withDateTime(thirtyDaysAgo),
+            Variable.withString(UserContextService.instance.getCurrentUserId()),
+            Variable.withString(UserContextService.instance.getCurrentUserId()),
+          ],
+          readsFrom: {
+            database.setEntries,
+            database.workoutSessions,
+            database.exercises,
+          },
+        )
+        .get();
 
     final volumeByMuscle = <String, double>{};
     double totalVolume = 0;
@@ -834,13 +867,14 @@ class AnalyticsService {
     }
 
     // Calculate overall balance score
-    final balanceScore = (100 -
-            imbalances.fold<double>(
-              0,
-              (sum, imb) => sum + imb.difference.abs(),
-            ))
-        .clamp(0, 100)
-        .toDouble();
+    final balanceScore =
+        (100 -
+                imbalances.fold<double>(
+                  0,
+                  (sum, imb) => sum + imb.difference.abs(),
+                ))
+            .clamp(0, 100)
+            .toDouble();
 
     final recommendations = _getBalanceRecommendations(imbalances);
 

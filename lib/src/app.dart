@@ -66,10 +66,12 @@ class _HerqAppState extends ConsumerState<HerqApp> {
     }
 
     // Select theme based on variant (HERQ or Default)
-    final lightTheme =
-        themeVariant == 'herq' ? AppTheme.herqLightTheme : AppTheme.lightTheme;
-    final darkTheme =
-        themeVariant == 'herq' ? AppTheme.herqDarkTheme : AppTheme.darkTheme;
+    final lightTheme = themeVariant == 'herq'
+        ? AppTheme.herqLightTheme
+        : AppTheme.lightTheme;
+    final darkTheme = themeVariant == 'herq'
+        ? AppTheme.herqDarkTheme
+        : AppTheme.darkTheme;
 
     if (_showSplash) {
       return MaterialApp(
@@ -128,10 +130,7 @@ class _HerqAppState extends ConsumerState<HerqApp> {
         // MaterialApp.router as the root but inject an additional Stack
         // via the builder which receives the navigator's child.
         return Stack(
-          children: [
-            if (child != null) child,
-            const NotificationOverlay(),
-          ],
+          children: [if (child != null) child, const NotificationOverlay()],
         );
       },
     );

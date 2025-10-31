@@ -41,8 +41,9 @@ class SetEntryWidget extends ConsumerStatefulWidget {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<ActiveSet>('set', set));
     properties.add(IntProperty('setNumber', setNumber));
-    properties.add(ObjectFlagProperty<ValueChanged<ActiveSet>>.has(
-        'onChanged', onChanged));
+    properties.add(
+      ObjectFlagProperty<ValueChanged<ActiveSet>>.has('onChanged', onChanged),
+    );
     properties.add(IntProperty('restTimerSeconds', restTimerSeconds));
     properties.add(StringProperty('exerciseName', exerciseName));
     properties.add(IntProperty('totalSets', totalSets));
@@ -112,8 +113,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     }
     if (oldWidget.set.reps != widget.set.reps &&
         !_repsController.selection.isValid) {
-      _repsController.text =
-          widget.set.reps > 0 ? widget.set.reps.toString() : '';
+      _repsController.text = widget.set.reps > 0
+          ? widget.set.reps.toString()
+          : '';
     }
     if (oldWidget.set.durationSeconds != widget.set.durationSeconds &&
         !_durationController.selection.isValid) {
@@ -146,9 +148,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   }
 
   /// Adjust fields based on execution type (replaces old variant logic)
-  List<ExerciseField> _getFieldsForExecutionType(
-    String executionType,
-  ) {
+  List<ExerciseField> _getFieldsForExecutionType(String executionType) {
     // Get the configuration for the execution type
     final config = ExerciseTypeConfig.fromString(executionType);
     return config.requiredFields;
@@ -178,7 +178,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     // Use execution type to determine fields (replaces old variant logic)
     final fields = _getFieldsForExecutionType(exerciseTypeString);
     final config = ExerciseTypeConfig.fromString(exerciseTypeString);
-    
+
     // Debug: Log the fields that will be displayed
     if (widget.setNumber == 1 && widget.isFirstSet) {
       print('🎯 SetEntryWidget Fields for "${widget.exerciseName}":');
@@ -193,8 +193,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest
-                  .withAlpha((0.6 * 255).round()),
+              color: colorScheme.surfaceContainerHighest.withAlpha(
+                (0.6 * 255).round(),
+              ),
             ),
             child: Row(
               children: [
@@ -207,8 +208,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                       style: theme.textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: 10,
-                        color: colorScheme.onSurface
-                            .withAlpha((0.6 * 255).round()),
+                        color: colorScheme.onSurface.withAlpha(
+                          (0.6 * 255).round(),
+                        ),
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -224,8 +226,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                     style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 10,
-                      color:
-                          colorScheme.onSurface.withAlpha((0.6 * 255).round()),
+                      color: colorScheme.onSurface.withAlpha(
+                        (0.6 * 255).round(),
+                      ),
                       letterSpacing: 0.5,
                     ),
                     textAlign: TextAlign.center,
@@ -244,8 +247,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                             style: theme.textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               fontSize: 10,
-                              color: colorScheme.onSurface
-                                  .withAlpha((0.6 * 255).round()),
+                              color: colorScheme.onSurface.withAlpha(
+                                (0.6 * 255).round(),
+                              ),
                               letterSpacing: 0.5,
                             ),
                             textAlign: TextAlign.center,
@@ -276,9 +280,10 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
             color: isCompleted
                 ? colorScheme.primary.withAlpha((0.12 * 255).round())
                 : (widget.setNumber % 2 == 0
-                    ? colorScheme.surfaceContainerHighest
-                        .withAlpha((0.3 * 255).round())
-                    : Colors.transparent),
+                      ? colorScheme.surfaceContainerHighest.withAlpha(
+                          (0.3 * 255).round(),
+                        )
+                      : Colors.transparent),
             border: Border(
               bottom: BorderSide(
                 color: colorScheme.outline.withAlpha((0.1 * 255).round()),
@@ -343,8 +348,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                           decoration: BoxDecoration(
                             color: isCompleted
                                 ? colorScheme.primary
-                                : colorScheme.surfaceContainerHighest
-                                    .withAlpha((0.8 * 255).round()),
+                                : colorScheme.surfaceContainerHighest.withAlpha(
+                                    (0.8 * 255).round(),
+                                  ),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Center(
@@ -371,8 +377,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                   height: 36,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest
-                        .withAlpha((0.4 * 255).round()),
+                    color: colorScheme.surfaceContainerHighest.withAlpha(
+                      (0.4 * 255).round(),
+                    ),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Center(
@@ -381,8 +388,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                             _formatPreviousSet(widget.previousSet!, config),
                             style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w500,
-                              color: colorScheme.onSurface
-                                  .withAlpha((0.5 * 255).round()),
+                              color: colorScheme.onSurface.withAlpha(
+                                (0.5 * 255).round(),
+                              ),
                               fontSize: 13,
                             ),
                             textAlign: TextAlign.center,
@@ -390,8 +398,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                         : Text(
                             '—',
                             style: TextStyle(
-                              color: colorScheme.onSurface
-                                  .withAlpha((0.3 * 255).round()),
+                              color: colorScheme.onSurface.withAlpha(
+                                (0.3 * 255).round(),
+                              ),
                               fontSize: 13,
                             ),
                           ),
@@ -431,8 +440,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
                     isCompleted
                         ? Icons.check_circle_rounded
                         : Icons.radio_button_unchecked_rounded,
-                    color:
-                        isCompleted ? colorScheme.primary : colorScheme.outline,
+                    color: isCompleted
+                        ? colorScheme.primary
+                        : colorScheme.outline,
                     size: 28,
                   ),
                 ),
@@ -486,132 +496,132 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
   }
 
   Widget _buildWeightInput(ColorScheme colorScheme) => SizedBox(
-        height: 36,
-        child: TextField(
-          controller: _weightController,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-          ],
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          decoration: _inputDecoration(colorScheme, 'kg'),
-          onTap: () => _weightController.selection = TextSelection(
-            baseOffset: 0,
-            extentOffset: _weightController.text.length,
-          ),
-          onChanged: (value) {
-            final weight = value.isEmpty ? null : double.tryParse(value);
-            _updateSet(weight: weight);
-          },
-        ),
-      );
+    height: 36,
+    child: TextField(
+      controller: _weightController,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+      ],
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      decoration: _inputDecoration(colorScheme, 'kg'),
+      onTap: () => _weightController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _weightController.text.length,
+      ),
+      onChanged: (value) {
+        final weight = value.isEmpty ? null : double.tryParse(value);
+        _updateSet(weight: weight);
+      },
+    ),
+  );
 
   Widget _buildRepsInput(ColorScheme colorScheme) => SizedBox(
-        height: 36,
-        child: TextField(
-          controller: _repsController,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          decoration: _inputDecoration(colorScheme, 'reps'),
-          onTap: () => _repsController.selection = TextSelection(
-            baseOffset: 0,
-            extentOffset: _repsController.text.length,
-          ),
-          onChanged: (value) {
-            final reps = value.isEmpty ? 0 : (int.tryParse(value) ?? 0);
-            _updateSet(reps: reps);
-          },
-        ),
-      );
+    height: 36,
+    child: TextField(
+      controller: _repsController,
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      decoration: _inputDecoration(colorScheme, 'reps'),
+      onTap: () => _repsController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _repsController.text.length,
+      ),
+      onChanged: (value) {
+        final reps = value.isEmpty ? 0 : (int.tryParse(value) ?? 0);
+        _updateSet(reps: reps);
+      },
+    ),
+  );
 
   Widget _buildDurationInput(ColorScheme colorScheme) => SizedBox(
-        height: 36,
-        child: TextField(
-          controller: _durationController,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          decoration: _inputDecoration(colorScheme, 'secs'),
-          onTap: () => _durationController.selection = TextSelection(
-            baseOffset: 0,
-            extentOffset: _durationController.text.length,
-          ),
-          onChanged: (value) {
-            final secs = value.isEmpty ? null : int.tryParse(value);
-            _updateSet(durationSeconds: secs);
-          },
-        ),
-      );
+    height: 36,
+    child: TextField(
+      controller: _durationController,
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      decoration: _inputDecoration(colorScheme, 'secs'),
+      onTap: () => _durationController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _durationController.text.length,
+      ),
+      onChanged: (value) {
+        final secs = value.isEmpty ? null : int.tryParse(value);
+        _updateSet(durationSeconds: secs);
+      },
+    ),
+  );
 
   Widget _buildDistanceInput(ColorScheme colorScheme) => SizedBox(
-        height: 36,
-        child: TextField(
-          controller: _distanceController,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-          ],
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          decoration: _inputDecoration(colorScheme, 'm'),
-          onTap: () => _distanceController.selection = TextSelection(
-            baseOffset: 0,
-            extentOffset: _distanceController.text.length,
-          ),
-          onChanged: (value) {
-            final distance = value.isEmpty ? null : double.tryParse(value);
-            _updateSet(distance: distance);
-          },
-        ),
-      );
+    height: 36,
+    child: TextField(
+      controller: _distanceController,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+      ],
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      decoration: _inputDecoration(colorScheme, 'm'),
+      onTap: () => _distanceController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _distanceController.text.length,
+      ),
+      onChanged: (value) {
+        final distance = value.isEmpty ? null : double.tryParse(value);
+        _updateSet(distance: distance);
+      },
+    ),
+  );
 
   Widget _buildAssistedWeightInput(ColorScheme colorScheme) => SizedBox(
-        height: 36,
-        child: TextField(
-          controller: _assistanceWeightController,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-          ],
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          decoration: _inputDecoration(colorScheme, '-kg'),
-          onTap: () => _assistanceWeightController.selection = TextSelection(
-            baseOffset: 0,
-            extentOffset: _assistanceWeightController.text.length,
-          ),
-          onChanged: (value) {
-            final assistWeight = value.isEmpty ? null : double.tryParse(value);
-            _updateSet(assistanceWeight: assistWeight);
-          },
-        ),
-      );
+    height: 36,
+    child: TextField(
+      controller: _assistanceWeightController,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+      ],
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      decoration: _inputDecoration(colorScheme, '-kg'),
+      onTap: () => _assistanceWeightController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _assistanceWeightController.text.length,
+      ),
+      onChanged: (value) {
+        final assistWeight = value.isEmpty ? null : double.tryParse(value);
+        _updateSet(assistanceWeight: assistWeight);
+      },
+    ),
+  );
 
   Widget _buildAddedWeightInput(ColorScheme colorScheme) => SizedBox(
-        height: 36,
-        child: TextField(
-          controller: _addedWeightController,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-          ],
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          decoration: _inputDecoration(colorScheme, '+kg'),
-          onTap: () => _addedWeightController.selection = TextSelection(
-            baseOffset: 0,
-            extentOffset: _addedWeightController.text.length,
-          ),
-          onChanged: (value) {
-            final added = value.isEmpty ? null : double.tryParse(value);
-            _updateSet(addedWeight: added);
-          },
-        ),
-      );
+    height: 36,
+    child: TextField(
+      controller: _addedWeightController,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+      ],
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      decoration: _inputDecoration(colorScheme, '+kg'),
+      onTap: () => _addedWeightController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _addedWeightController.text.length,
+      ),
+      onChanged: (value) {
+        final added = value.isEmpty ? null : double.tryParse(value);
+        _updateSet(addedWeight: added);
+      },
+    ),
+  );
 
   /// Common input decoration
   InputDecoration _inputDecoration(ColorScheme colorScheme, String hint) =>
@@ -637,10 +647,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(
-            color: colorScheme.primary,
-            width: 1.5,
-          ),
+          borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
         ),
         isDense: true,
       );
@@ -696,7 +703,9 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     final liveActivityService = ref.read(liveActivityServiceProvider);
 
     // Start rest timer with the exercise's configured duration and context
-    ref.read(restTimerProvider.notifier).startTimer(
+    ref
+        .read(restTimerProvider.notifier)
+        .startTimer(
           widget.restTimerSeconds,
           exerciseName: widget.exerciseName,
           currentSet: widget.setNumber,

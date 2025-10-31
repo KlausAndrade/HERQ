@@ -13,7 +13,9 @@ void main() {
       final now = DateTime.now();
 
       // Insert workout session
-      await db.into(db.workoutSessions).insert(
+      await db
+          .into(db.workoutSessions)
+          .insert(
             WorkoutSessionsCompanion.insert(
               id: sessionId,
               userId: 'test_user', // ✅ USER ISOLATION
@@ -24,7 +26,9 @@ void main() {
           );
 
       // Insert two set entries in same week
-      await db.into(db.setEntries).insert(
+      await db
+          .into(db.setEntries)
+          .insert(
             SetEntriesCompanion.insert(
               id: const Uuid().v4(),
               userId: 'test_user', // ✅ USER ISOLATION
@@ -37,7 +41,9 @@ void main() {
             ),
           );
 
-      await db.into(db.setEntries).insert(
+      await db
+          .into(db.setEntries)
+          .insert(
             SetEntriesCompanion.insert(
               id: const Uuid().v4(),
               userId: 'test_user', // ✅ USER ISOLATION

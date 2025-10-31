@@ -15,8 +15,10 @@ final workoutSyncServiceProvider = Provider<WorkoutSyncService?>((ref) {
 });
 
 /// Auto-sync provider - triggers sync when workout is completed
-final autoSyncProvider =
-    FutureProvider.family<void, String>((ref, userId) async {
+final autoSyncProvider = FutureProvider.family<void, String>((
+  ref,
+  userId,
+) async {
   final syncService = ref.watch(workoutSyncServiceProvider);
 
   if (syncService == null) {

@@ -13,9 +13,9 @@ class WorkoutSyncService {
       print('📤 Syncing user stats to Supabase for user: $userId');
 
       // Get local stats
-      final localStats = await (_db.select(_db.userStats)
-            ..where((s) => s.userId.equals(userId)))
-          .getSingleOrNull();
+      final localStats = await (_db.select(
+        _db.userStats,
+      )..where((s) => s.userId.equals(userId))).getSingleOrNull();
       if (localStats == null) {
         print('  ⚠️ No local stats found, skipping sync');
         return;

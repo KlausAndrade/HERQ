@@ -57,8 +57,7 @@ class WebStorageService {
   /// Store workout sessions
   static Future<bool> saveWorkoutSessions(
     List<Map<String, dynamic>> sessions,
-  ) async =>
-      _saveJson(_workoutSessionsKey, sessions);
+  ) async => _saveJson(_workoutSessionsKey, sessions);
 
   /// Retrieve workout sessions
   static Future<List<Map<String, dynamic>>> getWorkoutSessions() async {
@@ -69,8 +68,7 @@ class WebStorageService {
   /// Store exercises
   static Future<bool> saveExercises(
     List<Map<String, dynamic>> exercises,
-  ) async =>
-      _saveJson(_exercisesKey, exercises);
+  ) async => _saveJson(_exercisesKey, exercises);
 
   /// Retrieve exercises
   static Future<List<Map<String, dynamic>>> getExercises() async {
@@ -81,8 +79,7 @@ class WebStorageService {
   /// Store workout templates
   static Future<bool> saveTemplates(
     List<Map<String, dynamic>> templates,
-  ) async =>
-      _saveJson(_templatesKey, templates);
+  ) async => _saveJson(_templatesKey, templates);
 
   /// Retrieve workout templates
   static Future<List<Map<String, dynamic>>> getTemplates() async {
@@ -93,8 +90,7 @@ class WebStorageService {
   /// Store user preferences
   static Future<bool> saveUserPreferences(
     Map<String, dynamic> preferences,
-  ) async =>
-      _saveJson(_userPreferencesKey, preferences);
+  ) async => _saveJson(_userPreferencesKey, preferences);
 
   /// Retrieve user preferences
   static Future<Map<String, dynamic>> getUserPreferences() async {
@@ -105,8 +101,7 @@ class WebStorageService {
   /// Store personal records
   static Future<bool> savePersonalRecords(
     List<Map<String, dynamic>> records,
-  ) async =>
-      _saveJson(_personalRecordsKey, records);
+  ) async => _saveJson(_personalRecordsKey, records);
 
   /// Retrieve personal records
   static Future<List<Map<String, dynamic>>> getPersonalRecords() async {

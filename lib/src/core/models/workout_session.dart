@@ -20,9 +20,4 @@ class WorkoutSessions extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-enum WorkoutStatus {
-  notStarted,
-  inProgress,
-  completed,
-  cancelled,
-}
+enum WorkoutStatus { notStarted, inProgress, completed, cancelled }

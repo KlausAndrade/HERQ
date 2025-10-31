@@ -39,7 +39,8 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
     final estimatedDuration = _parseInt(workoutData['estimatedDuration']) ?? 60;
     final exercises = workoutData['exercises'] as List<dynamic>? ?? [];
     final difficulty = workoutData['difficulty'] as String? ?? 'intermediate';
-    final targetMuscleGroups = workoutData['targetMuscleGroups'] as List<dynamic>? ?? [];
+    final targetMuscleGroups =
+        workoutData['targetMuscleGroups'] as List<dynamic>? ?? [];
     final reasoning = workoutData['reasoning'] as String? ?? '';
     final confidence = (workoutData['confidence'] as num?)?.toDouble() ?? 0.8;
 
@@ -59,8 +60,9 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: _getDifficultyColor(difficulty)
-                    .withAlpha((0.2 * 255).round()),
+                color: _getDifficultyColor(
+                  difficulty,
+                ).withAlpha((0.2 * 255).round()),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -73,43 +75,44 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
               ),
             ),
             const SizedBox(height: 6),
-            
+
             // Title (no truncation)
             Text(
               name,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            
+
             // Description
             if (description.isNotEmpty) ...[
               const SizedBox(height: 4),
               Text(
                 description,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            
+
             const SizedBox(height: 8),
-            
+
             // Metadata row
             Wrap(
               spacing: 4,
               runSpacing: 2,
               children: [
                 _buildMetadataChip(Icons.schedule, '${estimatedDuration}min'),
-                _buildMetadataChip(Icons.fitness_center, '${exercises.length} exercises'),
-                _buildMetadataChip(Icons.psychology, '${(confidence * 100).round()}% match', Colors.green),
+                _buildMetadataChip(
+                  Icons.fitness_center,
+                  '${exercises.length} exercises',
+                ),
+                _buildMetadataChip(
+                  Icons.psychology,
+                  '${(confidence * 100).round()}% match',
+                  Colors.green,
+                ),
               ],
             ),
-            
+
             // Target muscle groups
             if (targetMuscleGroups.isNotEmpty) ...[
               const SizedBox(height: 6),
@@ -124,7 +127,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            
+
             // Groq reasoning (no truncation)
             if (reasoning.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -154,22 +157,21 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
                 ),
               ),
             ],
-            
+
             const SizedBox(height: 12),
-            
+
             // All exercises (no hiding)
             Text(
               'Exercises (${exercises.length}):',
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
             ),
             const SizedBox(height: 6),
-            ...exercises.map((exercise) => _buildCompactExerciseItem(context, exercise)),
-            
+            ...exercises.map(
+              (exercise) => _buildCompactExerciseItem(context, exercise),
+            ),
+
             const SizedBox(height: 12),
-            
+
             // Action buttons
             Row(
               children: [
@@ -179,7 +181,10 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
-                    child: Text(S.of(context)!.saveAsTemplate, style: const TextStyle(fontSize: 12)),
+                    child: Text(
+                      S.of(context)!.saveAsTemplate,
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -189,7 +194,10 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
-                    child: Text(S.of(context)!.startWorkout, style: const TextStyle(fontSize: 12)),
+                    child: Text(
+                      S.of(context)!.startWorkout,
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   ),
                 ),
               ],
@@ -239,7 +247,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
       final firstSet = sets.first;
       final weight = firstSet['weight'] as num? ?? 0;
       final reps = firstSet['reps'] as num? ?? 0;
-      
+
       if (exerciseType == 'weightReps' && weight > 0) {
         weightRepsInfo = '${weight}kg × ${reps} reps';
       } else if (exerciseType == 'bodyweightReps') {
@@ -258,7 +266,9 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +297,10 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
               ),
               if (equipmentUsed.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 1,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.blue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(4),
@@ -318,7 +331,9 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
             Text(
               notes,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withOpacity(0.7),
                 fontSize: 9,
                 fontStyle: FontStyle.italic,
               ),
@@ -330,7 +345,6 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
       ),
     );
   }
-
 
   String _formatRestTime(int seconds) {
     if (seconds == 0) return 'No rest';
@@ -358,7 +372,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
     try {
       // Create a workout template from the generated workout
       final templateId = 'ai_gen_${DateTime.now().millisecondsSinceEpoch}';
-      
+
       // Extract exercise IDs safely
       final exercises = workoutData['exercises'] as List<dynamic>? ?? [];
       print('🔍 _saveAsTemplate - Raw exercises: ${exercises.length}');
@@ -366,26 +380,30 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
         final exercise = exercises[i];
         print('🔍 Exercise $i: id=${exercise['id']}, name=${exercise['name']}');
       }
-      
+
       final exerciseIds = exercises
           .map((e) => e['id'] as String? ?? e['exerciseId'] as String? ?? '')
           .where((id) => id.isNotEmpty)
           .toList();
-      
+
       print('🔍 _saveAsTemplate - Extracted exerciseIds: $exerciseIds');
-      print('🔍 _saveAsTemplate - Unique exerciseIds: ${exerciseIds.toSet().toList()}');
-      
+      print(
+        '🔍 _saveAsTemplate - Unique exerciseIds: ${exerciseIds.toSet().toList()}',
+      );
+
       // Ensure unique exercise IDs to prevent duplicates
       final uniqueExerciseIds = exerciseIds.toSet().toList();
-      print('🔍 _saveAsTemplate - Using unique exerciseIds: $uniqueExerciseIds');
-      
+      print(
+        '🔍 _saveAsTemplate - Using unique exerciseIds: $uniqueExerciseIds',
+      );
+
       // Validate that exercise IDs exist in database
       final database = ref.read(databaseProvider);
       if (database != null) {
         final allExercises = await database.select(database.exercises).get();
         final validExerciseIds = <String>[];
         final invalidExerciseIds = <String>[];
-        
+
         for (final exerciseId in uniqueExerciseIds) {
           final exerciseExists = allExercises.any((e) => e.id == exerciseId);
           if (exerciseExists) {
@@ -394,32 +412,42 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
             invalidExerciseIds.add(exerciseId);
           }
         }
-        
+
         print('🔍 _saveAsTemplate - Valid exerciseIds: $validExerciseIds');
         print('🔍 _saveAsTemplate - Invalid exerciseIds: $invalidExerciseIds');
-        
+
         if (invalidExerciseIds.isNotEmpty) {
-          print('⚠️ _saveAsTemplate - Some exercise IDs from AI do not exist in database!');
+          print(
+            '⚠️ _saveAsTemplate - Some exercise IDs from AI do not exist in database!',
+          );
         }
-        
+
         // Use only valid exercise IDs
         if (validExerciseIds.isNotEmpty) {
           uniqueExerciseIds.clear();
           uniqueExerciseIds.addAll(validExerciseIds);
-          print('🔍 _saveAsTemplate - Using only valid exerciseIds: $uniqueExerciseIds');
+          print(
+            '🔍 _saveAsTemplate - Using only valid exerciseIds: $uniqueExerciseIds',
+          );
         }
       }
-      
+
       final template = WorkoutTemplate(
         id: templateId,
-        userId: isAdminMode ? null : 'default_user', // Admin mode = system-wide, User mode = user-specific
-        name: workoutData['name'] as String? ?? S.of(context)!.aiGeneratedWorkoutCreated,
+        userId: isAdminMode
+            ? null
+            : 'default_user', // Admin mode = system-wide, User mode = user-specific
+        name:
+            workoutData['name'] as String? ??
+            S.of(context)!.aiGeneratedWorkoutCreated,
         description: workoutData['description'] as String? ?? '',
-        category: workoutData['category'] as String? ?? S.of(context)!.aiGenerated,
+        category:
+            workoutData['category'] as String? ?? S.of(context)!.aiGenerated,
         sortOrder: 0,
         exerciseIds: uniqueExerciseIds,
         tags: ['ai_generated'],
-        estimatedDurationMinutes: _parseInt(workoutData['estimatedDuration']) ?? 60,
+        estimatedDurationMinutes:
+            _parseInt(workoutData['estimatedDuration']) ?? 60,
         isDefault: false,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -465,7 +493,7 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
     try {
       // Create a workout template first
       final templateId = 'ai_gen_${DateTime.now().millisecondsSinceEpoch}';
-      
+
       // Extract exercise IDs safely
       final exercises = workoutData['exercises'] as List<dynamic>? ?? [];
       print('🔍 _startWorkout - Raw exercises: ${exercises.length}');
@@ -473,26 +501,28 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
         final exercise = exercises[i];
         print('🔍 Exercise $i: id=${exercise['id']}, name=${exercise['name']}');
       }
-      
+
       final exerciseIds = exercises
           .map((e) => e['id'] as String? ?? e['exerciseId'] as String? ?? '')
           .where((id) => id.isNotEmpty)
           .toList();
-      
+
       print('🔍 _startWorkout - Extracted exerciseIds: $exerciseIds');
-      print('🔍 _startWorkout - Unique exerciseIds: ${exerciseIds.toSet().toList()}');
-      
+      print(
+        '🔍 _startWorkout - Unique exerciseIds: ${exerciseIds.toSet().toList()}',
+      );
+
       // Ensure unique exercise IDs to prevent duplicates
       final uniqueExerciseIds = exerciseIds.toSet().toList();
       print('🔍 _startWorkout - Using unique exerciseIds: $uniqueExerciseIds');
-      
+
       // Validate that exercise IDs exist in database
       final database = ref.read(databaseProvider);
       if (database != null) {
         final allExercises = await database.select(database.exercises).get();
         final validExerciseIds = <String>[];
         final invalidExerciseIds = <String>[];
-        
+
         for (final exerciseId in uniqueExerciseIds) {
           final exerciseExists = allExercises.any((e) => e.id == exerciseId);
           if (exerciseExists) {
@@ -501,25 +531,33 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
             invalidExerciseIds.add(exerciseId);
           }
         }
-        
+
         print('🔍 _startWorkout - Valid exerciseIds: $validExerciseIds');
         print('🔍 _startWorkout - Invalid exerciseIds: $invalidExerciseIds');
-        
+
         if (invalidExerciseIds.isNotEmpty) {
-          print('⚠️ _startWorkout - Some exercise IDs from AI do not exist in database!');
-          print('⚠️ Available exercise IDs: ${allExercises.map((e) => e.id).take(10).toList()}');
+          print(
+            '⚠️ _startWorkout - Some exercise IDs from AI do not exist in database!',
+          );
+          print(
+            '⚠️ Available exercise IDs: ${allExercises.map((e) => e.id).take(10).toList()}',
+          );
         }
-        
+
         // Use only valid exercise IDs
         if (validExerciseIds.isNotEmpty) {
           uniqueExerciseIds.clear();
           uniqueExerciseIds.addAll(validExerciseIds);
-          print('🔍 _startWorkout - Using only valid exerciseIds: $uniqueExerciseIds');
+          print(
+            '🔍 _startWorkout - Using only valid exerciseIds: $uniqueExerciseIds',
+          );
         } else {
           // If no valid exercise IDs, try to find similar exercises by name
-          print('🔍 _startWorkout - No valid exercise IDs found, trying to find similar exercises by name');
+          print(
+            '🔍 _startWorkout - No valid exercise IDs found, trying to find similar exercises by name',
+          );
           final fallbackExerciseIds = <String>[];
-          
+
           for (final exercise in exercises) {
             final exerciseName = exercise['name'] as String? ?? '';
             if (exerciseName.isNotEmpty) {
@@ -531,11 +569,13 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
               fallbackExerciseIds.add(matchingExercise.id);
             }
           }
-          
+
           if (fallbackExerciseIds.isNotEmpty) {
             uniqueExerciseIds.clear();
             uniqueExerciseIds.addAll(fallbackExerciseIds);
-            print('🔍 _startWorkout - Using fallback exerciseIds: $uniqueExerciseIds');
+            print(
+              '🔍 _startWorkout - Using fallback exerciseIds: $uniqueExerciseIds',
+            );
           } else {
             // If still no valid exercise IDs, show error and return
             if (context.mounted) {
@@ -543,7 +583,8 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
                   .showInAppNotification(
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     title: 'Invalid AI Workout',
-                    body: 'AI generated invalid exercise IDs. Please try again.',
+                    body:
+                        'AI generated invalid exercise IDs. Please try again.',
                   )
                   .catchError((_) {});
             }
@@ -551,17 +592,23 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
           }
         }
       }
-      
+
       final template = WorkoutTemplate(
         id: templateId,
-        userId: isAdminMode ? null : 'default_user', // Admin mode = system-wide, User mode = user-specific
-        name: workoutData['name'] as String? ?? S.of(context)!.aiGeneratedWorkoutCreated,
+        userId: isAdminMode
+            ? null
+            : 'default_user', // Admin mode = system-wide, User mode = user-specific
+        name:
+            workoutData['name'] as String? ??
+            S.of(context)!.aiGeneratedWorkoutCreated,
         description: workoutData['description'] as String? ?? '',
-        category: workoutData['category'] as String? ?? S.of(context)!.aiGenerated,
+        category:
+            workoutData['category'] as String? ?? S.of(context)!.aiGenerated,
         sortOrder: 0,
         exerciseIds: uniqueExerciseIds,
         tags: ['ai_generated'],
-        estimatedDurationMinutes: _parseInt(workoutData['estimatedDuration']) ?? 60,
+        estimatedDurationMinutes:
+            _parseInt(workoutData['estimatedDuration']) ?? 60,
         isDefault: false,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -572,10 +619,12 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
       final success = await templateActions.createTemplate(template);
 
       if (success && context.mounted) {
-        print('🔍 _startWorkout - Template created successfully, navigating to active workout');
+        print(
+          '🔍 _startWorkout - Template created successfully, navigating to active workout',
+        );
         print('🔍 _startWorkout - Template ID: $templateId');
         print('🔍 _startWorkout - Valid exercise IDs: $uniqueExerciseIds');
-        
+
         NotificationService()
             .showInAppNotification(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -585,7 +634,9 @@ class GeneratedWorkoutCard extends HookConsumerWidget {
             .catchError((_) {});
 
         // Navigate to active workout
-        print('🔍 _startWorkout - Navigating to: /active-workout?templateId=$templateId');
+        print(
+          '🔍 _startWorkout - Navigating to: /active-workout?templateId=$templateId',
+        );
         context.go('/active-workout?templateId=$templateId');
         onStart?.call();
       } else if (context.mounted) {

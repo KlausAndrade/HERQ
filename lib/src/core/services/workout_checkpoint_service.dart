@@ -69,7 +69,9 @@ class WorkoutCheckpointService {
     try {
       final workoutJson = jsonEncode(workout.toJson());
 
-      await database.into(database.workoutCheckpoints).insertOnConflictUpdate(
+      await database
+          .into(database.workoutCheckpoints)
+          .insertOnConflictUpdate(
             WorkoutCheckpointsCompanion.insert(
               id: workout.id,
               workoutName: workout.name,
@@ -92,10 +94,11 @@ class WorkoutCheckpointService {
   /// Get the latest saved checkpoint with metadata
   Future<CheckpointData?> getLatestCheckpoint() async {
     try {
-      final checkpoint = await (database.select(database.workoutCheckpoints)
-            ..orderBy([(t) => OrderingTerm.desc(t.lastSavedAt)])
-            ..limit(1))
-          .getSingleOrNull();
+      final checkpoint =
+          await (database.select(database.workoutCheckpoints)
+                ..orderBy([(t) => OrderingTerm.desc(t.lastSavedAt)])
+                ..limit(1))
+              .getSingleOrNull();
 
       if (checkpoint == null) return null;
 
@@ -127,9 +130,9 @@ class WorkoutCheckpointService {
   /// Internal delete method
   Future<void> _deleteCheckpoint(String checkpointId) async {
     try {
-      await (database.delete(database.workoutCheckpoints)
-            ..where((t) => t.id.equals(checkpointId)))
-          .go();
+      await (database.delete(
+        database.workoutCheckpoints,
+      )..where((t) => t.id.equals(checkpointId))).go();
     } catch (e) {
       print('❌ Failed to delete checkpoint: $e');
     }
@@ -139,9 +142,9 @@ class WorkoutCheckpointService {
   Future<void> cleanupOldCheckpoints() async {
     try {
       final cutoffDate = DateTime.now().subtract(const Duration(days: 7));
-      await (database.delete(database.workoutCheckpoints)
-            ..where((t) => t.lastSavedAt.isSmallerThanValue(cutoffDate)))
-          .go();
+      await (database.delete(
+        database.workoutCheckpoints,
+      )..where((t) => t.lastSavedAt.isSmallerThanValue(cutoffDate))).go();
       print('🧹 Old checkpoints cleaned up');
     } catch (e) {
       print('❌ Failed to cleanup checkpoints: $e');

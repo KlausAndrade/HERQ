@@ -56,122 +56,119 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        beforeOpen: (details) async {
-          await customStatement('PRAGMA foreign_keys = ON');
-        },
-        onCreate: (migrator) async {
-          await migrator.createAll();
-          await _insertDefaultData();
-        },
-        onUpgrade: (migrator, from, to) async {
-          if (to == 17) {
-            try {
-              // Add userId column to exercises table for user isolation
-              await customStatement(
-                'ALTER TABLE exercises ADD COLUMN user_id TEXT',
-              );
-              
-              // All existing exercises are global (admin-created), so set userId to NULL
-              // This means they'll be visible to all users
-              await customStatement(
-                "UPDATE exercises SET user_id = NULL WHERE user_id IS NULL",
-              );
-            } catch (e) {
-              // Column may already exist, ignore error
-              print('Migration 17 error (may be expected): $e');
-            }
-          }
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+    onCreate: (migrator) async {
+      await migrator.createAll();
+      await _insertDefaultData();
+    },
+    onUpgrade: (migrator, from, to) async {
+      if (to == 17) {
+        try {
+          // Add userId column to exercises table for user isolation
+          await customStatement(
+            'ALTER TABLE exercises ADD COLUMN user_id TEXT',
+          );
 
-          if (to == 16) {
-            try {
-              // Add userId columns for user isolation
-              await customStatement(
-                'ALTER TABLE workout_sessions ADD COLUMN user_id TEXT',
-              );
-              await customStatement(
-                'ALTER TABLE set_entries ADD COLUMN user_id TEXT',
-              );
-              await customStatement(
-                'ALTER TABLE workout_templates ADD COLUMN user_id TEXT',
-              );
-              await customStatement(
-                'ALTER TABLE personal_records ADD COLUMN user_id TEXT',
-              );
+          // All existing exercises are global (admin-created), so set userId to NULL
+          // This means they'll be visible to all users
+          await customStatement(
+            "UPDATE exercises SET user_id = NULL WHERE user_id IS NULL",
+          );
+        } catch (e) {
+          // Column may already exist, ignore error
+          print('Migration 17 error (may be expected): $e');
+        }
+      }
 
-              // Set default userId for existing data (will be updated by current user)
-              await customStatement(
-                "UPDATE workout_sessions SET user_id = 'default_user' WHERE user_id IS NULL",
-              );
-              await customStatement(
-                "UPDATE set_entries SET user_id = 'default_user' WHERE user_id IS NULL",
-              );
-              await customStatement(
-                "UPDATE workout_templates SET user_id = 'default_user' WHERE user_id IS NULL",
-              );
-              await customStatement(
-                "UPDATE personal_records SET user_id = 'default_user' WHERE user_id IS NULL",
-              );
-            } catch (e) {
-              print('Migration 16 error: $e');
-            }
-          }
+      if (to == 16) {
+        try {
+          // Add userId columns for user isolation
+          await customStatement(
+            'ALTER TABLE workout_sessions ADD COLUMN user_id TEXT',
+          );
+          await customStatement(
+            'ALTER TABLE set_entries ADD COLUMN user_id TEXT',
+          );
+          await customStatement(
+            'ALTER TABLE workout_templates ADD COLUMN user_id TEXT',
+          );
+          await customStatement(
+            'ALTER TABLE personal_records ADD COLUMN user_id TEXT',
+          );
 
-          if (to == 13) {
-            try {
-              await customStatement(
-                'ALTER TABLE exercises ADD COLUMN aliases TEXT',
-              );
-            } catch (e) {}
-          }
-          if (to == 12) {
-            await customStatement(
-              'UPDATE workout_templates SET exercise_ids = \'\' WHERE exercise_ids IS NULL',
-            );
-          } else if (to == 11) {
-            await migrator.createTable(workoutCheckpoints);
-          } else if (to == 10) {
-            await migrator.createTable(templateFolders);
-            await migrator.addColumn(
-              workoutTemplates,
-              workoutTemplates.folderId,
-            );
-          } else if (to == 9) {
-            await migrator.createTable(posts);
-            await migrator.createTable(postLikes);
-            await migrator.createTable(postComments);
-            await migrator.createTable(userFollows);
-          } else if (to == 8) {
-            await migrator.createTable(userAchievements);
-            await migrator.createTable(userStats);
-          } else if (to == 7) {
-            await migrator.createTable(exerciseFavorites);
-          } else if (to == 6) {
-            await migrator.deleteTable('exercises');
-            await migrator.deleteTable('set_entries');
-            await migrator.deleteTable('workout_templates');
-            await migrator.deleteTable('workout_sessions');
-            await migrator.deleteTable('personal_records');
+          // Set default userId for existing data (will be updated by current user)
+          await customStatement(
+            "UPDATE workout_sessions SET user_id = 'default_user' WHERE user_id IS NULL",
+          );
+          await customStatement(
+            "UPDATE set_entries SET user_id = 'default_user' WHERE user_id IS NULL",
+          );
+          await customStatement(
+            "UPDATE workout_templates SET user_id = 'default_user' WHERE user_id IS NULL",
+          );
+          await customStatement(
+            "UPDATE personal_records SET user_id = 'default_user' WHERE user_id IS NULL",
+          );
+        } catch (e) {
+          print('Migration 16 error: $e');
+        }
+      }
 
-            await migrator.createTable(exercises);
-            await migrator.createTable(setEntries);
-            await migrator.createTable(workoutTemplates);
-            await migrator.createTable(workoutSessions);
-            await migrator.createTable(personalRecords);
+      if (to == 13) {
+        try {
+          await customStatement(
+            'ALTER TABLE exercises ADD COLUMN aliases TEXT',
+          );
+        } catch (e) {}
+      }
+      if (to == 12) {
+        await customStatement(
+          'UPDATE workout_templates SET exercise_ids = \'\' WHERE exercise_ids IS NULL',
+        );
+      } else if (to == 11) {
+        await migrator.createTable(workoutCheckpoints);
+      } else if (to == 10) {
+        await migrator.createTable(templateFolders);
+        await migrator.addColumn(workoutTemplates, workoutTemplates.folderId);
+      } else if (to == 9) {
+        await migrator.createTable(posts);
+        await migrator.createTable(postLikes);
+        await migrator.createTable(postComments);
+        await migrator.createTable(userFollows);
+      } else if (to == 8) {
+        await migrator.createTable(userAchievements);
+        await migrator.createTable(userStats);
+      } else if (to == 7) {
+        await migrator.createTable(exerciseFavorites);
+      } else if (to == 6) {
+        await migrator.deleteTable('exercises');
+        await migrator.deleteTable('set_entries');
+        await migrator.deleteTable('workout_templates');
+        await migrator.deleteTable('workout_sessions');
+        await migrator.deleteTable('personal_records');
 
-            await _insertDefaultData();
-          } else if (to == 5) {
-            await migrator.deleteTable('exercises');
-            await migrator.deleteTable('set_entries');
-            await migrator.deleteTable('workout_templates');
+        await migrator.createTable(exercises);
+        await migrator.createTable(setEntries);
+        await migrator.createTable(workoutTemplates);
+        await migrator.createTable(workoutSessions);
+        await migrator.createTable(personalRecords);
 
-            await migrator.createTable(exercises);
-            await migrator.createTable(setEntries);
-            await migrator.createTable(workoutTemplates);
+        await _insertDefaultData();
+      } else if (to == 5) {
+        await migrator.deleteTable('exercises');
+        await migrator.deleteTable('set_entries');
+        await migrator.deleteTable('workout_templates');
 
-            await _insertDefaultData();
-          }
-        },
-      );
+        await migrator.createTable(exercises);
+        await migrator.createTable(setEntries);
+        await migrator.createTable(workoutTemplates);
+
+        await _insertDefaultData();
+      }
+    },
+  );
 
   Future<void> forceRepopulateExercises() async {
     await delete(exercises).go();
@@ -191,15 +188,15 @@ class AppDatabase extends _$AppDatabase {
 }
 
 LazyDatabase _openConnection() => LazyDatabase(() async {
-      final dbFolder = await getApplicationDocumentsDirectory();
-      final file = File(p.join(dbFolder.path, 'herq.db'));
+  final dbFolder = await getApplicationDocumentsDirectory();
+  final file = File(p.join(dbFolder.path, 'herq.db'));
 
-      if (Platform.isAndroid) {
-        await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
-      }
+  if (Platform.isAndroid) {
+    await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
+  }
 
-      final cachebase = (await getTemporaryDirectory()).path;
-      sqlite3.tempDirectory = cachebase;
+  final cachebase = (await getTemporaryDirectory()).path;
+  sqlite3.tempDirectory = cachebase;
 
-      return NativeDatabase.createInBackground(file);
-    });
+  return NativeDatabase.createInBackground(file);
+});

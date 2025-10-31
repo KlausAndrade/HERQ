@@ -110,7 +110,7 @@ class AuthErrorHandler {
     final message = error.toString().toLowerCase();
 
     // Web-specific JSON decoding errors
-    if (message.contains('format exception') || 
+    if (message.contains('format exception') ||
         message.contains('unexpected character') ||
         message.contains('json') ||
         message.contains('type error')) {

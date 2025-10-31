@@ -41,7 +41,8 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
 
     if (!restTimer.isActive) return const SizedBox.shrink();
 
-    final progress = (restTimer.totalSeconds - restTimer.remainingSeconds) /
+    final progress =
+        (restTimer.totalSeconds - restTimer.remainingSeconds) /
         restTimer.totalSeconds;
     final minutes = restTimer.remainingSeconds ~/ 60;
     final seconds = restTimer.remainingSeconds % 60;
@@ -57,24 +58,20 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
           gradient: LinearGradient(
             colors: isAlmostDone
                 ? [
-                    Theme.of(context)
-                        .colorScheme
-                        .error
-                        .withAlpha((0.9 * 255).round()),
-                    Theme.of(context)
-                        .colorScheme
-                        .error
-                        .withAlpha((0.7 * 255).round()),
+                    Theme.of(
+                      context,
+                    ).colorScheme.error.withAlpha((0.9 * 255).round()),
+                    Theme.of(
+                      context,
+                    ).colorScheme.error.withAlpha((0.7 * 255).round()),
                   ]
                 : [
-                    Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withAlpha((0.9 * 255).round()),
-                    Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withAlpha((0.7 * 255).round()),
+                    Theme.of(
+                      context,
+                    ).colorScheme.primary.withAlpha((0.9 * 255).round()),
+                    Theme.of(
+                      context,
+                    ).colorScheme.primary.withAlpha((0.7 * 255).round()),
                   ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -82,10 +79,11 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: (isAlmostDone
-                      ? Theme.of(context).colorScheme.error
-                      : Theme.of(context).colorScheme.primary)
-                  .withAlpha((0.2 * 255).round()),
+              color:
+                  (isAlmostDone
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).colorScheme.primary)
+                      .withAlpha((0.2 * 255).round()),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -107,17 +105,14 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
                       CircularProgressIndicator(
                         value: progress,
                         strokeWidth: 3,
-                        backgroundColor:
-                            Colors.white.withAlpha((0.3 * 255).round()),
+                        backgroundColor: Colors.white.withAlpha(
+                          (0.3 * 255).round(),
+                        ),
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           Colors.white,
                         ),
                       ),
-                      const Icon(
-                        Icons.timer,
-                        color: Colors.white,
-                        size: 16,
-                      ),
+                      const Icon(Icons.timer, color: Colors.white, size: 16),
                     ],
                   ),
                 ),
@@ -133,20 +128,19 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
                       Text(
                         '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5,
-                              height: 1,
-                            ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          height: 1,
+                        ),
                       ),
                       const SizedBox(width: 6),
                       Text(
                         isAlmostDone ? 'Almost!' : 'Rest',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color:
-                                  Colors.white.withAlpha((0.8 * 255).round()),
-                              fontWeight: FontWeight.w500,
-                            ),
+                          color: Colors.white.withAlpha((0.8 * 255).round()),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
@@ -157,11 +151,7 @@ class _RestTimerWidgetState extends ConsumerState<RestTimerWidget>
                     await HapticService.lightImpact();
                     ref.read(restTimerProvider.notifier).stopTimer();
                   },
-                  icon: const Icon(
-                    Icons.close,
-                    color: Colors.white,
-                    size: 18,
-                  ),
+                  icon: const Icon(Icons.close, color: Colors.white, size: 18),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(
                     minWidth: 32,

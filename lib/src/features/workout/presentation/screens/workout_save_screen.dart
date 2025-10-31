@@ -23,7 +23,8 @@ class WorkoutSaveScreen extends ConsumerStatefulWidget {
     String? notes,
     String? photoPath,
     bool postToSocial,
-  ) onSave;
+  )
+  onSave;
 
   @override
   ConsumerState<WorkoutSaveScreen> createState() => _WorkoutSaveScreenState();
@@ -32,11 +33,19 @@ class WorkoutSaveScreen extends ConsumerStatefulWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<WorkoutSummary>('summary', summary));
-    properties
-        .add(ObjectFlagProperty<VoidCallback>.has('onDiscard', onDiscard));
-    properties.add(ObjectFlagProperty<
-        Function(String name, String? notes, String? photoPath,
-            bool postToSocial)>.has('onSave', onSave));
+    properties.add(
+      ObjectFlagProperty<VoidCallback>.has('onDiscard', onDiscard),
+    );
+    properties.add(
+      ObjectFlagProperty<
+        Function(
+          String name,
+          String? notes,
+          String? photoPath,
+          bool postToSocial,
+        )
+      >.has('onSave', onSave),
+    );
   }
 }
 
@@ -68,51 +77,57 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
       print('⚠️ Image picker already in progress, ignoring');
       return;
     }
-    
+
     if (!mounted) return;
     setState(() => _isPickingImage = true);
-    
+
     XFile? image;
-    
+
     try {
       print('📸 Opening image picker (source: $source)...');
-      image = await _imagePicker.pickImage(
-        source: source,
-        maxWidth: 1024, // Smaller for faster HEIC conversion on iOS
-        maxHeight: 1024,
-        imageQuality: 60, // Lower quality for faster processing
-        requestFullMetadata: false, // Faster on iOS
-      ).timeout(
-        const Duration(seconds: 45), // Timeout for stuck HEIC conversions
-        onTimeout: () {
-          print('⚠️ Image picker timed out after 45s');
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Photo upload failed. iPhone camera photos (HEIC) may not work. Try using a screenshot or edit the photo first.'),
-                duration: Duration(seconds: 5),
-              ),
-            );
-          }
-          return null;
-        },
-      );
+      image = await _imagePicker
+          .pickImage(
+            source: source,
+            maxWidth: 1024, // Smaller for faster HEIC conversion on iOS
+            maxHeight: 1024,
+            imageQuality: 60, // Lower quality for faster processing
+            requestFullMetadata: false, // Faster on iOS
+          )
+          .timeout(
+            const Duration(seconds: 45), // Timeout for stuck HEIC conversions
+            onTimeout: () {
+              print('⚠️ Image picker timed out after 45s');
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Photo upload failed. iPhone camera photos (HEIC) may not work. Try using a screenshot or edit the photo first.',
+                    ),
+                    duration: Duration(seconds: 5),
+                  ),
+                );
+              }
+              return null;
+            },
+          );
 
-      print('📸 Image picker result: ${image != null ? "image selected" : "cancelled"}');
+      print(
+        '📸 Image picker result: ${image != null ? "image selected" : "cancelled"}',
+      );
       if (image != null) {
         print('📸 Image path: ${image.path}');
       }
     } catch (e) {
       print('❌ Error opening image picker: $e');
       image = null;
-      
+
       // Don't show error for user cancellation
-      if (!e.toString().contains('Cancelled') && 
-          !e.toString().contains('multiple_request') && 
+      if (!e.toString().contains('Cancelled') &&
+          !e.toString().contains('multiple_request') &&
           mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking image: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
       }
     } finally {
       print('📸 Resetting picker state');
@@ -120,7 +135,7 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
         setState(() => _isPickingImage = false);
       }
     }
-    
+
     // Process the selected image (outside try-catch to ensure flag is reset)
     if (image != null && mounted) {
       setState(() {
@@ -335,39 +350,37 @@ class _WorkoutSaveScreenState extends ConsumerState<WorkoutSaveScreen> {
   }
 
   Widget _buildAddPhotoButton() => OutlinedButton.icon(
-        onPressed: _showImageSourcePicker,
-        icon: const Icon(Icons.add_photo_alternate),
-        label: Text(S.of(context)!.addPhoto),
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.all(16),
-          minimumSize: const Size(double.infinity, 56),
-        ),
-      );
+    onPressed: _showImageSourcePicker,
+    icon: const Icon(Icons.add_photo_alternate),
+    label: Text(S.of(context)!.addPhoto),
+    style: OutlinedButton.styleFrom(
+      padding: const EdgeInsets.all(16),
+      minimumSize: const Size(double.infinity, 56),
+    ),
+  );
 
   Widget _buildPhotoPreview() => Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.file(
-              File(_photoPath!),
-              width: double.infinity,
-              height: 200,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: IconButton(
-              onPressed: _removePhoto,
-              icon: const Icon(Icons.close, color: Colors.white),
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.black54,
-              ),
-            ),
-          ),
-        ],
-      );
+    children: [
+      ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.file(
+          File(_photoPath!),
+          width: double.infinity,
+          height: 200,
+          fit: BoxFit.cover,
+        ),
+      ),
+      Positioned(
+        top: 8,
+        right: 8,
+        child: IconButton(
+          onPressed: _removePhoto,
+          icon: const Icon(Icons.close, color: Colors.white),
+          style: IconButton.styleFrom(backgroundColor: Colors.black54),
+        ),
+      ),
+    ],
+  );
 
   String _formatDuration(Duration duration) {
     final hours = duration.inHours;
@@ -433,25 +446,22 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        children: [
-          Icon(icon, size: 28, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-            ),
-          ),
-        ],
-      );
+    children: [
+      Icon(icon, size: 28, color: Theme.of(context).colorScheme.primary),
+      const SizedBox(height: 4),
+      Text(
+        value,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+        ),
+      ),
+    ],
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

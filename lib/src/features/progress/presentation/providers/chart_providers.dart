@@ -18,8 +18,9 @@ final weeklyVolumeProvider = FutureProvider<List<VolumeData>>((ref) async {
   }
 
   final sessions = await database.select(database.workoutSessions).get();
-  final completedSessions =
-      sessions.where((s) => s.completedAt != null).toList();
+  final completedSessions = sessions
+      .where((s) => s.completedAt != null)
+      .toList();
 
   // Group by week
   final weeklyData = <String, double>{};
@@ -31,20 +32,17 @@ final weeklyVolumeProvider = FutureProvider<List<VolumeData>>((ref) async {
   }
 
   // Convert to list and sort by date
-  final volumeList = weeklyData.entries
-      .map(
-        (e) => VolumeData(
-          date: DateTime.parse(e.key),
-          volume: e.value,
-        ),
-      )
-      .toList()
-    ..sort((a, b) => a.date.compareTo(b.date));
+  final volumeList =
+      weeklyData.entries
+          .map((e) => VolumeData(date: DateTime.parse(e.key), volume: e.value))
+          .toList()
+        ..sort((a, b) => a.date.compareTo(b.date));
 
   // Keep only last N weeks (configurable)
   if (volumeList.length > ChartConfig.defaultWeeksToShow) {
-    return volumeList
-        .sublist(volumeList.length - ChartConfig.defaultWeeksToShow);
+    return volumeList.sublist(
+      volumeList.length - ChartConfig.defaultWeeksToShow,
+    );
   }
 
   return volumeList;
@@ -58,8 +56,9 @@ final monthlyVolumeProvider = FutureProvider<List<VolumeData>>((ref) async {
   }
 
   final sessions = await database.select(database.workoutSessions).get();
-  final completedSessions =
-      sessions.where((s) => s.completedAt != null).toList();
+  final completedSessions = sessions
+      .where((s) => s.completedAt != null)
+      .toList();
 
   // Group by month
   final monthlyData = <String, double>{};
@@ -71,36 +70,40 @@ final monthlyVolumeProvider = FutureProvider<List<VolumeData>>((ref) async {
   }
 
   // Convert to list and sort by date
-  final volumeList = monthlyData.entries
-      .map(
-        (e) => VolumeData(
-          date: DateTime.parse('${e.key}-01'),
-          volume: e.value,
-        ),
-      )
-      .toList()
-    ..sort((a, b) => a.date.compareTo(b.date));
+  final volumeList =
+      monthlyData.entries
+          .map(
+            (e) => VolumeData(
+              date: DateTime.parse('${e.key}-01'),
+              volume: e.value,
+            ),
+          )
+          .toList()
+        ..sort((a, b) => a.date.compareTo(b.date));
 
   // Keep only last N months (configurable)
   if (volumeList.length > ChartConfig.defaultMonthsToShow) {
-    return volumeList
-        .sublist(volumeList.length - ChartConfig.defaultMonthsToShow);
+    return volumeList.sublist(
+      volumeList.length - ChartConfig.defaultMonthsToShow,
+    );
   }
 
   return volumeList;
 });
 
 // Provider for workout frequency data (workouts per week)
-final workoutFrequencyProvider =
-    FutureProvider<List<FrequencyData>>((ref) async {
+final workoutFrequencyProvider = FutureProvider<List<FrequencyData>>((
+  ref,
+) async {
   final database = ref.read(databaseProvider);
   if (database == null) {
     return [];
   }
 
   final sessions = await database.select(database.workoutSessions).get();
-  final completedSessions =
-      sessions.where((s) => s.completedAt != null).toList();
+  final completedSessions = sessions
+      .where((s) => s.completedAt != null)
+      .toList();
 
   // Group by week
   final weeklyData = <String, int>{};
@@ -112,20 +115,19 @@ final workoutFrequencyProvider =
   }
 
   // Convert to list and sort by date
-  final frequencyList = weeklyData.entries
-      .map(
-        (e) => FrequencyData(
-          date: DateTime.parse(e.key),
-          count: e.value,
-        ),
-      )
-      .toList()
-    ..sort((a, b) => a.date.compareTo(b.date));
+  final frequencyList =
+      weeklyData.entries
+          .map(
+            (e) => FrequencyData(date: DateTime.parse(e.key), count: e.value),
+          )
+          .toList()
+        ..sort((a, b) => a.date.compareTo(b.date));
 
   // Keep only last N weeks (configurable)
   if (frequencyList.length > ChartConfig.defaultWeeksToShow) {
-    return frequencyList
-        .sublist(frequencyList.length - ChartConfig.defaultWeeksToShow);
+    return frequencyList.sublist(
+      frequencyList.length - ChartConfig.defaultWeeksToShow,
+    );
   }
 
   return frequencyList;
@@ -133,47 +135,52 @@ final workoutFrequencyProvider =
 
 // Provider for exercise progress (specific exercise over time)
 final exerciseProgressProvider =
-    FutureProvider.family<List<ExerciseProgressData>, String>(
-        (ref, exerciseId) async {
-  final database = ref.read(databaseProvider);
-  if (database == null) {
-    return [];
-  }
+    FutureProvider.family<List<ExerciseProgressData>, String>((
+      ref,
+      exerciseId,
+    ) async {
+      final database = ref.read(databaseProvider);
+      if (database == null) {
+        return [];
+      }
 
-  final sets = await (database.select(database.setEntries)
-        ..where((tbl) => tbl.exerciseId.equals(exerciseId))
-        ..orderBy([(tbl) => OrderingTerm.asc(tbl.completedAt)]))
-      .get();
+      final sets =
+          await (database.select(database.setEntries)
+                ..where((tbl) => tbl.exerciseId.equals(exerciseId))
+                ..orderBy([(tbl) => OrderingTerm.asc(tbl.completedAt)]))
+              .get();
 
-  final completedSets = sets.where((s) => s.weight != null).toList();
+      final completedSets = sets.where((s) => s.weight != null).toList();
 
-  // Calculate max weight for each session
-  final sessionMaxes = <String, ExerciseProgressData>{};
+      // Calculate max weight for each session
+      final sessionMaxes = <String, ExerciseProgressData>{};
 
-  for (final set in completedSets) {
-    final sessionId = set.workoutSessionId;
-    final weight = set.weight!;
-    final reps = set.reps;
+      for (final set in completedSets) {
+        final sessionId = set.workoutSessionId;
+        final weight = set.weight!;
+        final reps = set.reps;
 
-    if (!sessionMaxes.containsKey(sessionId) ||
-        weight > sessionMaxes[sessionId]!.weight ||
-        (weight == sessionMaxes[sessionId]!.weight &&
-            reps > sessionMaxes[sessionId]!.reps)) {
-      sessionMaxes[sessionId] = ExerciseProgressData(
-        date: set.completedAt,
-        weight: weight,
-        reps: reps,
-        oneRepMax: _calculateOneRepMax(weight, reps),
-      );
-    }
-  }
+        if (!sessionMaxes.containsKey(sessionId) ||
+            weight > sessionMaxes[sessionId]!.weight ||
+            (weight == sessionMaxes[sessionId]!.weight &&
+                reps > sessionMaxes[sessionId]!.reps)) {
+          sessionMaxes[sessionId] = ExerciseProgressData(
+            date: set.completedAt,
+            weight: weight,
+            reps: reps,
+            oneRepMax: _calculateOneRepMax(weight, reps),
+          );
+        }
+      }
 
-  return sessionMaxes.values.toList()..sort((a, b) => a.date.compareTo(b.date));
-});
+      return sessionMaxes.values.toList()
+        ..sort((a, b) => a.date.compareTo(b.date));
+    });
 
 // Provider for personal records
-final personalRecordsProvider =
-    FutureProvider<List<PersonalRecord>>((ref) async {
+final personalRecordsProvider = FutureProvider<List<PersonalRecord>>((
+  ref,
+) async {
   final database = ref.read(databaseProvider);
   if (database == null) {
     return [];
@@ -221,20 +228,14 @@ double _calculateOneRepMax(double weight, int reps) {
 
 // Data classes
 class VolumeData {
-  const VolumeData({
-    required this.date,
-    required this.volume,
-  });
+  const VolumeData({required this.date, required this.volume});
 
   final DateTime date;
   final double volume;
 }
 
 class FrequencyData {
-  const FrequencyData({
-    required this.date,
-    required this.count,
-  });
+  const FrequencyData({required this.date, required this.count});
 
   final DateTime date;
   final int count;

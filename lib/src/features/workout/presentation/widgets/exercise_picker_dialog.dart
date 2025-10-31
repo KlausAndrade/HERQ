@@ -49,10 +49,9 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                 color: Theme.of(context).colorScheme.surface,
                 border: Border(
                   bottom: BorderSide(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .outline
-                        .withAlpha((0.2 * 255).round()),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withAlpha((0.2 * 255).round()),
                   ),
                 ),
               ),
@@ -64,8 +63,8 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                       Text(
                         S.of(context)!.addExercise,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       const Spacer(),
                       IconButton(
@@ -113,8 +112,9 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                               selected: isSelected,
                               onSelected: (selected) {
                                 setState(() {
-                                  _selectedCategory =
-                                      selected ? category : null;
+                                  _selectedCategory = selected
+                                      ? category
+                                      : null;
                                 });
                               },
                             ),
@@ -133,21 +133,20 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
             Expanded(
               child: exercisesAsync.when(
                 data: (exercises) {
-                  final filteredExercises = _selectedCategory == null ||
+                  final filteredExercises =
+                      _selectedCategory == null ||
                           _selectedCategory == S.of(context)!.all
                       ? exercises
                       : exercises
-                          .where(
-                            (e) =>
-                                e.category.toLowerCase() ==
-                                _selectedCategory!.toLowerCase(),
-                          )
-                          .toList();
+                            .where(
+                              (e) =>
+                                  e.category.toLowerCase() ==
+                                  _selectedCategory!.toLowerCase(),
+                            )
+                            .toList();
 
                   if (filteredExercises.isEmpty) {
-                    return Center(
-                      child: Text(S.of(context)!.noExercisesFound),
-                    );
+                    return Center(child: Text(S.of(context)!.noExercisesFound));
                   }
 
                   return ListView.builder(
@@ -162,10 +161,8 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withAlpha((0.1 * 255).round()),
+                                : Theme.of(context).colorScheme.primary
+                                      .withAlpha((0.1 * 255).round()),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
@@ -200,8 +197,9 @@ class _ExercisePickerDialogState extends ConsumerState<ExercisePickerDialog> {
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stack) => Center(
-                  child:
-                      Text('${S.of(context)!.errorLoadingExercises}: $error'),
+                  child: Text(
+                    '${S.of(context)!.errorLoadingExercises}: $error',
+                  ),
                 ),
               ),
             ),

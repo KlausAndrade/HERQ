@@ -21,10 +21,18 @@ class WorkoutCalendar extends StatefulWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(IterableProperty<WorkoutSession>('workouts', workouts));
-    properties.add(ObjectFlagProperty<Function(DateTime p1)?>.has(
-        'onDaySelected', onDaySelected));
-    properties.add(ObjectFlagProperty<Function(WorkoutSession p1)?>.has(
-        'onWorkoutTap', onWorkoutTap));
+    properties.add(
+      ObjectFlagProperty<Function(DateTime p1)?>.has(
+        'onDaySelected',
+        onDaySelected,
+      ),
+    );
+    properties.add(
+      ObjectFlagProperty<Function(WorkoutSession p1)?>.has(
+        'onWorkoutTap',
+        onWorkoutTap,
+      ),
+    );
   }
 }
 
@@ -40,67 +48,60 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   @override
   Widget build(BuildContext context) => Column(
-        children: [
-          // Month Navigation
-          _buildMonthNavigation(),
+    children: [
+      // Month Navigation
+      _buildMonthNavigation(),
 
-          // Calendar Grid
-          Expanded(
-            child: _buildCalendarGrid(),
-          ),
+      // Calendar Grid
+      Expanded(child: _buildCalendarGrid()),
 
-          // Selected Day Workouts
-          if (_selectedDay != null) _buildSelectedDayWorkouts(),
-        ],
-      );
+      // Selected Day Workouts
+      if (_selectedDay != null) _buildSelectedDayWorkouts(),
+    ],
+  );
 
   Widget _buildMonthNavigation() => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color:
-              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-          border: Border(
-            bottom: BorderSide(
-              color: Theme.of(context).dividerColor,
-            ),
-          ),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+      border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              _focusedMonth = DateTime(
+                _focusedMonth.year,
+                _focusedMonth.month - 1,
+              );
+            });
+          },
+          icon: const Icon(Icons.chevron_left),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _focusedMonth = DateTime(
-                    _focusedMonth.year,
-                    _focusedMonth.month - 1,
-                  );
-                });
-              },
-              icon: const Icon(Icons.chevron_left),
-            ),
-            Text(
-              DateFormat('MMMM y').format(_focusedMonth),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            IconButton(
-              onPressed: _canGoToNextMonth()
-                  ? () {
-                      setState(() {
-                        _focusedMonth = DateTime(
-                          _focusedMonth.year,
-                          _focusedMonth.month + 1,
-                        );
-                      });
-                    }
-                  : null,
-              icon: const Icon(Icons.chevron_right),
-            ),
-          ],
+        Text(
+          DateFormat('MMMM y').format(_focusedMonth),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
-      );
+        IconButton(
+          onPressed: _canGoToNextMonth()
+              ? () {
+                  setState(() {
+                    _focusedMonth = DateTime(
+                      _focusedMonth.year,
+                      _focusedMonth.month + 1,
+                    );
+                  });
+                }
+              : null,
+          icon: const Icon(Icons.chevron_right),
+        ),
+      ],
+    ),
+  );
 
   bool _canGoToNextMonth() {
     final now = DateTime.now();
@@ -130,9 +131,9 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             child: Text(
               _getWeekdayName(index),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           );
         }
@@ -144,8 +145,11 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
         // Day cells
         final dayNumber = index - 6 - firstWeekday;
-        final date =
-            DateTime(_focusedMonth.year, _focusedMonth.month, dayNumber);
+        final date = DateTime(
+          _focusedMonth.year,
+          _focusedMonth.month,
+          dayNumber,
+        );
         final isToday = _isToday(date);
         final isSelected =
             _selectedDay != null && _isSameDay(date, _selectedDay!);
@@ -214,10 +218,9 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             child: Text(
               '$day',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight:
-                        hasWorkout ? FontWeight.bold : FontWeight.normal,
-                    color: textColor,
-                  ),
+                fontWeight: hasWorkout ? FontWeight.bold : FontWeight.normal,
+                color: textColor,
+              ),
             ),
           ),
           // Workout indicator dots
@@ -281,22 +284,19 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context)
-              .colorScheme
-              .surfaceContainerHighest
-              .withOpacity(0.5),
+          color: Theme.of(
+            context,
+          ).colorScheme.surfaceContainerHighest.withOpacity(0.5),
           border: Border(
-            top: BorderSide(
-              color: Theme.of(context).dividerColor,
-            ),
+            top: BorderSide(color: Theme.of(context).dividerColor),
           ),
         ),
         child: Center(
           child: Text(
             'No workouts on ${DateFormat('MMMM d, y').format(_selectedDay!)}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey.shade600,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
           ),
         ),
       );
@@ -305,15 +305,10 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     return Container(
       constraints: const BoxConstraints(maxHeight: 200),
       decoration: BoxDecoration(
-        color: Theme.of(context)
-            .colorScheme
-            .surfaceContainerHighest
-            .withOpacity(0.5),
-        border: Border(
-          top: BorderSide(
-            color: Theme.of(context).dividerColor,
-          ),
-        ),
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -323,9 +318,9 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             padding: const EdgeInsets.all(16),
             child: Text(
               '${DateFormat('MMMM d, y').format(_selectedDay!)} • ${workoutsOnDay.length} workout${workoutsOnDay.length != 1 ? 's' : ''}',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(

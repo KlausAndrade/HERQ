@@ -47,8 +47,9 @@ class NotificationService {
       return;
     }
 
-    const initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initializationSettingsAndroid = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
 
     const initializationSettingsIOS = DarwinInitializationSettings();
 
@@ -78,12 +79,9 @@ class NotificationService {
     // Request permissions for iOS
     await _notifications
         .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
+          IOSFlutterLocalNotificationsPlugin
+        >()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
 
     _initialized = true;
   }
@@ -227,8 +225,8 @@ class NotificationService {
     final seconds = remainingSeconds % 60;
     final timeString =
         '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    final progress =
-        ((totalSeconds - remainingSeconds) / totalSeconds * 100).toInt();
+    final progress = ((totalSeconds - remainingSeconds) / totalSeconds * 100)
+        .toInt();
 
     // Build title and body with exercise context
     final title = exerciseName ?? '⏱️ Rest Timer';
@@ -242,18 +240,9 @@ class NotificationService {
 
     // Create action buttons for Android
     final androidActions = <AndroidNotificationAction>[
-      const AndroidNotificationAction(
-        'subtract_15',
-        '-15s',
-      ),
-      const AndroidNotificationAction(
-        'add_15',
-        '+15s',
-      ),
-      const AndroidNotificationAction(
-        'skip',
-        'Skip',
-      ),
+      const AndroidNotificationAction('subtract_15', '-15s'),
+      const AndroidNotificationAction('add_15', '+15s'),
+      const AndroidNotificationAction('skip', 'Skip'),
     ];
 
     final androidDetails = AndroidNotificationDetails(
@@ -332,9 +321,7 @@ class NotificationService {
   }
 
   /// Show a reminder notification when workout is left incomplete for 10 minutes
-  static Future<void> showWorkoutReminder({
-    required String workoutName,
-  }) async {
+  static Future<void> showWorkoutReminder({required String workoutName}) async {
     final instance = NotificationService();
     if (!instance._initialized) {
       await instance.initialize();

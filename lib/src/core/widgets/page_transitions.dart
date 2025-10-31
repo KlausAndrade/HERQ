@@ -11,29 +11,26 @@ class AppPageTransitions {
     String? name,
     Object? arguments,
     String? restorationId,
-  }) =>
-      CustomTransitionPage<T>(
-        key: key,
-        name: name,
-        arguments: arguments,
-        restorationId: restorationId,
-        child: child,
-        transitionDuration: AppDurations.page,
-        reverseTransitionDuration: AppDurations.page,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(1, 0);
-          const end = Offset.zero;
-          final tween = Tween(begin: begin, end: end).chain(
-            CurveTween(curve: AppCurves.smooth),
-          );
-          final offsetAnimation = animation.drive(tween);
+  }) => CustomTransitionPage<T>(
+    key: key,
+    name: name,
+    arguments: arguments,
+    restorationId: restorationId,
+    child: child,
+    transitionDuration: AppDurations.page,
+    reverseTransitionDuration: AppDurations.page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1, 0);
+      const end = Offset.zero;
+      final tween = Tween(
+        begin: begin,
+        end: end,
+      ).chain(CurveTween(curve: AppCurves.smooth));
+      final offsetAnimation = animation.drive(tween);
 
-          return SlideTransition(
-            position: offsetAnimation,
-            child: child,
-          );
-        },
-      );
+      return SlideTransition(position: offsetAnimation, child: child);
+    },
+  );
 
   /// Slide transition from bottom (modal presentations)
   static Page<T> slideUpTransition<T extends Object?>(
@@ -42,31 +39,28 @@ class AppPageTransitions {
     String? name,
     Object? arguments,
     String? restorationId,
-  }) =>
-      CustomTransitionPage<T>(
-        key: key,
-        name: name,
-        arguments: arguments,
-        restorationId: restorationId,
-        child: child,
-        transitionDuration: AppDurations.page,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(0, 1);
-          const end = Offset.zero;
-          final tween = Tween(begin: begin, end: end).chain(
-            CurveTween(curve: AppCurves.smooth),
-          );
-          final offsetAnimation = animation.drive(tween);
+  }) => CustomTransitionPage<T>(
+    key: key,
+    name: name,
+    arguments: arguments,
+    restorationId: restorationId,
+    child: child,
+    transitionDuration: AppDurations.page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(0, 1);
+      const end = Offset.zero;
+      final tween = Tween(
+        begin: begin,
+        end: end,
+      ).chain(CurveTween(curve: AppCurves.smooth));
+      final offsetAnimation = animation.drive(tween);
 
-          return SlideTransition(
-            position: offsetAnimation,
-            child: FadeTransition(
-              opacity: animation,
-              child: child,
-            ),
-          );
-        },
+      return SlideTransition(
+        position: offsetAnimation,
+        child: FadeTransition(opacity: animation, child: child),
       );
+    },
+  );
 
   /// Fade transition (subtle navigation)
   static Page<T> fadeTransition<T extends Object?>(
@@ -75,20 +69,16 @@ class AppPageTransitions {
     String? name,
     Object? arguments,
     String? restorationId,
-  }) =>
-      CustomTransitionPage<T>(
-        key: key,
-        name: name,
-        arguments: arguments,
-        restorationId: restorationId,
-        child: child,
-        reverseTransitionDuration: AppDurations.fast,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            FadeTransition(
-          opacity: animation,
-          child: child,
-        ),
-      );
+  }) => CustomTransitionPage<T>(
+    key: key,
+    name: name,
+    arguments: arguments,
+    restorationId: restorationId,
+    child: child,
+    reverseTransitionDuration: AppDurations.fast,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        FadeTransition(opacity: animation, child: child),
+  );
 
   /// Scale transition (modal dialogs)
   static Page<T> scaleTransition<T extends Object?>(
@@ -97,28 +87,21 @@ class AppPageTransitions {
     String? name,
     Object? arguments,
     String? restorationId,
-  }) =>
-      CustomTransitionPage<T>(
-        key: key,
-        name: name,
-        arguments: arguments,
-        restorationId: restorationId,
-        child: child,
-        reverseTransitionDuration: AppDurations.fast,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            ScaleTransition(
+  }) => CustomTransitionPage<T>(
+    key: key,
+    name: name,
+    arguments: arguments,
+    restorationId: restorationId,
+    child: child,
+    reverseTransitionDuration: AppDurations.fast,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1).animate(
-            CurvedAnimation(
-              parent: animation,
-              curve: AppCurves.elasticOut,
-            ),
+            CurvedAnimation(parent: animation, curve: AppCurves.elasticOut),
           ),
-          child: FadeTransition(
-            opacity: animation,
-            child: child,
-          ),
+          child: FadeTransition(opacity: animation, child: child),
         ),
-      );
+  );
 
   /// Shared axis transition (Material Design 3 style)
   static Page<T> sharedAxisTransition<T extends Object?>(
@@ -127,32 +110,29 @@ class AppPageTransitions {
     String? name,
     Object? arguments,
     String? restorationId,
-  }) =>
-      CustomTransitionPage<T>(
-        key: key,
-        name: name,
-        arguments: arguments,
-        restorationId: restorationId,
-        child: child,
-        transitionDuration: AppDurations.page,
-        reverseTransitionDuration: AppDurations.page,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            FadeTransition(
+  }) => CustomTransitionPage<T>(
+    key: key,
+    name: name,
+    arguments: arguments,
+    restorationId: restorationId,
+    child: child,
+    transitionDuration: AppDurations.page,
+    reverseTransitionDuration: AppDurations.page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        FadeTransition(
           opacity: animation,
           child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 0.05),
-              end: Offset.zero,
-            ).animate(
-              CurvedAnimation(
-                parent: animation,
-                curve: AppCurves.smooth,
-              ),
-            ),
+            position:
+                Tween<Offset>(
+                  begin: const Offset(0, 0.05),
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(parent: animation, curve: AppCurves.smooth),
+                ),
             child: child,
           ),
         ),
-      );
+  );
 
   /// No transition (instant)
   static Page<T> noTransition<T extends Object?>(
@@ -161,12 +141,11 @@ class AppPageTransitions {
     String? name,
     Object? arguments,
     String? restorationId,
-  }) =>
-      MaterialPage<T>(
-        key: key,
-        name: name,
-        arguments: arguments,
-        restorationId: restorationId,
-        child: child,
-      );
+  }) => MaterialPage<T>(
+    key: key,
+    name: name,
+    arguments: arguments,
+    restorationId: restorationId,
+    child: child,
+  );
 }

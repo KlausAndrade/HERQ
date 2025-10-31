@@ -92,32 +92,32 @@ class _EditPostDialogState extends ConsumerState<EditPostDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Edit Post'),
-        content: TextField(
-          controller: _captionController,
-          maxLines: 5,
-          maxLength: 500,
-          decoration: const InputDecoration(
-            hintText: 'What\'s on your mind?',
-            border: OutlineInputBorder(),
-          ),
-          enabled: !_isUpdating,
-        ),
-        actions: [
-          TextButton(
-            onPressed: _isUpdating ? null : () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: _isUpdating ? null : _updatePost,
-            child: _isUpdating
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Update'),
-          ),
-        ],
-      );
+    title: const Text('Edit Post'),
+    content: TextField(
+      controller: _captionController,
+      maxLines: 5,
+      maxLength: 500,
+      decoration: const InputDecoration(
+        hintText: 'What\'s on your mind?',
+        border: OutlineInputBorder(),
+      ),
+      enabled: !_isUpdating,
+    ),
+    actions: [
+      TextButton(
+        onPressed: _isUpdating ? null : () => Navigator.pop(context),
+        child: const Text('Cancel'),
+      ),
+      FilledButton(
+        onPressed: _isUpdating ? null : _updatePost,
+        child: _isUpdating
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Text('Update'),
+      ),
+    ],
+  );
 }

@@ -6,14 +6,15 @@ import 'auth_provider.dart';
 import 'database_provider.dart';
 
 /// Provider for enhanced global content sync service
-final enhancedGlobalContentSyncServiceProvider = Provider<EnhancedGlobalContentSyncService?>((ref) {
-  final supabase = ref.watch(supabaseClientProvider);
-  final db = ref.watch(databaseProvider);
+final enhancedGlobalContentSyncServiceProvider =
+    Provider<EnhancedGlobalContentSyncService?>((ref) {
+      final supabase = ref.watch(supabaseClientProvider);
+      final db = ref.watch(databaseProvider);
 
-  if (db == null) return null;
+      if (db == null) return null;
 
-  return EnhancedGlobalContentSyncService(supabase, db);
-});
+      return EnhancedGlobalContentSyncService(supabase, db);
+    });
 
 /// Provider to check if global content sync is needed
 final needsGlobalContentSyncProvider = FutureProvider<bool>((ref) async {
@@ -39,7 +40,8 @@ final globalContentSyncStatusProvider = FutureProvider<SyncStatus>((ref) async {
 });
 
 /// Notifier for triggering global content sync
-class GlobalContentSyncNotifier extends StateNotifier<AsyncValue<FullSyncResult?>> {
+class GlobalContentSyncNotifier
+    extends StateNotifier<AsyncValue<FullSyncResult?>> {
   GlobalContentSyncNotifier(this._service) : super(const AsyncValue.data(null));
 
   final EnhancedGlobalContentSyncService? _service;
@@ -51,7 +53,7 @@ class GlobalContentSyncNotifier extends StateNotifier<AsyncValue<FullSyncResult?
     }
 
     state = const AsyncValue.loading();
-    
+
     try {
       final result = await _service!.syncAllGlobalContent();
       state = AsyncValue.data(result);
@@ -67,7 +69,7 @@ class GlobalContentSyncNotifier extends StateNotifier<AsyncValue<FullSyncResult?
     }
 
     state = const AsyncValue.loading();
-    
+
     try {
       final result = await _service!.forceSyncAllContent();
       state = AsyncValue.data(result);
@@ -82,12 +84,18 @@ class GlobalContentSyncNotifier extends StateNotifier<AsyncValue<FullSyncResult?
 }
 
 /// Provider for global content sync notifier
-final globalContentSyncNotifierProvider = StateNotifierProvider<GlobalContentSyncNotifier, AsyncValue<FullSyncResult?>>((ref) {
-  final service = ref.watch(enhancedGlobalContentSyncServiceProvider);
-  return GlobalContentSyncNotifier(service);
-});
+final globalContentSyncNotifierProvider =
+    StateNotifierProvider<
+      GlobalContentSyncNotifier,
+      AsyncValue<FullSyncResult?>
+    >((ref) {
+      final service = ref.watch(enhancedGlobalContentSyncServiceProvider);
+      return GlobalContentSyncNotifier(service);
+    });
 
 /// Provider for triggering sync
-final globalContentSyncTriggerProvider = Provider<GlobalContentSyncNotifier>((ref) {
+final globalContentSyncTriggerProvider = Provider<GlobalContentSyncNotifier>((
+  ref,
+) {
   return ref.watch(globalContentSyncNotifierProvider.notifier);
 });

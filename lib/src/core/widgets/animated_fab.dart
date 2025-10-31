@@ -37,8 +37,9 @@ class AnimatedFAB extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+    properties.add(
+      ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed),
+    );
     properties.add(DiagnosticsProperty<IconData>('icon', icon));
     properties.add(StringProperty('label', label));
     properties.add(ColorProperty('backgroundColor', backgroundColor));
@@ -98,8 +99,9 @@ class _AnimatedFABState extends State<AnimatedFAB>
     // fake timers that can remain pending; detect the test binding and
     // schedule start on the next frame instead.
     final bindingName = WidgetsBinding.instance.runtimeType.toString();
-    final runningInWidgetTest =
-        bindingName.contains('AutomatedTestWidgetsFlutterBinding');
+    final runningInWidgetTest = bindingName.contains(
+      'AutomatedTestWidgetsFlutterBinding',
+    );
 
     if (runningInWidgetTest) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -167,9 +169,10 @@ class _AnimatedFABState extends State<AnimatedFAB>
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: (widget.backgroundColor ??
-                                theme.colorScheme.primary)
-                            .withOpacity(_isPressed ? 0.5 : 0.3),
+                        color:
+                            (widget.backgroundColor ??
+                                    theme.colorScheme.primary)
+                                .withOpacity(_isPressed ? 0.5 : 0.3),
                         blurRadius: _isPressed ? 12 : 8,
                         offset: Offset(0, _isPressed ? 4 : 6),
                       ),
@@ -186,43 +189,40 @@ class _AnimatedFABState extends State<AnimatedFAB>
   }
 
   Widget _buildRegularFAB(ThemeData theme) => FloatingActionButton(
-        onPressed: _handleTap,
-        backgroundColor: widget.gradient != null
-            ? Colors.transparent
-            : widget.backgroundColor ?? theme.colorScheme.primary,
-        foregroundColor: widget.foregroundColor ?? theme.colorScheme.onPrimary,
-        elevation: widget.gradient != null ? 0 : null,
-        mini: widget.mini,
-        heroTag: widget.heroTag,
-        tooltip: widget.tooltip,
-        child: GestureDetector(
-          onTapDown: _handleTapDown,
-          onTapUp: _handleTapUp,
-          onTapCancel: _handleTapCancel,
-          child: Icon(
-            widget.icon,
-            size: widget.mini ? 20 : 24,
-          ),
-        ),
-      );
+    onPressed: _handleTap,
+    backgroundColor: widget.gradient != null
+        ? Colors.transparent
+        : widget.backgroundColor ?? theme.colorScheme.primary,
+    foregroundColor: widget.foregroundColor ?? theme.colorScheme.onPrimary,
+    elevation: widget.gradient != null ? 0 : null,
+    mini: widget.mini,
+    heroTag: widget.heroTag,
+    tooltip: widget.tooltip,
+    child: GestureDetector(
+      onTapDown: _handleTapDown,
+      onTapUp: _handleTapUp,
+      onTapCancel: _handleTapCancel,
+      child: Icon(widget.icon, size: widget.mini ? 20 : 24),
+    ),
+  );
 
   Widget _buildExtendedFAB(ThemeData theme) => FloatingActionButton.extended(
-        onPressed: _handleTap,
-        backgroundColor: widget.gradient != null
-            ? Colors.transparent
-            : widget.backgroundColor ?? theme.colorScheme.primary,
-        foregroundColor: widget.foregroundColor ?? theme.colorScheme.onPrimary,
-        elevation: widget.gradient != null ? 0 : null,
-        heroTag: widget.heroTag,
-        tooltip: widget.tooltip,
-        icon: GestureDetector(
-          onTapDown: _handleTapDown,
-          onTapUp: _handleTapUp,
-          onTapCancel: _handleTapCancel,
-          child: Icon(widget.icon),
-        ),
-        label: Text(widget.label ?? ''),
-      );
+    onPressed: _handleTap,
+    backgroundColor: widget.gradient != null
+        ? Colors.transparent
+        : widget.backgroundColor ?? theme.colorScheme.primary,
+    foregroundColor: widget.foregroundColor ?? theme.colorScheme.onPrimary,
+    elevation: widget.gradient != null ? 0 : null,
+    heroTag: widget.heroTag,
+    tooltip: widget.tooltip,
+    icon: GestureDetector(
+      onTapDown: _handleTapDown,
+      onTapUp: _handleTapUp,
+      onTapCancel: _handleTapCancel,
+      child: Icon(widget.icon),
+    ),
+    label: Text(widget.label ?? ''),
+  );
 }
 
 /// Animated Floating Action Button with expand/collapse animation
@@ -274,9 +274,10 @@ class _ExpandableFABState extends State<ExpandableFAB>
       parent: _controller,
       curve: AppCurves.elasticOut,
     );
-    _rotationAnimation = Tween<double>(begin: 0, end: 0.125).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _rotationAnimation = Tween<double>(
+      begin: 0,
+      end: 0.125,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -298,63 +299,61 @@ class _ExpandableFABState extends State<ExpandableFAB>
 
   @override
   Widget build(BuildContext context) => Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          // Backdrop
-          if (_isOpen)
-            GestureDetector(
-              onTap: _toggle,
-              child: Container(
-                color: Colors.black.withOpacity(0.3),
-              ),
-            ),
+    alignment: Alignment.bottomRight,
+    children: [
+      // Backdrop
+      if (_isOpen)
+        GestureDetector(
+          onTap: _toggle,
+          child: Container(color: Colors.black.withOpacity(0.3)),
+        ),
 
-          // Child FABs
-          ...List.generate(widget.children.length, (index) {
-            final childWidget = widget.children[index];
-            return AnimatedBuilder(
-              animation: _expandAnimation,
-              builder: (context, _) {
-                final offset =
-                    widget.distance * (index + 1) * _expandAnimation.value;
-                return Positioned(
-                  bottom: offset,
-                  right: 0,
-                  child: FadeTransition(
-                    opacity: _expandAnimation,
-                    child: ScaleTransition(
-                      scale: _expandAnimation,
-                      child: FloatingActionButton.small(
-                        onPressed: () {
-                          HapticService.lightImpact();
-                          childWidget.onPressed();
-                          _toggle();
-                        },
-                        backgroundColor: childWidget.backgroundColor,
-                        foregroundColor: childWidget.foregroundColor,
-                        heroTag: null,
-                        tooltip: childWidget.label,
-                        child: Icon(childWidget.icon),
-                      ),
-                    ),
+      // Child FABs
+      ...List.generate(widget.children.length, (index) {
+        final childWidget = widget.children[index];
+        return AnimatedBuilder(
+          animation: _expandAnimation,
+          builder: (context, _) {
+            final offset =
+                widget.distance * (index + 1) * _expandAnimation.value;
+            return Positioned(
+              bottom: offset,
+              right: 0,
+              child: FadeTransition(
+                opacity: _expandAnimation,
+                child: ScaleTransition(
+                  scale: _expandAnimation,
+                  child: FloatingActionButton.small(
+                    onPressed: () {
+                      HapticService.lightImpact();
+                      childWidget.onPressed();
+                      _toggle();
+                    },
+                    backgroundColor: childWidget.backgroundColor,
+                    foregroundColor: childWidget.foregroundColor,
+                    heroTag: null,
+                    tooltip: childWidget.label,
+                    child: Icon(childWidget.icon),
                   ),
-                );
-              },
+                ),
+              ),
             );
-          }),
+          },
+        );
+      }),
 
-          // Main FAB
-          RotationTransition(
-            turns: _rotationAnimation,
-            child: FloatingActionButton(
-              onPressed: _toggle,
-              backgroundColor: widget.backgroundColor,
-              foregroundColor: widget.foregroundColor,
-              child: Icon(_isOpen ? Icons.close : widget.icon),
-            ),
-          ),
-        ],
-      );
+      // Main FAB
+      RotationTransition(
+        turns: _rotationAnimation,
+        child: FloatingActionButton(
+          onPressed: _toggle,
+          backgroundColor: widget.backgroundColor,
+          foregroundColor: widget.foregroundColor,
+          child: Icon(_isOpen ? Icons.close : widget.icon),
+        ),
+      ),
+    ],
+  );
 }
 
 class FABChild extends StatelessWidget {
@@ -381,8 +380,9 @@ class FABChild extends StatelessWidget {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<IconData>('icon', icon));
     properties.add(StringProperty('label', label));
-    properties
-        .add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+    properties.add(
+      ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed),
+    );
     properties.add(ColorProperty('backgroundColor', backgroundColor));
     properties.add(ColorProperty('foregroundColor', foregroundColor));
   }

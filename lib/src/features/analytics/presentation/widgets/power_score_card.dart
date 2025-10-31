@@ -5,10 +5,7 @@ import '../../domain/models/analytics_models.dart';
 
 /// Card displaying user's Power Score with tier badge
 class PowerScoreCard extends StatelessWidget {
-  const PowerScoreCard({
-    required this.powerScore,
-    super.key,
-  });
+  const PowerScoreCard({required this.powerScore, super.key});
   final PowerScore powerScore;
 
   @override
@@ -23,10 +20,7 @@ class PowerScoreCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              tierColor.withOpacity(0.1),
-              tierColor.withOpacity(0.05),
-            ],
+            colors: [tierColor.withOpacity(0.1), tierColor.withOpacity(0.05)],
           ),
           borderRadius: BorderRadius.circular(12),
         ),
@@ -40,14 +34,13 @@ class PowerScoreCard extends StatelessWidget {
               children: [
                 const Text(
                   'Power Score',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: tierColor,
                     borderRadius: BorderRadius.circular(20),
@@ -90,10 +83,7 @@ class PowerScoreCard extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
                     'points',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                 ),
               ],

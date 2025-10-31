@@ -9,7 +9,10 @@ class TelemetryRouteObserver extends NavigatorObserver {
 
   void _track(Route<dynamic>? route, String action) {
     if (route == null) return;
-    final name = route.settings.name ?? route.settings.arguments?.toString() ?? 'unknown';
+    final name =
+        route.settings.name ??
+        route.settings.arguments?.toString() ??
+        'unknown';
     try {
       ref.read(telemetryProvider).trackEvent('screen_view', {
         'route': name,
@@ -30,5 +33,3 @@ class TelemetryRouteObserver extends NavigatorObserver {
     _track(previousRoute, 'pop');
   }
 }
-
-

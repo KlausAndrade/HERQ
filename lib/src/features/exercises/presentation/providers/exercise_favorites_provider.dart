@@ -14,20 +14,21 @@ final favoritesProvider = StreamProvider<List<ExerciseFavorite>>((ref) {
     return Stream.value([]);
   }
 
-  return (database.select(database.exerciseFavorites)
-        ..where((tbl) => tbl.userId.equals(user.id)))
-      .watch();
+  return (database.select(
+    database.exerciseFavorites,
+  )..where((tbl) => tbl.userId.equals(user.id))).watch();
 });
 
 /// Provider to check if an exercise is favorited
-final isExerciseFavorited =
-    Provider.family<AsyncValue<bool>, String>((ref, exerciseId) {
+final isExerciseFavorited = Provider.family<AsyncValue<bool>, String>((
+  ref,
+  exerciseId,
+) {
   final favoritesAsync = ref.watch(favoritesProvider);
 
   return favoritesAsync.when(
-    data: (favorites) => AsyncValue.data(
-      favorites.any((fav) => fav.exerciseId == exerciseId),
-    ),
+    data: (favorites) =>
+        AsyncValue.data(favorites.any((fav) => fav.exerciseId == exerciseId)),
     loading: () => const AsyncValue.loading(),
     error: AsyncValue.error,
   );
@@ -52,9 +53,9 @@ final favoriteExercisesProvider = FutureProvider<List<Exercise>>((ref) async {
     return [];
   }
 
-  return (database.select(database.exercises)
-        ..where((tbl) => tbl.id.isIn(favoriteIds)))
-      .get();
+  return (database.select(
+    database.exercises,
+  )..where((tbl) => tbl.id.isIn(favoriteIds))).get();
 });
 
 /// Notifier for managing favorite exercises
@@ -80,24 +81,25 @@ class FavoritesNotifier {
     }
 
     // Check if already favorited
-    final existing = await (db.select(db.exerciseFavorites)
-          ..where(
-            (tbl) =>
-                tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
-          ))
-        .getSingleOrNull();
-
-    if (existing != null) {
-      // Remove from favorites
-      await (db.delete(db.exerciseFavorites)
-            ..where(
+    final existing =
+        await (db.select(db.exerciseFavorites)..where(
               (tbl) =>
                   tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
             ))
+            .getSingleOrNull();
+
+    if (existing != null) {
+      // Remove from favorites
+      await (db.delete(db.exerciseFavorites)..where(
+            (tbl) =>
+                tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
+          ))
           .go();
     } else {
       // Add to favorites
-      await db.into(db.exerciseFavorites).insert(
+      await db
+          .into(db.exerciseFavorites)
+          .insert(
             ExerciseFavoritesCompanion(
               userId: Value(userId),
               exerciseId: Value(exerciseId),
@@ -115,7 +117,9 @@ class FavoritesNotifier {
       throw Exception('Database or user not available');
     }
 
-    await db.into(db.exerciseFavorites).insert(
+    await db
+        .into(db.exerciseFavorites)
+        .insert(
           ExerciseFavoritesCompanion(
             userId: Value(userId),
             exerciseId: Value(exerciseId),
@@ -133,11 +137,10 @@ class FavoritesNotifier {
       throw Exception('Database or user not available');
     }
 
-    await (db.delete(db.exerciseFavorites)
-          ..where(
-            (tbl) =>
-                tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
-          ))
+    await (db.delete(db.exerciseFavorites)..where(
+          (tbl) =>
+              tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
+        ))
         .go();
   }
 
@@ -150,12 +153,12 @@ class FavoritesNotifier {
       return false;
     }
 
-    final result = await (db.select(db.exerciseFavorites)
-          ..where(
-            (tbl) =>
-                tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
-          ))
-        .getSingleOrNull();
+    final result =
+        await (db.select(db.exerciseFavorites)..where(
+              (tbl) =>
+                  tbl.userId.equals(userId) & tbl.exerciseId.equals(exerciseId),
+            ))
+            .getSingleOrNull();
 
     return result != null;
   }

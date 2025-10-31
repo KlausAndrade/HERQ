@@ -4,7 +4,7 @@ import 'dart:io';
 
 void main(List<String> args) async {
   final envFile = File('.env');
-  
+
   if (!envFile.existsSync()) {
     print('❌ .env file not found!');
     print('📝 Please copy .env.example to .env and fill in your values.');
@@ -13,12 +13,12 @@ void main(List<String> args) async {
 
   final envContent = envFile.readAsStringSync();
   final envVars = <String, String>{};
-  
+
   // Parse .env file
   for (final line in envContent.split('\n')) {
     final trimmedLine = line.trim();
     if (trimmedLine.isEmpty || trimmedLine.startsWith('#')) continue;
-    
+
     final parts = trimmedLine.split('=');
     if (parts.length >= 2) {
       final key = parts[0].trim();
@@ -28,20 +28,22 @@ void main(List<String> args) async {
   }
 
   // Inject into Android strings.xml
-  final androidStringsFile = File('android/app/src/main/res/values/strings.xml');
+  final androidStringsFile = File(
+    'android/app/src/main/res/values/strings.xml',
+  );
   if (androidStringsFile.existsSync()) {
     var androidContent = androidStringsFile.readAsStringSync();
-    
+
     androidContent = androidContent.replaceAll(
       'FACEBOOK_ID_PLACEHOLDER',
-      envVars['FACEBOOK_ID'] ?? 'YOUR_FACEBOOK_APP_ID'
+      envVars['FACEBOOK_ID'] ?? 'YOUR_FACEBOOK_APP_ID',
     );
-    
+
     androidContent = androidContent.replaceAll(
       'FACEBOOK_CLIENT_TOKEN_PLACEHOLDER',
-      envVars['FACEBOOK_CLIENT_TOKEN'] ?? 'YOUR_FACEBOOK_CLIENT_TOKEN'
+      envVars['FACEBOOK_CLIENT_TOKEN'] ?? 'YOUR_FACEBOOK_CLIENT_TOKEN',
     );
-    
+
     androidStringsFile.writeAsStringSync(androidContent);
     print('✅ Updated Android strings.xml');
   }
@@ -50,17 +52,17 @@ void main(List<String> args) async {
   final iosInfoFile = File('ios/Runner/Info.plist');
   if (iosInfoFile.existsSync()) {
     var iosContent = iosInfoFile.readAsStringSync();
-    
+
     iosContent = iosContent.replaceAll(
       'YOUR_FACEBOOK_APP_ID',
-      envVars['FACEBOOK_ID'] ?? 'YOUR_FACEBOOK_APP_ID'
+      envVars['FACEBOOK_ID'] ?? 'YOUR_FACEBOOK_APP_ID',
     );
-    
+
     iosContent = iosContent.replaceAll(
       'YOUR_FACEBOOK_CLIENT_TOKEN',
-      envVars['FACEBOOK_CLIENT_TOKEN'] ?? 'YOUR_FACEBOOK_CLIENT_TOKEN'
+      envVars['FACEBOOK_CLIENT_TOKEN'] ?? 'YOUR_FACEBOOK_CLIENT_TOKEN',
     );
-    
+
     iosInfoFile.writeAsStringSync(iosContent);
     print('✅ Updated iOS Info.plist');
   }

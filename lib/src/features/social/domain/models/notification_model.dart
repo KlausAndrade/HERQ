@@ -57,17 +57,17 @@ class SocialNotification {
   final bool isRead;
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'user_id': userId,
-        'type': type.name,
-        'title': title,
-        'body': body,
-        'created_at': createdAt.toIso8601String(),
-        'post_id': postId,
-        'comment_id': commentId,
-        'from_user_id': fromUserId,
-        'from_user_name': fromUserName,
-        'from_user_avatar': fromUserAvatar,
-        'is_read': isRead,
-      };
+    'id': id,
+    'user_id': userId,
+    'type': type.name,
+    'title': title,
+    'body': body,
+    'created_at': createdAt.toIso8601String(),
+    'post_id': postId,
+    'comment_id': commentId,
+    'from_user_id': fromUserId,
+    'from_user_name': fromUserName,
+    'from_user_avatar': fromUserAvatar,
+    'is_read': isRead,
+  };
 }

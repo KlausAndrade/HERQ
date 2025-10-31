@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Provider for managing app locale
-final localeProvider =
-    StateNotifierProvider<LocaleNotifier, Locale>((ref) => LocaleNotifier());
+final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>(
+  (ref) => LocaleNotifier(),
+);
 
 /// Notifier for managing locale state with persistence
 class LocaleNotifier extends StateNotifier<Locale> {
@@ -73,8 +74,8 @@ class LocaleNotifier extends StateNotifier<Locale> {
 
   /// Get all supported locales
   static List<Locale> get supportedLocales => const [
-        Locale('en'),
-        Locale('pt'),
-        Locale('es'),
-      ];
+    Locale('en'),
+    Locale('pt'),
+    Locale('es'),
+  ];
 }

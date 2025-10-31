@@ -123,9 +123,9 @@ class _BackupTab extends StatelessWidget {
           children: [
             Text(
               'Backup Status',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -182,9 +182,9 @@ class _BackupTab extends StatelessWidget {
           children: [
             Text(
               'Backup Actions',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _BackupAction(
@@ -230,9 +230,9 @@ class _BackupTab extends StatelessWidget {
           children: [
             Text(
               'Recent Backups',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _BackupItem(
@@ -276,9 +276,9 @@ class _BackupTab extends StatelessWidget {
       'This will create a complete backup of all data. This may take several minutes.',
       () {
         // TODO: Implement full backup
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Full backup started')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Full backup started')));
       },
     );
   }
@@ -298,17 +298,11 @@ class _BackupTab extends StatelessWidget {
   }
 
   void _scheduleBackup(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => _ScheduleBackupDialog(),
-    );
+    showDialog(context: context, builder: (context) => _ScheduleBackupDialog());
   }
 
   void _restoreFromBackup(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => _RestoreBackupDialog(),
-    );
+    showDialog(context: context, builder: (context) => _RestoreBackupDialog());
   }
 
   void _showConfirmationDialog(
@@ -372,9 +366,9 @@ class _ExportTab extends StatelessWidget {
           children: [
             Text(
               'Export Options',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _ExportOption(
@@ -420,9 +414,9 @@ class _ExportTab extends StatelessWidget {
           children: [
             Text(
               'Export History',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _ExportItem(
@@ -569,9 +563,9 @@ class _ImportTab extends StatelessWidget {
           children: [
             Text(
               'Import Options',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _ImportOption(
@@ -617,9 +611,9 @@ class _ImportTab extends StatelessWidget {
           children: [
             Text(
               'Import History',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _ImportItem(
@@ -717,9 +711,9 @@ class _StatusCard extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
           ],
         ),
@@ -782,7 +776,9 @@ class _BackupItem extends StatelessWidget {
           child: Text(
             type[0],
             style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         title: Text(name),
@@ -799,10 +795,7 @@ class _BackupItem extends StatelessWidget {
                   labelStyle: TextStyle(color: statusColor, fontSize: 12),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  createdAt,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                Text(createdAt, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ],
@@ -940,10 +933,7 @@ class _ExportItem extends StatelessWidget {
                   labelStyle: TextStyle(color: statusColor, fontSize: 12),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  createdAt,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                Text(createdAt, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ],
@@ -1060,10 +1050,7 @@ class _ImportItem extends StatelessWidget {
                   labelStyle: TextStyle(color: statusColor, fontSize: 12),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  createdAt,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                Text(createdAt, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ],
@@ -1176,9 +1163,9 @@ class _ScheduleBackupDialogState extends State<_ScheduleBackupDialog> {
           onPressed: () {
             // TODO: Implement schedule backup
             Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Backup scheduled')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Backup scheduled')));
           },
           child: const Text('Schedule'),
         ),
@@ -1193,7 +1180,8 @@ class _RestoreBackupDialog extends StatelessWidget {
     return AlertDialog(
       title: const Text('Restore from Backup'),
       content: const Text(
-          'Select a backup to restore from. This will replace all current data.'),
+        'Select a backup to restore from. This will replace all current data.',
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),

@@ -20,9 +20,9 @@ Future<void> fixDisplayNames(AppDatabase db) async {
     }
 
     // Fix: Set to "Unknown Athlete"
-    await db.update(db.users).replace(
-          user.copyWith(displayName: 'Unknown Athlete'),
-        );
+    await db
+        .update(db.users)
+        .replace(user.copyWith(displayName: 'Unknown Athlete'));
 
     print(
       '  🔧 Fixed user ${user.id}: "${user.displayName}" → "Unknown Athlete"',

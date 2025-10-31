@@ -8,10 +8,7 @@ import '../../../../core/services/notification_service.dart';
 import '../providers/social_providers.dart';
 
 class PostCommentsScreen extends ConsumerStatefulWidget {
-  const PostCommentsScreen({
-    required this.postId,
-    super.key,
-  });
+  const PostCommentsScreen({required this.postId, super.key});
 
   final String postId;
 
@@ -41,13 +38,12 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
     final postAsync = ref.watch(singlePostProvider(widget.postId));
     final commentsAsync = ref.watch(postCommentsProvider(widget.postId));
     final currentUser = ref.watch(currentUserProvider);
-    final currentUserProfile =
-        ref.watch(userProfileProvider(currentUser?.id ?? ''));
+    final currentUserProfile = ref.watch(
+      userProfileProvider(currentUser?.id ?? ''),
+    );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Comments'),
-      ),
+      appBar: AppBar(title: const Text('Comments')),
       body: Column(
         children: [
           // Post summary
@@ -59,9 +55,7 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                    ),
+                    bottom: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                 ),
                 child: Row(
@@ -120,8 +114,9 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                   itemBuilder: (context, index) {
                     final comment = comments[index];
                     final isCurrentUser = comment.userId == currentUser?.id;
-                    final commentUserAsync =
-                        ref.watch(userProfileProvider(comment.userId));
+                    final commentUserAsync = ref.watch(
+                      userProfileProvider(comment.userId),
+                    );
 
                     return commentUserAsync.when(
                       data: (user) => ListTile(
@@ -154,15 +149,11 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                             Text(comment.text),
                             const SizedBox(height: 4),
                             Text(
-                              DateFormat('MMM d, h:mm a')
-                                  .format(comment.createdAt),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
+                              DateFormat(
+                                'MMM d, h:mm a',
+                              ).format(comment.createdAt),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.grey, fontSize: 12),
                             ),
                           ],
                         ),
@@ -191,15 +182,11 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                             Text(comment.text),
                             const SizedBox(height: 4),
                             Text(
-                              DateFormat('MMM d, h:mm a')
-                                  .format(comment.createdAt),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
+                              DateFormat(
+                                'MMM d, h:mm a',
+                              ).format(comment.createdAt),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.grey, fontSize: 12),
                             ),
                           ],
                         ),
@@ -222,15 +209,11 @@ class _PostCommentsScreenState extends ConsumerState<PostCommentsScreen> {
                             Text(comment.text),
                             const SizedBox(height: 4),
                             Text(
-                              DateFormat('MMM d, h:mm a')
-                                  .format(comment.createdAt),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
+                              DateFormat(
+                                'MMM d, h:mm a',
+                              ).format(comment.createdAt),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.grey, fontSize: 12),
                             ),
                           ],
                         ),

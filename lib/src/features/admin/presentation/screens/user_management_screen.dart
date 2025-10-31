@@ -23,7 +23,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     'Created Date',
     'Last Active',
     'Name',
-    'Email'
+    'Email',
   ];
 
   @override
@@ -102,13 +102,17 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                                       labelText: 'Filter',
                                       border: OutlineInputBorder(),
                                       contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 6),
+                                        horizontal: 8,
+                                        vertical: 6,
+                                      ),
                                     ),
                                     items: _filterOptions.map((option) {
                                       return DropdownMenuItem(
                                         value: option,
-                                        child: Text(option,
-                                            overflow: TextOverflow.ellipsis),
+                                        child: Text(
+                                          option,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       );
                                     }).toList(),
                                     onChanged: (value) {
@@ -126,13 +130,17 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                                       labelText: 'Sort by',
                                       border: OutlineInputBorder(),
                                       contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 6),
+                                        horizontal: 8,
+                                        vertical: 6,
+                                      ),
                                     ),
                                     items: _sortOptions.map((option) {
                                       return DropdownMenuItem(
                                         value: option,
-                                        child: Text(option,
-                                            overflow: TextOverflow.ellipsis),
+                                        child: Text(
+                                          option,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       );
                                     }).toList(),
                                     onChanged: (value) {
@@ -149,9 +157,11 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 IconButton(
-                                  icon: Icon(_sortAscending
-                                      ? Icons.arrow_upward
-                                      : Icons.arrow_downward),
+                                  icon: Icon(
+                                    _sortAscending
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                  ),
                                   onPressed: () {
                                     setState(() {
                                       _sortAscending = !_sortAscending;
@@ -176,7 +186,9 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                                   labelText: 'Filter',
                                   border: OutlineInputBorder(),
                                   contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 8),
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
                                 ),
                                 items: _filterOptions.map((option) {
                                   return DropdownMenuItem(
@@ -199,7 +211,9 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                                   labelText: 'Sort by',
                                   border: OutlineInputBorder(),
                                   contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 8),
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
                                 ),
                                 items: _sortOptions.map((option) {
                                   return DropdownMenuItem(
@@ -216,9 +230,11 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                             ),
                             const SizedBox(width: 8),
                             IconButton(
-                              icon: Icon(_sortAscending
-                                  ? Icons.arrow_upward
-                                  : Icons.arrow_downward),
+                              icon: Icon(
+                                _sortAscending
+                                    ? Icons.arrow_upward
+                                    : Icons.arrow_downward,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   _sortAscending = !_sortAscending;
@@ -286,10 +302,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   }
 
   void _addUser() {
-    showDialog(
-      context: context,
-      builder: (context) => _AddUserDialog(),
-    );
+    showDialog(context: context, builder: (context) => _AddUserDialog());
   }
 
   void _editUser(BuildContext context, Map<String, dynamic> user) {
@@ -303,7 +316,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     // TODO: Implement user suspend functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text('Suspend user ${user['displayName']} coming soon')),
+        content: Text('Suspend user ${user['displayName']} coming soon'),
+      ),
     );
   }
 
@@ -353,15 +367,11 @@ class _UserList extends ConsumerWidget {
     if (searchQuery.isNotEmpty) {
       final searchLower = searchQuery.toLowerCase();
       filtered = filtered.where((user) {
-        return (user['email']
-                    ?.toString()
-                    .toLowerCase()
-                    .contains(searchLower) ??
+        return (user['email']?.toString().toLowerCase().contains(searchLower) ??
                 false) ||
-            (user['displayName']
-                    ?.toString()
-                    .toLowerCase()
-                    .contains(searchLower) ??
+            (user['displayName']?.toString().toLowerCase().contains(
+                  searchLower,
+                ) ??
                 false) ||
             (user['id']?.toString().toLowerCase().contains(searchLower) ??
                 false);
@@ -389,8 +399,9 @@ class _UserList extends ConsumerWidget {
       int comparison = 0;
       switch (sortBy) {
         case 'Created Date':
-          comparison =
-              (a['createdAt'] as String).compareTo(b['createdAt'] as String);
+          comparison = (a['createdAt'] as String).compareTo(
+            b['createdAt'] as String,
+          );
           break;
         case 'Last Active':
           final aLastSignIn = a['lastSignInAt'] as String?;
@@ -405,8 +416,9 @@ class _UserList extends ConsumerWidget {
             comparison = aLastSignIn.compareTo(bLastSignIn);
           break;
         case 'Name':
-          comparison = (a['displayName'] as String)
-              .compareTo(b['displayName'] as String);
+          comparison = (a['displayName'] as String).compareTo(
+            b['displayName'] as String,
+          );
           break;
         case 'Email':
           comparison = (a['email'] as String).compareTo(b['email'] as String);
@@ -478,25 +490,27 @@ class UserCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
-        leading: CircleAvatar(
-          child: Text(user['displayName'][0]),
-        ),
+        leading: CircleAvatar(child: Text(user['displayName'][0])),
         title: Text(user['displayName']),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(user['email']),
             if (isSuspended)
-              const Text('Status: Suspended',
-                  style: TextStyle(color: Colors.orange)),
+              const Text(
+                'Status: Suspended',
+                style: TextStyle(color: Colors.orange),
+              ),
             if (isBanned)
               Text(
-                  'Status: Banned until ${DateTime.parse(user['bannedUntil']).toLocal().toShortDate()}',
-                  style: const TextStyle(color: Colors.red)),
+                'Status: Banned until ${DateTime.parse(user['bannedUntil']).toLocal().toShortDate()}',
+                style: const TextStyle(color: Colors.red),
+              ),
             Text('Workouts: ${user['workoutCount'] ?? 0}'),
             if (user['lastWorkoutAt'] != null)
               Text(
-                  'Last Workout: ${DateTime.parse(user['lastWorkoutAt']).toLocal().toShortDate()}'),
+                'Last Workout: ${DateTime.parse(user['lastWorkoutAt']).toLocal().toShortDate()}',
+              ),
           ],
         ),
         trailing: PopupMenuButton<String>(
@@ -519,10 +533,13 @@ class UserCard extends StatelessWidget {
           itemBuilder: (context) => [
             const PopupMenuItem(value: 'edit', child: Text('Edit')),
             PopupMenuItem(
-                value: 'suspend',
-                child: Text(isSuspended ? 'Unsuspend' : 'Suspend')),
+              value: 'suspend',
+              child: Text(isSuspended ? 'Unsuspend' : 'Suspend'),
+            ),
             PopupMenuItem(
-                value: 'ban', child: Text(isBanned ? 'Unban' : 'Ban')),
+              value: 'ban',
+              child: Text(isBanned ? 'Unban' : 'Ban'),
+            ),
             const PopupMenuItem(value: 'delete', child: Text('Delete')),
           ],
         ),
@@ -570,8 +587,10 @@ class _AddUserDialogState extends ConsumerState<_AddUserDialog> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(
-                    'User ${_displayNameController.text} added successfully!')),
+              content: Text(
+                'User ${_displayNameController.text} added successfully!',
+              ),
+            ),
           );
           Navigator.of(context).pop();
           ref.refresh(userManagementProvider); // Refresh user list
@@ -581,9 +600,9 @@ class _AddUserDialogState extends ConsumerState<_AddUserDialog> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding user: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error adding user: $e')));
       }
     } finally {
       if (mounted) {

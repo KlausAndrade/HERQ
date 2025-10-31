@@ -18,8 +18,8 @@ class SetEntries extends Table {
 
   // New fields for different exercise types and supersets
   TextColumn get setType => text().withDefault(
-        const Constant('working'),
-      )(); // 'warmup', 'working', 'drop', 'failure'
+    const Constant('working'),
+  )(); // 'warmup', 'working', 'drop', 'failure'
   TextColumn get supersetId =>
       text().nullable()(); // Groups exercises in a superset
   IntColumn get supersetOrder =>

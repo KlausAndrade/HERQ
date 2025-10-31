@@ -15,10 +15,7 @@ import '../providers/exercise_favorites_provider.dart';
 import '../providers/exercise_providers.dart';
 
 class ExerciseDetailScreen extends ConsumerWidget {
-  const ExerciseDetailScreen({
-    required this.exerciseId,
-    super.key,
-  });
+  const ExerciseDetailScreen({required this.exerciseId, super.key});
 
   final String exerciseId;
 
@@ -32,12 +29,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
       data: (exercise) {
         if (exercise == null) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text(S.of(context)!.exerciseNotFound),
-            ),
-            body: Center(
-              child: Text(S.of(context)!.exerciseNotFoundMessage),
-            ),
+            appBar: AppBar(title: Text(S.of(context)!.exerciseNotFound)),
+            body: Center(child: Text(S.of(context)!.exerciseNotFoundMessage)),
           );
         }
 
@@ -51,14 +44,14 @@ class ExerciseDetailScreen extends ConsumerWidget {
               ),
               title: Row(
                 children: [
-                  Expanded(
-                    child: Text(exercise.name),
-                  ),
+                  Expanded(child: Text(exercise.name)),
                   if (isAdminMode) ...[
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(12),
@@ -179,7 +172,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
                             children: [
                               _InfoChip(
                                 icon: Icons.fitness_center,
-                                label: exercise.equipment[0].toUpperCase() +
+                                label:
+                                    exercise.equipment[0].toUpperCase() +
                                     exercise.equipment
                                         .substring(1)
                                         .replaceAll('_', ' '),
@@ -202,14 +196,16 @@ class ExerciseDetailScreen extends ConsumerWidget {
                             children: [
                               _InfoChip(
                                 icon: _getCategoryIcon(exercise.category),
-                                label: exercise.category[0].toUpperCase() +
+                                label:
+                                    exercise.category[0].toUpperCase() +
                                     exercise.category.substring(1),
                               ),
                               _ExerciseTypeChip(type: exercise.exerciseType),
                               if (exercise.parentExerciseId != null &&
                                   exercise.variantType != null)
                                 _VariantChip(
-                                    variantType: exercise.variantType!),
+                                  variantType: exercise.variantType!,
+                                ),
                             ],
                           ),
                         ],
@@ -222,8 +218,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
                   // Exercise Progression/Variants
                   Consumer(
                     builder: (context, ref, child) {
-                      final progressionChainAsync = ref
-                          .watch(exerciseProgressionChainProvider(exerciseId));
+                      final progressionChainAsync = ref.watch(
+                        exerciseProgressionChainProvider(exerciseId),
+                      );
 
                       return progressionChainAsync.when(
                         data: (progressionChain) {
@@ -241,9 +238,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                           children: [
                                             Icon(
                                               Icons.trending_up,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.primary,
                                             ),
                                             const SizedBox(width: 8),
                                             Text(
@@ -258,10 +255,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                           ],
                                         ),
                                         const SizedBox(height: 12),
-                                        ...progressionChain
-                                            .asMap()
-                                            .entries
-                                            .map((entry) {
+                                        ...progressionChain.asMap().entries.map((
+                                          entry,
+                                        ) {
                                           final index = entry.key;
                                           final exerciseInChain = entry.value;
                                           final isCurrentExercise =
@@ -269,7 +265,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
 
                                           return Padding(
                                             padding: const EdgeInsets.only(
-                                                bottom: 8),
+                                              bottom: 8,
+                                            ),
                                             child: Row(
                                               children: [
                                                 Container(
@@ -277,9 +274,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                   height: 24,
                                                   decoration: BoxDecoration(
                                                     color: isCurrentExercise
-                                                        ? Theme.of(context)
-                                                            .colorScheme
-                                                            .primary
+                                                        ? Theme.of(
+                                                            context,
+                                                          ).colorScheme.primary
                                                         : Colors.grey[300],
                                                     shape: BoxShape.circle,
                                                   ),
@@ -310,37 +307,39 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                     child: Container(
                                                       padding:
                                                           const EdgeInsets.all(
-                                                        12,
-                                                      ),
+                                                            12,
+                                                          ),
                                                       decoration: BoxDecoration(
                                                         color: isCurrentExercise
                                                             ? Theme.of(context)
-                                                                .colorScheme
-                                                                .primary
-                                                                .withOpacity(
-                                                                    0.1)
+                                                                  .colorScheme
+                                                                  .primary
+                                                                  .withOpacity(
+                                                                    0.1,
+                                                                  )
                                                             : Theme.of(context)
-                                                                .colorScheme
-                                                                .surface,
+                                                                  .colorScheme
+                                                                  .surface,
                                                         borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                          8,
-                                                        ),
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
                                                         border: Border.all(
                                                           color:
                                                               isCurrentExercise
-                                                                  ? Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .primary
-                                                                  : Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .outline
-                                                                      .withOpacity(
-                                                                        0.2,
-                                                                      ),
+                                                              ? Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .primary
+                                                              : Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .colorScheme
+                                                                    .outline
+                                                                    .withOpacity(
+                                                                      0.2,
+                                                                    ),
                                                         ),
                                                       ),
                                                       child: Row(
@@ -354,13 +353,13 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                                                 Text(
                                                                   exerciseInChain
                                                                       .name,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontWeight: isCurrentExercise
+                                                                  style: TextStyle(
+                                                                    fontWeight:
+                                                                        isCurrentExercise
                                                                         ? FontWeight
-                                                                            .bold
+                                                                              .bold
                                                                         : FontWeight
-                                                                            .w500,
+                                                                              .w500,
                                                                   ),
                                                                 ),
                                                                 const SizedBox(
@@ -427,12 +426,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
                           children: [
                             Text(
                               'Secondary Muscles',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
                             Wrap(
@@ -445,8 +440,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                         muscle[0].toUpperCase() +
                                             muscle.substring(1),
                                       ),
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.surface,
+                                      backgroundColor: Theme.of(
+                                        context,
+                                      ).colorScheme.surface,
                                     ),
                                   )
                                   .toList(),
@@ -467,12 +463,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
                         children: [
                           Text(
                             S.of(context)!.instructions,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -496,12 +488,8 @@ class ExerciseDetailScreen extends ConsumerWidget {
                           children: [
                             Text(
                               'Tags',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
                             Wrap(
@@ -513,10 +501,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
                                       label: Text(
                                         tag.replaceAll('_', ' ').toUpperCase(),
                                       ),
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary
-                                          .withOpacity(0.1),
+                                      backgroundColor: Theme.of(
+                                        context,
+                                      ).colorScheme.secondary.withOpacity(0.1),
                                     ),
                                   )
                                   .toList(),
@@ -563,20 +550,14 @@ class ExerciseDetailScreen extends ConsumerWidget {
       loading: () => SwipeBackWrapperWithFeedback(
         onSwipeBack: () => context.go('/exercises'),
         child: Scaffold(
-          appBar: AppBar(
-            title: Text(S.of(context)!.loading),
-          ),
-          body: const Center(
-            child: CircularProgressIndicator(),
-          ),
+          appBar: AppBar(title: Text(S.of(context)!.loading)),
+          body: const Center(child: CircularProgressIndicator()),
         ),
       ),
       error: (error, stack) => SwipeBackWrapperWithFeedback(
         onSwipeBack: () => context.go('/exercises'),
         child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Error'),
-          ),
+          appBar: AppBar(title: const Text('Error')),
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -609,45 +590,39 @@ class ExerciseDetailScreen extends ConsumerWidget {
 }
 
 class _InfoChip extends StatelessWidget {
-  const _InfoChip({
-    required this.icon,
-    required this.label,
-  });
+  const _InfoChip({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+        color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+      ),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
           ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
-                  ),
-            ),
-          ],
-        ),
-      );
+      ],
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -853,11 +828,14 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
     try {
       // Create a temporary quick workout template
       final templateId = 'quick_${DateTime.now().millisecondsSinceEpoch}';
-      await database.into(database.workoutTemplates).insert(
+      await database
+          .into(database.workoutTemplates)
+          .insert(
             WorkoutTemplatesCompanion.insert(
               id: templateId,
-              userId: Value(UserContextService.instance
-                  .getCurrentUserId()), // ✅ USER ISOLATION
+              userId: Value(
+                UserContextService.instance.getCurrentUserId(),
+              ), // ✅ USER ISOLATION
               name: 'Quick: ${exercise.name}',
               exerciseIds: Value([exercise.id]),
               tags: const [],
@@ -924,8 +902,9 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
                     itemCount: templates.length,
                     itemBuilder: (context, index) {
                       final template = templates[index];
-                      final alreadyAdded =
-                          template.exerciseIds.contains(exercise.id);
+                      final alreadyAdded = template.exerciseIds.contains(
+                        exercise.id,
+                      );
 
                       return ListTile(
                         leading: Icon(
@@ -935,8 +914,9 @@ extension ExerciseDetailScreenExtensions on ExerciseDetailScreen {
                           color: alreadyAdded ? Colors.green : null,
                         ),
                         title: Text(template.name),
-                        subtitle:
-                            Text('${template.exerciseIds.length} exercises'),
+                        subtitle: Text(
+                          '${template.exerciseIds.length} exercises',
+                        ),
                         enabled: !alreadyAdded,
                         onTap: alreadyAdded
                             ? null

@@ -68,10 +68,7 @@ class WebHomeScreen extends ConsumerWidget {
             const SizedBox(height: 32),
 
             // Recent Templates
-            Text(
-              'Quick Start',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text('Quick Start', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
             templates.when(
               data: (data) {
@@ -142,8 +139,9 @@ class WebHomeScreen extends ConsumerWidget {
                     child: Padding(
                       padding: EdgeInsets.all(24),
                       child: Center(
-                        child:
-                            Text('No workouts yet. Start your first workout!'),
+                        child: Text(
+                          'No workouts yet. Start your first workout!',
+                        ),
                       ),
                     ),
                   );
@@ -155,13 +153,16 @@ class WebHomeScreen extends ConsumerWidget {
                   itemCount: data.length > 5 ? 5 : data.length,
                   itemBuilder: (context, index) {
                     final session = data[index];
-                    final date =
-                        DateTime.parse(session['started_at'] as String);
+                    final date = DateTime.parse(
+                      session['started_at'] as String,
+                    );
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
                       child: ListTile(
-                        leading:
-                            const Icon(Icons.check_circle, color: Colors.green),
+                        leading: const Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                        ),
                         title: Text(session['name'] ?? 'Workout'),
                         subtitle: Text(
                           '${session['total_sets'] ?? 0} sets • ${_formatDate(date)}',
@@ -208,29 +209,23 @@ class _QuickActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                Icon(icon, size: 48, color: const Color(0xFF6366F1)),
-                const SizedBox(height: 12),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ),
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            Icon(icon, size: 48, color: const Color(0xFF6366F1)),
+            const SizedBox(height: 12),
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

@@ -42,15 +42,12 @@ Future<void> main() async {
         : (dotenv.env['SUPABASE_ANON_KEY'] ?? '');
 
     // Initialize Supabase for web
-    await Supabase.initialize(
-      url: url,
-      anonKey: anonKey,
-    );
+    await Supabase.initialize(url: url, anonKey: anonKey);
 
     print('✅ Web platform initialized with Supabase');
     print('   URL: ${url.isNotEmpty ? "configured" : "NOT SET"}');
     print('   Anon Key: ${anonKey.isNotEmpty ? "configured" : "NOT SET"}');
-    
+
     // Test Supabase connection
     try {
       final client = Supabase.instance.client;
@@ -64,19 +61,13 @@ Future<void> main() async {
     // Continue anyway - app should handle missing env gracefully
   }
 
-  runApp(
-    ProviderScope(
-      child: ErrorBoundary(
-        child: const HerqWebApp(),
-      ),
-    ),
-  );
+  runApp(ProviderScope(child: ErrorBoundary(child: const HerqWebApp())));
 }
 
 /// Error boundary to catch and display initialization errors
 class ErrorBoundary extends StatefulWidget {
   const ErrorBoundary({required this.child, super.key});
-  
+
   final Widget child;
 
   @override
@@ -89,7 +80,7 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
   @override
   void initState() {
     super.initState();
-    
+
     // Catch Flutter errors
     FlutterError.onError = (FlutterErrorDetails details) {
       print('❌ Flutter Error: ${details.exception}');
@@ -178,18 +169,18 @@ class HerqWebApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-        title: 'HERQ - Smart Strength Training',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF00BFA6), // HERQ Teal
-            brightness: Brightness.dark,
-          ),
-          useMaterial3: true,
-          scaffoldBackgroundColor: const Color(0xFF141516), // HERQ Charcoal
-        ),
-        routerConfig: _router,
-        debugShowCheckedModeBanner: false,
-      );
+    title: 'HERQ - Smart Strength Training',
+    theme: ThemeData(
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF00BFA6), // HERQ Teal
+        brightness: Brightness.dark,
+      ),
+      useMaterial3: true,
+      scaffoldBackgroundColor: const Color(0xFF141516), // HERQ Charcoal
+    ),
+    routerConfig: _router,
+    debugShowCheckedModeBanner: false,
+  );
 }
 
 final _router = GoRouter(
@@ -221,18 +212,12 @@ final _router = GoRouter(
     }
   },
   routes: [
-    GoRoute(
-      path: '/auth',
-      builder: (context, state) => const WebAuthScreen(),
-    ),
+    GoRoute(path: '/auth', builder: (context, state) => const WebAuthScreen()),
     GoRoute(
       path: '/auth/callback',
       builder: (context, state) => const AuthCallbackScreen(),
     ),
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const WebHomeScreen(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const WebHomeScreen()),
     GoRoute(
       path: '/templates',
       builder: (context, state) => const WebTemplatesScreen(),

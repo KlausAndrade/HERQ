@@ -65,12 +65,7 @@ class PersonalRecordAchievement {
   }
 }
 
-enum PRType {
-  maxWeight,
-  totalVolume,
-  maxReps,
-  oneRepMax,
-}
+enum PRType { maxWeight, totalVolume, maxReps, oneRepMax }
 
 class WorkoutAchievements {
   // Consecutive workout days

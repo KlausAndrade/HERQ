@@ -18,9 +18,9 @@ final firstTimeUserProvider = FutureProvider<bool>((ref) async {
       return false;
     }
 
-    final completedWorkouts = await (database.select(database.workoutSessions)
-          ..where((tbl) => tbl.completedAt.isNotNull()))
-        .get();
+    final completedWorkouts = await (database.select(
+      database.workoutSessions,
+    )..where((tbl) => tbl.completedAt.isNotNull())).get();
 
     // If no completed workouts, this is a first-time user
     return completedWorkouts.isEmpty;

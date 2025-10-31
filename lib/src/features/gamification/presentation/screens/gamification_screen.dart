@@ -78,8 +78,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
           // Calendar Tab
           workoutsAsync.when(
             data: (workouts) {
-              final completedWorkouts =
-                  workouts.where((w) => w.completedAt != null).toList();
+              final completedWorkouts = workouts
+                  .where((w) => w.completedAt != null)
+                  .toList();
               return completedWorkouts.isNotEmpty
                   ? WorkoutCalendar(
                       workouts: completedWorkouts,
@@ -156,8 +157,8 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                     Text(
                       'Workout Streak',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const StreakBadge(size: 50),
                   ],
@@ -202,9 +203,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
               children: [
                 Text(
                   'Lifetime Stats',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 _StatRow(
@@ -240,8 +241,11 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
 
   Widget _buildAchievementsTab(List<UserAchievement> userAchievements) {
     // Group achievements by category
-    final Map<AchievementCategory,
-        List<MapEntry<Achievement, UserAchievement?>>> grouped = {};
+    final Map<
+      AchievementCategory,
+      List<MapEntry<Achievement, UserAchievement?>>
+    >
+    grouped = {};
 
     for (final achievement in Achievements.all) {
       final userAchievement = userAchievements
@@ -249,8 +253,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
           .firstOrNull;
 
       grouped.putIfAbsent(achievement.category, () => []);
-      grouped[achievement.category]!
-          .add(MapEntry(achievement, userAchievement));
+      grouped[achievement.category]!.add(
+        MapEntry(achievement, userAchievement),
+      );
     }
 
     // Sort each category: completed last, then by progress
@@ -288,9 +293,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                 const SizedBox(height: 16),
                 Text(
                   S.of(context)!.achievementProgress,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -299,7 +304,8 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
                 ),
                 const SizedBox(height: 16),
                 LinearProgressIndicator(
-                  value: userAchievements.where((a) => a.isCompleted).length /
+                  value:
+                      userAchievements.where((a) => a.isCompleted).length /
                       Achievements.all.length,
                   minHeight: 8,
                   backgroundColor: Colors.grey.shade200,
@@ -318,9 +324,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen>
               child: Text(
                 _getCategoryName(category),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ),
             ...grouped[category]!.map((entry) {
@@ -385,36 +391,33 @@ class _StatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: iconColor.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Column(
+      children: [
+        Icon(icon, color: iconColor, size: 32),
+        const SizedBox(height: 8),
+        Text(label, style: Theme.of(context).textTheme.bodySmall),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: iconColor,
+          ),
         ),
-        child: Column(
-          children: [
-            Icon(icon, color: iconColor, size: 32),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: iconColor,
-                  ),
-            ),
-            Text(
-              subtitle,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey.shade600,
-                  ),
-            ),
-          ],
+        Text(
+          subtitle,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
         ),
-      );
+      ],
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -439,26 +442,23 @@ class _StatRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Row(
-          children: [
-            Icon(icon, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                label,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-          ],
+    padding: const EdgeInsets.symmetric(vertical: 12),
+    child: Row(
+      children: [
+        Icon(icon, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
         ),
-      );
+        Text(
+          value,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      ],
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

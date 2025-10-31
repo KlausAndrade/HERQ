@@ -7,11 +7,7 @@ import '../../data/providers/gamification_provider.dart';
 import '../../domain/models/achievement.dart';
 
 class StreakBadge extends ConsumerWidget {
-  const StreakBadge({
-    super.key,
-    this.size = 40,
-    this.showText = true,
-  });
+  const StreakBadge({super.key, this.size = 40, this.showText = true});
   final double size;
   final bool showText;
 
@@ -77,10 +73,7 @@ class StreakBadge extends ConsumerWidget {
                     currentStreak != 1
                         ? S.of(context)!.days
                         : S.of(context)!.day,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: size * 0.3,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: size * 0.3),
                   ),
                 ],
               ],
@@ -102,11 +95,7 @@ class StreakBadge extends ConsumerWidget {
 }
 
 class LevelIndicator extends ConsumerWidget {
-  const LevelIndicator({
-    super.key,
-    this.showProgress = true,
-    this.size = 60,
-  });
+  const LevelIndicator({super.key, this.showProgress = true, this.size = 60});
   final bool showProgress;
   final double size;
 
@@ -123,8 +112,10 @@ class LevelIndicator extends ConsumerWidget {
 
         final level = stats.level;
         final totalXp = stats.experiencePoints;
-        final progress =
-            gamificationService.calculateLevelProgress(totalXp, level);
+        final progress = gamificationService.calculateLevelProgress(
+          totalXp,
+          level,
+        );
         final nextLevelXp = gamificationService.xpRequiredForLevel(level + 1);
         final currentLevelXp = gamificationService.xpRequiredForLevel(level);
         final xpIntoLevel = totalXp - currentLevelXp;
@@ -166,10 +157,9 @@ class LevelIndicator extends ConsumerWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.3),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withOpacity(0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -192,16 +182,16 @@ class LevelIndicator extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 S.of(context)!.levelN(level),
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               Text(
                 S.of(context)!.xpProgress(xpIntoLevel, xpNeeded),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey.shade600,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
               ),
             ],
           ],
@@ -253,11 +243,7 @@ class AchievementCard extends StatelessWidget {
                 color: isCompleted ? achievement.color : Colors.grey.shade300,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                achievement.icon,
-                color: Colors.white,
-                size: 28,
-              ),
+              child: Icon(achievement.icon, color: Colors.white, size: 28),
             ),
             const SizedBox(width: 16),
             // Details
@@ -268,9 +254,9 @@ class AchievementCard extends StatelessWidget {
                   Text(
                     achievement.title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isCompleted ? achievement.color : null,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: isCompleted ? achievement.color : null,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -291,8 +277,8 @@ class AchievementCard extends StatelessWidget {
                     Text(
                       '$progress%',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey.shade600,
-                          ),
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ] else ...[
                     Row(
@@ -338,8 +324,9 @@ class AchievementCard extends StatelessWidget {
                   Icon(
                     Icons.star,
                     size: 16,
-                    color:
-                        isCompleted ? achievement.color : Colors.grey.shade600,
+                    color: isCompleted
+                        ? achievement.color
+                        : Colors.grey.shade600,
                   ),
                   const SizedBox(width: 4),
                   Text(

@@ -18,12 +18,12 @@ final userStatsProvider = StreamProvider.autoDispose<UserStat?>((ref) {
 // Provider for user achievements (wires to current authenticated user)
 final userAchievementsProvider =
     StreamProvider.autoDispose<List<UserAchievement>>((ref) {
-  final database = ref.watch(databaseProvider);
-  final currentUser = ref.watch(currentUserProvider);
-  if (database == null || currentUser == null) return Stream.value([]);
+      final database = ref.watch(databaseProvider);
+      final currentUser = ref.watch(currentUserProvider);
+      if (database == null || currentUser == null) return Stream.value([]);
 
-  return database.watchUserAchievements(currentUser.id);
-});
+      return database.watchUserAchievements(currentUser.id);
+    });
 
 // Provider for gamification service
 final gamificationServiceProvider = Provider<GamificationService?>((ref) {
@@ -81,14 +81,16 @@ class GamificationService {
     print('  User Display Name: $userDisplayName');
 
     // Ensure user record exists
-    final existingUser = await (database.select(database.users)
-          ..where((tbl) => tbl.id.equals(uid)))
-        .getSingleOrNull();
+    final existingUser = await (database.select(
+      database.users,
+    )..where((tbl) => tbl.id.equals(uid))).getSingleOrNull();
 
     if (existingUser == null) {
       print('  ⚠️ User record not found, creating one...');
       final displayName = userDisplayName ?? 'Unknown Athlete';
-      await database.into(database.users).insertOnConflictUpdate(
+      await database
+          .into(database.users)
+          .insertOnConflictUpdate(
             UsersCompanion.insert(
               id: uid,
               email: Value(userEmail),
@@ -102,9 +104,9 @@ class GamificationService {
       print('     Display Name: $displayName');
 
       // Verify it was created
-      final verifyUser = await (database.select(database.users)
-            ..where((tbl) => tbl.id.equals(uid)))
-          .getSingleOrNull();
+      final verifyUser = await (database.select(
+        database.users,
+      )..where((tbl) => tbl.id.equals(uid))).getSingleOrNull();
       print(
         '  🔍 Verification: User ${verifyUser != null ? "FOUND" : "NOT FOUND"} in DB',
       );
@@ -117,7 +119,9 @@ class GamificationService {
       if (existingUser.displayName.isEmpty && userDisplayName != null) {
         // Update existing user if they have no display name but we have one now
         print('  🔄 Updating user record with display name...');
-        await database.into(database.users).insertOnConflictUpdate(
+        await database
+            .into(database.users)
+            .insertOnConflictUpdate(
               UsersCompanion.insert(
                 id: uid,
                 email: Value(userEmail ?? existingUser.email),
@@ -130,16 +134,18 @@ class GamificationService {
     }
 
     // Get all completed workouts
-    final workouts = await (database.select(database.workoutSessions)
-          ..where((tbl) => tbl.completedAt.isNotNull()))
-        .get();
+    final workouts = await (database.select(
+      database.workoutSessions,
+    )..where((tbl) => tbl.completedAt.isNotNull())).get();
 
     print('  Found ${workouts.length} completed workouts');
 
     if (workouts.isEmpty) {
       print('  ⚠️ No completed workouts found!');
       // Still create/update the stats entry with zeros
-      await database.into(database.userStats).insertOnConflictUpdate(
+      await database
+          .into(database.userStats)
+          .insertOnConflictUpdate(
             UserStatsCompanion.insert(
               userId: uid,
               totalWorkouts: const Value(0),
@@ -161,8 +167,10 @@ class GamificationService {
 
     // Calculate totals
     final totalWorkouts = workouts.length;
-    final totalVolume =
-        workouts.fold<double>(0, (sum, w) => sum + w.totalVolume);
+    final totalVolume = workouts.fold<double>(
+      0,
+      (sum, w) => sum + w.totalVolume,
+    );
     final totalSets = workouts.fold<int>(0, (sum, w) => sum + w.totalSets);
 
     print('  Total workouts: $totalWorkouts');
@@ -173,8 +181,11 @@ class GamificationService {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final workedOutToday = workouts.any((w) {
-      final workoutDate =
-          DateTime(w.startedAt.year, w.startedAt.month, w.startedAt.day);
+      final workoutDate = DateTime(
+        w.startedAt.year,
+        w.startedAt.month,
+        w.startedAt.day,
+      );
       return workoutDate.isAtSameMomentAs(today);
     });
 
@@ -185,14 +196,16 @@ class GamificationService {
         : 0;
     final longestStreak =
         existing != null && existing.longestStreak > currentStreak
-            ? existing.longestStreak
-            : currentStreak;
+        ? existing.longestStreak
+        : currentStreak;
 
     print('  Current streak: $currentStreak days');
     print('  Longest streak: $longestStreak days');
 
     // Update or insert user stats
-    await database.into(database.userStats).insertOnConflictUpdate(
+    await database
+        .into(database.userStats)
+        .insertOnConflictUpdate(
           UserStatsCompanion.insert(
             userId: uid,
             totalWorkouts: Value(totalWorkouts),
@@ -200,11 +213,13 @@ class GamificationService {
             longestStreak: Value(longestStreak),
             totalVolumeLifted: Value(totalVolume),
             totalSetsCompleted: Value(totalSets),
-            experiencePoints:
-                Value(existing?.experiencePoints ?? totalWorkouts * 100),
+            experiencePoints: Value(
+              existing?.experiencePoints ?? totalWorkouts * 100,
+            ),
             level: Value(existing?.level ?? 1),
-            lastWorkoutDate:
-                Value(workouts.isNotEmpty ? workouts.last.completedAt : null),
+            lastWorkoutDate: Value(
+              workouts.isNotEmpty ? workouts.last.completedAt : null,
+            ),
           ),
         );
 
@@ -253,9 +268,9 @@ class GamificationService {
 
     // Get all workout sessions ordered by date descending
     // Note: WorkoutSessions doesn't have userId, so we get all sessions
-    final sessions = await (database.select(database.workoutSessions)
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.completedAt)]))
-        .get();
+    final sessions = await (database.select(
+      database.workoutSessions,
+    )..orderBy([(tbl) => OrderingTerm.desc(tbl.completedAt)])).get();
 
     if (sessions.isEmpty) return 0;
 
@@ -313,12 +328,9 @@ class GamificationService {
     final newXp = stats.experiencePoints + xpAmount;
     final newLevel = calculateLevel(newXp);
 
-    await database.update(database.userStats).replace(
-          stats.copyWith(
-            experiencePoints: newXp,
-            level: newLevel,
-          ),
-        );
+    await database
+        .update(database.userStats)
+        .replace(stats.copyWith(experiencePoints: newXp, level: newLevel));
   }
 
   // Update stats after workout completion
@@ -338,8 +350,9 @@ class GamificationService {
 
     // Calculate new streak
     final newStreak = await calculateCurrentStreak(userId: uid);
-    final newLongestStreak =
-        newStreak > stats.longestStreak ? newStreak : stats.longestStreak;
+    final newLongestStreak = newStreak > stats.longestStreak
+        ? newStreak
+        : stats.longestStreak;
 
     // Update stats
     final updatedStats = stats.copyWith(
@@ -421,7 +434,9 @@ class GamificationService {
       if (currentProgress >= achievement.requiredProgress) {
         // Achievement unlocked!
         if (existingAchievement != null) {
-          await database.update(database.userAchievements).replace(
+          await database
+              .update(database.userAchievements)
+              .replace(
                 existingAchievement.copyWith(
                   progress: 100,
                   isCompleted: true,
@@ -429,7 +444,9 @@ class GamificationService {
                 ),
               );
         } else {
-          await database.into(database.userAchievements).insert(
+          await database
+              .into(database.userAchievements)
+              .insert(
                 UserAchievementsCompanion.insert(
                   userId: uid,
                   achievementId: achievement.id,
@@ -446,13 +463,15 @@ class GamificationService {
       } else {
         // Update progress
         if (existingAchievement != null) {
-          await database.update(database.userAchievements).replace(
-                existingAchievement.copyWith(
-                  progress: progressPercentage,
-                ),
+          await database
+              .update(database.userAchievements)
+              .replace(
+                existingAchievement.copyWith(progress: progressPercentage),
               );
         } else {
-          await database.into(database.userAchievements).insert(
+          await database
+              .into(database.userAchievements)
+              .insert(
                 UserAchievementsCompanion.insert(
                   userId: uid,
                   achievementId: achievement.id,
@@ -475,8 +494,9 @@ class GamificationService {
 
     final completed = userAchievements.where((a) => a.isCompleted).length;
     final total = Achievements.all.length;
-    final inProgress =
-        userAchievements.where((a) => !a.isCompleted && a.progress > 0).length;
+    final inProgress = userAchievements
+        .where((a) => !a.isCompleted && a.progress > 0)
+        .length;
 
     return {
       'completed': completed,
@@ -490,22 +510,22 @@ class GamificationService {
 // Database extension methods
 extension GamificationQueries on AppDatabase {
   // Watch user stats
-  Stream<UserStat?> watchUserStats(String userId) =>
-      (select(userStats)..where((tbl) => tbl.userId.equals(userId)))
-          .watchSingleOrNull();
+  Stream<UserStat?> watchUserStats(String userId) => (select(
+    userStats,
+  )..where((tbl) => tbl.userId.equals(userId))).watchSingleOrNull();
 
   // Get user stats
-  Future<UserStat?> getUserStats(String userId) =>
-      (select(userStats)..where((tbl) => tbl.userId.equals(userId)))
-          .getSingleOrNull();
+  Future<UserStat?> getUserStats(String userId) => (select(
+    userStats,
+  )..where((tbl) => tbl.userId.equals(userId))).getSingleOrNull();
 
   // Watch user achievements
-  Stream<List<UserAchievement>> watchUserAchievements(String userId) =>
-      (select(userAchievements)..where((tbl) => tbl.userId.equals(userId)))
-          .watch();
+  Stream<List<UserAchievement>> watchUserAchievements(String userId) => (select(
+    userAchievements,
+  )..where((tbl) => tbl.userId.equals(userId))).watch();
 
   // Get user achievements
-  Future<List<UserAchievement>> getUserAchievements(String userId) =>
-      (select(userAchievements)..where((tbl) => tbl.userId.equals(userId)))
-          .get();
+  Future<List<UserAchievement>> getUserAchievements(String userId) => (select(
+    userAchievements,
+  )..where((tbl) => tbl.userId.equals(userId))).get();
 }

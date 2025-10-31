@@ -15,13 +15,10 @@ class ExerciseVariantPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IconButton(
-        icon: Icon(
-          _getEquipmentIcon(currentEquipment),
-          size: 20,
-        ),
-        tooltip: _getTooltip(),
-        onPressed: () => _showPicker(context),
-      );
+    icon: Icon(_getEquipmentIcon(currentEquipment), size: 20),
+    tooltip: _getTooltip(),
+    onPressed: () => _showPicker(context),
+  );
 
   IconData _getEquipmentIcon(String? equipment) {
     switch (equipment?.toLowerCase()) {
@@ -75,8 +72,11 @@ class ExerciseVariantPicker extends StatelessWidget {
     properties.add(StringProperty('currentEquipment', currentEquipment));
     properties.add(StringProperty('currentVariant', currentVariant));
     properties.add(
-        ObjectFlagProperty<Function(String? equipment, String? variant)>.has(
-            'onChanged', onChanged));
+      ObjectFlagProperty<Function(String? equipment, String? variant)>.has(
+        'onChanged',
+        onChanged,
+      ),
+    );
   }
 }
 
@@ -99,8 +99,11 @@ class _VariantPickerSheet extends StatefulWidget {
     properties.add(StringProperty('currentEquipment', currentEquipment));
     properties.add(StringProperty('currentVariant', currentVariant));
     properties.add(
-        ObjectFlagProperty<Function(String? equipment, String? variant)>.has(
-            'onChanged', onChanged));
+      ObjectFlagProperty<Function(String? equipment, String? variant)>.has(
+        'onChanged',
+        onChanged,
+      ),
+    );
   }
 }
 
@@ -172,10 +175,7 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                   final isSelected = equipment == selectedEquipment;
                   return ChoiceChip(
                     label: Text(_formatLabel(equipment)),
-                    avatar: Icon(
-                      _getEquipmentIconForType(equipment),
-                      size: 16,
-                    ),
+                    avatar: Icon(_getEquipmentIconForType(equipment), size: 16),
                     selected: isSelected,
                     onSelected: (selected) {
                       final newEquipment = selected ? equipment : null;
@@ -214,24 +214,25 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                     label: Text(_formatExecutionTypeLabel(executionType)),
                     selected: isSelected,
                     onSelected: (selected) {
-                      final newExecutionType = selected ? executionType : 'weight_reps';
+                      final newExecutionType = selected
+                          ? executionType
+                          : 'weight_reps';
                       setState(() {
                         selectedVariant = newExecutionType;
                       });
                       // Apply change immediately
-                      widget.onChanged(
-                        selectedEquipment,
-                        newExecutionType,
-                      );
+                      widget.onChanged(selectedEquipment, newExecutionType);
                     },
                     selectedColor: theme.colorScheme.secondaryContainer,
                   );
                 }).toList(),
               ),
-              
+
               // Help text for execution types
-              if (selectedVariant == 'timer' || selectedVariant == 'duration_weight' || 
-                  selectedVariant == 'distance_duration' || selectedVariant == 'weight_distance')
+              if (selectedVariant == 'timer' ||
+                  selectedVariant == 'duration_weight' ||
+                  selectedVariant == 'distance_duration' ||
+                  selectedVariant == 'weight_distance')
                 Container(
                   margin: const EdgeInsets.only(top: 8),
                   padding: const EdgeInsets.all(12),

@@ -49,8 +49,9 @@ final volumeTrendsProvider = FutureProvider<List<VolumeAnalysis>>((ref) async {
 });
 
 /// Provider for exercise progress
-final exerciseProgressProvider =
-    FutureProvider<List<ExerciseProgress>>((ref) async {
+final exerciseProgressProvider = FutureProvider<List<ExerciseProgress>>((
+  ref,
+) async {
   final service = ref.watch(analyticsServiceProvider);
   return service.getExerciseProgress();
 });

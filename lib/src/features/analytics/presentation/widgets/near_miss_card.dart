@@ -5,10 +5,7 @@ import '../../domain/models/analytics_models.dart';
 
 /// Card displaying near-miss PRs for motivation
 class NearMissCard extends StatelessWidget {
-  const NearMissCard({
-    required this.nearMisses,
-    super.key,
-  });
+  const NearMissCard({required this.nearMisses, super.key});
   final List<NearMissPR> nearMisses;
 
   @override
@@ -29,10 +26,7 @@ class NearMissCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 const Text(
                   'So Close!',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -48,8 +42,9 @@ class NearMissCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest
-                        .withAlpha((0.3 * 255).round()),
+                    color: theme.colorScheme.surfaceContainerHighest.withAlpha(
+                      (0.3 * 255).round(),
+                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Column(

@@ -32,7 +32,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
   @override
   Widget build(BuildContext context) {
     final muscleGroupsAsync = ref.watch(muscleGroupsProvider);
-    final categoriesAsync = kIsWeb 
+    final categoriesAsync = kIsWeb
         ? ref.watch(exerciseCategoriesUnifiedProvider)
         : ref.watch(exerciseCategoriesProvider);
     final isAdminMode = ref.watch(currentAdminModeProvider);
@@ -47,9 +47,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
         ),
         title: Row(
           children: [
-            Expanded(
-              child: Text(S.of(context)!.exerciseLibrary),
-            ),
+            Expanded(child: Text(S.of(context)!.exerciseLibrary)),
             if (isAdminMode) ...[
               const SizedBox(width: 8),
               Container(
@@ -240,8 +238,9 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                       exercise: exercise,
                       onTap: () => context.go('/exercise/${exercise.id}'),
                       onEdit: isAdminMode || exercise.id.startsWith('custom_')
-                          ? () => context
-                              .push('/exercises/create?id=${exercise.id}')
+                          ? () => context.push(
+                              '/exercises/create?id=${exercise.id}',
+                            )
                           : null,
                       isAdminMode: isAdminMode,
                     );
@@ -321,7 +320,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
               exercises.add(data);
             }
           }
-          
+
           var filtered = exercises;
 
           // Apply category filter
@@ -361,8 +360,9 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
 
           // Apply variants filter
           if (!_showVariants) {
-            filtered =
-                filtered.where((e) => e.parentExerciseId == null).toList();
+            filtered = filtered
+                .where((e) => e.parentExerciseId == null)
+                .toList();
           }
 
           return AsyncValue.data(filtered);
@@ -417,8 +417,9 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
 
           // Apply variants filter
           if (!_showVariants) {
-            filtered =
-                filtered.where((e) => e.parentExerciseId == null).toList();
+            filtered = filtered
+                .where((e) => e.parentExerciseId == null)
+                .toList();
           }
 
           return AsyncValue.data(filtered);
@@ -433,8 +434,9 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
     }
 
     if (_selectedCategory != 'All') {
-      final categoryExercises = ref
-          .watch(exercisesByCategoryProvider(_selectedCategory.toLowerCase()));
+      final categoryExercises = ref.watch(
+        exercisesByCategoryProvider(_selectedCategory.toLowerCase()),
+      );
       if (!_showVariants) {
         return categoryExercises.whenData(
           (exercises) =>
@@ -480,8 +482,10 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
           child: Column(
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -497,10 +501,8 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                       child: Text(
                         S.of(context)!.exerciseProgressions,
                         textAlign: TextAlign.center,
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
                     IconButton(
@@ -524,47 +526,47 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
   }
 
   Widget _buildBottomNavigation(BuildContext context) => BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 2,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              context.go('/');
-              break;
-            case 1:
-              context.go('/workout-templates');
-              break;
-            case 2:
-              context.go('/exercises');
-              break;
-            case 3:
-              context.go('/progress');
-              break;
-          }
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home_outlined),
-            activeIcon: const Icon(Icons.home),
-            label: S.of(context)!.home,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.fitness_center_outlined),
-            activeIcon: const Icon(Icons.fitness_center),
-            label: S.of(context)!.workouts,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.search_outlined),
-            activeIcon: const Icon(Icons.search),
-            label: S.of(context)!.exercises,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.trending_up_outlined),
-            activeIcon: const Icon(Icons.trending_up),
-            label: S.of(context)!.progress,
-          ),
-        ],
-      );
+    type: BottomNavigationBarType.fixed,
+    currentIndex: 2,
+    onTap: (index) {
+      switch (index) {
+        case 0:
+          context.go('/');
+          break;
+        case 1:
+          context.go('/workout-templates');
+          break;
+        case 2:
+          context.go('/exercises');
+          break;
+        case 3:
+          context.go('/progress');
+          break;
+      }
+    },
+    items: [
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.home_outlined),
+        activeIcon: const Icon(Icons.home),
+        label: S.of(context)!.home,
+      ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.fitness_center_outlined),
+        activeIcon: const Icon(Icons.fitness_center),
+        label: S.of(context)!.workouts,
+      ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.search_outlined),
+        activeIcon: const Icon(Icons.search),
+        label: S.of(context)!.exercises,
+      ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.trending_up_outlined),
+        activeIcon: const Icon(Icons.trending_up),
+        label: S.of(context)!.progress,
+      ),
+    ],
+  );
 }
 
 class _ExerciseCard extends ConsumerWidget {
@@ -616,7 +618,10 @@ class _ExerciseCard extends ConsumerWidget {
               const SizedBox(width: 4),
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: _getVariantColor(context, exercise.variantType),
                     borderRadius: BorderRadius.circular(4),
@@ -638,7 +643,10 @@ class _ExerciseCard extends ConsumerWidget {
               const SizedBox(width: 4),
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(4),
@@ -673,8 +681,10 @@ class _ExerciseCard extends ConsumerWidget {
                 _ExerciseTypeChip(type: exercise.exerciseType),
                 if (exercise.isBodyweight)
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(4),
@@ -716,8 +726,9 @@ class _ExerciseCard extends ConsumerWidget {
                     }
                   }
                 },
-                tooltip:
-                    isFavorite ? 'Remove from favorites' : 'Add to favorites',
+                tooltip: isFavorite
+                    ? 'Remove from favorites'
+                    : 'Add to favorites',
               ),
               loading: () => const SizedBox(
                 width: 40,
@@ -737,8 +748,8 @@ class _ExerciseCard extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.edit, size: 20),
                 onPressed: onEdit,
-                tooltip: isAdminMode 
-                    ? 'Edit exercise (Admin)' 
+                tooltip: isAdminMode
+                    ? 'Edit exercise (Admin)'
                     : 'Edit custom exercise',
               )
             else
@@ -925,9 +936,7 @@ class _ExerciseProgressionsView extends ConsumerWidget {
     return progressionsAsync.when(
       data: (progressionsMap) {
         if (progressionsMap.isEmpty) {
-          return const Center(
-            child: Text('No exercise progressions found'),
-          );
+          return const Center(child: Text('No exercise progressions found'));
         }
 
         return ListView.builder(
@@ -955,12 +964,8 @@ class _ExerciseProgressionsView extends ConsumerWidget {
                         Expanded(
                           child: Text(
                             parent.name,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -969,10 +974,9 @@ class _ExerciseProgressionsView extends ConsumerWidget {
                         Flexible(
                           child: Text(
                             '${variants.length + 1} variations',
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Colors.grey,
-                                    ),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -1017,9 +1021,7 @@ class _ExerciseProgressionsView extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Text('Error: $error'),
-      ),
+      error: (error, stack) => Center(child: Text('Error: $error')),
     );
   }
 
@@ -1056,8 +1058,12 @@ class _ExerciseProgressionsView extends ConsumerWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<ScrollController>(
-        'scrollController', scrollController));
+    properties.add(
+      DiagnosticsProperty<ScrollController>(
+        'scrollController',
+        scrollController,
+      ),
+    );
   }
 }
 
@@ -1074,82 +1080,77 @@ class _ProgressionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.only(left: isParent ? 0 : 24, bottom: 8),
-        child: InkWell(
-          onTap: onTap,
+    padding: EdgeInsets.only(left: isParent ? 0 : 24, bottom: 8),
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isParent
+              ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+              : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isParent
-                  ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                  : Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-              ),
-            ),
-            child: Row(
-              children: [
-                if (!isParent) ...[
-                  const Icon(
-                    Icons.trending_up,
-                    size: 16,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(width: 8),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        exercise.name,
-                        style: TextStyle(
-                          fontWeight:
-                              isParent ? FontWeight.bold : FontWeight.w500,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      const SizedBox(height: 4),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 4,
-                        children: [
-                          _DifficultyChip(difficulty: exercise.difficulty),
-                          if (!isParent && exercise.variantType != null)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _getVariantColor(exercise.variantType),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                exercise.variantType!.toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right),
-              ],
-            ),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
           ),
         ),
-      );
+        child: Row(
+          children: [
+            if (!isParent) ...[
+              const Icon(Icons.trending_up, size: 16, color: Colors.grey),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    exercise.name,
+                    style: TextStyle(
+                      fontWeight: isParent ? FontWeight.bold : FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: [
+                      _DifficultyChip(difficulty: exercise.difficulty),
+                      if (!isParent && exercise.variantType != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getVariantColor(exercise.variantType),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            exercise.variantType!.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right),
+          ],
+        ),
+      ),
+    ),
+  );
 
   Color _getVariantColor(String? variantType) {
     switch (variantType?.toLowerCase()) {
@@ -1185,21 +1186,21 @@ class ExerciseSearchDelegate extends SearchDelegate<String> {
 
   @override
   List<Widget> buildActions(BuildContext context) => [
-        IconButton(
-          onPressed: () {
-            query = '';
-          },
-          icon: const Icon(Icons.clear),
-        ),
-      ];
+    IconButton(
+      onPressed: () {
+        query = '';
+      },
+      icon: const Icon(Icons.clear),
+    ),
+  ];
 
   @override
   Widget buildLeading(BuildContext context) => IconButton(
-        onPressed: () {
-          close(context, '');
-        },
-        icon: const Icon(Icons.arrow_back),
-      );
+    onPressed: () {
+      close(context, '');
+    },
+    icon: const Icon(Icons.arrow_back),
+  );
 
   @override
   Widget buildResults(BuildContext context) => _buildSearchResults();
@@ -1209,9 +1210,7 @@ class ExerciseSearchDelegate extends SearchDelegate<String> {
 
   Widget _buildSearchResults() {
     if (query.isEmpty) {
-      return const Center(
-        child: Text('Enter exercise name to search'),
-      );
+      return const Center(child: Text('Enter exercise name to search'));
     }
 
     return Consumer(
@@ -1221,9 +1220,7 @@ class ExerciseSearchDelegate extends SearchDelegate<String> {
         return exercisesAsync.when(
           data: (exercises) {
             if (exercises.isEmpty) {
-              return const Center(
-                child: Text('No exercises found'),
-              );
+              return const Center(child: Text('No exercises found'));
             }
 
             return ListView.builder(
@@ -1260,33 +1257,37 @@ class ExerciseSearchDelegate extends SearchDelegate<String> {
 Exercise? mapToExercise(Map<String, dynamic> map) {
   try {
     print('🔍 Mapping exercise: ${map['name']}');
-    
+
     // Handle equipment array - convert to comma-separated string
     String equipmentStr = '';
     if (map['equipment'] != null && map['equipment'] is List) {
       equipmentStr = (map['equipment'] as List).cast<String>().join(',');
     }
-    
+
     // Handle secondary muscle groups
     List<String> secondaryMuscles = [];
-    if (map['secondary_muscle_groups'] != null && map['secondary_muscle_groups'] is List) {
-      secondaryMuscles = (map['secondary_muscle_groups'] as List).cast<String>();
+    if (map['secondary_muscle_groups'] != null &&
+        map['secondary_muscle_groups'] is List) {
+      secondaryMuscles = (map['secondary_muscle_groups'] as List)
+          .cast<String>();
     }
-    
+
     // Handle tags
     List<String> tagsList = [];
     if (map['tags'] != null && map['tags'] is List) {
       tagsList = (map['tags'] as List).cast<String>();
     }
-    
+
     // Handle aliases
     List<String> aliasesList = [];
     if (map['aliases'] != null && map['aliases'] is List) {
       aliasesList = (map['aliases'] as List).cast<String>();
     }
-    
+
     final exercise = Exercise(
-      id: map['id'] as String? ?? 'unknown_${DateTime.now().millisecondsSinceEpoch}',
+      id:
+          map['id'] as String? ??
+          'unknown_${DateTime.now().millisecondsSinceEpoch}',
       userId: map['user_id'] as String?,
       name: map['name'] as String? ?? 'Unknown Exercise',
       primaryMuscleGroup: map['primary_muscle_group'] as String? ?? 'other',
@@ -1301,14 +1302,14 @@ Exercise? mapToExercise(Map<String, dynamic> map) {
       difficulty: map['difficulty'] as String? ?? 'intermediate',
       parentExerciseId: map['parent_exercise_id'] as String?,
       variantType: map['variant_type'] as String?,
-      createdAt: map['created_at'] != null 
+      createdAt: map['created_at'] != null
           ? DateTime.parse(map['created_at'] as String)
           : DateTime.now(),
       updatedAt: map['updated_at'] != null
           ? DateTime.parse(map['updated_at'] as String)
           : DateTime.now(),
     );
-    
+
     print('✅ Mapped exercise: ${exercise.name}');
     return exercise;
   } catch (e, stackTrace) {

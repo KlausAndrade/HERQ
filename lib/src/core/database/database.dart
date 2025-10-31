@@ -59,54 +59,58 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        beforeOpen: (details) async {
-          // Enable foreign keys for integrity
-          await customStatement('PRAGMA foreign_keys = ON');
-        },
-        onCreate: (migrator) async {
-          await migrator.createAll();
-          await _insertDefaultData();
-        },
-        onUpgrade: (migrator, from, to) async {
-          // Apply lightweight per-version migrations. Keep in sync with
-          // native implementation in `database_native.dart`.
-          if (to == 19) {
+    beforeOpen: (details) async {
+      // Enable foreign keys for integrity
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+    onCreate: (migrator) async {
+      await migrator.createAll();
+      await _insertDefaultData();
+    },
+    onUpgrade: (migrator, from, to) async {
+      // Apply lightweight per-version migrations. Keep in sync with
+      // native implementation in `database_native.dart`.
+      if (to == 19) {
+        try {
+          // Ensure all tables have user_id column for user isolation
+          final tables = [
+            'exercises',
+            'workout_sessions',
+            'set_entries',
+            'personal_records',
+            'user_stats',
+            'exercise_favorites',
+            'user_achievements',
+          ];
+
+          for (final table in tables) {
             try {
-              // Ensure all tables have user_id column for user isolation
-              final tables = [
-                'exercises',
-                'workout_sessions', 
-                'set_entries',
-                'personal_records',
-                'user_stats',
-                'exercise_favorites',
-                'user_achievements'
-              ];
-              
-              for (final table in tables) {
-                try {
-                  await customStatement('ALTER TABLE $table ADD COLUMN user_id TEXT');
-                  print('✅ Added user_id column to $table');
-                } catch (e) {
-                  // Column may already exist, which is fine
-                  print('ℹ️ user_id column may already exist in $table: $e');
-                }
-              }
-              
-              // Set all existing exercises to global (NULL user_id)
-              await customStatement('UPDATE exercises SET user_id = NULL WHERE user_id IS NULL');
-              
-              print('✅ Migration 19: Ensured all tables have user_id column');
+              await customStatement(
+                'ALTER TABLE $table ADD COLUMN user_id TEXT',
+              );
+              print('✅ Added user_id column to $table');
             } catch (e) {
-              print('Migration 19 error: $e');
+              // Column may already exist, which is fine
+              print('ℹ️ user_id column may already exist in $table: $e');
             }
           }
 
-          if (to == 18) {
-            try {
-              // Make userId column nullable in workout_templates table for admin templates
-              // SQLite doesn't support ALTER COLUMN, so we need to recreate the table
-              await customStatement('''
+          // Set all existing exercises to global (NULL user_id)
+          await customStatement(
+            'UPDATE exercises SET user_id = NULL WHERE user_id IS NULL',
+          );
+
+          print('✅ Migration 19: Ensured all tables have user_id column');
+        } catch (e) {
+          print('Migration 19 error: $e');
+        }
+      }
+
+      if (to == 18) {
+        try {
+          // Make userId column nullable in workout_templates table for admin templates
+          // SQLite doesn't support ALTER COLUMN, so we need to recreate the table
+          await customStatement('''
                 CREATE TABLE workout_templates_new (
                   id TEXT NOT NULL PRIMARY KEY,
                   user_id TEXT,
@@ -123,307 +127,332 @@ class AppDatabase extends _$AppDatabase {
                   updated_at INTEGER NOT NULL
                 )
               ''');
-              
-              // Copy data from old table to new table
-              await customStatement('''
+
+          // Copy data from old table to new table
+          await customStatement('''
                 INSERT INTO workout_templates_new 
                 SELECT id, user_id, name, description, category, folder_id, sort_order, 
                        exercise_ids, tags, estimated_duration_minutes, is_default, created_at, updated_at
                 FROM workout_templates
               ''');
-              
-              // Drop old table and rename new table
-              await customStatement('DROP TABLE workout_templates');
-              await customStatement('ALTER TABLE workout_templates_new RENAME TO workout_templates');
-            } catch (e) {
-              print('Migration 18 error: $e');
-            }
-          }
 
-          if (to == 17) {
-            try {
-              // Add userId column to exercises table for user isolation
-              await customStatement(
-                'ALTER TABLE exercises ADD COLUMN user_id TEXT',
-              );
-              
-              // All existing exercises are global (admin-created), so set userId to NULL
-              // This means they'll be visible to all users
-              await customStatement(
-                "UPDATE exercises SET user_id = NULL WHERE user_id IS NULL",
-              );
-            } catch (e) {
-              // Column may already exist, ignore error
-              print('Migration 17 error (may be expected): $e');
-            }
-          }
+          // Drop old table and rename new table
+          await customStatement('DROP TABLE workout_templates');
+          await customStatement(
+            'ALTER TABLE workout_templates_new RENAME TO workout_templates',
+          );
+        } catch (e) {
+          print('Migration 18 error: $e');
+        }
+      }
 
-          if (to == 16) {
-            try {
-              // Add userId columns for user isolation
-              await customStatement(
-                'ALTER TABLE workout_sessions ADD COLUMN user_id TEXT',
-              );
-              await customStatement(
-                'ALTER TABLE set_entries ADD COLUMN user_id TEXT',
-              );
-              await customStatement(
-                'ALTER TABLE workout_templates ADD COLUMN user_id TEXT',
-              );
-              await customStatement(
-                'ALTER TABLE personal_records ADD COLUMN user_id TEXT',
-              );
+      if (to == 17) {
+        try {
+          // Add userId column to exercises table for user isolation
+          await customStatement(
+            'ALTER TABLE exercises ADD COLUMN user_id TEXT',
+          );
 
-              // Set default userId for existing data (will be updated by current user)
-              await customStatement(
-                "UPDATE workout_sessions SET user_id = 'default_user' WHERE user_id IS NULL",
-              );
-              await customStatement(
-                "UPDATE set_entries SET user_id = 'default_user' WHERE user_id IS NULL",
-              );
-              await customStatement(
-                "UPDATE workout_templates SET user_id = 'default_user' WHERE user_id IS NULL",
-              );
-              await customStatement(
-                "UPDATE personal_records SET user_id = 'default_user' WHERE user_id IS NULL",
-              );
-            } catch (e) {
-              print('Migration 16 error: $e');
-            }
-          }
+          // All existing exercises are global (admin-created), so set userId to NULL
+          // This means they'll be visible to all users
+          await customStatement(
+            "UPDATE exercises SET user_id = NULL WHERE user_id IS NULL",
+          );
+        } catch (e) {
+          // Column may already exist, ignore error
+          print('Migration 17 error (may be expected): $e');
+        }
+      }
 
-          if (to == 15) {
-            try {
-              // Add equipment_used and variant_type fields for exercise variants
-              await customStatement(
-                'ALTER TABLE set_entries ADD COLUMN equipment_used TEXT',
-              );
-            } catch (e) {
-              // Column may already exist, ignore error
-            }
-            try {
-              await customStatement(
-                'ALTER TABLE set_entries ADD COLUMN variant_type TEXT',
-              );
-            } catch (e) {
-              // Column may already exist, ignore error
-            }
-          }
+      if (to == 16) {
+        try {
+          // Add userId columns for user isolation
+          await customStatement(
+            'ALTER TABLE workout_sessions ADD COLUMN user_id TEXT',
+          );
+          await customStatement(
+            'ALTER TABLE set_entries ADD COLUMN user_id TEXT',
+          );
+          await customStatement(
+            'ALTER TABLE workout_templates ADD COLUMN user_id TEXT',
+          );
+          await customStatement(
+            'ALTER TABLE personal_records ADD COLUMN user_id TEXT',
+          );
 
-          if (to == 14) {
-            try {
-              // Add distance field to set_entries for distance-based exercises
-              await customStatement(
-                'ALTER TABLE set_entries ADD COLUMN distance REAL',
-              );
-            } catch (e) {
-              // Column may already exist, ignore error
-            }
-          }
+          // Set default userId for existing data (will be updated by current user)
+          await customStatement(
+            "UPDATE workout_sessions SET user_id = 'default_user' WHERE user_id IS NULL",
+          );
+          await customStatement(
+            "UPDATE set_entries SET user_id = 'default_user' WHERE user_id IS NULL",
+          );
+          await customStatement(
+            "UPDATE workout_templates SET user_id = 'default_user' WHERE user_id IS NULL",
+          );
+          await customStatement(
+            "UPDATE personal_records SET user_id = 'default_user' WHERE user_id IS NULL",
+          );
+        } catch (e) {
+          print('Migration 16 error: $e');
+        }
+      }
 
-          if (to == 13) {
-            try {
-              await customStatement(
-                'ALTER TABLE exercises ADD COLUMN aliases TEXT',
-              );
-            } catch (e) {}
-          }
+      if (to == 15) {
+        try {
+          // Add equipment_used and variant_type fields for exercise variants
+          await customStatement(
+            'ALTER TABLE set_entries ADD COLUMN equipment_used TEXT',
+          );
+        } catch (e) {
+          // Column may already exist, ignore error
+        }
+        try {
+          await customStatement(
+            'ALTER TABLE set_entries ADD COLUMN variant_type TEXT',
+          );
+        } catch (e) {
+          // Column may already exist, ignore error
+        }
+      }
 
-          if (to == 12) {
-            await customStatement(
-              "UPDATE workout_templates SET exercise_ids = '' WHERE exercise_ids IS NULL",
-            );
-          } else if (to == 11) {
-            await migrator.createTable(workoutCheckpoints);
-          } else if (to == 10) {
-            await migrator.createTable(templateFolders);
-            await migrator.addColumn(
-              workoutTemplates,
-              workoutTemplates.folderId,
-            );
-          } else if (to == 9) {
-            await migrator.createTable(posts);
-            await migrator.createTable(postLikes);
-            await migrator.createTable(postComments);
-            await migrator.createTable(userFollows);
-          } else if (to == 8) {
-            await migrator.createTable(userAchievements);
-            await migrator.createTable(userStats);
-          } else if (to == 7) {
-            await migrator.createTable(exerciseFavorites);
-          } else if (to == 6) {
-            await migrator.deleteTable('exercises');
-            await migrator.deleteTable('set_entries');
-            await migrator.deleteTable('workout_templates');
-            await migrator.deleteTable('workout_sessions');
-            await migrator.deleteTable('personal_records');
+      if (to == 14) {
+        try {
+          // Add distance field to set_entries for distance-based exercises
+          await customStatement(
+            'ALTER TABLE set_entries ADD COLUMN distance REAL',
+          );
+        } catch (e) {
+          // Column may already exist, ignore error
+        }
+      }
 
-            await migrator.createTable(exercises);
-            await migrator.createTable(setEntries);
-            await migrator.createTable(workoutTemplates);
-            await migrator.createTable(workoutSessions);
-            await migrator.createTable(personalRecords);
+      if (to == 13) {
+        try {
+          await customStatement(
+            'ALTER TABLE exercises ADD COLUMN aliases TEXT',
+          );
+        } catch (e) {}
+      }
 
-            await _insertDefaultData();
-          } else if (to == 5) {
-            await migrator.deleteTable('exercises');
-            await migrator.deleteTable('set_entries');
-            await migrator.deleteTable('workout_templates');
+      if (to == 12) {
+        await customStatement(
+          "UPDATE workout_templates SET exercise_ids = '' WHERE exercise_ids IS NULL",
+        );
+      } else if (to == 11) {
+        await migrator.createTable(workoutCheckpoints);
+      } else if (to == 10) {
+        await migrator.createTable(templateFolders);
+        await migrator.addColumn(workoutTemplates, workoutTemplates.folderId);
+      } else if (to == 9) {
+        await migrator.createTable(posts);
+        await migrator.createTable(postLikes);
+        await migrator.createTable(postComments);
+        await migrator.createTable(userFollows);
+      } else if (to == 8) {
+        await migrator.createTable(userAchievements);
+        await migrator.createTable(userStats);
+      } else if (to == 7) {
+        await migrator.createTable(exerciseFavorites);
+      } else if (to == 6) {
+        await migrator.deleteTable('exercises');
+        await migrator.deleteTable('set_entries');
+        await migrator.deleteTable('workout_templates');
+        await migrator.deleteTable('workout_sessions');
+        await migrator.deleteTable('personal_records');
 
-            await migrator.createTable(exercises);
-            await migrator.createTable(setEntries);
-            await migrator.createTable(workoutTemplates);
+        await migrator.createTable(exercises);
+        await migrator.createTable(setEntries);
+        await migrator.createTable(workoutTemplates);
+        await migrator.createTable(workoutSessions);
+        await migrator.createTable(personalRecords);
 
-            await _insertDefaultData();
-          }
-          
-          if (to == 20) {
-            try {
-              // Add sort_order column to template_folders table
-              await customStatement('ALTER TABLE template_folders ADD COLUMN sort_order INTEGER DEFAULT 0');
-              print('✅ Added sort_order column to template_folders');
-              
-              // Set sort_order for existing folders based on creation date
-              await customStatement('''
+        await _insertDefaultData();
+      } else if (to == 5) {
+        await migrator.deleteTable('exercises');
+        await migrator.deleteTable('set_entries');
+        await migrator.deleteTable('workout_templates');
+
+        await migrator.createTable(exercises);
+        await migrator.createTable(setEntries);
+        await migrator.createTable(workoutTemplates);
+
+        await _insertDefaultData();
+      }
+
+      if (to == 20) {
+        try {
+          // Add sort_order column to template_folders table
+          await customStatement(
+            'ALTER TABLE template_folders ADD COLUMN sort_order INTEGER DEFAULT 0',
+          );
+          print('✅ Added sort_order column to template_folders');
+
+          // Set sort_order for existing folders based on creation date
+          await customStatement('''
                 UPDATE template_folders 
                 SET sort_order = (
                   SELECT ROW_NUMBER() OVER (ORDER BY created_at) - 1
                 )
                 WHERE sort_order = 0
               ''');
-              print('✅ Set sort_order for existing template folders');
-              
-              print('✅ Migration 20: Added sort_order to template_folders');
-            } catch (e) {
-              print('❌ Migration 20 failed: $e');
+          print('✅ Set sort_order for existing template folders');
+
+          print('✅ Migration 20: Added sort_order to template_folders');
+        } catch (e) {
+          print('❌ Migration 20 failed: $e');
+          rethrow;
+        }
+      }
+
+      if (to == 21) {
+        try {
+          // Add missing columns to workout_checkpoints table (with error handling)
+          try {
+            await customStatement(
+              'ALTER TABLE workout_checkpoints ADD COLUMN started_at INTEGER',
+            );
+            print('✅ Added started_at column to workout_checkpoints');
+          } catch (e) {
+            if (e.toString().contains('duplicate column name')) {
+              print(
+                'ℹ️ started_at column already exists in workout_checkpoints',
+              );
+            } else {
               rethrow;
             }
           }
-          
-          if (to == 21) {
-            try {
-              // Add missing columns to workout_checkpoints table (with error handling)
-              try {
-                await customStatement('ALTER TABLE workout_checkpoints ADD COLUMN started_at INTEGER');
-                print('✅ Added started_at column to workout_checkpoints');
-              } catch (e) {
-                if (e.toString().contains('duplicate column name')) {
-                  print('ℹ️ started_at column already exists in workout_checkpoints');
-                } else {
-                  rethrow;
-                }
-              }
-              
-              try {
-                await customStatement('ALTER TABLE workout_checkpoints ADD COLUMN last_saved_at INTEGER');
-                print('✅ Added last_saved_at column to workout_checkpoints');
-              } catch (e) {
-                if (e.toString().contains('duplicate column name')) {
-                  print('ℹ️ last_saved_at column already exists in workout_checkpoints');
-                } else {
-                  rethrow;
-                }
-              }
-              
-              // Set timestamps for existing checkpoints (use current time as fallback)
-              final now = DateTime.now().millisecondsSinceEpoch;
-              await customStatement('''
+
+          try {
+            await customStatement(
+              'ALTER TABLE workout_checkpoints ADD COLUMN last_saved_at INTEGER',
+            );
+            print('✅ Added last_saved_at column to workout_checkpoints');
+          } catch (e) {
+            if (e.toString().contains('duplicate column name')) {
+              print(
+                'ℹ️ last_saved_at column already exists in workout_checkpoints',
+              );
+            } else {
+              rethrow;
+            }
+          }
+
+          // Set timestamps for existing checkpoints (use current time as fallback)
+          final now = DateTime.now().millisecondsSinceEpoch;
+          await customStatement('''
                 UPDATE workout_checkpoints 
                 SET started_at = $now, last_saved_at = $now 
                 WHERE started_at IS NULL OR last_saved_at IS NULL
               ''');
-              print('✅ Set timestamps for existing workout checkpoints');
-              
-              print('✅ Migration 21: Added missing columns to workout_checkpoints');
-            } catch (e) {
-              print('❌ Migration 21 failed: $e');
-              rethrow;
+          print('✅ Set timestamps for existing workout checkpoints');
+
+          print('✅ Migration 21: Added missing columns to workout_checkpoints');
+        } catch (e) {
+          print('❌ Migration 21 failed: $e');
+          rethrow;
+        }
+      }
+
+      if (to == 22) {
+        try {
+          print(
+            '🔄 Migration 22: Renaming columns to snake_case to match Supabase...',
+          );
+
+          // ⚠️ SQLite doesn't support renaming columns directly
+          // We need to recreate tables with the new column names
+
+          // 1. Add user_id to template_folders if it doesn't exist
+          try {
+            await customStatement(
+              'ALTER TABLE template_folders ADD COLUMN user_id TEXT',
+            );
+            print('✅ Added user_id column to template_folders');
+          } catch (e) {
+            if (e.toString().contains('duplicate column name')) {
+              print('ℹ️ user_id column already exists in template_folders');
+            } else {
+              throw e;
             }
           }
-          
-          if (to == 22) {
-            try {
-              print('🔄 Migration 22: Renaming columns to snake_case to match Supabase...');
-              
-              // ⚠️ SQLite doesn't support renaming columns directly
-              // We need to recreate tables with the new column names
-              
-              // 1. Add user_id to template_folders if it doesn't exist
-              try {
-                await customStatement('ALTER TABLE template_folders ADD COLUMN user_id TEXT');
-                print('✅ Added user_id column to template_folders');
-              } catch (e) {
-                if (e.toString().contains('duplicate column name')) {
-                  print('ℹ️ user_id column already exists in template_folders');
-                } else {
-                  throw e;
-                }
-              }
-              
-              print('✅ Migration 22: Schema updated to match Supabase (snake_case)');
-              print('ℹ️ Note: Drift will handle column name mapping automatically via .named()');
-            } catch (e) {
-              print('❌ Migration 22 failed: $e');
-              rethrow;
+
+          print(
+            '✅ Migration 22: Schema updated to match Supabase (snake_case)',
+          );
+          print(
+            'ℹ️ Note: Drift will handle column name mapping automatically via .named()',
+          );
+        } catch (e) {
+          print('❌ Migration 22 failed: $e');
+          rethrow;
+        }
+      }
+
+      if (to == 23) {
+        try {
+          print(
+            '🔄 Migration 23: Converting equipment column to array format...',
+          );
+
+          // ℹ️ Drift will handle the conversion automatically via StringListConverter
+          // Equipment was TEXT, now it's TEXT with StringListConverter (JSON array)
+          // Existing data should be compatible as long as it's valid JSON
+
+          print('✅ Migration 23: Equipment column now uses array format');
+        } catch (e) {
+          print('❌ Migration 23 failed: $e');
+          rethrow;
+        }
+      }
+
+      if (to == 24) {
+        try {
+          print(
+            '🔄 Migration 24: Adding missing columns to template_folders...',
+          );
+
+          // Add color column
+          try {
+            await customStatement(
+              'ALTER TABLE template_folders ADD COLUMN color TEXT',
+            );
+            print('✅ Added color column to template_folders');
+          } catch (e) {
+            if (e.toString().contains('duplicate column name')) {
+              print('ℹ️ color column already exists in template_folders');
+            } else {
+              throw e;
             }
           }
-          
-          if (to == 23) {
-            try {
-              print('🔄 Migration 23: Converting equipment column to array format...');
-              
-              // ℹ️ Drift will handle the conversion automatically via StringListConverter
-              // Equipment was TEXT, now it's TEXT with StringListConverter (JSON array)
-              // Existing data should be compatible as long as it's valid JSON
-              
-              print('✅ Migration 23: Equipment column now uses array format');
-            } catch (e) {
-              print('❌ Migration 23 failed: $e');
-              rethrow;
+
+          // Add is_expanded column
+          try {
+            await customStatement(
+              'ALTER TABLE template_folders ADD COLUMN is_expanded INTEGER DEFAULT 1',
+            );
+            print('✅ Added is_expanded column to template_folders');
+          } catch (e) {
+            if (e.toString().contains('duplicate column name')) {
+              print('ℹ️ is_expanded column already exists in template_folders');
+            } else {
+              throw e;
             }
           }
-          
-          if (to == 24) {
-            try {
-              print('🔄 Migration 24: Adding missing columns to template_folders...');
-              
-              // Add color column
-              try {
-                await customStatement('ALTER TABLE template_folders ADD COLUMN color TEXT');
-                print('✅ Added color column to template_folders');
-              } catch (e) {
-                if (e.toString().contains('duplicate column name')) {
-                  print('ℹ️ color column already exists in template_folders');
-                } else {
-                  throw e;
-                }
-              }
-              
-              // Add is_expanded column
-              try {
-                await customStatement('ALTER TABLE template_folders ADD COLUMN is_expanded INTEGER DEFAULT 1');
-                print('✅ Added is_expanded column to template_folders');
-              } catch (e) {
-                if (e.toString().contains('duplicate column name')) {
-                  print('ℹ️ is_expanded column already exists in template_folders');
-                } else {
-                  throw e;
-                }
-              }
-              
-              print('✅ Migration 24: Added missing columns to template_folders');
-            } catch (e) {
-              print('❌ Migration 24 failed: $e');
-              rethrow;
-            }
-          }
-          
-          if (to == 26) {
-            try {
-              print('🔄 Migration 26: Workout checkpoints schema alignment...');
-              
-              // Rename columns to snake_case (SQLite requires table recreation)
-              await customStatement('''
+
+          print('✅ Migration 24: Added missing columns to template_folders');
+        } catch (e) {
+          print('❌ Migration 24 failed: $e');
+          rethrow;
+        }
+      }
+
+      if (to == 26) {
+        try {
+          print('🔄 Migration 26: Workout checkpoints schema alignment...');
+
+          // Rename columns to snake_case (SQLite requires table recreation)
+          await customStatement('''
                 CREATE TABLE workout_checkpoints_new (
                   id TEXT PRIMARY KEY,
                   workout_name TEXT NOT NULL,
@@ -433,24 +462,26 @@ class AppDatabase extends _$AppDatabase {
                   elapsed_seconds INTEGER NOT NULL
                 )
               ''');
-              
-              await customStatement('''
+
+          await customStatement('''
                 INSERT INTO workout_checkpoints_new 
                 SELECT id, workoutName, workoutData, last_saved_at, started_at, elapsed_seconds
                 FROM workout_checkpoints
               ''');
-              
-              await customStatement('DROP TABLE workout_checkpoints');
-              await customStatement('ALTER TABLE workout_checkpoints_new RENAME TO workout_checkpoints');
-              
-              print('✅ Migration 26: Workout checkpoints now use snake_case');
-            } catch (e) {
-              print('❌ Migration 26 failed: $e');
-              rethrow;
-            }
-          }
-        },
-      );
+
+          await customStatement('DROP TABLE workout_checkpoints');
+          await customStatement(
+            'ALTER TABLE workout_checkpoints_new RENAME TO workout_checkpoints',
+          );
+
+          print('✅ Migration 26: Workout checkpoints now use snake_case');
+        } catch (e) {
+          print('❌ Migration 26 failed: $e');
+          rethrow;
+        }
+      }
+    },
+  );
 
   // Internal seeder used by onCreate and tests. Keep this minimal to avoid
   // pulling platform-specific code into the top-level file.
@@ -507,7 +538,8 @@ class AppDatabase extends _$AppDatabase {
         var companion = WorkoutTemplatesCompanion(
           id: Value(t['id'] as String? ?? ''),
           userId: const Value(
-              'system'), // Use 'system' as userId for default templates
+            'system',
+          ), // Use 'system' as userId for default templates
           name: Value(t['name'] as String? ?? ''),
           description: Value(t['description'] as String?),
           folderId: Value(t['folderId'] as String?),
@@ -515,8 +547,9 @@ class AppDatabase extends _$AppDatabase {
             List<String>.from(t['exerciseIds'] as List<dynamic>? ?? []),
           ),
           tags: Value(List<String>.from(t['tags'] as List<dynamic>? ?? [])),
-          estimatedDurationMinutes:
-              Value(t['estimatedDurationMinutes'] as int?),
+          estimatedDurationMinutes: Value(
+            t['estimatedDurationMinutes'] as int?,
+          ),
           isDefault: Value(t['isDefault'] as bool? ?? false),
         );
 
@@ -829,17 +862,17 @@ class AppDatabase extends _$AppDatabase {
         final companion = ExercisesCompanion(
           id: Value(exerciseData['id'] as String? ?? ''),
           name: Value(exerciseData['name'] as String? ?? ''),
-          primaryMuscleGroup:
-              Value(exerciseData['primaryMuscleGroup'] as String? ?? ''),
+          primaryMuscleGroup: Value(
+            exerciseData['primaryMuscleGroup'] as String? ?? '',
+          ),
           secondaryMuscleGroups: Value(
             List<String>.from(
-                exerciseData['secondaryMuscleGroups'] as List<dynamic>),
+              exerciseData['secondaryMuscleGroups'] as List<dynamic>,
+            ),
           ),
           equipment: Value(exerciseData['equipment'] as String? ?? ''),
           instructions: Value(exerciseData['instructions'] as String? ?? ''),
-          tags: Value(
-            List<String>.from(exerciseData['tags'] as List<dynamic>),
-          ),
+          tags: Value(List<String>.from(exerciseData['tags'] as List<dynamic>)),
           isBodyweight: Value(exerciseData['isBodyweight'] as bool? ?? false),
           exerciseType: Value(exerciseData['exerciseType'] as String? ?? ''),
           category: Value(exerciseData['category'] as String? ?? ''),
@@ -1161,17 +1194,17 @@ class AppDatabase extends _$AppDatabase {
         final companion = ExercisesCompanion(
           id: Value(variantData['id']! as String),
           name: Value(variantData['name']! as String),
-          primaryMuscleGroup:
-              Value(variantData['primaryMuscleGroup']! as String),
+          primaryMuscleGroup: Value(
+            variantData['primaryMuscleGroup']! as String,
+          ),
           secondaryMuscleGroups: Value(
             List<String>.from(
-                variantData['secondaryMuscleGroups'] as List<dynamic>),
+              variantData['secondaryMuscleGroups'] as List<dynamic>,
+            ),
           ),
           equipment: Value(variantData['equipment']! as String),
           instructions: Value(variantData['instructions']! as String),
-          tags: Value(
-            List<String>.from(variantData['tags'] as List<dynamic>),
-          ),
+          tags: Value(List<String>.from(variantData['tags'] as List<dynamic>)),
           isBodyweight: Value(variantData['isBodyweight']! as bool),
           exerciseType: Value(variantData['exerciseType']! as String),
           category: Value(variantData['category']! as String),
@@ -1213,11 +1246,7 @@ class AppDatabase extends _$AppDatabase {
         // Only update if the type is different
         if (exercise.exerciseType != correctType) {
           await (update(exercises)..where((e) => e.id.equals(exercise.id)))
-              .write(
-            ExercisesCompanion(
-              exerciseType: Value(correctType),
-            ),
-          );
+              .write(ExercisesCompanion(exerciseType: Value(correctType)));
 
           updatedCount++;
           print(

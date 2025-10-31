@@ -32,29 +32,29 @@ class WorkoutSettings {
     bool? hapticFeedback,
     bool? autoStartRestTimer,
     bool? showExerciseVideos,
-  }) =>
-      WorkoutSettings(
-        defaultRestTimerSeconds:
-            defaultRestTimerSeconds ?? this.defaultRestTimerSeconds,
-        weightUnit: weightUnit ?? this.weightUnit,
-        hapticFeedback: hapticFeedback ?? this.hapticFeedback,
-        autoStartRestTimer: autoStartRestTimer ?? this.autoStartRestTimer,
-        showExerciseVideos: showExerciseVideos ?? this.showExerciseVideos,
-      );
+  }) => WorkoutSettings(
+    defaultRestTimerSeconds:
+        defaultRestTimerSeconds ?? this.defaultRestTimerSeconds,
+    weightUnit: weightUnit ?? this.weightUnit,
+    hapticFeedback: hapticFeedback ?? this.hapticFeedback,
+    autoStartRestTimer: autoStartRestTimer ?? this.autoStartRestTimer,
+    showExerciseVideos: showExerciseVideos ?? this.showExerciseVideos,
+  );
 
   Map<String, dynamic> toJson() => {
-        'defaultRestTimerSeconds': defaultRestTimerSeconds,
-        'weightUnit': weightUnit,
-        'hapticFeedback': hapticFeedback,
-        'autoStartRestTimer': autoStartRestTimer,
-        'showExerciseVideos': showExerciseVideos,
-      };
+    'defaultRestTimerSeconds': defaultRestTimerSeconds,
+    'weightUnit': weightUnit,
+    'hapticFeedback': hapticFeedback,
+    'autoStartRestTimer': autoStartRestTimer,
+    'showExerciseVideos': showExerciseVideos,
+  };
 }
 
 /// Provider for workout settings
 final workoutSettingsProvider =
     StateNotifierProvider<WorkoutSettingsNotifier, WorkoutSettings>(
-        WorkoutSettingsNotifier.new);
+      WorkoutSettingsNotifier.new,
+    );
 
 /// Notifier for workout settings
 class WorkoutSettingsNotifier extends StateNotifier<WorkoutSettings> {
@@ -78,9 +78,7 @@ class WorkoutSettingsNotifier extends StateNotifier<WorkoutSettings> {
 
   Future<void> _saveSettings() async {
     final prefsService = _ref.read(preferencesUpdateProvider);
-    await prefsService.updatePreferences({
-      'workoutSettings': state.toJson(),
-    });
+    await prefsService.updatePreferences({'workoutSettings': state.toJson()});
   }
 
   Future<void> setDefaultRestTimer(int seconds) async {

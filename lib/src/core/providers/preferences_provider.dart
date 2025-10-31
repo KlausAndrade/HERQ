@@ -3,15 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/unified_storage_service.dart';
 
 /// Provider for user preferences
-final userPreferencesProvider =
-    FutureProvider<Map<String, dynamic>>((ref) async {
+final userPreferencesProvider = FutureProvider<Map<String, dynamic>>((
+  ref,
+) async {
   final storage = ref.read(unifiedStorageProvider);
   return storage.getUserPreferences();
 });
 
 /// Provider for updating user preferences
-final preferencesUpdateProvider =
-    Provider<PreferencesUpdateService>(PreferencesUpdateService.new);
+final preferencesUpdateProvider = Provider<PreferencesUpdateService>(
+  PreferencesUpdateService.new,
+);
 
 /// Service for updating preferences and refreshing providers
 class PreferencesUpdateService {

@@ -85,9 +85,7 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
 
   Future<void> _showWorkoutReminderNotification(String workoutName) async {
     try {
-      await NotificationService.showWorkoutReminder(
-        workoutName: workoutName,
-      );
+      await NotificationService.showWorkoutReminder(workoutName: workoutName);
       print('🔔 Workout reminder notification sent');
     } catch (e) {
       print('❌ Failed to show workout reminder: $e');

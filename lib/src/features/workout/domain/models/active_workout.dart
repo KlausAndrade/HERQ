@@ -11,17 +11,17 @@ class ActiveWorkout {
   });
 
   factory ActiveWorkout.fromJson(Map<String, dynamic> json) => ActiveWorkout(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        exercises: (json['exercises'] as List)
-            .map((e) => ActiveExercise.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        currentExerciseIndex: json['currentExerciseIndex'] as int? ?? 0,
-        elapsedTime: Duration(seconds: json['elapsedTimeSeconds'] as int? ?? 0),
-        totalSets: json['totalSets'] as int? ?? 0,
-        totalVolume: (json['totalVolume'] as num?)?.toDouble() ?? 0.0,
-        templateId: json['templateId'] as String?, // ✅ Include template ID
-      );
+    id: json['id'] as String,
+    name: json['name'] as String,
+    exercises: (json['exercises'] as List)
+        .map((e) => ActiveExercise.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    currentExerciseIndex: json['currentExerciseIndex'] as int? ?? 0,
+    elapsedTime: Duration(seconds: json['elapsedTimeSeconds'] as int? ?? 0),
+    totalSets: json['totalSets'] as int? ?? 0,
+    totalVolume: (json['totalVolume'] as num?)?.toDouble() ?? 0.0,
+    templateId: json['templateId'] as String?, // ✅ Include template ID
+  );
   final String id;
   final String name;
   final List<ActiveExercise> exercises;
@@ -33,15 +33,15 @@ class ActiveWorkout {
 
   // JSON serialization
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'exercises': exercises.map((e) => e.toJson()).toList(),
-        'currentExerciseIndex': currentExerciseIndex,
-        'elapsedTimeSeconds': elapsedTime.inSeconds,
-        'totalSets': totalSets,
-        'totalVolume': totalVolume,
-        'templateId': templateId, // ✅ Include template ID
-      };
+    'id': id,
+    'name': name,
+    'exercises': exercises.map((e) => e.toJson()).toList(),
+    'currentExerciseIndex': currentExerciseIndex,
+    'elapsedTimeSeconds': elapsedTime.inSeconds,
+    'totalSets': totalSets,
+    'totalVolume': totalVolume,
+    'templateId': templateId, // ✅ Include template ID
+  };
 
   /// Check if all sets in the workout are completed
   bool isFullyCompleted() {
@@ -60,16 +60,13 @@ class ActiveWorkout {
 
   /// Get count of completed sets
   int getCompletedSetsCount() => exercises.fold<int>(
-        0,
-        (sum, exercise) =>
-            sum + exercise.sets.where((s) => s.isCompleted).length,
-      );
+    0,
+    (sum, exercise) => sum + exercise.sets.where((s) => s.isCompleted).length,
+  );
 
   /// Get total count of all sets
-  int getTotalSetsCount() => exercises.fold<int>(
-        0,
-        (sum, exercise) => sum + exercise.sets.length,
-      );
+  int getTotalSetsCount() =>
+      exercises.fold<int>(0, (sum, exercise) => sum + exercise.sets.length);
 }
 
 class ActiveExercise {
@@ -87,40 +84,40 @@ class ActiveExercise {
   });
 
   factory ActiveExercise.fromJson(Map<String, dynamic> json) => ActiveExercise(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        sets: (json['sets'] as List)
-            .map((s) => ActiveSet.fromJson(s as Map<String, dynamic>))
-            .toList(),
-        restTimerSeconds: json['restTimerSeconds'] as int? ?? 90,
-        exerciseType: json['exerciseType'] as String? ?? 'reps',
-        equipmentUsed: json['equipmentUsed'] as String?,
-        variantType: json['variantType'] as String?,
-        previousSet: json['previousSet'] != null
-            ? ActiveSet.fromJson(json['previousSet'] as Map<String, dynamic>)
-            : null,
-      );
+    id: json['id'] as String,
+    name: json['name'] as String,
+    sets: (json['sets'] as List)
+        .map((s) => ActiveSet.fromJson(s as Map<String, dynamic>))
+        .toList(),
+    restTimerSeconds: json['restTimerSeconds'] as int? ?? 90,
+    exerciseType: json['exerciseType'] as String? ?? 'reps',
+    equipmentUsed: json['equipmentUsed'] as String?,
+    variantType: json['variantType'] as String?,
+    previousSet: json['previousSet'] != null
+        ? ActiveSet.fromJson(json['previousSet'] as Map<String, dynamic>)
+        : null,
+  );
   final String id;
   final String name;
   final List<ActiveSet> sets;
   final int restTimerSeconds;
   final String exerciseType; // 'reps' | 'timer' | 'body_weighted' | etc.
   final String?
-      equipmentUsed; // 'barbell' | 'dumbbell' | 'cable' | 'machine' | etc.
+  equipmentUsed; // 'barbell' | 'dumbbell' | 'cable' | 'machine' | etc.
   final String? variantType;
   final ActiveSet? previousSet; // Previous workout's set data for comparison
 
   // JSON serialization
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'sets': sets.map((s) => s.toJson()).toList(),
-        'restTimerSeconds': restTimerSeconds,
-        'exerciseType': exerciseType,
-        'equipmentUsed': equipmentUsed,
-        'variantType': variantType,
-        'previousSet': previousSet?.toJson(),
-      };
+    'id': id,
+    'name': name,
+    'sets': sets.map((s) => s.toJson()).toList(),
+    'restTimerSeconds': restTimerSeconds,
+    'exerciseType': exerciseType,
+    'equipmentUsed': equipmentUsed,
+    'variantType': variantType,
+    'previousSet': previousSet?.toJson(),
+  };
 }
 
 class ActiveSet {
@@ -141,24 +138,24 @@ class ActiveSet {
   });
 
   factory ActiveSet.fromJson(Map<String, dynamic> json) => ActiveSet(
-        number: json['number'] as int,
-        weight: (json['weight'] as num?)?.toDouble(),
-        reps: json['reps'] as int,
-        durationSeconds: json['durationSeconds'] as int?,
-        distance: (json['distance'] as num?)?.toDouble(),
-        assistanceWeight: (json['assistanceWeight'] as num?)?.toDouble(),
-        addedWeight: (json['addedWeight'] as num?)?.toDouble(),
-        rpe: json['rpe'] as int?,
-        isCompleted: json['isCompleted'] as bool? ?? false,
-        isPRWeight: json['isPRWeight'] as bool? ?? false,
-        isPRReps: json['isPRReps'] as bool? ?? false,
-      );
+    number: json['number'] as int,
+    weight: (json['weight'] as num?)?.toDouble(),
+    reps: json['reps'] as int,
+    durationSeconds: json['durationSeconds'] as int?,
+    distance: (json['distance'] as num?)?.toDouble(),
+    assistanceWeight: (json['assistanceWeight'] as num?)?.toDouble(),
+    addedWeight: (json['addedWeight'] as num?)?.toDouble(),
+    rpe: json['rpe'] as int?,
+    isCompleted: json['isCompleted'] as bool? ?? false,
+    isPRWeight: json['isPRWeight'] as bool? ?? false,
+    isPRReps: json['isPRReps'] as bool? ?? false,
+  );
   final int number;
   final double? weight;
   final int reps;
   final int? durationSeconds; // Used for timer-based sets (e.g. handstand hold)
   final double?
-      distance; // Used for distance-based exercises (stored in meters)
+  distance; // Used for distance-based exercises (stored in meters)
   final double? assistanceWeight; // For assisted bodyweight exercises
   final double? addedWeight; // For weighted bodyweight exercises
   final int? rpe;
@@ -168,16 +165,16 @@ class ActiveSet {
 
   // JSON serialization
   Map<String, dynamic> toJson() => {
-        'number': number,
-        'weight': weight,
-        'reps': reps,
-        'durationSeconds': durationSeconds,
-        'distance': distance,
-        'assistanceWeight': assistanceWeight,
-        'addedWeight': addedWeight,
-        'rpe': rpe,
-        'isCompleted': isCompleted,
-        'isPRWeight': isPRWeight,
-        'isPRReps': isPRReps,
-      };
+    'number': number,
+    'weight': weight,
+    'reps': reps,
+    'durationSeconds': durationSeconds,
+    'distance': distance,
+    'assistanceWeight': assistanceWeight,
+    'addedWeight': addedWeight,
+    'rpe': rpe,
+    'isCompleted': isCompleted,
+    'isPRWeight': isPRWeight,
+    'isPRReps': isPRReps,
+  };
 }

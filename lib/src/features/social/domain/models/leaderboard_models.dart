@@ -1,16 +1,6 @@
-enum LeaderboardType {
-  totalVolume,
-  workoutCount,
-  streak,
-  prCount,
-}
+enum LeaderboardType { totalVolume, workoutCount, streak, prCount }
 
-enum Period {
-  daily,
-  weekly,
-  monthly,
-  allTime,
-}
+enum Period { daily, weekly, monthly, allTime }
 
 class LeaderboardEntry {
   const LeaderboardEntry({
@@ -69,10 +59,7 @@ class Leaderboard {
 }
 
 class LeaderboardParams {
-  const LeaderboardParams({
-    required this.type,
-    required this.period,
-  });
+  const LeaderboardParams({required this.type, required this.period});
   final LeaderboardType type;
   final Period period;
 

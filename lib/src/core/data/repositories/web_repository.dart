@@ -14,9 +14,7 @@ class WebWorkoutRepository implements WorkoutRepository {
       .from('workout_sessions')
       .stream(primaryKey: ['id'])
       .order('started_at')
-      .map(
-        (data) => data.map(WorkoutSessionDto.fromJson).toList(),
-      );
+      .map((data) => data.map(WorkoutSessionDto.fromJson).toList());
 
   @override
   Future<List<WorkoutSessionDto>> getWorkoutSessions() async {
@@ -117,8 +115,10 @@ class WebWorkoutRepository implements WorkoutRepository {
 
   @override
   Future<List<WorkoutTemplateDto>> getWorkoutTemplates() async {
-    final response =
-        await _supabase.from('workout_templates').select().order('name');
+    final response = await _supabase
+        .from('workout_templates')
+        .select()
+        .order('name');
 
     return (response as List)
         .map((json) => WorkoutTemplateDto.fromJson(json))
@@ -130,9 +130,7 @@ class WebWorkoutRepository implements WorkoutRepository {
       .from('workout_templates')
       .stream(primaryKey: ['id'])
       .order('name')
-      .map(
-        (data) => data.map(WorkoutTemplateDto.fromJson).toList(),
-      );
+      .map((data) => data.map(WorkoutTemplateDto.fromJson).toList());
 
   @override
   Future<WorkoutTemplateDto?> getWorkoutTemplateById(String id) async {
@@ -195,8 +193,11 @@ class WebExerciseRepository implements ExerciseRepository {
 
   @override
   Future<ExerciseDto?> getExerciseById(String id) async {
-    final response =
-        await _supabase.from('exercises').select().eq('id', id).maybeSingle();
+    final response = await _supabase
+        .from('exercises')
+        .select()
+        .eq('id', id)
+        .maybeSingle();
 
     return response != null ? ExerciseDto.fromJson(response) : null;
   }

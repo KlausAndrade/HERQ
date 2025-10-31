@@ -15,29 +15,23 @@ import '../providers/active_workout_provider.dart';
 import '../providers/workout_providers.dart';
 
 class WorkoutDetailScreen extends ConsumerWidget {
-  const WorkoutDetailScreen({
-    required this.workoutId,
-    super.key,
-  });
+  const WorkoutDetailScreen({required this.workoutId, super.key});
 
   final String workoutId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final workoutSessionAsync =
-        ref.watch(workoutSessionByIdProvider(workoutId));
+    final workoutSessionAsync = ref.watch(
+      workoutSessionByIdProvider(workoutId),
+    );
     final setEntriesAsync = ref.watch(setEntriesBySessionProvider(workoutId));
 
     return workoutSessionAsync.when(
       data: (workoutSession) {
         if (workoutSession == null) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Workout Not Found'),
-            ),
-            body: const Center(
-              child: Text('Workout session not found'),
-            ),
+            appBar: AppBar(title: const Text('Workout Not Found')),
+            body: const Center(child: Text('Workout session not found')),
           );
         }
 
@@ -100,17 +94,11 @@ class WorkoutDetailScreen extends ConsumerWidget {
         );
       },
       loading: () => Scaffold(
-        appBar: AppBar(
-          title: const Text('Loading...'),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: const Text('Loading...')),
+        body: const Center(child: CircularProgressIndicator()),
       ),
       error: (error, stack) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Error'),
-        ),
+        appBar: AppBar(title: const Text('Error')),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -154,8 +142,8 @@ class WorkoutDetailScreen extends ConsumerWidget {
                   Text(
                     S.of(context)!.workoutOptions,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -236,7 +224,9 @@ class WorkoutDetailScreen extends ConsumerWidget {
               if (database == null) return;
 
               try {
-                await database.update(database.workoutSessions).replace(
+                await database
+                    .update(database.workoutSessions)
+                    .replace(
                       workoutSession.copyWith(notes: Value(controller.text)),
                     );
 
@@ -304,23 +294,30 @@ class WorkoutDetailScreen extends ConsumerWidget {
                 try {
                   // Get all exercises that were in this workout session
                   // This includes exercises with completed sets AND exercises that were added but never completed
-                  final entries = await (database.select(database.setEntries)
-                        ..where(
-                          (tbl) =>
-                              tbl.workoutSessionId.equals(workoutSession.id),
-                        ))
-                      .get();
+                  final entries =
+                      await (database.select(database.setEntries)..where(
+                            (tbl) =>
+                                tbl.workoutSessionId.equals(workoutSession.id),
+                          ))
+                          .get();
 
                   // Get exercise IDs from set entries (completed sets)
-                  final completedExerciseIds = entries.map((e) => e.exerciseId).toSet();
-                  
+                  final completedExerciseIds = entries
+                      .map((e) => e.exerciseId)
+                      .toSet();
+
                   // If this workout was from a template, get all exercises from the template
                   List<String> exerciseIds;
-                  if (workoutSession.templateId != null && workoutSession.templateId!.isNotEmpty) {
-                    final template = await (database.select(database.workoutTemplates)
-                          ..where((tbl) => tbl.id.equals(workoutSession.templateId!)))
-                        .getSingleOrNull();
-                    
+                  if (workoutSession.templateId != null &&
+                      workoutSession.templateId!.isNotEmpty) {
+                    final template =
+                        await (database.select(database.workoutTemplates)
+                              ..where(
+                                (tbl) =>
+                                    tbl.id.equals(workoutSession.templateId!),
+                              ))
+                            .getSingleOrNull();
+
                     if (template != null) {
                       // Use template exercises (includes all exercises, even those without completed sets)
                       exerciseIds = template.exerciseIds;
@@ -390,7 +387,8 @@ class WorkoutDetailScreen extends ConsumerWidget {
   void _shareWorkout(BuildContext context, WorkoutSession workoutSession) {
     // Simple share functionality using dialog for now
     // In a real app, you'd use share_plus package
-    final shareText = '''
+    final shareText =
+        '''
 ${workoutSession.name}
 Completed: ${workoutSession.completedAt != null ? DateFormat('MMM d, y').format(workoutSession.completedAt!) : 'In Progress'}
 
@@ -401,15 +399,13 @@ Stats:
 
 ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n${workoutSession.notes}' : ''}
     '''
-        .trim();
+            .trim();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(S.of(context)!.shareWorkout),
-        content: SingleChildScrollView(
-          child: SelectableText(shareText),
-        ),
+        content: SingleChildScrollView(child: SelectableText(shareText)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -455,10 +451,9 @@ ${workoutSession.notes != null && workoutSession.notes!.isNotEmpty ? '\nNotes:\n
 
               try {
                 // Delete associated set entries first
-                await (database.delete(database.setEntries)
-                      ..where(
-                        (tbl) => tbl.workoutSessionId.equals(workoutSession.id),
-                      ))
+                await (database.delete(database.setEntries)..where(
+                      (tbl) => tbl.workoutSessionId.equals(workoutSession.id),
+                    ))
                     .go();
 
                 // Delete the workout session
@@ -529,8 +524,9 @@ class _WorkoutHeader extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color:
-                          _getStatusColor(workoutSession.completedAt != null),
+                      color: _getStatusColor(
+                        workoutSession.completedAt != null,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -548,31 +544,31 @@ class _WorkoutHeader extends StatelessWidget {
                       children: [
                         Text(
                           workoutSession.name,
-                          style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           dateFormat.format(workoutSession.startedAt),
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.7),
-                                  ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacity(0.7),
+                              ),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(workoutSession.completedAt != null)
-                          .withOpacity(0.1),
+                      color: _getStatusColor(
+                        workoutSession.completedAt != null,
+                      ).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -582,8 +578,9 @@ class _WorkoutHeader extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color:
-                            _getStatusColor(workoutSession.completedAt != null),
+                        color: _getStatusColor(
+                          workoutSession.completedAt != null,
+                        ),
                       ),
                     ),
                   ),
@@ -642,39 +639,35 @@ class _WorkoutHeader extends StatelessWidget {
                     Icon(
                       Icons.schedule,
                       size: 16,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'Started: ${timeFormat.format(workoutSession.startedAt)}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.6),
-                          ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Icon(
                       Icons.check,
                       size: 16,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'Finished: ${timeFormat.format(workoutSession.completedAt!)}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.6),
-                          ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
+                      ),
                     ),
                   ],
                 ),
@@ -704,7 +697,8 @@ class _WorkoutHeader extends StatelessWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(
-        DiagnosticsProperty<WorkoutSession>('workoutSession', workoutSession));
+      DiagnosticsProperty<WorkoutSession>('workoutSession', workoutSession),
+    );
   }
 }
 
@@ -721,36 +715,29 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        mainAxisSize: MainAxisSize.min,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
+      const SizedBox(width: 4),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 16,
-            color: Theme.of(context).colorScheme.primary,
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
           ),
-          const SizedBox(width: 4),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.6),
-                    ),
-              ),
-              Text(
-                value,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-            ],
+          Text(
+            value,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
           ),
         ],
-      );
+      ),
+    ],
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -793,11 +780,10 @@ class _ExerciseSetsSection extends ConsumerWidget {
               Text(
                 'This workout doesn\'t have any recorded sets yet',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.7),
-                    ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -819,19 +805,16 @@ class _ExerciseSetsSection extends ConsumerWidget {
         children: [
           Text(
             'Exercises',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           ...groupedSets.entries.map((entry) {
             final exerciseId = entry.key;
             final exerciseSets = entry.value;
 
-            return _ExerciseCard(
-              exerciseId: exerciseId,
-              sets: exerciseSets,
-            );
+            return _ExerciseCard(exerciseId: exerciseId, sets: exerciseSets);
           }),
         ],
       ),
@@ -843,15 +826,13 @@ class _ExerciseSetsSection extends ConsumerWidget {
     super.debugFillProperties(properties);
     properties.add(IterableProperty<SetEntry>('setEntries', setEntries));
     properties.add(
-        DiagnosticsProperty<WorkoutSession>('workoutSession', workoutSession));
+      DiagnosticsProperty<WorkoutSession>('workoutSession', workoutSession),
+    );
   }
 }
 
 class _ExerciseCard extends ConsumerWidget {
-  const _ExerciseCard({
-    required this.exerciseId,
-    required this.sets,
-  });
+  const _ExerciseCard({required this.exerciseId, required this.sets});
 
   final String exerciseId;
   final List<SetEntry> sets;
@@ -883,20 +864,17 @@ class _ExerciseCard extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         exerciseName,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
                     Text(
                       '${sets.length} ${S.of(context)!.sets}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.6),
-                          ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
+                      ),
                     ),
                   ],
                 ),
@@ -911,30 +889,27 @@ class _ExerciseCard extends ConsumerWidget {
                       flex: 2,
                       child: Text(
                         'Weight',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(fontWeight: FontWeight.w600),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     Expanded(
                       flex: 2,
                       child: Text(
                         'Reps',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(fontWeight: FontWeight.w600),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     Expanded(
                       flex: 2,
                       child: Text(
                         'RPE',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(fontWeight: FontWeight.w600),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -1049,38 +1024,32 @@ class _WorkoutNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.all(16),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    margin: const EdgeInsets.all(16),
+    child: Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.note,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Notes',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
+                Icon(Icons.note, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 8),
                 Text(
-                  notes,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  'Notes',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 12),
+            Text(notes, style: Theme.of(context).textTheme.bodyMedium),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

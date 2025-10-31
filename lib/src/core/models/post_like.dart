@@ -15,6 +15,6 @@ class PostLikes extends Table {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {postId, userId}, // Ensure a user can only like a post once
-      ];
+    {postId, userId}, // Ensure a user can only like a post once
+  ];
 }

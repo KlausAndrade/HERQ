@@ -12,9 +12,9 @@ import 'workout_web_sessions_provider.dart';
 // Web-only active workout provider (uses Supabase only)
 final activeWorkoutWebProvider =
     StateNotifierProvider<ActiveWorkoutWebNotifier, ActiveWorkout?>((ref) {
-  final supabase = ref.watch(supabaseClientProvider);
-  return ActiveWorkoutWebNotifier(supabase, ref);
-});
+      final supabase = ref.watch(supabaseClientProvider);
+      return ActiveWorkoutWebNotifier(supabase, ref);
+    });
 
 class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
   ActiveWorkoutWebNotifier(this.supabase, this._ref) : super(null);
@@ -76,8 +76,9 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       };
 
       // Check for missing exercises and log warning
-      final missingExercises =
-          exerciseIds.where((id) => !exerciseMap.containsKey(id)).toList();
+      final missingExercises = exerciseIds
+          .where((id) => !exerciseMap.containsKey(id))
+          .toList();
       if (missingExercises.isNotEmpty) {
         print(
           '⚠️ Template "${templateData['name']}" references ${missingExercises.length} missing exercises: $missingExercises',
@@ -88,8 +89,9 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
       }
 
       // Create active exercises in template order (skip missing exercises)
-      final activeExercises =
-          exerciseIds.where(exerciseMap.containsKey).map((id) {
+      final activeExercises = exerciseIds.where(exerciseMap.containsKey).map((
+        id,
+      ) {
         final exercise = exerciseMap[id]!;
         final exerciseType =
             exercise['exercise_type'] as String? ?? 'weight_reps';
@@ -305,8 +307,8 @@ class ActiveWorkoutWebNotifier extends StateNotifier<ActiveWorkout?> {
 // Simple rest timer provider for web
 final restTimerWebProvider =
     StateNotifierProvider<RestTimerWebNotifier, RestTimerWebState>(
-  (ref) => RestTimerWebNotifier(),
-);
+      (ref) => RestTimerWebNotifier(),
+    );
 
 class RestTimerWebNotifier extends StateNotifier<RestTimerWebState> {
   RestTimerWebNotifier() : super(const RestTimerWebState());
@@ -357,8 +359,10 @@ class RestTimerWebNotifier extends StateNotifier<RestTimerWebState> {
 
   void subtractTime(int seconds) {
     if (state.isActive) {
-      final newRemaining =
-          (state.remainingSeconds - seconds).clamp(0, state.totalSeconds);
+      final newRemaining = (state.remainingSeconds - seconds).clamp(
+        0,
+        state.totalSeconds,
+      );
       if (newRemaining == 0) {
         stopTimer();
       } else {

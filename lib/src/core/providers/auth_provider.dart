@@ -6,8 +6,9 @@ import '../utils/auth_error_handler.dart';
 // telemetry is handled in UI layers where ref is accessible
 
 // Supabase client provider
-final supabaseClientProvider =
-    Provider<SupabaseClient>((ref) => Supabase.instance.client);
+final supabaseClientProvider = Provider<SupabaseClient>(
+  (ref) => Supabase.instance.client,
+);
 
 // Authentication state provider
 final authStateProvider = StreamProvider<AuthState>((ref) {
@@ -36,56 +37,49 @@ class AuthService {
   Future<AuthResponse> signInWithEmail({
     required String email,
     required String password,
-  }) async =>
-      _client.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
+  }) async => _client.auth.signInWithPassword(email: email, password: password);
 
   // Sign up with email and password
   Future<AuthResponse> signUpWithEmail({
     required String email,
     required String password,
     String? displayName,
-  }) async =>
-      _client.auth.signUp(
-        email: email,
-        password: password,
-        data: {
-          if (displayName != null) 'display_name': displayName,
-        },
-      );
+  }) async => _client.auth.signUp(
+    email: email,
+    password: password,
+    data: {if (displayName != null) 'display_name': displayName},
+  );
 
   // Sign in with Google
   Future<bool> signInWithGoogle() async => _client.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: 'herq://login-callback/',
-      );
+    OAuthProvider.google,
+    redirectTo: 'herq://login-callback/',
+  );
 
   // Sign in with Apple
   Future<bool> signInWithApple() async => _client.auth.signInWithOAuth(
-        OAuthProvider.apple,
-        redirectTo: 'herq://login-callback/',
-      );
+    OAuthProvider.apple,
+    redirectTo: 'herq://login-callback/',
+  );
 
   // Sign in with Facebook
   Future<bool> signInWithFacebook() async {
     try {
       print('🔍 Starting Facebook login...');
-      
+
       // Use native Facebook SDK with login behavior preference
       final LoginResult result = await FacebookAuth.instance.login(
         permissions: ['email', 'public_profile'],
         loginBehavior: LoginBehavior.nativeWithFallback, // Prefer native SSO
       );
-      
+
       print('🔍 Facebook login result: ${result.status}');
       print('🔍 Facebook login message: ${result.message}');
       print('🔍 Facebook login method: ${result.accessToken?.graphDomain}');
 
       if (result.status == LoginStatus.success) {
         print('✅ Facebook login successful');
-        
+
         // Get Facebook access token
         final AccessToken accessToken = result.accessToken!;
         print('🔍 Facebook access token received');
@@ -97,7 +91,9 @@ class AuthService {
           idToken: accessToken.token,
         );
 
-        print('🔍 Supabase response: ${response.session != null ? "Success" : "Failed"}');
+        print(
+          '🔍 Supabase response: ${response.session != null ? "Success" : "Failed"}',
+        );
         return response.session != null;
       } else {
         print('❌ Facebook login failed: ${result.message}');
@@ -124,10 +120,7 @@ class AuthService {
   Future<void> resendEmailVerification() async {
     final user = _client.auth.currentUser;
     if (user?.email != null) {
-      await _client.auth.resend(
-        type: OtpType.signup,
-        email: user!.email,
-      );
+      await _client.auth.resend(type: OtpType.signup, email: user!.email);
     }
   }
 

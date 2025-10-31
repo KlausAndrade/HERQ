@@ -37,18 +37,18 @@ class AISuggestion extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        type,
-        title,
-        description,
-        confidence,
-        createdAt,
-        workoutId,
-        exerciseId,
-        reasoning,
-        metadata,
-        actionable,
-      ];
+    id,
+    type,
+    title,
+    description,
+    confidence,
+    createdAt,
+    workoutId,
+    exerciseId,
+    reasoning,
+    metadata,
+    actionable,
+  ];
 }
 
 enum SuggestionType {
@@ -102,18 +102,18 @@ class WorkoutRecommendation extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        description,
-        exercises,
-        estimatedDuration,
-        difficulty,
-        targetMuscleGroups,
-        reasoning,
-        confidence,
-        requiredEquipment,
-        alternatives,
-      ];
+    id,
+    name,
+    description,
+    exercises,
+    estimatedDuration,
+    difficulty,
+    targetMuscleGroups,
+    reasoning,
+    confidence,
+    requiredEquipment,
+    alternatives,
+  ];
 }
 
 enum Difficulty {
@@ -155,16 +155,16 @@ class RecommendedExercise extends Equatable {
 
   @override
   List<Object?> get props => [
-        exerciseId,
-        name,
-        sets,
-        reps,
-        weight,
-        rpe,
-        restSeconds,
-        notes,
-        substitutions,
-      ];
+    exerciseId,
+    name,
+    sets,
+    reps,
+    weight,
+    rpe,
+    restSeconds,
+    notes,
+    substitutions,
+  ];
 }
 
 @JsonSerializable()
@@ -199,17 +199,17 @@ class ProgressiveOverloadSuggestion extends Equatable {
 
   @override
   List<Object?> get props => [
-        exerciseId,
-        currentWeight,
-        currentReps,
-        currentSets,
-        suggestedWeight,
-        suggestedReps,
-        suggestedSets,
-        reasoning,
-        confidence,
-        timeframe,
-      ];
+    exerciseId,
+    currentWeight,
+    currentReps,
+    currentSets,
+    suggestedWeight,
+    suggestedReps,
+    suggestedSets,
+    reasoning,
+    confidence,
+    timeframe,
+  ];
 }
 
 @JsonSerializable()
@@ -242,16 +242,16 @@ class RecoveryAnalysis extends Equatable {
 
   @override
   List<Object?> get props => [
-        userId,
-        analysisDate,
-        fatigueLevel,
-        recoveryScore,
-        recommendations,
-        nextWorkoutSuggestion,
-        sleepQuality,
-        stressLevel,
-        nutritionScore,
-      ];
+    userId,
+    analysisDate,
+    fatigueLevel,
+    recoveryScore,
+    recommendations,
+    nextWorkoutSuggestion,
+    sleepQuality,
+    stressLevel,
+    nutritionScore,
+  ];
 }
 
 enum FatigueLevel {

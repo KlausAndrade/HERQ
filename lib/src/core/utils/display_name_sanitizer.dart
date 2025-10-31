@@ -52,6 +52,5 @@ class DisplayNameSanitizer {
   static List<String> sanitizeList(
     List<String?> displayNames, {
     String fallback = 'Unknown Athlete',
-  }) =>
-      displayNames.map((name) => sanitize(name, fallback: fallback)).toList();
+  }) => displayNames.map((name) => sanitize(name, fallback: fallback)).toList();
 }

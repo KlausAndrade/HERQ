@@ -319,17 +319,17 @@ Future<void> seedCoreExercises(AppDatabase database) async {
       final companion = ExercisesCompanion(
         id: Value(exerciseData['id']! as String),
         name: Value(exerciseData['name']! as String),
-        primaryMuscleGroup:
-            Value(exerciseData['primaryMuscleGroup']! as String),
+        primaryMuscleGroup: Value(
+          exerciseData['primaryMuscleGroup']! as String,
+        ),
         secondaryMuscleGroups: Value(
           List<String>.from(
-              exerciseData['secondaryMuscleGroups'] as List<dynamic>),
+            exerciseData['secondaryMuscleGroups'] as List<dynamic>,
+          ),
         ),
         equipment: Value(exerciseData['equipment']! as String),
         instructions: Value(exerciseData['instructions']! as String),
-        tags: Value(
-          List<String>.from(exerciseData['tags'] as List<dynamic>),
-        ),
+        tags: Value(List<String>.from(exerciseData['tags'] as List<dynamic>)),
         isBodyweight: Value(exerciseData['isBodyweight']! as bool),
         exerciseType: Value(exerciseData['exerciseType']! as String),
         category: Value(exerciseData['category']! as String),

@@ -14,8 +14,9 @@ final webStorageServiceProvider = Provider<WebStorageService?>((ref) {
 });
 
 /// Provider for checking if web storage is available
-final webStorageAvailableProvider =
-    Provider<bool>((ref) => kIsWeb && WebStorageService.isSupported);
+final webStorageAvailableProvider = Provider<bool>(
+  (ref) => kIsWeb && WebStorageService.isSupported,
+);
 
 /// Provider for storage information
 final storageInfoProvider = FutureProvider<Map<String, dynamic>>((ref) async {
@@ -80,8 +81,9 @@ class WebStorageNotifier
       final exercises = await WebStorageService.getExercises();
 
       // Check if exercise already exists and update, or add new
-      final existingIndex =
-          exercises.indexWhere((e) => e['id'] == exercise['id']);
+      final existingIndex = exercises.indexWhere(
+        (e) => e['id'] == exercise['id'],
+      );
       if (existingIndex >= 0) {
         exercises[existingIndex] = exercise;
       } else {
@@ -110,8 +112,9 @@ class WebStorageNotifier
       final templates = await WebStorageService.getTemplates();
 
       // Check if template already exists and update, or add new
-      final existingIndex =
-          templates.indexWhere((t) => t['id'] == template['id']);
+      final existingIndex = templates.indexWhere(
+        (t) => t['id'] == template['id'],
+      );
       if (existingIndex >= 0) {
         templates[existingIndex] = template;
       } else {
@@ -215,40 +218,45 @@ class WebStorageNotifier
 /// Provider for web storage state management
 final webStorageProvider =
     StateNotifierProvider<WebStorageNotifier, AsyncValue<Map<String, dynamic>>>(
-  (ref) => WebStorageNotifier(),
-);
+      (ref) => WebStorageNotifier(),
+    );
 
 /// Provider for workout sessions from web storage
-final webWorkoutSessionsProvider =
-    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final webWorkoutSessionsProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   if (!kIsWeb || !WebStorageService.isSupported) return [];
   return WebStorageService.getWorkoutSessions();
 });
 
 /// Provider for exercises from web storage
-final webExercisesProvider =
-    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final webExercisesProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   if (!kIsWeb || !WebStorageService.isSupported) return [];
   return WebStorageService.getExercises();
 });
 
 /// Provider for templates from web storage
-final webTemplatesProvider =
-    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final webTemplatesProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   if (!kIsWeb || !WebStorageService.isSupported) return [];
   return WebStorageService.getTemplates();
 });
 
 /// Provider for user preferences from web storage
-final webUserPreferencesProvider =
-    FutureProvider<Map<String, dynamic>>((ref) async {
+final webUserPreferencesProvider = FutureProvider<Map<String, dynamic>>((
+  ref,
+) async {
   if (!kIsWeb || !WebStorageService.isSupported) return {};
   return WebStorageService.getUserPreferences();
 });
 
 /// Provider for personal records from web storage
-final webPersonalRecordsProvider =
-    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final webPersonalRecordsProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   if (!kIsWeb || !WebStorageService.isSupported) return [];
   return WebStorageService.getPersonalRecords();
 });
