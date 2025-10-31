@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/utils/auth_error_handler.dart';
@@ -45,7 +44,6 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
         
         // Handle signup response
         if (response.user != null) {
-          print('✅ Signup successful: ${response.user?.email}');
           if (mounted) {
             context.go('/');
           }
@@ -60,7 +58,6 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
         
         // Handle signin response
         if (response.user != null) {
-          print('✅ Signin successful: ${response.user?.email}');
           if (mounted) {
             context.go('/');
           }
@@ -68,8 +65,7 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
           throw Exception('Signin failed - no user returned');
         }
       }
-    } catch (e) {
-      print('❌ Auth error: $e');
+    } on Exception catch (e) {
       setState(() {
         _error = _getWebFriendlyErrorMessage(e);
       });
@@ -322,7 +318,7 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
                         padding: const EdgeInsets.all(8),
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
+                          color: Colors.blue.withValues(alpha: 0.1),
                           border: Border.all(color: Colors.blue),
                           borderRadius: BorderRadius.circular(4),
                         ),
@@ -339,7 +335,7 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
                       label: const Text('Download Android APK'),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        backgroundColor: const Color(0xFF00BFA6).withOpacity(0.1),
+                        backgroundColor: const Color(0xFF00BFA6).withValues(alpha: 0.1),
                         foregroundColor: const Color(0xFF00BFA6),
                         side: const BorderSide(color: Color(0xFF00BFA6)),
                         shape: RoundedRectangleBorder(
@@ -354,14 +350,14 @@ class _WebAuthScreenState extends ConsumerState<WebAuthScreen> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFF00BFA6).withOpacity(0.1),
-                            const Color(0xFFD4FF4D).withOpacity(0.1),
+                            const Color(0xFF00BFA6).withValues(alpha: 0.1),
+                            const Color(0xFFD4FF4D).withValues(alpha: 0.1),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFF00BFA6).withOpacity(0.3)),
+                        border: Border.all(color: const Color(0xFF00BFA6).withValues(alpha: 0.3)),
                       ),
                       child: Column(
                         children: [
