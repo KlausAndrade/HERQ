@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 import '../../../../core/providers/auth_provider.dart';
@@ -298,12 +300,53 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   onPressed: () => context.go('/'),
                   child: const Text('Skip for now'),
                 ),
+
+                // Download APK button (web only)
+                if (kIsWeb) ...[
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: _downloadApk,
+                    icon: const Icon(Icons.download),
+                    label: const Text('Download Android APK'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: const Color(0xFF00BFA6).withValues(alpha: 0.1),
+                      foregroundColor: const Color(0xFF00BFA6),
+                      side: const BorderSide(color: Color(0xFF00BFA6)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _downloadApk() async {
+    try {
+      final uri = Uri.parse('/herq-release.apk');
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        // Fallback: try to trigger download directly
+        final downloadUrl = Uri.parse('${Uri.base.origin}/herq-release.apk');
+        await launchUrl(downloadUrl, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to download APK: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _handleSubmit() async {
