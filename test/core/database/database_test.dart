@@ -390,7 +390,7 @@ void main() {
         await database.into(database.workoutTemplates).insert(
               WorkoutTemplatesCompanion.insert(
                 id: templateId,
-                userId: 'test_user', // ✅ USER ISOLATION
+                userId: const Value('test_user'), // ✅ USER ISOLATION
                 name: 'Push Day Template',
                 exerciseIds: const Value([]),
                 tags: const ['push', 'strength'],
@@ -413,7 +413,7 @@ void main() {
         await database.into(database.workoutTemplates).insert(
               WorkoutTemplatesCompanion.insert(
                 id: templateId,
-                userId: 'test_user', // ✅ USER ISOLATION
+                userId: const Value('test_user'), // ✅ USER ISOLATION
                 name: 'Original Template',
                 exerciseIds: const Value([]),
                 tags: const [],
