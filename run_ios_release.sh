@@ -5,8 +5,13 @@
 
 echo "🍎 Running iOS Release on Device..."
 
-# Load environment variables from .env file
-export $(cat .env | grep -v '^#' | xargs)
+# Load environment variables from .env file (if it exists)
+if [ -f .env ]; then
+  echo "📋 Loading environment variables from .env..."
+  export $(cat .env | grep -v '^#' | xargs)
+else
+  echo "⚠️  No .env file found. Using environment variables or compile-time constants."
+fi
 
 # Get device ID from parameter or use default
 DEVICE_ID=${1:-"00008140-000A798C38A2201C"}
