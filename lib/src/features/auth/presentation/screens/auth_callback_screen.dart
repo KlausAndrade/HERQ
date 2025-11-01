@@ -25,13 +25,13 @@ class _AuthCallbackScreenState extends ConsumerState<AuthCallbackScreen> {
   Future<void> _handleAuthCallback() async {
     try {
       print('🔍 Handling auth callback...');
-      
+
       // Use enhanced auth callback handler
       final response = await EnhancedWebAuthHelper.handleAuthCallback();
-      
+
       if (response != null && response.user != null) {
         print('✅ Auth callback successful: ${response.user?.email}');
-        
+
         if (mounted) {
           // Navigate to home page
           context.go('/');
@@ -88,9 +88,9 @@ class _AuthCallbackScreenState extends ConsumerState<AuthCallbackScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               if (_isLoading) ...[
                 const CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00BFA6)),
@@ -133,7 +133,8 @@ class _AuthCallbackScreenState extends ConsumerState<AuthCallbackScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BFA6),
                     foregroundColor: const Color(0xFF1B1D21),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

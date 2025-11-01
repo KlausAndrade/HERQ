@@ -214,7 +214,8 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                     label: Text(_formatExecutionTypeLabel(executionType)),
                     selected: isSelected,
                     onSelected: (selected) {
-                      final newExecutionType = selected ? executionType : 'weight_reps';
+                      final newExecutionType =
+                          selected ? executionType : 'weight_reps';
                       setState(() {
                         selectedVariant = newExecutionType;
                       });
@@ -228,10 +229,12 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                   );
                 }).toList(),
               ),
-              
+
               // Help text for execution types
-              if (selectedVariant == 'timer' || selectedVariant == 'duration_weight' || 
-                  selectedVariant == 'distance_duration' || selectedVariant == 'weight_distance')
+              if (selectedVariant == 'timer' ||
+                  selectedVariant == 'duration_weight' ||
+                  selectedVariant == 'distance_duration' ||
+                  selectedVariant == 'weight_distance')
                 Container(
                   margin: const EdgeInsets.only(top: 8),
                   padding: const EdgeInsets.all(12),

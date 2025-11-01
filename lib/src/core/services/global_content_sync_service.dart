@@ -16,16 +16,14 @@ class GlobalContentSyncService {
 
       // First, let's check if we can access the exercises table
       print('🔍 Checking Supabase connection and permissions...');
-      
+
       // Fetch global exercises from Supabase
       // Note: We'll fetch all exercises since the user_id column may not exist yet
-      final globalExercises = await _supabase
-          .from('exercises')
-          .select()
-          .order('name');
+      final globalExercises =
+          await _supabase.from('exercises').select().order('name');
 
       print('📊 Found ${globalExercises.length} exercises in Supabase');
-      
+
       if (globalExercises.isEmpty) {
         print('⚠️ No exercises found in Supabase. Check:');
         print('   1. Are you logged in?');
@@ -36,36 +34,42 @@ class GlobalContentSyncService {
 
       // Show first few exercises for debugging
       print('📋 First few exercises:');
-      for (int i = 0; i < (globalExercises.length > 3 ? 3 : globalExercises.length); i++) {
+      for (int i = 0;
+          i < (globalExercises.length > 3 ? 3 : globalExercises.length);
+          i++) {
         final exercise = globalExercises[i];
         print('   ${i + 1}. ${exercise['name']} (ID: ${exercise['id']})');
       }
 
       int syncedCount = 0;
       int errorCount = 0;
-      
+
       for (final exercise in globalExercises) {
         try {
           print('🔄 Syncing exercise: ${exercise['name']}');
-          
+
           // Debug progression relationships
           if (exercise['parent_exercise_id'] != null) {
-            print('   📋 Parent: ${exercise['parent_exercise_id']} | Variant: ${exercise['variant_type']}');
+            print(
+                '   📋 Parent: ${exercise['parent_exercise_id']} | Variant: ${exercise['variant_type']}');
           }
-          
+
           // Convert to local format and insert/update
           final companion = ExercisesCompanion.insert(
-            id: exercise['id'] ?? 'unknown_${DateTime.now().millisecondsSinceEpoch}',
+            id: exercise['id'] ??
+                'unknown_${DateTime.now().millisecondsSinceEpoch}',
             userId: const Value(null), // Global exercise
             name: exercise['name'] ?? 'Unknown Exercise',
             primaryMuscleGroup: exercise['primary_muscle_group'] ?? 'other',
-            secondaryMuscleGroups: _convertToStringList(exercise['secondary_muscle_groups']),
-            equipment: _convertToStringList(exercise['equipment']).isNotEmpty 
-                ? _convertToStringList(exercise['equipment']).first 
+            secondaryMuscleGroups:
+                _convertToStringList(exercise['secondary_muscle_groups']),
+            equipment: _convertToStringList(exercise['equipment']).isNotEmpty
+                ? _convertToStringList(exercise['equipment']).first
                 : 'none',
-            instructions: exercise['instructions'] ?? 'No instructions provided',
+            instructions:
+                exercise['instructions'] ?? 'No instructions provided',
             tags: _convertToStringList(exercise['tags']),
-            aliases: Value(_convertToStringList(exercise['aliases']).isNotEmpty 
+            aliases: Value(_convertToStringList(exercise['aliases']).isNotEmpty
                 ? _convertToStringList(exercise['aliases'])
                 : null),
             isBodyweight: Value(exercise['is_bodyweight'] ?? false),
@@ -96,7 +100,7 @@ class GlobalContentSyncService {
       print('   ✅ Successfully synced: $syncedCount');
       print('   ❌ Errors: $errorCount');
       print('   📊 Total processed: ${globalExercises.length}');
-      
+
       if (syncedCount > 0) {
         print('✅ Synced $syncedCount global exercises from Supabase');
       } else {
@@ -120,13 +124,11 @@ class GlobalContentSyncService {
 
       // Fetch global templates from Supabase
       // Note: We'll fetch all templates since the user_id column may not exist yet
-      final globalTemplates = await _supabase
-          .from('workout_templates')
-          .select()
-          .order('name');
+      final globalTemplates =
+          await _supabase.from('workout_templates').select().order('name');
 
       print('📊 Found ${globalTemplates.length} templates in Supabase');
-      
+
       if (globalTemplates.isEmpty) {
         print('⚠️ No templates found in Supabase. Check:');
         print('   1. Are you logged in?');
@@ -137,22 +139,26 @@ class GlobalContentSyncService {
 
       // Show first few templates for debugging
       print('📋 First few templates:');
-      for (int i = 0; i < (globalTemplates.length > 3 ? 3 : globalTemplates.length); i++) {
+      for (int i = 0;
+          i < (globalTemplates.length > 3 ? 3 : globalTemplates.length);
+          i++) {
         final template = globalTemplates[i];
         print('   ${i + 1}. ${template['name']} (ID: ${template['id']})');
       }
 
       int syncedCount = 0;
       int errorCount = 0;
-      
+
       for (final template in globalTemplates) {
         try {
           print('🔄 Syncing template: ${template['name']}');
-          
+
           // Convert to local format and insert/update
           final companion = WorkoutTemplatesCompanion.insert(
-            id: template['id'] ?? 'unknown_template_${DateTime.now().millisecondsSinceEpoch}',
-            userId: const Value('00000000-0000-0000-0000-000000000000'), // System UUID for global templates
+            id: template['id'] ??
+                'unknown_template_${DateTime.now().millisecondsSinceEpoch}',
+            userId: const Value(
+                '00000000-0000-0000-0000-000000000000'), // System UUID for global templates
             name: template['name'] ?? 'Unknown Template',
             description: Value(template['description']),
             folderId: Value(template['folder_id']),
@@ -161,7 +167,8 @@ class GlobalContentSyncService {
             ),
             tags: List<String>.from(template['tags'] ?? []),
             category: Value(template['category']),
-            estimatedDurationMinutes: Value(template['estimated_duration_minutes']),
+            estimatedDurationMinutes:
+                Value(template['estimated_duration_minutes']),
             isDefault: Value(template['is_default'] ?? false),
             sortOrder: Value(template['sort_order'] ?? 0),
             createdAt: Value(template['created_at'] != null
@@ -172,7 +179,9 @@ class GlobalContentSyncService {
                 : DateTime.now()),
           );
 
-          await _db.into(_db.workoutTemplates).insertOnConflictUpdate(companion);
+          await _db
+              .into(_db.workoutTemplates)
+              .insertOnConflictUpdate(companion);
           syncedCount++;
           print('   ✅ Synced successfully');
         } catch (e) {
@@ -186,7 +195,7 @@ class GlobalContentSyncService {
       print('   ✅ Successfully synced: $syncedCount');
       print('   ❌ Errors: $errorCount');
       print('   📊 Total processed: ${globalTemplates.length}');
-      
+
       if (syncedCount > 0) {
         print('✅ Synced $syncedCount global templates from Supabase');
       } else {
@@ -206,12 +215,13 @@ class GlobalContentSyncService {
   /// Full sync - sync all global content
   Future<void> syncAllGlobalContent() async {
     print('🌍 Starting global content sync...');
-    
+
     try {
       // Add timeout to prevent hanging
       await Future.any([
         _performSync(),
-        Future.delayed(const Duration(seconds: 30), () => throw TimeoutException('Sync timeout')),
+        Future.delayed(const Duration(seconds: 30),
+            () => throw TimeoutException('Sync timeout')),
       ]);
       print('✅ Global content sync completed');
     } catch (e) {
@@ -277,5 +287,4 @@ class GlobalContentSyncService {
     }
     return [];
   }
-
 }

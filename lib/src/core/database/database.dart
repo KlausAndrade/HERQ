@@ -75,27 +75,29 @@ class AppDatabase extends _$AppDatabase {
               // Ensure all tables have user_id column for user isolation
               final tables = [
                 'exercises',
-                'workout_sessions', 
+                'workout_sessions',
                 'set_entries',
                 'personal_records',
                 'user_stats',
                 'exercise_favorites',
                 'user_achievements'
               ];
-              
+
               for (final table in tables) {
                 try {
-                  await customStatement('ALTER TABLE $table ADD COLUMN user_id TEXT');
+                  await customStatement(
+                      'ALTER TABLE $table ADD COLUMN user_id TEXT');
                   print('✅ Added user_id column to $table');
                 } catch (e) {
                   // Column may already exist, which is fine
                   print('ℹ️ user_id column may already exist in $table: $e');
                 }
               }
-              
+
               // Set all existing exercises to global (NULL user_id)
-              await customStatement('UPDATE exercises SET user_id = NULL WHERE user_id IS NULL');
-              
+              await customStatement(
+                  'UPDATE exercises SET user_id = NULL WHERE user_id IS NULL');
+
               print('✅ Migration 19: Ensured all tables have user_id column');
             } catch (e) {
               print('Migration 19 error: $e');
@@ -123,7 +125,7 @@ class AppDatabase extends _$AppDatabase {
                   updated_at INTEGER NOT NULL
                 )
               ''');
-              
+
               // Copy data from old table to new table
               await customStatement('''
                 INSERT INTO workout_templates_new 
@@ -131,10 +133,11 @@ class AppDatabase extends _$AppDatabase {
                        exercise_ids, tags, estimated_duration_minutes, is_default, created_at, updated_at
                 FROM workout_templates
               ''');
-              
+
               // Drop old table and rename new table
               await customStatement('DROP TABLE workout_templates');
-              await customStatement('ALTER TABLE workout_templates_new RENAME TO workout_templates');
+              await customStatement(
+                  'ALTER TABLE workout_templates_new RENAME TO workout_templates');
             } catch (e) {
               print('Migration 18 error: $e');
             }
@@ -146,7 +149,7 @@ class AppDatabase extends _$AppDatabase {
               await customStatement(
                 'ALTER TABLE exercises ADD COLUMN user_id TEXT',
               );
-              
+
               // All existing exercises are global (admin-created), so set userId to NULL
               // This means they'll be visible to all users
               await customStatement(
@@ -276,13 +279,14 @@ class AppDatabase extends _$AppDatabase {
 
             await _insertDefaultData();
           }
-          
+
           if (to == 20) {
             try {
               // Add sort_order column to template_folders table
-              await customStatement('ALTER TABLE template_folders ADD COLUMN sort_order INTEGER DEFAULT 0');
+              await customStatement(
+                  'ALTER TABLE template_folders ADD COLUMN sort_order INTEGER DEFAULT 0');
               print('✅ Added sort_order column to template_folders');
-              
+
               // Set sort_order for existing folders based on creation date
               await customStatement('''
                 UPDATE template_folders 
@@ -292,39 +296,43 @@ class AppDatabase extends _$AppDatabase {
                 WHERE sort_order = 0
               ''');
               print('✅ Set sort_order for existing template folders');
-              
+
               print('✅ Migration 20: Added sort_order to template_folders');
             } catch (e) {
               print('❌ Migration 20 failed: $e');
               rethrow;
             }
           }
-          
+
           if (to == 21) {
             try {
               // Add missing columns to workout_checkpoints table (with error handling)
               try {
-                await customStatement('ALTER TABLE workout_checkpoints ADD COLUMN started_at INTEGER');
+                await customStatement(
+                    'ALTER TABLE workout_checkpoints ADD COLUMN started_at INTEGER');
                 print('✅ Added started_at column to workout_checkpoints');
               } catch (e) {
                 if (e.toString().contains('duplicate column name')) {
-                  print('ℹ️ started_at column already exists in workout_checkpoints');
+                  print(
+                      'ℹ️ started_at column already exists in workout_checkpoints');
                 } else {
                   rethrow;
                 }
               }
-              
+
               try {
-                await customStatement('ALTER TABLE workout_checkpoints ADD COLUMN last_saved_at INTEGER');
+                await customStatement(
+                    'ALTER TABLE workout_checkpoints ADD COLUMN last_saved_at INTEGER');
                 print('✅ Added last_saved_at column to workout_checkpoints');
               } catch (e) {
                 if (e.toString().contains('duplicate column name')) {
-                  print('ℹ️ last_saved_at column already exists in workout_checkpoints');
+                  print(
+                      'ℹ️ last_saved_at column already exists in workout_checkpoints');
                 } else {
                   rethrow;
                 }
               }
-              
+
               // Set timestamps for existing checkpoints (use current time as fallback)
               final now = DateTime.now().millisecondsSinceEpoch;
               await customStatement('''
@@ -333,24 +341,27 @@ class AppDatabase extends _$AppDatabase {
                 WHERE started_at IS NULL OR last_saved_at IS NULL
               ''');
               print('✅ Set timestamps for existing workout checkpoints');
-              
-              print('✅ Migration 21: Added missing columns to workout_checkpoints');
+
+              print(
+                  '✅ Migration 21: Added missing columns to workout_checkpoints');
             } catch (e) {
               print('❌ Migration 21 failed: $e');
               rethrow;
             }
           }
-          
+
           if (to == 22) {
             try {
-              print('🔄 Migration 22: Renaming columns to snake_case to match Supabase...');
-              
+              print(
+                  '🔄 Migration 22: Renaming columns to snake_case to match Supabase...');
+
               // ⚠️ SQLite doesn't support renaming columns directly
               // We need to recreate tables with the new column names
-              
+
               // 1. Add user_id to template_folders if it doesn't exist
               try {
-                await customStatement('ALTER TABLE template_folders ADD COLUMN user_id TEXT');
+                await customStatement(
+                    'ALTER TABLE template_folders ADD COLUMN user_id TEXT');
                 print('✅ Added user_id column to template_folders');
               } catch (e) {
                 if (e.toString().contains('duplicate column name')) {
@@ -359,37 +370,42 @@ class AppDatabase extends _$AppDatabase {
                   throw e;
                 }
               }
-              
-              print('✅ Migration 22: Schema updated to match Supabase (snake_case)');
-              print('ℹ️ Note: Drift will handle column name mapping automatically via .named()');
+
+              print(
+                  '✅ Migration 22: Schema updated to match Supabase (snake_case)');
+              print(
+                  'ℹ️ Note: Drift will handle column name mapping automatically via .named()');
             } catch (e) {
               print('❌ Migration 22 failed: $e');
               rethrow;
             }
           }
-          
+
           if (to == 23) {
             try {
-              print('🔄 Migration 23: Converting equipment column to array format...');
-              
+              print(
+                  '🔄 Migration 23: Converting equipment column to array format...');
+
               // ℹ️ Drift will handle the conversion automatically via StringListConverter
               // Equipment was TEXT, now it's TEXT with StringListConverter (JSON array)
               // Existing data should be compatible as long as it's valid JSON
-              
+
               print('✅ Migration 23: Equipment column now uses array format');
             } catch (e) {
               print('❌ Migration 23 failed: $e');
               rethrow;
             }
           }
-          
+
           if (to == 24) {
             try {
-              print('🔄 Migration 24: Adding missing columns to template_folders...');
-              
+              print(
+                  '🔄 Migration 24: Adding missing columns to template_folders...');
+
               // Add color column
               try {
-                await customStatement('ALTER TABLE template_folders ADD COLUMN color TEXT');
+                await customStatement(
+                    'ALTER TABLE template_folders ADD COLUMN color TEXT');
                 print('✅ Added color column to template_folders');
               } catch (e) {
                 if (e.toString().contains('duplicate column name')) {
@@ -398,30 +414,33 @@ class AppDatabase extends _$AppDatabase {
                   throw e;
                 }
               }
-              
+
               // Add is_expanded column
               try {
-                await customStatement('ALTER TABLE template_folders ADD COLUMN is_expanded INTEGER DEFAULT 1');
+                await customStatement(
+                    'ALTER TABLE template_folders ADD COLUMN is_expanded INTEGER DEFAULT 1');
                 print('✅ Added is_expanded column to template_folders');
               } catch (e) {
                 if (e.toString().contains('duplicate column name')) {
-                  print('ℹ️ is_expanded column already exists in template_folders');
+                  print(
+                      'ℹ️ is_expanded column already exists in template_folders');
                 } else {
                   throw e;
                 }
               }
-              
-              print('✅ Migration 24: Added missing columns to template_folders');
+
+              print(
+                  '✅ Migration 24: Added missing columns to template_folders');
             } catch (e) {
               print('❌ Migration 24 failed: $e');
               rethrow;
             }
           }
-          
+
           if (to == 26) {
             try {
               print('🔄 Migration 26: Workout checkpoints schema alignment...');
-              
+
               // Rename columns to snake_case (SQLite requires table recreation)
               await customStatement('''
                 CREATE TABLE workout_checkpoints_new (
@@ -433,16 +452,17 @@ class AppDatabase extends _$AppDatabase {
                   elapsed_seconds INTEGER NOT NULL
                 )
               ''');
-              
+
               await customStatement('''
                 INSERT INTO workout_checkpoints_new 
                 SELECT id, workoutName, workoutData, last_saved_at, started_at, elapsed_seconds
                 FROM workout_checkpoints
               ''');
-              
+
               await customStatement('DROP TABLE workout_checkpoints');
-              await customStatement('ALTER TABLE workout_checkpoints_new RENAME TO workout_checkpoints');
-              
+              await customStatement(
+                  'ALTER TABLE workout_checkpoints_new RENAME TO workout_checkpoints');
+
               print('✅ Migration 26: Workout checkpoints now use snake_case');
             } catch (e) {
               print('❌ Migration 26 failed: $e');

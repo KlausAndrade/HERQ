@@ -178,7 +178,7 @@ class _SetEntryWidgetState extends ConsumerState<SetEntryWidget> {
     // Use execution type to determine fields (replaces old variant logic)
     final fields = _getFieldsForExecutionType(exerciseTypeString);
     final config = ExerciseTypeConfig.fromString(exerciseTypeString);
-    
+
     // Debug: Log the fields that will be displayed
     if (widget.setNumber == 1 && widget.isFirstSet) {
       print('🎯 SetEntryWidget Fields for "${widget.exerciseName}":');

@@ -33,7 +33,9 @@ class _WebDebugScreenState extends ConsumerState<WebDebugScreen> {
       // Test 1: Supabase connection
       _addLog('📡 Testing Supabase connection...');
       final connectionTest = await EnhancedWebAuthHelper.testConnection();
-      _addLog(connectionTest ? '✅ Connection test passed' : '❌ Connection test failed');
+      _addLog(connectionTest
+          ? '✅ Connection test passed'
+          : '❌ Connection test failed');
 
       // Test 2: Current session
       _addLog('🔐 Checking current session...');
@@ -63,7 +65,7 @@ class _WebDebugScreenState extends ConsumerState<WebDebugScreen> {
       _addLog('   Full URL: $uri');
       _addLog('   Fragment: ${uri.fragment}');
       _addLog('   Query params: ${uri.queryParameters}');
-      
+
       if (uri.fragment.contains('access_token')) {
         _addLog('✅ Access token found in URL fragment');
       } else if (uri.queryParameters.containsKey('access_token')) {
@@ -89,7 +91,8 @@ class _WebDebugScreenState extends ConsumerState<WebDebugScreen> {
       try {
         final client = Supabase.instance.client;
         _addLog('   Client initialized: ${client != null}');
-        _addLog('   Auth state: ${client.auth.currentSession != null ? "Active" : "None"}');
+        _addLog(
+            '   Auth state: ${client.auth.currentSession != null ? "Active" : "None"}');
       } catch (e) {
         _addLog('❌ Error checking client state: $e');
       }
@@ -115,7 +118,8 @@ class _WebDebugScreenState extends ConsumerState<WebDebugScreen> {
 
   void _addLog(String message) {
     setState(() {
-      _debugLogs.add('${DateTime.now().toIso8601String().substring(11, 19)} $message');
+      _debugLogs.add(
+          '${DateTime.now().toIso8601String().substring(11, 19)} $message');
     });
   }
 
@@ -140,7 +144,7 @@ class _WebDebugScreenState extends ConsumerState<WebDebugScreen> {
         email: 'test@example.com',
         password: 'testpassword',
       );
-      
+
       if (response.user != null) {
         _addLog('✅ Test sign in successful: ${response.user?.email}');
       } else {
@@ -213,7 +217,7 @@ class _WebDebugScreenState extends ConsumerState<WebDebugScreen> {
               ],
             ),
           ),
-          
+
           // Debug logs
           Expanded(
             child: Container(
@@ -249,7 +253,8 @@ class _WebDebugScreenState extends ConsumerState<WebDebugScreen> {
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00BFA6)),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFF00BFA6)),
                           ),
                         ),
                     ],
@@ -259,17 +264,19 @@ class _WebDebugScreenState extends ConsumerState<WebDebugScreen> {
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: _debugLogs.map((log) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(
-                            log,
-                            style: const TextStyle(
-                              color: Color(0xFFF8F8FA),
-                              fontFamily: 'monospace',
-                              fontSize: 12,
-                            ),
-                          ),
-                        )).toList(),
+                        children: _debugLogs
+                            .map((log) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 4),
+                                  child: Text(
+                                    log,
+                                    style: const TextStyle(
+                                      color: Color(0xFFF8F8FA),
+                                      fontFamily: 'monospace',
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
                       ),
                     ),
                   ),

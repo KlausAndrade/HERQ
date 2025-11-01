@@ -70,7 +70,7 @@ class AppDatabase extends _$AppDatabase {
               await customStatement(
                 'ALTER TABLE exercises ADD COLUMN user_id TEXT',
               );
-              
+
               // All existing exercises are global (admin-created), so set userId to NULL
               // This means they'll be visible to all users
               await customStatement(

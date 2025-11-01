@@ -80,32 +80,32 @@ class OptimizedFolderView extends HookConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     ...improvements.map((improvement) => Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                            size: 16,
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  improvement.toString(),
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              improvement.toString(),
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
+                        )),
                   ],
                 ],
               ),
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Templates list
           Text(
             'Optimized Templates (${templates.length})',
@@ -115,11 +115,12 @@ class OptimizedFolderView extends HookConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
-          
-          ...templates.map((template) => _buildTemplateCard(context, ref, template)),
-          
+
+          ...templates
+              .map((template) => _buildTemplateCard(context, ref, template)),
+
           const SizedBox(height: 24),
-          
+
           // Action buttons
           Row(
             children: [
@@ -143,11 +144,13 @@ class OptimizedFolderView extends HookConsumerWidget {
     );
   }
 
-  Widget _buildTemplateCard(BuildContext context, WidgetRef ref, Map<String, dynamic> template) {
+  Widget _buildTemplateCard(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> template) {
     final name = template['name'] as String? ?? 'Unknown Template';
     final description = template['description'] as String? ?? '';
     final exercises = template['exercises'] as List<dynamic>? ?? [];
-    final estimatedDuration = template['estimatedDurationMinutes'] as int? ?? 60;
+    final estimatedDuration =
+        template['estimatedDurationMinutes'] as int? ?? 60;
     final changes = template['changes'] as String? ?? '';
     final improvements = template['improvements'] as List<dynamic>? ?? [];
 
@@ -185,7 +188,8 @@ class OptimizedFolderView extends HookConsumerWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.blue.withAlpha((0.2 * 255).round()),
                     borderRadius: BorderRadius.circular(12),
@@ -260,25 +264,25 @@ class OptimizedFolderView extends HookConsumerWidget {
               ),
               const SizedBox(height: 4),
               ...improvements.map((improvement) => Padding(
-                padding: const EdgeInsets.only(bottom: 2),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.check,
-                      color: Colors.green,
-                      size: 14,
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.check,
+                          color: Colors.green,
+                          size: 14,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            improvement.toString(),
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        improvement.toString(),
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                    ),
-                  ],
-                ),
-              )),
+                  )),
             ],
             const SizedBox(height: 16),
             Row(
@@ -306,12 +310,14 @@ class OptimizedFolderView extends HookConsumerWidget {
 
   Future<void> _saveAllAsNew(BuildContext context, WidgetRef ref) async {
     try {
-      final templates = optimizedData['folder']?['templates'] as List<dynamic>? ?? [];
+      final templates =
+          optimizedData['folder']?['templates'] as List<dynamic>? ?? [];
       final templateActions = ref.read(templateActionsProvider);
-      
+
       int savedCount = 0;
       for (final template in templates) {
-        final success = await _createTemplateFromOptimized(ref, templateActions, template);
+        final success =
+            await _createTemplateFromOptimized(ref, templateActions, template);
         if (success) savedCount++;
       }
 
@@ -323,7 +329,7 @@ class OptimizedFolderView extends HookConsumerWidget {
               body: 'All optimized templates have been saved as new templates.',
             )
             .catchError((_) {});
-        
+
         onSave?.call();
       }
     } catch (e) {
@@ -341,12 +347,14 @@ class OptimizedFolderView extends HookConsumerWidget {
 
   Future<void> _replaceAll(BuildContext context, WidgetRef ref) async {
     try {
-      final templates = optimizedData['folder']?['templates'] as List<dynamic>? ?? [];
+      final templates =
+          optimizedData['folder']?['templates'] as List<dynamic>? ?? [];
       final templateActions = ref.read(templateActionsProvider);
-      
+
       int replacedCount = 0;
       for (final template in templates) {
-        final success = await _updateTemplateFromOptimized(ref, templateActions, template);
+        final success =
+            await _updateTemplateFromOptimized(ref, templateActions, template);
         if (success) replacedCount++;
       }
 
@@ -358,7 +366,7 @@ class OptimizedFolderView extends HookConsumerWidget {
               body: 'All optimized templates have replaced the originals.',
             )
             .catchError((_) {});
-        
+
         onReplace?.call();
       }
     } catch (e) {
@@ -374,10 +382,12 @@ class OptimizedFolderView extends HookConsumerWidget {
     }
   }
 
-  Future<void> _saveTemplateAsNew(BuildContext context, WidgetRef ref, Map<String, dynamic> template) async {
+  Future<void> _saveTemplateAsNew(BuildContext context, WidgetRef ref,
+      Map<String, dynamic> template) async {
     try {
       final templateActions = ref.read(templateActionsProvider);
-      final success = await _createTemplateFromOptimized(ref, templateActions, template);
+      final success =
+          await _createTemplateFromOptimized(ref, templateActions, template);
 
       if (context.mounted) {
         if (success) {
@@ -385,7 +395,8 @@ class OptimizedFolderView extends HookConsumerWidget {
               .showInAppNotification(
                 id: DateTime.now().millisecondsSinceEpoch.toString(),
                 title: 'Template saved successfully!',
-                body: 'Your optimized template has been saved as a new template.',
+                body:
+                    'Your optimized template has been saved as a new template.',
               )
               .catchError((_) {});
         } else {
@@ -411,10 +422,12 @@ class OptimizedFolderView extends HookConsumerWidget {
     }
   }
 
-  Future<void> _replaceTemplate(BuildContext context, WidgetRef ref, Map<String, dynamic> template) async {
+  Future<void> _replaceTemplate(BuildContext context, WidgetRef ref,
+      Map<String, dynamic> template) async {
     try {
       final templateActions = ref.read(templateActionsProvider);
-      final success = await _updateTemplateFromOptimized(ref, templateActions, template);
+      final success =
+          await _updateTemplateFromOptimized(ref, templateActions, template);
 
       if (context.mounted) {
         if (success) {
@@ -448,9 +461,11 @@ class OptimizedFolderView extends HookConsumerWidget {
     }
   }
 
-  Future<bool> _createTemplateFromOptimized(WidgetRef ref, dynamic templateActions, Map<String, dynamic> template) async {
+  Future<bool> _createTemplateFromOptimized(WidgetRef ref,
+      dynamic templateActions, Map<String, dynamic> template) async {
     try {
-      final templateId = 'ai_opt_${DateTime.now().millisecondsSinceEpoch}_${template['id']}';
+      final templateId =
+          'ai_opt_${DateTime.now().millisecondsSinceEpoch}_${template['id']}';
       final workoutTemplate = WorkoutTemplate(
         id: templateId,
         userId: _getCurrentUserId(ref),
@@ -464,7 +479,8 @@ class OptimizedFolderView extends HookConsumerWidget {
                 .toList() ??
             [],
         tags: ['ai_optimized', ...(template['tags'] as List<dynamic>? ?? [])],
-        estimatedDurationMinutes: template['estimatedDurationMinutes'] as int? ?? 60,
+        estimatedDurationMinutes:
+            template['estimatedDurationMinutes'] as int? ?? 60,
         isDefault: false,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -476,7 +492,8 @@ class OptimizedFolderView extends HookConsumerWidget {
     }
   }
 
-  Future<bool> _updateTemplateFromOptimized(WidgetRef ref, dynamic templateActions, Map<String, dynamic> template) async {
+  Future<bool> _updateTemplateFromOptimized(WidgetRef ref,
+      dynamic templateActions, Map<String, dynamic> template) async {
     try {
       // This would require implementing an update method in templateActions
       // For now, we'll create a new template with the original ID
@@ -494,7 +511,8 @@ class OptimizedFolderView extends HookConsumerWidget {
                 .toList() ??
             [],
         tags: ['ai_optimized', ...(template['tags'] as List<dynamic>? ?? [])],
-        estimatedDurationMinutes: template['estimatedDurationMinutes'] as int? ?? 60,
+        estimatedDurationMinutes:
+            template['estimatedDurationMinutes'] as int? ?? 60,
         isDefault: false,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -516,7 +534,7 @@ class OptimizedFolderView extends HookConsumerWidget {
     } catch (e) {
       print('⚠️ Error getting current user: $e');
     }
-    
+
     // Fallback to default user ID if authentication fails
     return 'default_user';
   }

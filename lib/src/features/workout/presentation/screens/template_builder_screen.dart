@@ -80,9 +80,11 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
                 templates.where((t) => t.id == widget.templateId).firstOrNull;
             if (template != null) {
               print('🔍 TemplateBuilder - Loading template: ${template.name}');
-              print('🔍 TemplateBuilder - Template exerciseIds: ${template.exerciseIds}');
-              print('🔍 TemplateBuilder - Template exerciseIds count: ${template.exerciseIds.length}');
-              
+              print(
+                  '🔍 TemplateBuilder - Template exerciseIds: ${template.exerciseIds}');
+              print(
+                  '🔍 TemplateBuilder - Template exerciseIds count: ${template.exerciseIds.length}');
+
               _nameController.text = template.name;
               _descriptionController.text = template.description ?? '';
               // Normalize category from stored template to avoid issues with
@@ -91,11 +93,14 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
               _selectedExerciseIds.addAll(template.exerciseIds);
               _tags.addAll(template.tags);
               _estimatedDuration = template.estimatedDurationMinutes;
-              _currentFolderId = template.folderId; // ✅ Preserve folder ID when editing
-              
-              print('🔍 TemplateBuilder - Loaded exerciseIds: $_selectedExerciseIds');
-              print('🔍 TemplateBuilder - Loaded exerciseIds count: ${_selectedExerciseIds.length}');
-              
+              _currentFolderId =
+                  template.folderId; // ✅ Preserve folder ID when editing
+
+              print(
+                  '🔍 TemplateBuilder - Loaded exerciseIds: $_selectedExerciseIds');
+              print(
+                  '🔍 TemplateBuilder - Loaded exerciseIds count: ${_selectedExerciseIds.length}');
+
               if (mounted) setState(() {});
               break;
             }
@@ -140,16 +145,20 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
   @override
   Widget build(BuildContext context) {
     final exercisesAsync = ref.watch(exercisesProvider);
-    
+
     // Debug: Print exercises state
     exercisesAsync.when(
       data: (exercises) {
-        print('🔍 TemplateBuilder - Available exercises count: ${exercises.length}');
-        print('🔍 TemplateBuilder - Selected exerciseIds: $_selectedExerciseIds');
-        print('🔍 TemplateBuilder - Selected exerciseIds count: ${_selectedExerciseIds.length}');
+        print(
+            '🔍 TemplateBuilder - Available exercises count: ${exercises.length}');
+        print(
+            '🔍 TemplateBuilder - Selected exerciseIds: $_selectedExerciseIds');
+        print(
+            '🔍 TemplateBuilder - Selected exerciseIds count: ${_selectedExerciseIds.length}');
       },
       loading: () => print('🔍 TemplateBuilder - Loading exercises...'),
-      error: (error, stack) => print('🔍 TemplateBuilder - Error loading exercises: $error'),
+      error: (error, stack) =>
+          print('🔍 TemplateBuilder - Error loading exercises: $error'),
     );
 
     return Scaffold(
@@ -526,14 +535,17 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
       id: widget.templateId ?? const Uuid().v4(),
       userId: ref.read(currentAdminModeProvider)
           ? null // Admin templates are system-wide
-          : UserContextService.instance.getCurrentUserId() ?? 'default_user', // ✅ USER ISOLATION
+          : UserContextService.instance.getCurrentUserId() ??
+              'default_user', // ✅ USER ISOLATION
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim().isEmpty
           ? null
           : _descriptionController.text.trim(),
       category: _selectedCategory,
       sortOrder: 0,
-      folderId: widget.templateId != null ? _currentFolderId : _initialFolderId, // ✅ Use current folder ID for editing, initial for creating
+      folderId: widget.templateId != null
+          ? _currentFolderId
+          : _initialFolderId, // ✅ Use current folder ID for editing, initial for creating
       exerciseIds: _selectedExerciseIds,
       tags: _tags,
       estimatedDurationMinutes: _estimatedDuration,
@@ -650,27 +662,40 @@ class _TemplateBuilderScreenState extends ConsumerState<TemplateBuilderScreen> {
 
   bool _canDeleteTemplate() {
     if (widget.templateId == null) return false;
-    
+
     // System template IDs that should not be deletable
     const systemTemplateIds = {
-      'ppl_push', 'ppl_pull', 'ppl_legs',
-      'phul_upper_power', 'phul_lower_power', 'phul_upper_hyp', 'phul_lower_hyp',
-      'full_body_beginner', 'full_body_intermediate', 'full_body_advanced',
-      'upper_lower_upper', 'upper_lower_lower',
-      'strength_beginner', 'strength_intermediate', 'strength_advanced',
-      'bodybuilding_chest', 'bodybuilding_back', 'bodybuilding_legs', 'bodybuilding_arms',
+      'ppl_push',
+      'ppl_pull',
+      'ppl_legs',
+      'phul_upper_power',
+      'phul_lower_power',
+      'phul_upper_hyp',
+      'phul_lower_hyp',
+      'full_body_beginner',
+      'full_body_intermediate',
+      'full_body_advanced',
+      'upper_lower_upper',
+      'upper_lower_lower',
+      'strength_beginner',
+      'strength_intermediate',
+      'strength_advanced',
+      'bodybuilding_chest',
+      'bodybuilding_back',
+      'bodybuilding_legs',
+      'bodybuilding_arms',
     };
-    
+
     // Don't allow deletion of system templates
     if (systemTemplateIds.contains(widget.templateId)) {
       return false;
     }
-    
+
     // Allow deletion of AI-generated templates (start with 'ai_gen_')
     if (widget.templateId!.startsWith('ai_gen_')) {
       return true;
     }
-    
+
     // Allow deletion of user-created templates (not system templates)
     // This is a fallback for any other user-created templates
     return true;

@@ -7,16 +7,18 @@ class ContentManagementScreen extends ConsumerStatefulWidget {
   const ContentManagementScreen({super.key});
 
   @override
-  ConsumerState<ContentManagementScreen> createState() => _ContentManagementScreenState();
+  ConsumerState<ContentManagementScreen> createState() =>
+      _ContentManagementScreenState();
 }
 
-class _ContentManagementScreenState extends ConsumerState<ContentManagementScreen> {
+class _ContentManagementScreenState
+    extends ConsumerState<ContentManagementScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _instructionsController = TextEditingController();
   final _primaryMuscleGroupController = TextEditingController();
   final _equipmentController = TextEditingController();
-  
+
   String _category = 'strength';
   String _difficulty = 'intermediate';
   String _exerciseType = 'weight_reps';
@@ -39,7 +41,7 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
 
     try {
       final supabase = ref.read(supabaseClientProvider);
-      
+
       final exerciseData = {
         'id': _generateExerciseId(_nameController.text),
         'name': _nameController.text,
@@ -59,7 +61,7 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
       };
 
       await supabase.from('exercises').insert(exerciseData);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Exercise created successfully!')),
@@ -76,7 +78,8 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
   }
 
   String _generateExerciseId(String name) {
-    return name.toLowerCase()
+    return name
+        .toLowerCase()
         .replaceAll(' ', '_')
         .replaceAll(RegExp(r'[^a-z0-9_]'), '');
   }
@@ -119,7 +122,8 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
                     children: [
                       const Text(
                         'Create New Exercise',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -128,7 +132,8 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
                           labelText: 'Exercise Name',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) => value?.isEmpty == true ? 'Required' : null,
+                        validator: (value) =>
+                            value?.isEmpty == true ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -137,7 +142,8 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
                           labelText: 'Primary Muscle Group',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) => value?.isEmpty == true ? 'Required' : null,
+                        validator: (value) =>
+                            value?.isEmpty == true ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -146,7 +152,8 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
                           labelText: 'Equipment',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) => value?.isEmpty == true ? 'Required' : null,
+                        validator: (value) =>
+                            value?.isEmpty == true ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -156,7 +163,8 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
                           border: OutlineInputBorder(),
                         ),
                         maxLines: 3,
-                        validator: (value) => value?.isEmpty == true ? 'Required' : null,
+                        validator: (value) =>
+                            value?.isEmpty == true ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -169,12 +177,19 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
                                 border: OutlineInputBorder(),
                               ),
                               items: const [
-                                DropdownMenuItem(value: 'strength', child: Text('Strength')),
-                                DropdownMenuItem(value: 'cardio', child: Text('Cardio')),
-                                DropdownMenuItem(value: 'flexibility', child: Text('Flexibility')),
-                                DropdownMenuItem(value: 'calisthenics', child: Text('Calisthenics')),
+                                DropdownMenuItem(
+                                    value: 'strength', child: Text('Strength')),
+                                DropdownMenuItem(
+                                    value: 'cardio', child: Text('Cardio')),
+                                DropdownMenuItem(
+                                    value: 'flexibility',
+                                    child: Text('Flexibility')),
+                                DropdownMenuItem(
+                                    value: 'calisthenics',
+                                    child: Text('Calisthenics')),
                               ],
-                              onChanged: (value) => setState(() => _category = value!),
+                              onChanged: (value) =>
+                                  setState(() => _category = value!),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -186,12 +201,18 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
                                 border: OutlineInputBorder(),
                               ),
                               items: const [
-                                DropdownMenuItem(value: 'beginner', child: Text('Beginner')),
-                                DropdownMenuItem(value: 'intermediate', child: Text('Intermediate')),
-                                DropdownMenuItem(value: 'advanced', child: Text('Advanced')),
-                                DropdownMenuItem(value: 'expert', child: Text('Expert')),
+                                DropdownMenuItem(
+                                    value: 'beginner', child: Text('Beginner')),
+                                DropdownMenuItem(
+                                    value: 'intermediate',
+                                    child: Text('Intermediate')),
+                                DropdownMenuItem(
+                                    value: 'advanced', child: Text('Advanced')),
+                                DropdownMenuItem(
+                                    value: 'expert', child: Text('Expert')),
                               ],
-                              onChanged: (value) => setState(() => _difficulty = value!),
+                              onChanged: (value) =>
+                                  setState(() => _difficulty = value!),
                             ),
                           ),
                         ],
@@ -207,12 +228,19 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
                                 border: OutlineInputBorder(),
                               ),
                               items: const [
-                                DropdownMenuItem(value: 'weight_reps', child: Text('Weight & Reps')),
-                                DropdownMenuItem(value: 'body_weight_reps', child: Text('Bodyweight Reps')),
-                                DropdownMenuItem(value: 'duration', child: Text('Duration')),
-                                DropdownMenuItem(value: 'distance', child: Text('Distance')),
+                                DropdownMenuItem(
+                                    value: 'weight_reps',
+                                    child: Text('Weight & Reps')),
+                                DropdownMenuItem(
+                                    value: 'body_weight_reps',
+                                    child: Text('Bodyweight Reps')),
+                                DropdownMenuItem(
+                                    value: 'duration', child: Text('Duration')),
+                                DropdownMenuItem(
+                                    value: 'distance', child: Text('Distance')),
                               ],
-                              onChanged: (value) => setState(() => _exerciseType = value!),
+                              onChanged: (value) =>
+                                  setState(() => _exerciseType = value!),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -220,7 +248,8 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
                             child: CheckboxListTile(
                               title: const Text('Bodyweight'),
                               value: _isBodyweight,
-                              onChanged: (value) => setState(() => _isBodyweight = value ?? false),
+                              onChanged: (value) => setState(
+                                  () => _isBodyweight = value ?? false),
                             ),
                           ),
                         ],
@@ -248,7 +277,8 @@ class _ContentManagementScreenState extends ConsumerState<ContentManagementScree
                     children: [
                       const Text(
                         'Bulk Operations',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
                       Row(

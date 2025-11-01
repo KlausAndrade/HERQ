@@ -96,7 +96,8 @@ class FolderSelectionDialog extends HookConsumerWidget {
     );
   }
 
-  Widget _buildFolderItem(BuildContext context, WidgetRef ref, TemplateFolder folder) {
+  Widget _buildFolderItem(
+      BuildContext context, WidgetRef ref, TemplateFolder folder) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -104,7 +105,7 @@ class FolderSelectionDialog extends HookConsumerWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: folder.color != null 
+            color: folder.color != null
                 ? Color(int.parse(folder.color!.replaceFirst('#', '0xff')))
                 : Colors.blue,
             borderRadius: BorderRadius.circular(8),

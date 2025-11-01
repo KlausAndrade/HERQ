@@ -32,7 +32,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
   @override
   Widget build(BuildContext context) {
     final muscleGroupsAsync = ref.watch(muscleGroupsProvider);
-    final categoriesAsync = kIsWeb 
+    final categoriesAsync = kIsWeb
         ? ref.watch(exerciseCategoriesUnifiedProvider)
         : ref.watch(exerciseCategoriesProvider);
     final isAdminMode = ref.watch(currentAdminModeProvider);
@@ -321,7 +321,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
               exercises.add(data);
             }
           }
-          
+
           var filtered = exercises;
 
           // Apply category filter
@@ -616,7 +616,8 @@ class _ExerciseCard extends ConsumerWidget {
               const SizedBox(width: 4),
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   decoration: BoxDecoration(
                     color: _getVariantColor(context, exercise.variantType),
                     borderRadius: BorderRadius.circular(4),
@@ -638,7 +639,8 @@ class _ExerciseCard extends ConsumerWidget {
               const SizedBox(width: 4),
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(4),
@@ -737,8 +739,8 @@ class _ExerciseCard extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.edit, size: 20),
                 onPressed: onEdit,
-                tooltip: isAdminMode 
-                    ? 'Edit exercise (Admin)' 
+                tooltip: isAdminMode
+                    ? 'Edit exercise (Admin)'
                     : 'Edit custom exercise',
               )
             else
@@ -1260,33 +1262,36 @@ class ExerciseSearchDelegate extends SearchDelegate<String> {
 Exercise? mapToExercise(Map<String, dynamic> map) {
   try {
     print('🔍 Mapping exercise: ${map['name']}');
-    
+
     // Handle equipment array - convert to comma-separated string
     String equipmentStr = '';
     if (map['equipment'] != null && map['equipment'] is List) {
       equipmentStr = (map['equipment'] as List).cast<String>().join(',');
     }
-    
+
     // Handle secondary muscle groups
     List<String> secondaryMuscles = [];
-    if (map['secondary_muscle_groups'] != null && map['secondary_muscle_groups'] is List) {
-      secondaryMuscles = (map['secondary_muscle_groups'] as List).cast<String>();
+    if (map['secondary_muscle_groups'] != null &&
+        map['secondary_muscle_groups'] is List) {
+      secondaryMuscles =
+          (map['secondary_muscle_groups'] as List).cast<String>();
     }
-    
+
     // Handle tags
     List<String> tagsList = [];
     if (map['tags'] != null && map['tags'] is List) {
       tagsList = (map['tags'] as List).cast<String>();
     }
-    
+
     // Handle aliases
     List<String> aliasesList = [];
     if (map['aliases'] != null && map['aliases'] is List) {
       aliasesList = (map['aliases'] as List).cast<String>();
     }
-    
+
     final exercise = Exercise(
-      id: map['id'] as String? ?? 'unknown_${DateTime.now().millisecondsSinceEpoch}',
+      id: map['id'] as String? ??
+          'unknown_${DateTime.now().millisecondsSinceEpoch}',
       userId: map['user_id'] as String?,
       name: map['name'] as String? ?? 'Unknown Exercise',
       primaryMuscleGroup: map['primary_muscle_group'] as String? ?? 'other',
@@ -1301,14 +1306,14 @@ Exercise? mapToExercise(Map<String, dynamic> map) {
       difficulty: map['difficulty'] as String? ?? 'intermediate',
       parentExerciseId: map['parent_exercise_id'] as String?,
       variantType: map['variant_type'] as String?,
-      createdAt: map['created_at'] != null 
+      createdAt: map['created_at'] != null
           ? DateTime.parse(map['created_at'] as String)
           : DateTime.now(),
       updatedAt: map['updated_at'] != null
           ? DateTime.parse(map['updated_at'] as String)
           : DateTime.now(),
     );
-    
+
     print('✅ Mapped exercise: ${exercise.name}');
     return exercise;
   } catch (e, stackTrace) {

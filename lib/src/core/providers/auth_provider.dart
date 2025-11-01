@@ -72,20 +72,20 @@ class AuthService {
   Future<bool> signInWithFacebook() async {
     try {
       print('🔍 Starting Facebook login...');
-      
+
       // Use native Facebook SDK with login behavior preference
       final LoginResult result = await FacebookAuth.instance.login(
         permissions: ['email', 'public_profile'],
         loginBehavior: LoginBehavior.nativeWithFallback, // Prefer native SSO
       );
-      
+
       print('🔍 Facebook login result: ${result.status}');
       print('🔍 Facebook login message: ${result.message}');
       print('🔍 Facebook login method: ${result.accessToken?.graphDomain}');
 
       if (result.status == LoginStatus.success) {
         print('✅ Facebook login successful');
-        
+
         // Get Facebook access token
         final AccessToken accessToken = result.accessToken!;
         print('🔍 Facebook access token received');
@@ -97,7 +97,8 @@ class AuthService {
           idToken: accessToken.token,
         );
 
-        print('🔍 Supabase response: ${response.session != null ? "Success" : "Failed"}');
+        print(
+            '🔍 Supabase response: ${response.session != null ? "Success" : "Failed"}');
         return response.session != null;
       } else {
         print('❌ Facebook login failed: ${result.message}');

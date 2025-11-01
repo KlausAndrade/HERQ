@@ -111,9 +111,7 @@ class PostCard extends ConsumerWidget {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           child: Text(
-                            isFollowing
-                                ? S.of(context)!.following
-                                : 'Follow',
+                            isFollowing ? S.of(context)!.following : 'Follow',
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
@@ -842,7 +840,8 @@ class PostCard extends ConsumerWidget {
       print('🔍 Fetching exercises for session: $sessionId');
 
       // Use the new provider to fetch set entries from Supabase
-      final setEntriesAsync = ref.read(setEntriesBySessionFromSupabaseProvider(sessionId).future);
+      final setEntriesAsync =
+          ref.read(setEntriesBySessionFromSupabaseProvider(sessionId).future);
       final setEntriesData = await setEntriesAsync;
 
       print('📊 Found ${setEntriesData.length} set entries');

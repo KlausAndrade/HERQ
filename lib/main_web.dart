@@ -50,7 +50,7 @@ Future<void> main() async {
     print('✅ Web platform initialized with Supabase');
     print('   URL: ${url.isNotEmpty ? "configured" : "NOT SET"}');
     print('   Anon Key: ${anonKey.isNotEmpty ? "configured" : "NOT SET"}');
-    
+
     // Test Supabase connection
     try {
       final client = Supabase.instance.client;
@@ -76,7 +76,7 @@ Future<void> main() async {
 /// Error boundary to catch and display initialization errors
 class ErrorBoundary extends StatefulWidget {
   const ErrorBoundary({required this.child, super.key});
-  
+
   final Widget child;
 
   @override
@@ -89,7 +89,7 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
   @override
   void initState() {
     super.initState();
-    
+
     // Catch Flutter errors
     FlutterError.onError = (FlutterErrorDetails details) {
       print('❌ Flutter Error: ${details.exception}');

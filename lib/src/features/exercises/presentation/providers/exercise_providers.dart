@@ -17,20 +17,24 @@ final exercisesProvider = FutureProvider<List<Exercise>>((ref) async {
   final needsSync = await ref.read(needsGlobalContentSyncProvider.future);
   if (needsSync) {
     print('🌍 Global content updates available, syncing...');
-    await ref.read(globalContentSyncTriggerProvider.notifier).syncGlobalContent();
+    await ref
+        .read(globalContentSyncTriggerProvider.notifier)
+        .syncGlobalContent();
   }
 
   final currentUserId = ref.read(currentUserProvider)?.id;
-  
+
   // Get global exercises (userId = NULL) + user's custom exercises (userId = currentUserId)
   final exercises = await (database.select(database.exercises)
-        ..where((tbl) => 
-          tbl.userId.isNull() | 
-          (currentUserId != null ? tbl.userId.equals(currentUserId) : const Constant(false))
-        ))
+        ..where((tbl) =>
+            tbl.userId.isNull() |
+            (currentUserId != null
+                ? tbl.userId.equals(currentUserId)
+                : const Constant(false))))
       .get();
-  
-  print('DEBUG: Found ${exercises.length} exercises in database (global + user custom)');
+
+  print(
+      'DEBUG: Found ${exercises.length} exercises in database (global + user custom)');
   return exercises;
 });
 
@@ -47,19 +51,21 @@ final exercisesByMuscleGroupProvider =
   if (muscleGroup == null || muscleGroup.isEmpty || muscleGroup == 'All') {
     // Get global exercises (userId = NULL) + user's custom exercises (userId = currentUserId)
     return (database.select(database.exercises)
-          ..where((tbl) => 
-            tbl.userId.isNull() | 
-            (currentUserId != null ? tbl.userId.equals(currentUserId) : const Constant(false))
-          ))
+          ..where((tbl) =>
+              tbl.userId.isNull() |
+              (currentUserId != null
+                  ? tbl.userId.equals(currentUserId)
+                  : const Constant(false))))
         .get();
   }
 
   return (database.select(database.exercises)
-        ..where((tbl) => 
-          tbl.primaryMuscleGroup.equals(muscleGroup.toLowerCase()) &
-          (tbl.userId.isNull() | 
-           (currentUserId != null ? tbl.userId.equals(currentUserId) : const Constant(false)))
-        ))
+        ..where((tbl) =>
+            tbl.primaryMuscleGroup.equals(muscleGroup.toLowerCase()) &
+            (tbl.userId.isNull() |
+                (currentUserId != null
+                    ? tbl.userId.equals(currentUserId)
+                    : const Constant(false)))))
       .get();
 });
 
@@ -76,10 +82,11 @@ final exerciseSearchProvider =
   if (query.isEmpty) {
     // Get global exercises (userId = NULL) + user's custom exercises (userId = currentUserId)
     return (database.select(database.exercises)
-          ..where((tbl) => 
-            tbl.userId.isNull() | 
-            (currentUserId != null ? tbl.userId.equals(currentUserId) : const Constant(false))
-          ))
+          ..where((tbl) =>
+              tbl.userId.isNull() |
+              (currentUserId != null
+                  ? tbl.userId.equals(currentUserId)
+                  : const Constant(false))))
         .get();
   }
 
@@ -88,18 +95,31 @@ final exerciseSearchProvider =
   final q = '%${query.toLowerCase()}%';
 
   // Build user filter condition
-  final userFilter = currentUserId != null 
-    ? 'user_id IS NULL OR user_id = ?'
-    : 'user_id IS NULL';
-  
-  final variables = currentUserId != null 
-    ? [Variable<String>(q), Variable<String>(q), Variable<String>(q), Variable<String>(q), Variable<String>(currentUserId)]
-    : [Variable<String>(q), Variable<String>(q), Variable<String>(q), Variable<String>(q)];
+  final userFilter = currentUserId != null
+      ? 'user_id IS NULL OR user_id = ?'
+      : 'user_id IS NULL';
 
-  final rows = await database.customSelect(
-    'SELECT * FROM exercises WHERE (LOWER(name) LIKE ? OR LOWER(primary_muscle_group) LIKE ? OR (aliases IS NOT NULL AND LOWER(aliases) LIKE ?) OR (tags IS NOT NULL AND LOWER(tags) LIKE ?)) AND ($userFilter) COLLATE NOCASE',
-    variables: variables,
-  ).get();
+  final variables = currentUserId != null
+      ? [
+          Variable<String>(q),
+          Variable<String>(q),
+          Variable<String>(q),
+          Variable<String>(q),
+          Variable<String>(currentUserId)
+        ]
+      : [
+          Variable<String>(q),
+          Variable<String>(q),
+          Variable<String>(q),
+          Variable<String>(q)
+        ];
+
+  final rows = await database
+      .customSelect(
+        'SELECT * FROM exercises WHERE (LOWER(name) LIKE ? OR LOWER(primary_muscle_group) LIKE ? OR (aliases IS NOT NULL AND LOWER(aliases) LIKE ?) OR (tags IS NOT NULL AND LOWER(tags) LIKE ?)) AND ($userFilter) COLLATE NOCASE',
+        variables: variables,
+      )
+      .get();
 
   // Map rows to Exercise data objects using database mapping
   final results = rows.map((r) => database.exercises.map(r.data)).toList();
@@ -170,12 +190,18 @@ final exerciseVariantsProvider =
   final variants = await (database.select(database.exercises)
         ..where((tbl) => tbl.parentExerciseId.equals(parentId)))
       .get();
-  
+
   // Sort by difficulty (basic/beginner first, expert last)
   variants.sort((a, b) {
     // Handle both 'basic' and 'beginner' as the same level
-    const difficultyOrder = ['basic', 'beginner', 'intermediate', 'advanced', 'expert'];
-    
+    const difficultyOrder = [
+      'basic',
+      'beginner',
+      'intermediate',
+      'advanced',
+      'expert'
+    ];
+
     // Normalize difficulty names
     String normalizeDifficulty(String difficulty) {
       switch (difficulty.toLowerCase()) {
@@ -192,20 +218,20 @@ final exerciseVariantsProvider =
           return 'intermediate'; // Default fallback
       }
     }
-    
+
     final aNormalized = normalizeDifficulty(a.difficulty);
     final bNormalized = normalizeDifficulty(b.difficulty);
-    
+
     final aIndex = difficultyOrder.indexOf(aNormalized);
     final bIndex = difficultyOrder.indexOf(bNormalized);
-    
+
     // If difficulty not found, put it at the end
     final aIndexSafe = aIndex == -1 ? difficultyOrder.length : aIndex;
     final bIndexSafe = bIndex == -1 ? difficultyOrder.length : bIndex;
-    
+
     return aIndexSafe.compareTo(bIndexSafe);
   });
-  
+
   return variants;
 });
 
@@ -235,8 +261,14 @@ final exerciseProgressionChainProvider =
   final allExercises = [parent, ...variants];
   allExercises.sort((a, b) {
     // Handle both 'basic' and 'beginner' as the same level
-    const difficultyOrder = ['basic', 'beginner', 'intermediate', 'advanced', 'expert'];
-    
+    const difficultyOrder = [
+      'basic',
+      'beginner',
+      'intermediate',
+      'advanced',
+      'expert'
+    ];
+
     // Normalize difficulty names
     String normalizeDifficulty(String difficulty) {
       switch (difficulty.toLowerCase()) {
@@ -253,17 +285,17 @@ final exerciseProgressionChainProvider =
           return 'intermediate'; // Default fallback
       }
     }
-    
+
     final aNormalized = normalizeDifficulty(a.difficulty);
     final bNormalized = normalizeDifficulty(b.difficulty);
-    
+
     final aIndex = difficultyOrder.indexOf(aNormalized);
     final bIndex = difficultyOrder.indexOf(bNormalized);
-    
+
     // If difficulty not found, put it at the end
     final aIndexSafe = aIndex == -1 ? difficultyOrder.length : aIndex;
     final bIndexSafe = bIndex == -1 ? difficultyOrder.length : bIndex;
-    
+
     return aIndexSafe.compareTo(bIndexSafe);
   });
 

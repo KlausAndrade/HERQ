@@ -214,7 +214,8 @@ class _CreateTemplateDialogState extends ConsumerState<_CreateTemplateDialog> {
                   if (selectedExercises.isNotEmpty)
                     Chip(
                       label: Text('${selectedExercises.length} selected'),
-                      backgroundColor: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                      backgroundColor:
+                          const Color(0xFF6366F1).withValues(alpha: 0.2),
                     ),
                 ],
               ),
@@ -222,7 +223,8 @@ class _CreateTemplateDialogState extends ConsumerState<_CreateTemplateDialog> {
               if (selectedExercises.isNotEmpty)
                 Chip(
                   label: Text('${selectedExercises.length} selected'),
-                  backgroundColor: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                  backgroundColor:
+                      const Color(0xFF6366F1).withValues(alpha: 0.2),
                 ),
               const SizedBox(height: 12),
               ElevatedButton.icon(
