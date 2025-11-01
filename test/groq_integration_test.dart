@@ -7,8 +7,12 @@ void main() {
     late GroqService groqService;
 
     setUpAll(() async {
-      // Load environment variables
-      await dotenv.load();
+      // Load environment variables (if .env exists)
+      try {
+        await dotenv.load();
+      } catch (e) {
+        // .env file not found, skip loading
+      }
     });
 
     setUp(() {

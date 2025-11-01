@@ -13,7 +13,14 @@ import 'package:herq/src/app.dart';
 void main() {
   testWidgets('App loads without error', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const ProviderScope(child: HerqApp()));
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: HerqApp(),
+      ),
+    );
+
+    // Wait for initial frame
+    await tester.pump();
 
     // Verify that our app loads without error
     expect(find.byType(HerqApp), findsOneWidget);
