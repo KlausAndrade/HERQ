@@ -254,6 +254,7 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                       );
                     },
                     selectedColor: theme.colorScheme.primaryContainer,
+                    showCheckmark: false,
                   );
                 }).toList(),
               ),
@@ -294,46 +295,11 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                         combinedVariant == 'weight_reps' ? null : combinedVariant,
                       );
                     },
-                    selectedColor: theme.colorScheme.secondaryContainer,
+                    selectedColor: theme.colorScheme.primaryContainer,
+                    showCheckmark: false,
                   );
                 }).toList(),
               ),
-
-              // Help text for execution types
-              if (selectedVariant == 'timer' ||
-                  selectedVariant == 'duration_weight' ||
-                  selectedVariant == 'distance_duration' ||
-                  selectedVariant == 'weight_distance')
-                Container(
-                  margin: const EdgeInsets.only(top: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: theme.colorScheme.primary.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _getExecutionTypeHelpTitle(selectedVariant ?? ''),
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _getExecutionTypeHelpText(selectedVariant ?? ''),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onPrimaryContainer,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
 
               const SizedBox(height: 6),
               const Divider(),
@@ -374,7 +340,8 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                         combinedVariant == 'weight_reps' ? null : combinedVariant,
                       );
                     },
-                    selectedColor: theme.colorScheme.tertiaryContainer,
+                    selectedColor: theme.colorScheme.primaryContainer,
+                    showCheckmark: false,
                   );
                 }).toList(),
               ),
@@ -412,36 +379,6 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
         return 'Weight & Distance';
       default:
         return executionType[0].toUpperCase() + executionType.substring(1);
-    }
-  }
-
-  String _getExecutionTypeHelpTitle(String executionType) {
-    switch (executionType) {
-      case 'timer':
-        return 'Duration Training';
-      case 'duration_weight':
-        return 'Weighted Duration';
-      case 'distance_duration':
-        return 'Cardio Training';
-      case 'weight_distance':
-        return 'Weighted Carries';
-      default:
-        return 'Execution Type';
-    }
-  }
-
-  String _getExecutionTypeHelpText(String executionType) {
-    switch (executionType) {
-      case 'timer':
-        return 'Time-based exercises like planks, wall sits, or isometric holds. Track duration in seconds.';
-      case 'duration_weight':
-        return 'Weighted exercises held for time, like farmer\'s carries or weighted planks. Track both weight and duration.';
-      case 'distance_duration':
-        return 'Cardio exercises like running, cycling, or rowing. Track both distance and time.';
-      case 'weight_distance':
-        return 'Weighted carries or sled pushes. Track both weight and distance covered.';
-      default:
-        return 'Select the appropriate execution type for your exercise.';
     }
   }
 
