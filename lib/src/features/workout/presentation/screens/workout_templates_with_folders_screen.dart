@@ -115,9 +115,11 @@ class _WorkoutTemplatesWithFoldersScreenState
         ),
         actions: [
           IconButton(
-            onPressed: () => context.push('/template-builder'),
+            onPressed: _isEditing
+                ? () => context.push('/template-builder')
+                : () => _startEmptyWorkout(),
             icon: const Icon(Icons.add),
-            tooltip: 'Create Template',
+            tooltip: _isEditing ? 'Create Template' : 'Start Empty Workout',
           ),
         ],
       ),
@@ -1037,6 +1039,10 @@ class _WorkoutTemplatesWithFoldersScreenState
 
   void _startWorkout(String templateId) {
     context.push('/active-workout?templateId=$templateId');
+  }
+
+  void _startEmptyWorkout() {
+    context.push('/active-workout');
   }
 
   Color _getCategoryColor(String category) {

@@ -171,22 +171,57 @@ class _MultiExercisePickerDialogState
                       final isSelected = exerciseObj != null &&
                           _selectedExercises.contains(exerciseObj);
 
-                      return CheckboxListTile(
-                        value: isSelected,
+                      return ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withAlpha((0.1 * 255).round()),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.fitness_center,
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Theme.of(context).colorScheme.primary,
+                            size: 20,
+                          ),
+                        ),
                         title: Text(name),
                         subtitle: Text(
                           '${muscleGroup.toUpperCase()} • $category',
                         ),
-                        onChanged: exerciseObj == null
+                        trailing: Checkbox(
+                          value: isSelected,
+                          onChanged: exerciseObj == null
+                              ? null
+                              : (selected) {
+                                  setState(() {
+                                    if (selected ?? false) {
+                                      if (exerciseObj != null) {
+                                        _selectedExercises.add(exerciseObj);
+                                      }
+                                    } else {
+                                      _selectedExercises.remove(exerciseObj);
+                                    }
+                                  });
+                                },
+                        ),
+                        onTap: exerciseObj == null
                             ? null
-                            : (selected) {
+                            : () {
                                 setState(() {
-                                  if (selected ?? false) {
+                                  final wasSelected = isSelected;
+                                  if (wasSelected) {
+                                    _selectedExercises.remove(exerciseObj);
+                                  } else {
                                     if (exerciseObj != null) {
                                       _selectedExercises.add(exerciseObj);
                                     }
-                                  } else {
-                                    _selectedExercises.remove(exerciseObj);
                                   }
                                 });
                               },

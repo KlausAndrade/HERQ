@@ -13,6 +13,7 @@ import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../workout/presentation/providers/active_workout_provider.dart';
+import '../../../workout/presentation/providers/exercise_variant_preferences_provider.dart';
 import '../../../workout/presentation/providers/workout_providers.dart';
 import '../providers/social_providers.dart';
 import 'edit_post_dialog.dart';
@@ -1039,19 +1040,38 @@ class PostCard extends ConsumerWidget {
 
       print('✅ Found ${setEntriesData.length} sets from workout session');
 
-      // Get unique exercise IDs
-      final exerciseIds = setEntriesData
-          .map((entry) => entry['exercise_id'] as String)
-          .toSet()
-          .toList();
+      // Get unique exercise IDs and extract variant info
+      final exerciseIds = <String>{};
+      final exerciseVariantMap = <String, Map<String, String?>>{};
+      
+      for (final entry in setEntriesData) {
+        final exerciseId = entry['exercise_id'] as String;
+        exerciseIds.add(exerciseId);
+        
+        // Extract variant info from set entries (use most common variant per exercise)
+        if (!exerciseVariantMap.containsKey(exerciseId)) {
+          final equipmentUsed = entry['equipment_used'] as String?;
+          final variantType = entry['variant_type'] as String?;
+          
+          // Only store if variant info exists
+          if (equipmentUsed != null || variantType != null) {
+            exerciseVariantMap[exerciseId] = {
+              'equipment': equipmentUsed,
+              'variant': variantType,
+            };
+          }
+        }
+      }
 
-      print('📋 Found ${exerciseIds.length} unique exercises');
+      final exerciseIdsList = exerciseIds.toList();
+      print('📋 Found ${exerciseIdsList.length} unique exercises');
+      print('📋 Found variant info for ${exerciseVariantMap.length} exercises');
 
       // Fetch exercise details separately
       final exercisesData = await supabase
           .from('exercises')
           .select('id, name, exercise_type, equipment, primary_muscle_group')
-          .inFilter('id', exerciseIds);
+          .inFilter('id', exerciseIdsList);
 
       print('✅ Fetched ${exercisesData.length} exercise details');
 
@@ -1063,14 +1083,36 @@ class PostCard extends ConsumerWidget {
       // Ensure exercises exist in local database (copy from Supabase if needed)
       await _ensureExercisesExist(ref, exerciseDataMap);
 
-      print('🏋️ Starting workout with ${exerciseIds.length} exercises');
+      // Save variant preferences from the copied workout
+      if (exerciseVariantMap.isNotEmpty) {
+        print('💾 Saving variant preferences from copied workout...');
+        final variantPrefsNotifier = ref.read(exerciseVariantPreferencesProvider.notifier);
+        
+        for (final entry in exerciseVariantMap.entries) {
+          final exerciseId = entry.key;
+          final variantInfo = entry.value;
+          final equipmentUsed = variantInfo['equipment'];
+          final variantType = variantInfo['variant'];
+          
+          if (equipmentUsed != null) {
+            await variantPrefsNotifier.setVariantForExercise(
+              exerciseId,
+              equipmentUsed,
+              variantType,
+            );
+            print('  ✓ Saved variant for $exerciseId: $equipmentUsed / $variantType');
+          }
+        }
+      }
+
+      print('🏋️ Starting workout with ${exerciseIdsList.length} exercises');
 
       // Start workout with the fetched exercises
       await ref
           .read(activeWorkoutProvider.notifier)
           .startWorkoutFromExerciseIds(
             workoutName,
-            exerciseIds,
+            exerciseIdsList,
           );
 
       // Navigate to active workout screen

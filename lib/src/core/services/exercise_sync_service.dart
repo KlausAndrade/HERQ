@@ -6,8 +6,19 @@ import '../providers/database_provider.dart';
 class ExerciseSyncService {
   /// Map variant_type to Supabase allowed values
   /// Allowed: progression, regression, equipment, angle, grip, tempo, range, stability, assisted, strict
+  /// 
+  /// Note: Position variants (inclined, declined, suspended) are NOT stored in exercises.variant_type.
+  /// They are stored in set_entries.variant_type in combined format like "weight_reps:inclined".
+  /// This function only handles exercise-level variants.
   static String? _mapVariantType(String? variantType) {
     if (variantType == null || variantType.isEmpty) return null;
+
+    // If it contains ':', it's a combined format (executionType:position) which should not
+    // be stored in exercises.variant_type - it's for set_entries.variant_type
+    if (variantType.contains(':')) {
+      print('⚠️ Combined variant format detected (e.g., "weight_reps:inclined"). This should be in set_entries, not exercises. Setting to null.');
+      return null;
+    }
 
     // Map common invalid values to valid ones or null
     const allowedTypes = [
@@ -35,6 +46,12 @@ class ExerciseSyncService {
         return null; // These are base exercises, not variants
       case 'unilateral':
         return 'equipment'; // Map to equipment variation
+      case 'inclined':
+      case 'declined':
+      case 'suspended':
+        // Position variants are for set_entries, not exercises
+        print('⚠️ Position variant ($variantType) should be in set_entries, not exercises. Setting to null.');
+        return null;
       default:
         print('⚠️ Unknown variant_type: $variantType, setting to null');
         return null;
@@ -89,9 +106,9 @@ class ExerciseSyncService {
           }
 
           // Clean arrays - remove any double-encoded JSON strings
-          final cleanTags = exercise.tags ?? [];
-          final cleanAliases = exercise.aliases ?? [];
-          final cleanSecondaryMuscles = exercise.secondaryMuscleGroups ?? [];
+          final cleanTags = exercise.tags;
+          final cleanAliases = exercise.aliases;
+          final cleanSecondaryMuscles = exercise.secondaryMuscleGroups;
 
           await supabase.from('exercises').upsert({
             'id': exercise.id,

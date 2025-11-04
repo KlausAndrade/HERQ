@@ -390,6 +390,40 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
     }
   }
 
+  /// Start an empty workout with no exercises
+  Future<void> startEmptyWorkout() async {
+    print('🏁 Starting empty workout...');
+
+    // First, clear any existing workout
+    await _clearActiveWorkout();
+
+    state = ActiveWorkout(
+      id: 'workout_${DateTime.now().millisecondsSinceEpoch}',
+      name: 'Quick Start Workout',
+      exercises: const [],
+    );
+
+    print('🏁 Empty workout created: Quick Start Workout');
+
+    // Start the workout duration timer
+    _startWorkoutTimer();
+
+    // Reset modifications flag
+    _ref.read(workoutModificationsProvider.notifier).reset();
+
+    // Start foreground service
+    await _foregroundService.startService(
+      workoutName: 'Quick Start Workout',
+      exerciseCount: 0,
+    );
+
+    // Start auto-save checkpoint service
+    final checkpointService = _ref.read(workoutCheckpointServiceProvider);
+    if (checkpointService != null && state != null) {
+      checkpointService.startAutoSave(state!);
+    }
+  }
+
   /// Start a workout directly from a list of exercise IDs (no template record)
   Future<void> startWorkoutFromExerciseIds(
     String name,
@@ -993,8 +1027,13 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       final exercises = List<ActiveExercise>.from(state!.exercises);
       final exercise = exercises[exerciseIndex];
 
-      // ✅ FIX: Update exerciseType to match the new execution type
-      final newExerciseType = variantType ?? exercise.exerciseType;
+      // Extract execution type from variant if it contains position (e.g., "weight_reps:inclined" → "weight_reps")
+      String? executionType;
+      if (variantType != null && variantType.contains(':')) {
+        executionType = variantType.split(':').first;
+      } else {
+        executionType = variantType ?? exercise.exerciseType;
+      }
 
       print('🔄 Updating exercise variant:');
       print('   Exercise: ${exercise.name}');
@@ -1003,17 +1042,16 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkout?> {
       );
       print('   Old variant: ${exercise.variantType} → New: $variantType');
       print(
-          '   Old exerciseType: ${exercise.exerciseType} → New: $newExerciseType');
+          '   Old exerciseType: ${exercise.exerciseType} → New: $executionType');
 
       exercises[exerciseIndex] = ActiveExercise(
         id: exercise.id,
         name: exercise.name,
         sets: exercise.sets,
         restTimerSeconds: exercise.restTimerSeconds,
-        exerciseType:
-            newExerciseType, // ✅ Update exerciseType to match execution type
+        exerciseType: executionType, // Extract execution type (e.g., "weight_reps" from "weight_reps:inclined")
         equipmentUsed: equipmentUsed, // Use new value directly (can be null)
-        variantType: variantType, // Use new value directly (can be null)
+        variantType: variantType, // Store full variant including position (e.g., "weight_reps:inclined")
         previousSet: exercise.previousSet, // ✅ FIX: Preserve previous set data!
       );
 

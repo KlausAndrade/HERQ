@@ -47,9 +47,29 @@ class ExerciseVariantPicker extends StatelessWidget {
       parts.add(_formatEquipment(currentEquipment!));
     }
     if (currentVariant != null && currentVariant != 'standard') {
-      parts.add(_formatVariant(currentVariant!));
+      // Parse combined variant (executionType:position)
+      final variantParts = currentVariant!.split(':');
+      if (variantParts.length == 2) {
+        final position = variantParts[1];
+        parts.add(_formatPosition(position));
+      } else {
+        parts.add(_formatVariant(currentVariant!));
+      }
     }
     return parts.isEmpty ? 'Change equipment/variant' : parts.join(' • ');
+  }
+
+  String _formatPosition(String position) {
+    switch (position) {
+      case 'inclined':
+        return 'Inclined';
+      case 'declined':
+        return 'Declined';
+      case 'suspended':
+        return 'Suspended';
+      default:
+        return position[0].toUpperCase() + position.substring(1);
+    }
   }
 
   String _formatEquipment(String equipment) =>
@@ -107,6 +127,7 @@ class _VariantPickerSheet extends StatefulWidget {
 class _VariantPickerSheetState extends State<_VariantPickerSheet> {
   late String? selectedEquipment;
   late String? selectedVariant;
+  late String? selectedPosition;
 
   static const equipmentOptions = [
     'barbell',
@@ -130,11 +151,35 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
     'weight_distance',
   ];
 
+  static const positionVariantOptions = [
+    'standard',
+    'inclined',
+    'declined',
+    'suspended',
+  ];
+
   @override
   void initState() {
     super.initState();
     selectedEquipment = widget.currentEquipment;
-    selectedVariant = widget.currentVariant ?? 'weight_reps';
+    
+    // Parse variant: could be "executionType:position" or just "executionType"
+    final variant = widget.currentVariant ?? 'weight_reps';
+    if (variant.contains(':')) {
+      final parts = variant.split(':');
+      selectedVariant = parts[0];
+      selectedPosition = parts[1];
+    } else {
+      selectedVariant = variant;
+      selectedPosition = 'standard';
+    }
+  }
+
+  String _combineVariantAndPosition(String executionType, String? position) {
+    if (position == null || position == 'standard') {
+      return executionType;
+    }
+    return '$executionType:$position';
   }
 
   @override
@@ -183,9 +228,13 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                         selectedEquipment = newEquipment;
                       });
                       // Apply change immediately
+                      final combinedVariant = _combineVariantAndPosition(
+                        selectedVariant ?? 'weight_reps',
+                        selectedPosition == 'standard' ? null : selectedPosition,
+                      );
                       widget.onChanged(
                         newEquipment,
-                        selectedVariant == 'standard' ? null : selectedVariant,
+                        combinedVariant == 'weight_reps' ? null : combinedVariant,
                       );
                     },
                     selectedColor: theme.colorScheme.primaryContainer,
@@ -220,9 +269,13 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                         selectedVariant = newExecutionType;
                       });
                       // Apply change immediately
+                      final combinedVariant = _combineVariantAndPosition(
+                        newExecutionType,
+                        selectedPosition == 'standard' ? null : selectedPosition,
+                      );
                       widget.onChanged(
                         selectedEquipment,
-                        newExecutionType,
+                        combinedVariant == 'weight_reps' ? null : combinedVariant,
                       );
                     },
                     selectedColor: theme.colorScheme.secondaryContainer,
@@ -265,6 +318,50 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                     ],
                   ),
                 ),
+
+              const SizedBox(height: 6),
+              const Divider(),
+              const SizedBox(height: 6),
+
+              // Position/Angle Selection
+              Text(
+                'Position / Angle',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 8,
+                runSpacing: 2,
+                children: positionVariantOptions.map((position) {
+                  final isSelected = position == selectedPosition;
+                  return ChoiceChip(
+                    label: Text(_formatPositionLabel(position)),
+                    avatar: Icon(
+                      _getPositionIcon(position),
+                      size: 16,
+                    ),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      final newPosition = selected ? position : 'standard';
+                      setState(() {
+                        selectedPosition = newPosition;
+                      });
+                      // Apply change immediately
+                      final combinedVariant = _combineVariantAndPosition(
+                        selectedVariant ?? 'weight_reps',
+                        newPosition == 'standard' ? null : newPosition,
+                      );
+                      widget.onChanged(
+                        selectedEquipment,
+                        combinedVariant == 'weight_reps' ? null : combinedVariant,
+                      );
+                    },
+                    selectedColor: theme.colorScheme.tertiaryContainer,
+                  );
+                }).toList(),
+              ),
 
               const SizedBox(height: 16),
             ],
@@ -350,6 +447,36 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
         return Icons.sports_gymnastics;
       case 'none':
         return Icons.not_interested;
+      default:
+        return Icons.more_horiz;
+    }
+  }
+
+  String _formatPositionLabel(String position) {
+    switch (position) {
+      case 'standard':
+        return 'Standard';
+      case 'inclined':
+        return 'Inclined';
+      case 'declined':
+        return 'Declined';
+      case 'suspended':
+        return 'Suspended';
+      default:
+        return position[0].toUpperCase() + position.substring(1);
+    }
+  }
+
+  IconData _getPositionIcon(String position) {
+    switch (position) {
+      case 'standard':
+        return Icons.horizontal_rule;
+      case 'inclined':
+        return Icons.trending_up;
+      case 'declined':
+        return Icons.trending_down;
+      case 'suspended':
+        return Icons.waves;
       default:
         return Icons.more_horiz;
     }
