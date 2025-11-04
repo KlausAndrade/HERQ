@@ -2017,6 +2017,24 @@ class SEs extends S {
   String get incline => 'Inclinado';
 
   @override
+  String get inclined => 'Inclinado';
+
+  @override
+  String get declined => 'Declinado';
+
+  @override
+  String get suspended => 'Suspendido';
+
+  @override
+  String get seated => 'Sentado';
+
+  @override
+  String get standing => 'De Pie';
+
+  @override
+  String get elevated => 'Elevado';
+
+  @override
   String get deficit => 'Déficit';
 
   @override

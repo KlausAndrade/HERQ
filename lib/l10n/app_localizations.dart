@@ -3939,6 +3939,42 @@ abstract class S {
   /// **'Incline'**
   String get incline;
 
+  /// No description provided for @inclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Inclined'**
+  String get inclined;
+
+  /// No description provided for @declined.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get declined;
+
+  /// No description provided for @suspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get suspended;
+
+  /// No description provided for @seated.
+  ///
+  /// In en, this message translates to:
+  /// **'Seated'**
+  String get seated;
+
+  /// No description provided for @standing.
+  ///
+  /// In en, this message translates to:
+  /// **'Standing'**
+  String get standing;
+
+  /// No description provided for @elevated.
+  ///
+  /// In en, this message translates to:
+  /// **'Elevated'**
+  String get elevated;
+
   /// No description provided for @deficit.
   ///
   /// In en, this message translates to:

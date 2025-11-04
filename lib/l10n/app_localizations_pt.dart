@@ -2008,6 +2008,24 @@ class SPt extends S {
   String get incline => 'Inclinado';
 
   @override
+  String get inclined => 'Inclinado';
+
+  @override
+  String get declined => 'Declinado';
+
+  @override
+  String get suspended => 'Suspenso';
+
+  @override
+  String get seated => 'Sentado';
+
+  @override
+  String get standing => 'Em Pé';
+
+  @override
+  String get elevated => 'Elevado';
+
+  @override
   String get deficit => 'Déficit';
 
   @override

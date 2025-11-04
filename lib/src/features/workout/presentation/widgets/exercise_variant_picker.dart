@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../../../l10n/app_localizations.dart';
+
 /// A compact picker for selecting equipment and variant type for an exercise
 class ExerciseVariantPicker extends StatelessWidget {
   const ExerciseVariantPicker({
@@ -19,7 +21,7 @@ class ExerciseVariantPicker extends StatelessWidget {
           _getEquipmentIcon(currentEquipment),
           size: 20,
         ),
-        tooltip: _getTooltip(),
+        tooltip: _getTooltip(context),
         onPressed: () => _showPicker(context),
       );
 
@@ -41,7 +43,8 @@ class ExerciseVariantPicker extends StatelessWidget {
     }
   }
 
-  String _getTooltip() {
+  String _getTooltip(BuildContext context) {
+    final l10n = S.of(context);
     final parts = <String>[];
     if (currentEquipment != null) {
       parts.add(_formatEquipment(currentEquipment!));
@@ -51,7 +54,7 @@ class ExerciseVariantPicker extends StatelessWidget {
       final variantParts = currentVariant!.split(':');
       if (variantParts.length == 2) {
         final position = variantParts[1];
-        parts.add(_formatPosition(position));
+        parts.add(_formatPosition(position, l10n));
       } else {
         parts.add(_formatVariant(currentVariant!));
       }
@@ -59,14 +62,22 @@ class ExerciseVariantPicker extends StatelessWidget {
     return parts.isEmpty ? 'Change equipment/variant' : parts.join(' • ');
   }
 
-  String _formatPosition(String position) {
+  String _formatPosition(String position, dynamic l10n) {
     switch (position) {
       case 'inclined':
-        return 'Inclined';
+        return l10n.inclined;
       case 'declined':
-        return 'Declined';
+        return l10n.declined;
       case 'suspended':
-        return 'Suspended';
+        return l10n.suspended;
+      case 'seated':
+        return l10n.seated;
+      case 'standing':
+        return l10n.standing;
+      case 'elevated':
+        return l10n.elevated;
+      case 'deficit':
+        return l10n.deficit;
       default:
         return position[0].toUpperCase() + position.substring(1);
     }
@@ -81,6 +92,7 @@ class ExerciseVariantPicker extends StatelessWidget {
   void _showPicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) => _VariantPickerSheet(
         currentEquipment: currentEquipment,
         currentVariant: currentVariant,
@@ -156,6 +168,10 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
     'inclined',
     'declined',
     'suspended',
+    'seated',
+    'standing',
+    'elevated',
+    'deficit',
   ];
 
   @override
@@ -337,7 +353,7 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                 children: positionVariantOptions.map((position) {
                   final isSelected = position == selectedPosition;
                   return ChoiceChip(
-                    label: Text(_formatPositionLabel(position)),
+                    label: Text(_formatPositionLabel(position, context)),
                     avatar: Icon(
                       _getPositionIcon(position),
                       size: 16,
@@ -452,7 +468,35 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
     }
   }
 
-  String _formatPositionLabel(String position) {
+  String _formatPositionLabel(String position, BuildContext context) {
+    final l10n = S.of(context);
+    if (l10n == null) {
+      // Fallback to English if localization not available
+      return _getEnglishPositionLabel(position);
+    }
+    switch (position) {
+      case 'standard':
+        return l10n.standard;
+      case 'inclined':
+        return l10n.inclined;
+      case 'declined':
+        return l10n.declined;
+      case 'suspended':
+        return l10n.suspended;
+      case 'seated':
+        return l10n.seated;
+      case 'standing':
+        return l10n.standing;
+      case 'elevated':
+        return l10n.elevated;
+      case 'deficit':
+        return l10n.deficit;
+      default:
+        return position[0].toUpperCase() + position.substring(1);
+    }
+  }
+
+  String _getEnglishPositionLabel(String position) {
     switch (position) {
       case 'standard':
         return 'Standard';
@@ -462,6 +506,14 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
         return 'Declined';
       case 'suspended':
         return 'Suspended';
+      case 'seated':
+        return 'Seated';
+      case 'standing':
+        return 'Standing';
+      case 'elevated':
+        return 'Elevated';
+      case 'deficit':
+        return 'Deficit';
       default:
         return position[0].toUpperCase() + position.substring(1);
     }
@@ -477,6 +529,14 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
         return Icons.trending_down;
       case 'suspended':
         return Icons.waves;
+      case 'seated':
+        return Icons.chair;
+      case 'standing':
+        return Icons.accessibility_new;
+      case 'elevated':
+        return Icons.arrow_upward;
+      case 'deficit':
+        return Icons.arrow_downward;
       default:
         return Icons.more_horiz;
     }

@@ -8,6 +8,7 @@
     "android": "./run_android.sh",
     "build:web": "./build_web.sh",
     "build:ios": "./build_ios.sh",
+    "build:ios:release:device": "./build_ios_release.sh 00008140-000A798C38A2201C",
     "build:ios:release": "./build_ios_release.sh",
     
     "build:android": "./build_apk.sh",

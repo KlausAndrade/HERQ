@@ -1998,6 +1998,24 @@ class SEn extends S {
   String get incline => 'Incline';
 
   @override
+  String get inclined => 'Inclined';
+
+  @override
+  String get declined => 'Declined';
+
+  @override
+  String get suspended => 'Suspended';
+
+  @override
+  String get seated => 'Seated';
+
+  @override
+  String get standing => 'Standing';
+
+  @override
+  String get elevated => 'Elevated';
+
+  @override
   String get deficit => 'Deficit';
 
   @override
