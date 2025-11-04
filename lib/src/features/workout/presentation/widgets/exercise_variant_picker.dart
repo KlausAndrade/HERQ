@@ -93,6 +93,8 @@ class ExerciseVariantPicker extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
       builder: (context) => _VariantPickerSheet(
         currentEquipment: currentEquipment,
         currentVariant: currentVariant,
@@ -210,17 +212,28 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Exercise Variant',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              // Header with close button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    S.of(context)?.exerciseVariant ?? 'Exercise Variant',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                    tooltip: S.of(context)?.close ?? 'Close',
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
 
               // Equipment Selection
               Text(
-                'Equipment',
+                S.of(context)?.equipment ?? 'Equipment',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -231,13 +244,14 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                 runSpacing: 2,
                 children: equipmentOptions.map((equipment) {
                   final isSelected = equipment == selectedEquipment;
-                  return ChoiceChip(
-                    label: Text(_formatLabel(equipment)),
+                  return FilterChip(
+                    label: Text(_formatEquipmentLabel(equipment, context)),
                     avatar: Icon(
                       _getEquipmentIconForType(equipment),
                       size: 16,
                     ),
                     selected: isSelected,
+                    showCheckmark: false,
                     onSelected: (selected) {
                       final newEquipment = selected ? equipment : null;
                       setState(() {
@@ -254,7 +268,6 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                       );
                     },
                     selectedColor: theme.colorScheme.primaryContainer,
-                    showCheckmark: false,
                   );
                 }).toList(),
               ),
@@ -265,7 +278,7 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
 
               // Execution Type Selection
               Text(
-                'Execution Type',
+                S.of(context)?.executionType ?? 'Execution Type',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -276,9 +289,10 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                 runSpacing: 2,
                 children: executionTypeOptions.map((executionType) {
                   final isSelected = executionType == selectedVariant;
-                  return ChoiceChip(
-                    label: Text(_formatExecutionTypeLabel(executionType)),
+                  return FilterChip(
+                    label: Text(_formatExecutionTypeLabel(executionType, context)),
                     selected: isSelected,
+                    showCheckmark: false,
                     onSelected: (selected) {
                       final newExecutionType =
                           selected ? executionType : 'weight_reps';
@@ -296,7 +310,6 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                       );
                     },
                     selectedColor: theme.colorScheme.primaryContainer,
-                    showCheckmark: false,
                   );
                 }).toList(),
               ),
@@ -307,7 +320,7 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
 
               // Position/Angle Selection
               Text(
-                'Position / Angle',
+                S.of(context)?.positionAngle ?? 'Position / Angle',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -318,13 +331,14 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                 runSpacing: 2,
                 children: positionVariantOptions.map((position) {
                   final isSelected = position == selectedPosition;
-                  return ChoiceChip(
+                  return FilterChip(
                     label: Text(_formatPositionLabel(position, context)),
                     avatar: Icon(
                       _getPositionIcon(position),
                       size: 16,
                     ),
                     selected: isSelected,
+                    showCheckmark: false,
                     onSelected: (selected) {
                       final newPosition = selected ? position : 'standard';
                       setState(() {
@@ -341,7 +355,6 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                       );
                     },
                     selectedColor: theme.colorScheme.primaryContainer,
-                    showCheckmark: false,
                   );
                 }).toList(),
               ),
@@ -354,12 +367,67 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
     );
   }
 
-  String _formatLabel(String label) => label
-      .split('_')
-      .map((word) => word[0].toUpperCase() + word.substring(1))
-      .join(' ');
+  String _formatEquipmentLabel(String equipment, BuildContext context) {
+    final l10n = S.of(context);
+    if (l10n == null) {
+      return equipment
+          .split('_')
+          .map((word) => word[0].toUpperCase() + word.substring(1))
+          .join(' ');
+    }
+    switch (equipment.toLowerCase()) {
+      case 'barbell':
+        return l10n.barbell;
+      case 'dumbbell':
+        return l10n.dumbbell;
+      case 'cable':
+        return l10n.cable;
+      case 'machine':
+        return l10n.machine;
+      case 'bodyweight':
+        return l10n.bodyweight;
+      case 'resistance_band':
+        return l10n.resistanceBand;
+      case 'kettlebell':
+        return l10n.kettlebell;
+      case 'none':
+        return l10n.none;
+      default:
+        return equipment
+            .split('_')
+            .map((word) => word[0].toUpperCase() + word.substring(1))
+            .join(' ');
+    }
+  }
 
-  String _formatExecutionTypeLabel(String executionType) {
+  String _formatExecutionTypeLabel(String executionType, BuildContext context) {
+    final l10n = S.of(context);
+    if (l10n == null) {
+      return _getEnglishExecutionTypeLabel(executionType);
+    }
+    switch (executionType) {
+      case 'weight_reps':
+        return l10n.weightReps;
+      case 'reps':
+        return l10n.bodyweightReps;
+      case 'weighted_bodyweight':
+        return l10n.weightedBodyweight;
+      case 'assisted_bodyweight':
+        return l10n.assistedBodyweight;
+      case 'timer':
+        return l10n.durationOnly;
+      case 'duration_weight':
+        return l10n.durationWeight;
+      case 'distance_duration':
+        return l10n.distanceDuration;
+      case 'weight_distance':
+        return l10n.weightDistance;
+      default:
+        return executionType[0].toUpperCase() + executionType.substring(1);
+    }
+  }
+
+  String _getEnglishExecutionTypeLabel(String executionType) {
     switch (executionType) {
       case 'weight_reps':
         return 'Weight & Reps';

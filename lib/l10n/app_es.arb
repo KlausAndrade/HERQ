@@ -317,6 +317,8 @@
   "exerciseVariant": "Variante del Ejercicio",
   "variantType": "Tipo de Variante",
   "changeEquipmentVariant": "Cambiar equipamiento/variante",
+  "executionType": "Tipo de Ejecución",
+  "positionAngle": "Posición / Ángulo",
   "apply": "Aplicar",
   "resistanceBand": "Banda de Resistencia",
   "standard": "Estándar",

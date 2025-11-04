@@ -1959,6 +1959,18 @@ abstract class S {
   /// **'Change equipment/variant'**
   String get changeEquipmentVariant;
 
+  /// No description provided for @executionType.
+  ///
+  /// In en, this message translates to:
+  /// **'Execution Type'**
+  String get executionType;
+
+  /// No description provided for @positionAngle.
+  ///
+  /// In en, this message translates to:
+  /// **'Position / Angle'**
+  String get positionAngle;
+
   /// No description provided for @apply.
   ///
   /// In en, this message translates to:

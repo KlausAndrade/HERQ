@@ -696,7 +696,7 @@ class SPt extends S {
   String get bodyweightReps => 'Repetições de Peso Corporal';
 
   @override
-  String get weightedBodyweight => 'Peso Corporal com Peso';
+  String get weightedBodyweight => 'Peso Corporal com Carga';
 
   @override
   String get assistedBodyweight => 'Peso Corporal Assistido';
@@ -966,6 +966,12 @@ class SPt extends S {
 
   @override
   String get changeEquipmentVariant => 'Mudar equipamento/variante';
+
+  @override
+  String get executionType => 'Tipo de Execução';
+
+  @override
+  String get positionAngle => 'Posição / Ângulo';
 
   @override
   String get apply => 'Aplicar';

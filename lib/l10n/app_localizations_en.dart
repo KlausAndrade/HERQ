@@ -962,6 +962,12 @@ class SEn extends S {
   String get changeEquipmentVariant => 'Change equipment/variant';
 
   @override
+  String get executionType => 'Execution Type';
+
+  @override
+  String get positionAngle => 'Position / Angle';
+
+  @override
   String get apply => 'Apply';
 
   @override

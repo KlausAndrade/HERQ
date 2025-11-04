@@ -972,6 +972,12 @@ class SEs extends S {
   String get changeEquipmentVariant => 'Cambiar equipamiento/variante';
 
   @override
+  String get executionType => 'Tipo de Ejecución';
+
+  @override
+  String get positionAngle => 'Posición / Ángulo';
+
+  @override
   String get apply => 'Aplicar';
 
   @override
