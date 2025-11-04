@@ -48,7 +48,8 @@ class AnalyticsScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               _buildUserMetrics(context, data),
               const SizedBox(height: 24),
-              _buildSectionHeader(context, 'Recent Events (Last 100)', Colors.teal),
+              _buildSectionHeader(
+                  context, 'Recent Events (Last 100)', Colors.teal),
               const SizedBox(height: 12),
               recentEvents.when(
                 data: (events) => _buildEventsList(context, events),
@@ -619,7 +620,8 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-Widget _buildEventsList(BuildContext context, List<Map<String, dynamic>> events) {
+Widget _buildEventsList(
+    BuildContext context, List<Map<String, dynamic>> events) {
   if (events.isEmpty) {
     return const Card(
       child: Padding(
@@ -646,7 +648,8 @@ Widget _buildEventsList(BuildContext context, List<Map<String, dynamic>> events)
           return ListTile(
             dense: true,
             leading: const Icon(Icons.bolt, color: Colors.teal),
-            title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+            title:
+                Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
             subtitle: Text(
               props is Map<String, dynamic>
                   ? props.entries
@@ -658,8 +661,13 @@ Widget _buildEventsList(BuildContext context, List<Map<String, dynamic>> events)
               overflow: TextOverflow.ellipsis,
             ),
             trailing: Text(
-              createdAt != null ? createdAt.substring(0, 19).replaceFirst('T', ' ') : '',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+              createdAt != null
+                  ? createdAt.substring(0, 19).replaceFirst('T', ' ')
+                  : '',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: Colors.grey[600]),
             ),
           );
         },

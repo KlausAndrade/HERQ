@@ -148,21 +148,23 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
         setState(() {
           _nameController.text = exercise.name;
           _instructionsController.text = exercise.instructions;
-          _selectedMuscleGroup = _muscleGroups.contains(exercise.primaryMuscleGroup) 
-              ? exercise.primaryMuscleGroup 
-              : 'Chest'; // Fallback to ensure valid value
+          _selectedMuscleGroup =
+              _muscleGroups.contains(exercise.primaryMuscleGroup)
+                  ? exercise.primaryMuscleGroup
+                  : 'Chest'; // Fallback to ensure valid value
           _selectedSecondaryMuscles.addAll(exercise.secondaryMuscleGroups);
-          _selectedEquipment = _equipmentOptions.contains(exercise.equipment) 
-              ? exercise.equipment 
+          _selectedEquipment = _equipmentOptions.contains(exercise.equipment)
+              ? exercise.equipment
               : 'Barbell'; // Fallback
-          _selectedCategory = _categories.contains(exercise.category) 
-              ? exercise.category 
+          _selectedCategory = _categories.contains(exercise.category)
+              ? exercise.category
               : 'strength'; // Fallback
-          _selectedDifficulty = _difficulties.contains(exercise.difficulty) 
-              ? exercise.difficulty 
+          _selectedDifficulty = _difficulties.contains(exercise.difficulty)
+              ? exercise.difficulty
               : 'intermediate'; // Fallback
-          _selectedExerciseType = _exerciseTypeConfigs.any((config) => config.type.value == exercise.exerciseType)
-              ? exercise.exerciseType 
+          _selectedExerciseType = _exerciseTypeConfigs
+                  .any((config) => config.type.value == exercise.exerciseType)
+              ? exercise.exerciseType
               : 'weight_reps'; // Fallback
           _isBodyweight = exercise.isBodyweight;
           _selectedTags.addAll(exercise.tags);
@@ -233,18 +235,20 @@ class _CreateExerciseScreenState extends ConsumerState<CreateExerciseScreen> {
 
       final isEdit = widget.exerciseId != null;
       final isAdminMode = ref.read(currentAdminModeProvider);
-      final exerciseId = isEdit 
-          ? widget.exerciseId! 
-          : isAdminMode 
+      final exerciseId = isEdit
+          ? widget.exerciseId!
+          : isAdminMode
               ? const Uuid().v4() // Admin exercises get system IDs
               : 'custom_${const Uuid().v4()}'; // User exercises get custom_ prefix
 
       // Get current user ID for user isolation (null for admin mode = system-wide)
-      final currentUserId = isAdminMode ? null : ref.read(currentUserProvider)?.id;
-      
+      final currentUserId =
+          isAdminMode ? null : ref.read(currentUserProvider)?.id;
+
       final companion = ExercisesCompanion.insert(
         id: exerciseId,
-        userId: Value(currentUserId), // ✅ USER ISOLATION: Link to current user (null = admin/system-wide)
+        userId: Value(
+            currentUserId), // ✅ USER ISOLATION: Link to current user (null = admin/system-wide)
         name: _nameController.text.trim(),
         primaryMuscleGroup: _selectedMuscleGroup,
         secondaryMuscleGroups: _selectedSecondaryMuscles,

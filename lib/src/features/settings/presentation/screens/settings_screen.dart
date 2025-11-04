@@ -45,393 +45,409 @@ class SettingsScreen extends ConsumerWidget {
             onPressed: () => context.go('/'),
           ),
         ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Account Section
-          Text(
-            S.of(context)!.account,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: Builder(
-              builder: (context) {
-                final user = ref.watch(currentUserProvider);
-                final isLoggedIn = user != null;
-
-                if (isLoggedIn) {
-                  return Column(
-                    children: [
-                      ListTile(
-                        leading:
-                            const Icon(Icons.check_circle, color: Colors.green),
-                        title: Text(S.of(context)!.loggedIn),
-                        subtitle: Text(user.email ?? S.of(context)!.noEmail),
-                      ),
-                      const Divider(height: 1),
-                      ListTile(
-                        leading: const Icon(Icons.edit),
-                        title: Text(S.of(context)!.editProfile),
-                        subtitle: Text(S.of(context)!.updateDisplayNameBio),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => context.push('/edit-profile'),
-                      ),
-                      const Divider(height: 1),
-                      ListTile(
-                        leading: const Icon(Icons.logout, color: Colors.red),
-                        title: Text(S.of(context)!.signOut),
-                        onTap: () async {
-                          final authService = ref.read(authServiceProvider);
-                          await authService.signOut();
-                          if (context.mounted) {
-                            NotificationService()
-                                .showInAppNotification(
-                                  id: DateTime.now()
-                                      .millisecondsSinceEpoch
-                                      .toString(),
-                                  title: 'Signed out',
-                                  body: 'Signed out successfully',
-                                )
-                                .catchError((_) {});
-                          }
-                        },
-                      ),
-                    ],
-                  );
-                } else {
-                  return ListTile(
-                    leading: const Icon(Icons.person_outline),
-                    title: Text(S.of(context)!.signInSignUp),
-                    subtitle: Text(S.of(context)!.syncDataAcrossDevices),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => context.go('/auth'),
-                  );
-                }
-              },
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            // Account Section
+            Text(
+              S.of(context)!.account,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 12),
+            Card(
+              child: Builder(
+                builder: (context) {
+                  final user = ref.watch(currentUserProvider);
+                  final isLoggedIn = user != null;
 
-          // Appearance Section
-          Text(
-            S.of(context)!.appearance,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.palette_outlined),
-                  title: Text(S.of(context)!.theme),
-                  subtitle: Text(_getThemeModeText(context, themeMode)),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showThemeDialog(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.color_lens_outlined),
-                  title: Text(S.of(context)!.colorTheme),
-                  subtitle: Text(_getThemeVariantText(context, themeVariant)),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showThemeVariantDialog(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.language),
-                  title: Text(S.of(context)!.language),
-                  subtitle: Text(LocaleNotifier.getLocaleName(locale)),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showLanguageDialog(context, ref),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Workout Settings Section
-          Text(
-            S.of(context)!.workoutSettings,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.timer_outlined),
-                  title: const Text('Default Rest Timer'),
-                  subtitle: Text(
-                    ref
-                        .read(workoutSettingsProvider.notifier)
-                        .getFormattedRestTime(),
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showRestTimerDialog(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.scale_outlined),
-                  title: const Text('Weight Unit'),
-                  subtitle: Text(
-                    ref
-                        .read(workoutSettingsProvider.notifier)
-                        .getWeightUnitDisplay(),
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showWeightUnitDialog(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.vibration),
-                  title: const Text('Haptic Feedback'),
-                  subtitle: const Text('Vibrate on timer completion'),
-                  trailing: AnimatedSwitch(
-                    value: workoutSettings.hapticFeedback,
-                    onChanged: (value) {
-                      ref
-                          .read(workoutSettingsProvider.notifier)
-                          .setHapticFeedback(value);
-                    },
-                    thumbIcon: Icons.vibration,
-                  ),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.play_circle_outline),
-                  title: const Text('Auto-start Rest Timer'),
-                  subtitle: const Text('Start timer after completing a set'),
-                  trailing: AnimatedSwitch(
-                    value: workoutSettings.autoStartRestTimer,
-                    onChanged: (value) {
-                      ref
-                          .read(workoutSettingsProvider.notifier)
-                          .setAutoStartRestTimer(value);
-                    },
-                    thumbIcon: Icons.timer,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Data Section
-          Text(
-            'Data & Privacy',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.cloud_sync_outlined),
-                  title: const Text('Sync Data'),
-                  subtitle: const Text('Last synced: Never'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showSyncDialog(context),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.update, color: Colors.blue),
-                  title: const Text('Update Content'),
-                  subtitle: const Text('Get latest exercises and templates from admin'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showUpdateContentDialog(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.download_outlined),
-                  title: const Text('Export Data'),
-                  subtitle: const Text('Download your workout data'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showExportDialog(context, ref),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.analytics_outlined),
-                  title: const Text('Telemetry'),
-                  subtitle: const Text('Help improve HERQ by sending anonymous usage events'),
-                  trailing: FutureBuilder<bool>(
-                    future: _getTelemetryEnabled(),
-                    builder: (context, snapshot) {
-                      final enabled = snapshot.data ?? true;
-                      return Switch(
-                        value: enabled,
-                        onChanged: (value) async {
-                          await _setTelemetryEnabled(value);
-                          // Refresh
-                          (context as Element).markNeedsBuild();
-                        },
-                      );
-                    },
-                  ),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.delete_forever),
-                  title: const Text('Delete All Data'),
-                  subtitle: const Text('Permanently delete all workout data'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showDeleteDataDialog(context, ref),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Admin Dashboard Link (only visible to admins)
-          Consumer(
-            builder: (context, ref, child) {
-              final isAdmin = ref.watch(isAdminProvider);
-              
-              if (!isAdmin) {
-                return const SizedBox.shrink(); // Hide for non-admins
-              }
-              
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Admin Access',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
+                  if (isLoggedIn) {
+                    return Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.check_circle,
+                              color: Colors.green),
+                          title: Text(S.of(context)!.loggedIn),
+                          subtitle: Text(user.email ?? S.of(context)!.noEmail),
                         ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.edit),
+                          title: Text(S.of(context)!.editProfile),
+                          subtitle: Text(S.of(context)!.updateDisplayNameBio),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () => context.push('/edit-profile'),
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.logout, color: Colors.red),
+                          title: Text(S.of(context)!.signOut),
+                          onTap: () async {
+                            final authService = ref.read(authServiceProvider);
+                            await authService.signOut();
+                            if (context.mounted) {
+                              NotificationService()
+                                  .showInAppNotification(
+                                    id: DateTime.now()
+                                        .millisecondsSinceEpoch
+                                        .toString(),
+                                    title: 'Signed out',
+                                    body: 'Signed out successfully',
+                                  )
+                                  .catchError((_) {});
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  } else {
+                    return ListTile(
+                      leading: const Icon(Icons.person_outline),
+                      title: Text(S.of(context)!.signInSignUp),
+                      subtitle: Text(S.of(context)!.syncDataAcrossDevices),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.go('/auth'),
+                    );
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Appearance Section
+            Text(
+              S.of(context)!.appearance,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(height: 8),
-                  
-                  // Admin Mode Toggle
-                  Card(
-                    color: Colors.red.withOpacity(0.1),
-                    child: Consumer(
-                      builder: (context, ref, child) {
-                        final adminMode = ref.watch(adminModeProvider);
-                        final isAdmin = ref.watch(isAdminProvider);
-                        
-                        return ListTile(
-                          leading: const Icon(Icons.admin_panel_settings, color: Colors.red),
-                          title: const Text('Enable Admin Mode'),
-                          subtitle: const Text('Toggle admin features and system-wide access'),
-                          trailing: Switch(
-                            value: adminMode,
-                            onChanged: isAdmin ? (value) {
-                              ref.read(adminModeProvider.notifier).setAdminMode(enabled: value);
-                            } : null,
-                            activeColor: Colors.red,
-                          ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.palette_outlined),
+                    title: Text(S.of(context)!.theme),
+                    subtitle: Text(_getThemeModeText(context, themeMode)),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showThemeDialog(context, ref),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.color_lens_outlined),
+                    title: Text(S.of(context)!.colorTheme),
+                    subtitle: Text(_getThemeVariantText(context, themeVariant)),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showThemeVariantDialog(context, ref),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.language),
+                    title: Text(S.of(context)!.language),
+                    subtitle: Text(LocaleNotifier.getLocaleName(locale)),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showLanguageDialog(context, ref),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Workout Settings Section
+            Text(
+              S.of(context)!.workoutSettings,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.timer_outlined),
+                    title: const Text('Default Rest Timer'),
+                    subtitle: Text(
+                      ref
+                          .read(workoutSettingsProvider.notifier)
+                          .getFormattedRestTime(),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showRestTimerDialog(context, ref),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.scale_outlined),
+                    title: const Text('Weight Unit'),
+                    subtitle: Text(
+                      ref
+                          .read(workoutSettingsProvider.notifier)
+                          .getWeightUnitDisplay(),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showWeightUnitDialog(context, ref),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.vibration),
+                    title: const Text('Haptic Feedback'),
+                    subtitle: const Text('Vibrate on timer completion'),
+                    trailing: AnimatedSwitch(
+                      value: workoutSettings.hapticFeedback,
+                      onChanged: (value) {
+                        ref
+                            .read(workoutSettingsProvider.notifier)
+                            .setHapticFeedback(value);
+                      },
+                      thumbIcon: Icons.vibration,
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.play_circle_outline),
+                    title: const Text('Auto-start Rest Timer'),
+                    subtitle: const Text('Start timer after completing a set'),
+                    trailing: AnimatedSwitch(
+                      value: workoutSettings.autoStartRestTimer,
+                      onChanged: (value) {
+                        ref
+                            .read(workoutSettingsProvider.notifier)
+                            .setAutoStartRestTimer(value);
+                      },
+                      thumbIcon: Icons.timer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Data Section
+            Text(
+              'Data & Privacy',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.cloud_sync_outlined),
+                    title: const Text('Sync Data'),
+                    subtitle: const Text('Last synced: Never'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showSyncDialog(context),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.update, color: Colors.blue),
+                    title: const Text('Update Content'),
+                    subtitle: const Text(
+                        'Get latest exercises and templates from admin'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showUpdateContentDialog(context, ref),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.download_outlined),
+                    title: const Text('Export Data'),
+                    subtitle: const Text('Download your workout data'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showExportDialog(context, ref),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.analytics_outlined),
+                    title: const Text('Telemetry'),
+                    subtitle: const Text(
+                        'Help improve HERQ by sending anonymous usage events'),
+                    trailing: FutureBuilder<bool>(
+                      future: _getTelemetryEnabled(),
+                      builder: (context, snapshot) {
+                        final enabled = snapshot.data ?? true;
+                        return Switch(
+                          value: enabled,
+                          onChanged: (value) async {
+                            await _setTelemetryEnabled(value);
+                            // Refresh
+                            (context as Element).markNeedsBuild();
+                          },
                         );
                       },
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  
-                  // Admin Dashboard
-                  Card(
-                    color: Colors.red.withOpacity(0.1),
-                    child: ListTile(
-                      leading: const Icon(Icons.admin_panel_settings, color: Colors.red),
-                      title: const Text('Admin Dashboard'),
-                      subtitle: const Text('Manage global content, system maintenance, and debug tools'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => context.go('/admin'),
-                    ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.delete_forever),
+                    title: const Text('Delete All Data'),
+                    subtitle: const Text('Permanently delete all workout data'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showDeleteDataDialog(context, ref),
                   ),
-                  const SizedBox(height: 24),
                 ],
-              );
-            },
-          ),
-          const SizedBox(height: 24),
+              ),
+            ),
+            const SizedBox(height: 24),
 
-          // About Section
-          Text(
-            'About',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: Column(
-              children: [
-                InkWell(
-                  onTap: () => context.push('/about-herq'),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+            // Admin Dashboard Link (only visible to admins)
+            Consumer(
+              builder: (context, ref, child) {
+                final isAdmin = ref.watch(isAdminProvider);
+
+                if (!isAdmin) {
+                  return const SizedBox.shrink(); // Hide for non-admins
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Admin Access',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.red,
+                          ),
                     ),
-                    child: Row(
-                      children: [
-                        Transform.translate(
-                          offset: const Offset(-4, 0),
-                          child: Image.asset(
-                            'assets/images/herq_logo.png',
-                            height: 32,
-                            width: 32,
-                            fit: BoxFit.contain,
+                    const SizedBox(height: 8),
+
+                    // Admin Mode Toggle
+                    Card(
+                      color: Colors.red.withOpacity(0.1),
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          final adminMode = ref.watch(adminModeProvider);
+                          final isAdmin = ref.watch(isAdminProvider);
+
+                          return ListTile(
+                            leading: const Icon(Icons.admin_panel_settings,
+                                color: Colors.red),
+                            title: const Text('Enable Admin Mode'),
+                            subtitle: const Text(
+                                'Toggle admin features and system-wide access'),
+                            trailing: Switch(
+                              value: adminMode,
+                              onChanged: isAdmin
+                                  ? (value) {
+                                      ref
+                                          .read(adminModeProvider.notifier)
+                                          .setAdminMode(enabled: value);
+                                    }
+                                  : null,
+                              activeColor: Colors.red,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Admin Dashboard
+                    Card(
+                      color: Colors.red.withOpacity(0.1),
+                      child: ListTile(
+                        leading: const Icon(Icons.admin_panel_settings,
+                            color: Colors.red),
+                        title: const Text('Admin Dashboard'),
+                        subtitle: const Text(
+                            'Manage global content, system maintenance, and debug tools'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => context.go('/admin'),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+
+            // About Section
+            Text(
+              'About',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: Column(
+                children: [
+                  InkWell(
+                    onTap: () => context.push('/about-herq'),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          Transform.translate(
+                            offset: const Offset(-4, 0),
+                            child: Image.asset(
+                              'assets/images/herq_logo.png',
+                              height: 32,
+                              width: 32,
+                              fit: BoxFit.contain,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                S.of(context)!.aboutHerq,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              Text(
-                                S.of(context)!.appTagline,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  S.of(context)!.aboutHerq,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  S.of(context)!.appTagline,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
+                                      ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const Icon(Icons.chevron_right),
-                      ],
+                          const Icon(Icons.chevron_right),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const Divider(height: 1),
-                const ListTile(
-                  leading: Icon(Icons.info_outline),
-                  title: Text('Version'),
-                  subtitle: Text('1.0.0+1'),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.description_outlined),
-                  title: const Text('Privacy Policy'),
-                  trailing: const Icon(Icons.open_in_new),
-                  onTap: () => _showPrivacyPolicy(context),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.gavel_outlined),
-                  title: const Text('Terms of Service'),
-                  trailing: const Icon(Icons.open_in_new),
-                  onTap: () => _showTermsOfService(context),
-                ),
-              ],
+                  const Divider(height: 1),
+                  const ListTile(
+                    leading: Icon(Icons.info_outline),
+                    title: Text('Version'),
+                    subtitle: Text('1.0.0+1'),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.description_outlined),
+                    title: const Text('Privacy Policy'),
+                    trailing: const Icon(Icons.open_in_new),
+                    onTap: () => _showPrivacyPolicy(context),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.gavel_outlined),
+                    title: const Text('Terms of Service'),
+                    trailing: const Icon(Icons.open_in_new),
+                    onTap: () => _showTermsOfService(context),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -1730,9 +1746,9 @@ By using HERQ, you agree to these terms.''',
     }
   }
 
-
   /// Show dialog for updating content (normal users)
-  Future<void> _showUpdateContentDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showUpdateContentDialog(
+      BuildContext context, WidgetRef ref) async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1754,7 +1770,7 @@ By using HERQ, you agree to these terms.''',
           FilledButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              
+
               // Use a different approach - show loading in a separate overlay
               _showUpdateContentLoading(context, ref);
             },
@@ -1769,7 +1785,7 @@ By using HERQ, you agree to these terms.''',
   void _showUpdateContentLoading(BuildContext context, WidgetRef ref) {
     // Create an overlay entry that will persist
     late OverlayEntry overlayEntry;
-    
+
     overlayEntry = OverlayEntry(
       builder: (context) => Material(
         color: Colors.black.withOpacity(0.5),
@@ -1812,18 +1828,21 @@ By using HERQ, you agree to these terms.''',
   }
 
   /// Perform the actual content update
-  Future<void> _performContentUpdate(OverlayEntry overlayEntry, WidgetRef ref) async {
+  Future<void> _performContentUpdate(
+      OverlayEntry overlayEntry, WidgetRef ref) async {
     try {
       print('🔄 Starting content update...');
       // Trigger global content sync
-      await ref.read(globalContentSyncTriggerProvider.notifier).syncGlobalContent();
+      await ref
+          .read(globalContentSyncTriggerProvider.notifier)
+          .syncGlobalContent();
       print('✅ Content update completed');
-      
+
       // Remove the overlay
       try {
         overlayEntry.remove();
         print('✅ Loading overlay removed');
-        
+
         // Show success notification
         NotificationService()
             .showInAppNotification(
@@ -1837,12 +1856,12 @@ By using HERQ, you agree to these terms.''',
       }
     } catch (e) {
       print('❌ Content update failed: $e');
-      
+
       // Remove the overlay
       try {
         overlayEntry.remove();
         print('✅ Loading overlay removed after error');
-        
+
         // Show error notification
         NotificationService()
             .showInAppNotification(

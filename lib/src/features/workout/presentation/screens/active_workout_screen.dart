@@ -18,7 +18,8 @@ import '../../domain/models/active_workout.dart';
 import '../../domain/models/workout_summary.dart';
 import '../providers/active_workout_provider.dart';
 // import removed: unused
-import '../widgets/exercise_picker_dialog.dart';
+import '../widgets/multi_exercise_picker_dialog.dart';
+import '../../../../core/database/database.dart';
 import '../widgets/exercise_variant_picker.dart';
 import '../widgets/rest_timer_widget.dart';
 import '../widgets/set_entry_widget.dart';
@@ -111,10 +112,58 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
         });
       });
     } else {
-      // Auto-expand first exercise if any
-      if (mounted) {
-        _expandedExercises.add(0);
-      }
+      // Start empty workout if no template ID
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final existingWorkout = ref.read(activeWorkoutProvider);
+
+        // If there's already an active workout, show confirmation dialog
+        if (existingWorkout != null && mounted) {
+          final confirmed = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(S.of(context)!.workoutInProgress),
+              content: Text(
+                '${S.of(context)!.haveActiveWorkout(existingWorkout.name)} '
+                '${S.of(context)!.startingNewWillEnd}\n\n'
+                '${S.of(context)!.doYouWantToContinue}',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(S.of(context)!.cancel),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(S.of(context)!.forceStartNewWorkout),
+                ),
+                FilledButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop(true);
+                    // Force cleanup to ensure clean state
+                    await ref
+                        .read(activeWorkoutProvider.notifier)
+                        .forceCleanup();
+                  },
+                  child: Text(S.of(context)!.clearAndStartNew),
+                ),
+              ],
+            ),
+          );
+
+          if (confirmed != true) {
+            // User cancelled, go back to previous screen
+            if (mounted) {
+              Navigator.of(context).pop();
+            }
+            return;
+          }
+        }
+
+        // Start empty workout
+        await ref
+            .read(activeWorkoutProvider.notifier)
+            .startEmptyWorkout();
+      });
     }
   }
 
@@ -505,21 +554,35 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   Future<void> _showAddExerciseDialog(BuildContext context) async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (context) => const ExercisePickerDialog(),
+      builder: (context) => const MultiExercisePickerDialog(),
     );
 
     if (result != null && context.mounted) {
-      final exercise = result['exercise'];
-      final initialWeight = result['initialWeight'] as double?;
-      final restTimerSeconds = result['restTimerSeconds'] as int? ?? 90;
-      final isAssisted = result['isAssisted'] as bool? ?? false;
+      // Handle both formats: single exercise or multiple exercises
+      if (result['exercises'] != null) {
+        // Multiple exercises format (from MultiExercisePickerDialog)
+        final exercises = result['exercises'] as List<Exercise>;
+        for (final exercise in exercises) {
+          await ref.read(activeWorkoutProvider.notifier).addExercise(
+                exercise.id,
+                restTimerSeconds: 90,
+                isAssisted: false,
+              );
+        }
+      } else if (result['exercise'] != null) {
+        // Single exercise format (backward compatibility)
+        final exercise = result['exercise'] as Exercise;
+        final initialWeight = result['initialWeight'] as double?;
+        final restTimerSeconds = result['restTimerSeconds'] as int? ?? 90;
+        final isAssisted = result['isAssisted'] as bool? ?? false;
 
-      await ref.read(activeWorkoutProvider.notifier).addExercise(
-            exercise.id,
-            initialWeight: initialWeight,
-            restTimerSeconds: restTimerSeconds,
-            isAssisted: isAssisted,
-          );
+        await ref.read(activeWorkoutProvider.notifier).addExercise(
+              exercise.id,
+              initialWeight: initialWeight,
+              restTimerSeconds: restTimerSeconds,
+              isAssisted: isAssisted,
+            );
+      }
     }
   }
 

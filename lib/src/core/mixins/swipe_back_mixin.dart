@@ -61,9 +61,9 @@ extension SwipeBackMixinExtension on Widget {
       onPanEnd: (details) {
         // Handle swipe completion
         if (details.velocity.pixelsPerSecond.dx > swipeVelocityThreshold) {
-            if (onSwipeBack != null) {
-              onSwipeBack();
-            } else {
+          if (onSwipeBack != null) {
+            onSwipeBack();
+          } else {
             // Default back navigation behavior
             final context = this as BuildContext?;
             if (context != null) {

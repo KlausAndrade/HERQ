@@ -6,7 +6,11 @@ import 'package:herq/src/features/ai/data/services/ai_coaching_service.dart';
 void main() {
   group('AI Recommendations Debug', () {
     setUpAll(() async {
-      await dotenv.load();
+      try {
+        await dotenv.load();
+      } catch (e) {
+        // .env file not found, skip loading
+      }
     });
 
     test('should test mock service recommendations only', () async {

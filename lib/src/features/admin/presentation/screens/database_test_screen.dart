@@ -130,7 +130,8 @@ class _DatabaseTestScreenState extends ConsumerState<DatabaseTestScreen> {
       // Test template folders table
       final folders = await database.select(database.templateFolders).get();
       setState(() {
-        _testResults = '✅ Template folders table accessible! Found ${folders.length} folders';
+        _testResults =
+            '✅ Template folders table accessible! Found ${folders.length} folders';
       });
     } catch (e) {
       setState(() {
@@ -161,7 +162,8 @@ class _DatabaseTestScreenState extends ConsumerState<DatabaseTestScreen> {
       // Test exercises table
       final exercises = await database.select(database.exercises).get();
       setState(() {
-        _testResults = '✅ Exercises table accessible! Found ${exercises.length} exercises';
+        _testResults =
+            '✅ Exercises table accessible! Found ${exercises.length} exercises';
       });
     } catch (e) {
       setState(() {

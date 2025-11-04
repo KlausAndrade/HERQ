@@ -312,15 +312,19 @@ class WorkoutDetailScreen extends ConsumerWidget {
                       .get();
 
                   // Get exercise IDs from set entries (completed sets)
-                  final completedExerciseIds = entries.map((e) => e.exerciseId).toSet();
-                  
+                  final completedExerciseIds =
+                      entries.map((e) => e.exerciseId).toSet();
+
                   // If this workout was from a template, get all exercises from the template
                   List<String> exerciseIds;
-                  if (workoutSession.templateId != null && workoutSession.templateId!.isNotEmpty) {
-                    final template = await (database.select(database.workoutTemplates)
-                          ..where((tbl) => tbl.id.equals(workoutSession.templateId!)))
-                        .getSingleOrNull();
-                    
+                  if (workoutSession.templateId != null &&
+                      workoutSession.templateId!.isNotEmpty) {
+                    final template =
+                        await (database.select(database.workoutTemplates)
+                              ..where((tbl) =>
+                                  tbl.id.equals(workoutSession.templateId!)))
+                            .getSingleOrNull();
+
                     if (template != null) {
                       // Use template exercises (includes all exercises, even those without completed sets)
                       exerciseIds = template.exerciseIds;

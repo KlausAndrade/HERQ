@@ -5,7 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Provider to track admin mode globally (persistent)
-final adminModeProvider = StateNotifierProvider<AdminModeNotifier, bool>((ref) => AdminModeNotifier());
+final adminModeProvider = StateNotifierProvider<AdminModeNotifier, bool>(
+    (ref) => AdminModeNotifier());
 
 /// Provider to check if user is admin (based on email from .env)
 final isAdminProvider = Provider<bool>((ref) {
@@ -13,19 +14,19 @@ final isAdminProvider = Provider<bool>((ref) {
   if (user?.email == null) {
     return false;
   }
-  
+
   // Get admin emails from environment variables
   const adminEmails = String.fromEnvironment('ADMIN_EMAILS');
   if (adminEmails.isEmpty) {
     return false;
   }
-  
+
   // Parse admin emails (comma-separated)
   final adminEmailList = adminEmails
       .split(',')
       .map((email) => email.trim().toLowerCase())
       .toList();
-  
+
   // Check if current user's email is in admin list
   final userEmail = user!.email!.toLowerCase();
   return adminEmailList.contains(userEmail);
@@ -53,7 +54,7 @@ class AdminModeNotifier extends StateNotifier<bool> {
     if (!_isCurrentUserAdmin()) {
       return; // Do nothing if user is not admin
     }
-    
+
     state = !state;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('admin_mode', state);
@@ -64,7 +65,7 @@ class AdminModeNotifier extends StateNotifier<bool> {
     if (!_isCurrentUserAdmin()) {
       return; // Do nothing if user is not admin
     }
-    
+
     state = enabled;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('admin_mode', enabled);
@@ -76,19 +77,19 @@ class AdminModeNotifier extends StateNotifier<bool> {
     if (user?.email == null) {
       return false;
     }
-    
+
     // Get admin emails from environment variables
     const adminEmails = String.fromEnvironment('ADMIN_EMAILS');
     if (adminEmails.isEmpty) {
       return false;
     }
-    
+
     // Parse admin emails (comma-separated)
     final adminEmailList = adminEmails
         .split(',')
         .map((email) => email.trim().toLowerCase())
         .toList();
-    
+
     // Check if current user's email is in admin list
     final userEmail = user!.email!.toLowerCase();
     return adminEmailList.contains(userEmail);
@@ -96,11 +97,13 @@ class AdminModeNotifier extends StateNotifier<bool> {
 }
 
 /// Helper function to navigate with admin mode preserved
-void navigateWithAdminMode(BuildContext context, String route, {bool preserveAdmin = true}) {
+void navigateWithAdminMode(BuildContext context, String route,
+    {bool preserveAdmin = true}) {
   // Since we're now using persistent admin mode, we don't need URL parameters
   // Just navigate normally - the admin mode is handled by the provider
   context.go(route);
 }
 
 /// Helper function to get admin query parameter (deprecated - use adminModeProvider instead)
-String getAdminQueryParam(BuildContext context) => ''; // No longer needed with persistent admin mode
+String getAdminQueryParam(BuildContext context) =>
+    ''; // No longer needed with persistent admin mode

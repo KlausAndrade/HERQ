@@ -7,11 +7,11 @@ class WebAuthTestHelper {
   static bool testSupabaseInitialization() {
     try {
       final client = Supabase.instance.client;
-      
+
       if (kIsWeb) {
         debugPrint('🔍 Web: Supabase client initialized: true');
       }
-      
+
       // Test if we can access the client without errors
       return true;
     } on Exception catch (e) {
@@ -21,24 +21,25 @@ class WebAuthTestHelper {
       return false;
     }
   }
-  
+
   /// Test authentication response handling
   static Future<bool> testAuthResponseHandling() async {
     try {
       final client = Supabase.instance.client;
-      
+
       // Test getting current session
       final session = client.auth.currentSession;
       if (kIsWeb) {
-        debugPrint('🔍 Web: Current session: ${session != null ? "Active" : "None"}');
+        debugPrint(
+            '🔍 Web: Current session: ${session != null ? "Active" : "None"}');
       }
-      
+
       // Test getting current user
       final user = client.auth.currentUser;
       if (kIsWeb) {
         debugPrint('🔍 Web: Current user: ${user?.email ?? "None"}');
       }
-      
+
       return true;
     } on Exception catch (e) {
       if (kIsWeb) {
@@ -47,7 +48,7 @@ class WebAuthTestHelper {
       return false;
     }
   }
-  
+
   /// Test JSON decoding with sample data
   static bool testJsonDecoding() {
     try {
@@ -63,13 +64,13 @@ class WebAuthTestHelper {
           'refresh_token': 'test-refresh',
         },
       };
-      
+
       // Test JSON encoding/decoding
       final jsonString = testData.toString();
       if (kIsWeb) {
         debugPrint('🔍 Web: JSON test data: $jsonString');
       }
-      
+
       return true;
     } on Exception catch (e) {
       if (kIsWeb) {
@@ -78,19 +79,19 @@ class WebAuthTestHelper {
       return false;
     }
   }
-  
+
   /// Run all web authentication tests
   static Future<Map<String, bool>> runAllTests() async {
     final results = <String, bool>{};
-    
+
     results['supabase_init'] = testSupabaseInitialization();
     results['auth_response'] = await testAuthResponseHandling();
     results['json_decoding'] = testJsonDecoding();
-    
+
     if (kIsWeb) {
       debugPrint('🔍 Web: Test results: $results');
     }
-    
+
     return results;
   }
 }

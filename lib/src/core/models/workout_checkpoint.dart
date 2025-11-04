@@ -5,7 +5,8 @@ import 'package:drift/drift.dart';
 class WorkoutCheckpoints extends Table {
   TextColumn get id => text()();
   TextColumn get workoutName => text().named('workout_name')();
-  TextColumn get workoutData => text().named('workout_data')(); // JSON serialized ActiveWorkout
+  TextColumn get workoutData =>
+      text().named('workout_data')(); // JSON serialized ActiveWorkout
   DateTimeColumn get lastSavedAt => dateTime().named('last_saved_at')();
   DateTimeColumn get startedAt => dateTime().named('started_at')();
   IntColumn get elapsedSeconds => integer().named('elapsed_seconds')();

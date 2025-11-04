@@ -9,7 +9,7 @@ import '../core/providers/auth_provider.dart';
 import '../core/services/user_context_service.dart';
 import '../features/workout/presentation/providers/template_web_provider.dart';
 
-// Provider for all template folders  
+// Provider for all template folders
 final templateFoldersProvider = StreamProvider<List<dynamic>>((ref) async* {
   // On web, fetch from Supabase
   if (kIsWeb) {
@@ -17,15 +17,15 @@ final templateFoldersProvider = StreamProvider<List<dynamic>>((ref) async* {
     yield folders;
     return;
   }
-  
+
   final database = ref.watch(databaseProvider);
-  
+
   // On mobile, if database is null, return empty list
   if (database == null) {
     yield [];
     return;
   }
-  
+
   try {
     await for (final folders in (database.select(database.templateFolders)
           ..orderBy([(t) => OrderingTerm(expression: t.sortOrder)]))
@@ -43,17 +43,18 @@ final templateFolderNotifierProvider =
     StateNotifierProvider<TemplateFolderNotifier, AsyncValue<void>>((ref) {
   final database = ref.watch(databaseProvider);
   final supabase = ref.watch(supabaseClientProvider);
-  
+
   // On web, database is null - return a stub notifier
   if (kIsWeb || database == null) {
     return TemplateFolderNotifier(null, supabase);
   }
-  
+
   return TemplateFolderNotifier(database, supabase);
 });
 
 class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
-  TemplateFolderNotifier(this._database, this._supabase) : super(const AsyncValue.data(null));
+  TemplateFolderNotifier(this._database, this._supabase)
+      : super(const AsyncValue.data(null));
   final AppDatabase? _database;
   final SupabaseClient _supabase;
 
@@ -67,15 +68,16 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
     if (db == null) {
       throw UnimplementedError('Template folders not available on web yet');
     }
-    
+
     state = const AsyncValue.loading();
     try {
       final folderId = const Uuid().v4();
       final now = DateTime.now();
-      
+
       final folder = TemplateFoldersCompanion.insert(
         id: folderId,
-        userId: Value(UserContextService.instance.getCurrentUserId()), // ✅ USER ISOLATION
+        userId: Value(
+            UserContextService.instance.getCurrentUserId()), // ✅ USER ISOLATION
         name: name,
         description: Value(description),
         color: Value(color),
@@ -131,13 +133,12 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
     if (db == null) {
       throw UnimplementedError('Template folders not available on web yet');
     }
-    
+
     state = const AsyncValue.loading();
     try {
       final now = DateTime.now();
-      
-      await (db.update(db.templateFolders)
-            ..where((t) => t.id.equals(folderId)))
+
+      await (db.update(db.templateFolders)..where((t) => t.id.equals(folderId)))
           .write(
         TemplateFoldersCompanion(
           name: name != null ? Value(name) : const Value.absent(),
@@ -157,19 +158,22 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
           final updateData = <String, dynamic>{
             'updated_at': now.toIso8601String(),
           };
-          
+
           if (name != null) updateData['name'] = name;
           if (description != null) updateData['description'] = description;
           if (color != null) updateData['color'] = color;
           if (isExpanded != null) updateData['is_expanded'] = isExpanded;
-          
-          await _supabase.from('template_folders').update(updateData).eq('id', folderId);
+
+          await _supabase
+              .from('template_folders')
+              .update(updateData)
+              .eq('id', folderId);
           print('✅ Folder update synced to Supabase');
         }
       } catch (syncError) {
         print('⚠️ Folder update sync failed: $syncError');
       }
-      
+
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -183,7 +187,7 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
     if (db == null) {
       throw UnimplementedError('Template folders not available on web yet');
     }
-    
+
     state = const AsyncValue.loading();
     try {
       // First, remove folderId from all templates in this folder
@@ -196,8 +200,7 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
       );
 
       // Then delete the folder
-      await (db.delete(db.templateFolders)
-            ..where((t) => t.id.equals(folderId)))
+      await (db.delete(db.templateFolders)..where((t) => t.id.equals(folderId)))
           .go();
 
       // 🌩️ Sync to Supabase
@@ -209,7 +212,7 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
             'folder_id': null,
             'updated_at': DateTime.now().toIso8601String(),
           }).eq('folder_id', folderId);
-          
+
           // Delete the folder from Supabase
           await _supabase.from('template_folders').delete().eq('id', folderId);
           print('✅ Folder deletion synced to Supabase');
@@ -234,11 +237,11 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
     if (db == null) {
       throw UnimplementedError('Template folders not available on web yet');
     }
-    
+
     state = const AsyncValue.loading();
     try {
       final now = DateTime.now();
-      
+
       await (db.update(db.workoutTemplates)
             ..where((t) => t.id.equals(templateId)))
           .write(
@@ -261,7 +264,7 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
       } catch (syncError) {
         print('⚠️ Template folder assignment sync failed: $syncError');
       }
-      
+
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -275,11 +278,11 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
     if (db == null) {
       throw UnimplementedError('Template folders not available on web yet');
     }
-    
+
     state = const AsyncValue.loading();
     try {
       final now = DateTime.now();
-      
+
       for (var i = 0; i < folders.length; i++) {
         final sortValue = i * 2;
         await (db.update(db.templateFolders)
@@ -308,7 +311,7 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
       } catch (syncError) {
         print('⚠️ Folder reordering sync failed: $syncError');
       }
-      
+
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -318,7 +321,7 @@ class TemplateFolderNotifier extends StateNotifier<AsyncValue<void>> {
 
   Future<void> updateFolderSortOrders(Map<String, int> orders) async {
     if (orders.isEmpty) return;
-    
+
     final db = _database;
     if (db == null) {
       throw UnimplementedError('Template folders not available on web yet');
@@ -350,19 +353,20 @@ final templatesInFolderProvider =
     StreamProvider.family<List<dynamic>, String?>((ref, folderId) async* {
   // On web, fetch from Supabase
   if (kIsWeb) {
-    final templates = await ref.watch(templatesInFolderWebProvider(folderId).future);
+    final templates =
+        await ref.watch(templatesInFolderWebProvider(folderId).future);
     yield templates;
     return;
   }
-  
+
   final database = ref.watch(databaseProvider);
-  
+
   // On mobile, if database is null, return empty list
   if (database == null) {
     yield [];
     return;
   }
-  
+
   try {
     if (folderId == null) {
       // Return templates not in any folder

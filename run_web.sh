@@ -5,12 +5,12 @@
 
 echo "🌐 Launching HERQ on Chrome..."
 
-# Load environment variables from .env file
+# Load environment variables from .env file (if it exists)
 if [ -f .env ]; then
   echo "📋 Loading environment variables from .env..."
   export $(cat .env | grep -v '^#' | xargs)
 else
-  echo "⚠️  No .env file found"
+  echo "⚠️  No .env file found. Using environment variables or compile-time constants."
 fi
 
 # Run with environment variables

@@ -30,7 +30,7 @@ class _MultiExercisePickerDialogState
   @override
   Widget build(BuildContext context) {
     // Use unified provider that works on both web and mobile
-    final exercisesAsync = kIsWeb 
+    final exercisesAsync = kIsWeb
         ? ref.watch(exerciseSearchUnifiedProvider(_searchQuery))
         : ref.watch(exerciseSearchProvider(_searchQuery));
     final categoriesAsync = kIsWeb
@@ -133,15 +133,13 @@ class _MultiExercisePickerDialogState
                   final filteredExercises =
                       _selectedCategory == null || _selectedCategory == 'All'
                           ? exercises
-                          : exercises
-                              .where((e) {
-                                final category = kIsWeb 
-                                    ? (e as Map<String, dynamic>)['category'] 
-                                    : (e as Exercise).category;
-                                return category.toString().toLowerCase() ==
-                                    _selectedCategory!.toLowerCase();
-                              })
-                              .toList();
+                          : exercises.where((e) {
+                              final category = kIsWeb
+                                  ? (e as Map<String, dynamic>)['category']
+                                  : (e as Exercise).category;
+                              return category.toString().toLowerCase() ==
+                                  _selectedCategory!.toLowerCase();
+                            }).toList();
                   if (filteredExercises.isEmpty) {
                     return const Center(
                       child: Text('No exercises found'),
@@ -151,16 +149,17 @@ class _MultiExercisePickerDialogState
                     itemCount: filteredExercises.length,
                     itemBuilder: (context, index) {
                       final exerciseData = filteredExercises[index];
-                      
+
                       // Handle both web (Map) and mobile (Exercise object)
                       final String name, category, muscleGroup;
                       final Exercise? exerciseObj;
-                      
+
                       if (kIsWeb) {
                         final map = exerciseData as Map<String, dynamic>;
                         name = map['name'] as String;
                         category = map['category'] as String;
-                        muscleGroup = map['primary_muscle_group'] as String? ?? category;
+                        muscleGroup =
+                            map['primary_muscle_group'] as String? ?? category;
                         exerciseObj = mapToExercise(map);
                       } else {
                         exerciseObj = exerciseData as Exercise;
@@ -168,26 +167,64 @@ class _MultiExercisePickerDialogState
                         category = exerciseObj.category;
                         muscleGroup = exerciseObj.primaryMuscleGroup;
                       }
-                      
-                      final isSelected = exerciseObj != null && _selectedExercises.contains(exerciseObj);
-                      
-                      return CheckboxListTile(
-                        value: isSelected,
+
+                      final isSelected = exerciseObj != null &&
+                          _selectedExercises.contains(exerciseObj);
+
+                      return ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withAlpha((0.1 * 255).round()),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.fitness_center,
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Theme.of(context).colorScheme.primary,
+                            size: 20,
+                          ),
+                        ),
                         title: Text(name),
                         subtitle: Text(
                           '${muscleGroup.toUpperCase()} • $category',
                         ),
-                        onChanged: exerciseObj == null ? null : (selected) {
-                          setState(() {
-                            if (selected ?? false) {
-                              if (exerciseObj != null) {
-                                _selectedExercises.add(exerciseObj);
-                              }
-                            } else {
-                              _selectedExercises.remove(exerciseObj);
-                            }
-                          });
-                        },
+                        trailing: Checkbox(
+                          value: isSelected,
+                          onChanged: exerciseObj == null
+                              ? null
+                              : (selected) {
+                                  setState(() {
+                                    if (selected ?? false) {
+                                      if (exerciseObj != null) {
+                                        _selectedExercises.add(exerciseObj);
+                                      }
+                                    } else {
+                                      _selectedExercises.remove(exerciseObj);
+                                    }
+                                  });
+                                },
+                        ),
+                        onTap: exerciseObj == null
+                            ? null
+                            : () {
+                                setState(() {
+                                  final wasSelected = isSelected;
+                                  if (wasSelected) {
+                                    _selectedExercises.remove(exerciseObj);
+                                  } else {
+                                    if (exerciseObj != null) {
+                                      _selectedExercises.add(exerciseObj);
+                                    }
+                                  }
+                                });
+                              },
                       );
                     },
                   );

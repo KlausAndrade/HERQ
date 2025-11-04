@@ -115,9 +115,11 @@ class _WorkoutTemplatesWithFoldersScreenState
         ),
         actions: [
           IconButton(
-            onPressed: () => context.push('/template-builder'),
+            onPressed: _isEditing
+                ? () => context.push('/template-builder')
+                : () => _startEmptyWorkout(),
             icon: const Icon(Icons.add),
-            tooltip: 'Create Template',
+            tooltip: _isEditing ? 'Create Template' : 'Start Empty Workout',
           ),
         ],
       ),
@@ -173,7 +175,8 @@ class _WorkoutTemplatesWithFoldersScreenState
                 ),
               // Unfoldered Templates - wrapped in DragTarget to allow dropping
               unfoldered.when(
-                data: (templates) => _buildUncategorizedSection(templates as List<WorkoutTemplate>),
+                data: (templates) => _buildUncategorizedSection(
+                    templates as List<WorkoutTemplate>),
                 loading: () => const SizedBox.shrink(),
                 error: (_, __) => const SizedBox.shrink(),
               ),
@@ -966,7 +969,7 @@ class _WorkoutTemplatesWithFoldersScreenState
         ],
       ),
     );
-    
+
     if (confirmed == true && mounted) {
       try {
         await ref
@@ -1036,6 +1039,10 @@ class _WorkoutTemplatesWithFoldersScreenState
 
   void _startWorkout(String templateId) {
     context.push('/active-workout?templateId=$templateId');
+  }
+
+  void _startEmptyWorkout() {
+    context.push('/active-workout');
   }
 
   Color _getCategoryColor(String category) {
@@ -1145,7 +1152,7 @@ class _WorkoutTemplatesWithFoldersScreenState
 
   void _showRenameDialog(BuildContext context, WorkoutTemplate template) {
     final controller = TextEditingController(text: template.name);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1178,7 +1185,7 @@ class _WorkoutTemplatesWithFoldersScreenState
 
   void _showDuplicateDialog(BuildContext context, WorkoutTemplate template) {
     final controller = TextEditingController(text: '${template.name} (Copy)');
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1225,16 +1232,17 @@ class _WorkoutTemplatesWithFoldersScreenState
               },
             ),
             ...ref.read(templateFoldersProvider).when(
-              data: (folders) => folders.map((folder) => ListTile(
-                title: Text(folder.name),
-                onTap: () {
-                  Navigator.pop(context);
-                  _moveTemplate(template.id, folder);
-                },
-              )),
-              loading: () => [const ListTile(title: Text('Loading...'))],
-              error: (_, __) => [const ListTile(title: Text('Error loading folders'))],
-            ),
+                  data: (folders) => folders.map((folder) => ListTile(
+                        title: Text(folder.name),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _moveTemplate(template.id, folder);
+                        },
+                      )),
+                  loading: () => [const ListTile(title: Text('Loading...'))],
+                  error: (_, __) =>
+                      [const ListTile(title: Text('Error loading folders'))],
+                ),
           ],
         ),
         actions: [
@@ -1330,24 +1338,37 @@ class _WorkoutTemplatesWithFoldersScreenState
   bool _canDeleteTemplate(WorkoutTemplate template) {
     // System template IDs that should not be deletable
     const systemTemplateIds = {
-      'ppl_push', 'ppl_pull', 'ppl_legs',
-      'phul_upper_power', 'phul_lower_power', 'phul_upper_hyp', 'phul_lower_hyp',
-      'full_body_beginner', 'full_body_intermediate', 'full_body_advanced',
-      'upper_lower_upper', 'upper_lower_lower',
-      'strength_beginner', 'strength_intermediate', 'strength_advanced',
-      'bodybuilding_chest', 'bodybuilding_back', 'bodybuilding_legs', 'bodybuilding_arms',
+      'ppl_push',
+      'ppl_pull',
+      'ppl_legs',
+      'phul_upper_power',
+      'phul_lower_power',
+      'phul_upper_hyp',
+      'phul_lower_hyp',
+      'full_body_beginner',
+      'full_body_intermediate',
+      'full_body_advanced',
+      'upper_lower_upper',
+      'upper_lower_lower',
+      'strength_beginner',
+      'strength_intermediate',
+      'strength_advanced',
+      'bodybuilding_chest',
+      'bodybuilding_back',
+      'bodybuilding_legs',
+      'bodybuilding_arms',
     };
-    
+
     // Don't allow deletion of system templates
     if (systemTemplateIds.contains(template.id)) {
       return false;
     }
-    
+
     // Allow deletion of AI-generated templates (start with 'ai_gen_')
     if (template.id.startsWith('ai_gen_')) {
       return true;
     }
-    
+
     // Allow deletion of user-created templates (not system templates)
     // This is a fallback for any other user-created templates
     return true;

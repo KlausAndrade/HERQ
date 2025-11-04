@@ -166,20 +166,21 @@ final setEntriesBySessionAnyUserProvider =
 
 // Provider for set entries from Supabase (for social viewing)
 final setEntriesBySessionFromSupabaseProvider =
-    FutureProvider.family<List<Map<String, dynamic>>, String>((ref, sessionId) async {
+    FutureProvider.family<List<Map<String, dynamic>>, String>(
+        (ref, sessionId) async {
   final supabase = ref.read(supabaseClientProvider);
-  
+
   try {
     print('🔍 Fetching set entries from Supabase for session: $sessionId');
-    
+
     final setEntriesData = await supabase
         .from('set_entries')
         .select()
         .eq('workout_session_id', sessionId)
         .order('exercise_id, set_number');
-    
+
     print('📊 Found ${setEntriesData.length} set entries in Supabase');
-    
+
     return setEntriesData;
   } catch (e) {
     print('❌ Error fetching set entries from Supabase: $e');

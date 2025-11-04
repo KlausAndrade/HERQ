@@ -6,8 +6,12 @@ import 'package:herq/src/features/ai/data/services/ai_coaching_service.dart';
 void main() {
   group('AI Debug Tests', () {
     setUpAll(() async {
-      // Load environment variables
-      await dotenv.load();
+      // Load environment variables (if .env exists)
+      try {
+        await dotenv.load();
+      } catch (e) {
+        // .env file not found, skip loading
+      }
     });
 
     test('should check Groq service initialization', () async {

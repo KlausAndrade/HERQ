@@ -10,9 +10,9 @@ import '../../../l10n/app_localizations.dart';
 /// Handles deep link authentication for mobile apps
 class DeepLinkHandler {
   static final DeepLinkHandler _instance = DeepLinkHandler._internal();
-  
+
   DeepLinkHandler._internal();
-  
+
   factory DeepLinkHandler() => _instance;
 
   BuildContext? _context;
@@ -22,10 +22,11 @@ class DeepLinkHandler {
   void initialize(BuildContext context, GoRouter router) {
     _context = context;
     _router = router;
-    
+
     // Listen for auth state changes
-    Supabase.instance.client.auth.onAuthStateChange.listen(_handleAuthStateChange);
-    
+    Supabase.instance.client.auth.onAuthStateChange
+        .listen(_handleAuthStateChange);
+
     debugPrint('🔗 Deep link handler initialized');
   }
 
@@ -33,10 +34,11 @@ class DeepLinkHandler {
   void _handleAuthStateChange(AuthState state) {
     debugPrint('🔍 Auth state changed: ${state.event}');
     debugPrint('🔍 User: ${state.session?.user?.email}');
-    
+
     if (state.event == AuthChangeEvent.signedIn && state.session != null) {
-      debugPrint('✅ User signed in via deep link: ${state.session?.user?.email}');
-      
+      debugPrint(
+          '✅ User signed in via deep link: ${state.session?.user?.email}');
+
       // Show success notification
       if (_context != null) {
         final localizations = S.of(_context!);
@@ -48,14 +50,14 @@ class DeepLinkHandler {
           );
         }
       }
-      
+
       // Navigate to home screen
       if (_context != null && _router != null) {
         _router!.go('/');
       }
     } else if (state.event == AuthChangeEvent.signedOut) {
       debugPrint('❌ User signed out');
-      
+
       // Navigate to auth screen
       if (_context != null && _router != null) {
         _router!.go('/auth');
@@ -66,19 +68,20 @@ class DeepLinkHandler {
   /// Handle incoming deep links
   Future<void> handleDeepLink(String link) async {
     debugPrint('🔗 Handling deep link: $link');
-    
+
     try {
       // Parse the deep link URL
       final uri = Uri.parse(link);
       debugPrint('🔍 Parsed URI: $uri');
-      
+
       // Check if this is a Supabase auth callback
       if (uri.scheme == 'herq' && uri.host == 'login-callback') {
         debugPrint('🔍 Supabase auth callback detected');
-        
+
         // Use the URL to get session from Supabase
-        final session = await Supabase.instance.client.auth.getSessionFromUrl(uri);
-        
+        final session =
+            await Supabase.instance.client.auth.getSessionFromUrl(uri);
+
         if (session != null) {
           debugPrint('✅ Session created successfully');
         } else {
@@ -90,4 +93,3 @@ class DeepLinkHandler {
     }
   }
 }
-

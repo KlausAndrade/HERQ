@@ -27,20 +27,22 @@ class GroqService {
     try {
       // Check MOCK_AI environment variable first
       final mockAi = dotenv.env['MOCK_AI'];
-      
+
       if (mockAi != null && mockAi.toLowerCase() == 'true') {
         return true;
       }
-      
+
       // If MOCK_AI is explicitly set to false, use real API
       if (mockAi != null && mockAi.toLowerCase() == 'false') {
         final apiKey = dotenv.env['GROQ_API_KEY'];
-        if (apiKey == null || apiKey.isEmpty || apiKey == 'your_groq_api_key_here') {
+        if (apiKey == null ||
+            apiKey.isEmpty ||
+            apiKey == 'your_groq_api_key_here') {
           throw Exception('MOCK_AI=false but GROQ_API_KEY is not configured');
         }
         return false;
       }
-      
+
       // Default behavior: check API key
       final apiKey = dotenv.env['GROQ_API_KEY'];
       if (apiKey == null ||
@@ -80,13 +82,15 @@ class GroqService {
     } catch (e) {
       if (e is GroqException) {
         // Handle specific error types
-        if (e.message.toLowerCase().contains('rate limit') || 
+        if (e.message.toLowerCase().contains('rate limit') ||
             e.message.toLowerCase().contains('quota') ||
             e.message.toLowerCase().contains('too many requests')) {
-          throw Exception('Rate limit exceeded. Please wait a moment and try again.');
+          throw Exception(
+              'Rate limit exceeded. Please wait a moment and try again.');
         } else if (e.message.toLowerCase().contains('unauthorized') ||
-                   e.message.toLowerCase().contains('invalid api key')) {
-          throw Exception('Invalid API key. Please check your Groq API configuration.');
+            e.message.toLowerCase().contains('invalid api key')) {
+          throw Exception(
+              'Invalid API key. Please check your Groq API configuration.');
         } else if (e.message.toLowerCase().contains('timeout')) {
           throw Exception('Request timed out. Please try again.');
         } else {

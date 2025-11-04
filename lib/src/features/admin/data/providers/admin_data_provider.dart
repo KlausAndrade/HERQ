@@ -73,7 +73,7 @@ final adminDashboardProvider =
   } catch (e) {
     print('  Error fetching Supabase users: $e');
     print('  Supabase admin access required - no fallback to local users');
-    
+
     // Return empty data when Supabase admin access fails
     return {
       'totalUsers': 0,
@@ -145,9 +145,7 @@ final userManagementProvider =
       final displayName = (userMetadata['display_name'] as String?) ??
           (userMetadata['full_name'] as String?) ??
           localUser?.displayName ??
-          (authUser.email != null
-              ? authUser.email!.split('@').first
-              : null) ??
+          (authUser.email != null ? authUser.email!.split('@').first : null) ??
           'Unknown';
 
       users.add({
@@ -173,7 +171,7 @@ final userManagementProvider =
   } catch (e) {
     print('  Error fetching Supabase users: $e');
     print('  Supabase admin access required - no fallback to local users');
-    
+
     // Return empty list when Supabase admin access fails
     return [];
   }
@@ -265,7 +263,7 @@ final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
     print('🔍 Analytics Debug:');
     print('  Error fetching Supabase users: $e');
     print('  Supabase admin access required - no fallback to local users');
-    
+
     // Return empty data when Supabase admin access fails
     return {
       'totalUsers': 0,
@@ -282,7 +280,8 @@ final analyticsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
 });
 
 // Recent telemetry events (admin-only)
-final recentEventsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final recentEventsProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final isAdmin = ref.read(isAdminProvider);
   if (!isAdmin) {
     throw Exception('Access denied: Admin privileges required');

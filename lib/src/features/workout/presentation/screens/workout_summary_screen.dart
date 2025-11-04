@@ -73,112 +73,113 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
       child: Scaffold(
         backgroundColor: colorScheme.surface,
         body: Stack(
-        children: [
-          // Main content
-          SafeArea(
-            child: Column(
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => context.go('/'),
-                      ),
-                      const Spacer(),
-                      TextButton.icon(
-                        onPressed: () => _shareWorkout(context),
-                        icon: const Icon(Icons.share),
-                        label: const Text('Share'),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Scrollable content
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                    child: Column(
+          children: [
+            // Main content
+            SafeArea(
+              child: Column(
+                children: [
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
                       children: [
-                        // Celebration icon
-                        _buildAnimatedIcon(),
-
-                        const SizedBox(height: 16),
-
-                        // Title
-                        _buildTitle(),
-
-                        const SizedBox(height: 8),
-
-                        // Subtitle
-                        Text(
-                          widget.summary.workoutName,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.primary,
-                          ),
-                          textAlign: TextAlign.center,
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => context.go('/'),
                         ),
-
-                        const SizedBox(height: 32),
-
-                        // Main stats cards
-                        _buildMainStatsCards(),
-
-                        const SizedBox(height: 24),
-
-                        // PRs section
-                        if (widget.summary.prs.isNotEmpty) ...[
-                          _buildPRsSection(),
-                          const SizedBox(height: 24),
-                        ],
-
-                        // Achievements section
-                        if (widget.summary.achievements.hasAnyAchievement) ...[
-                          _buildAchievementsSection(),
-                          const SizedBox(height: 24),
-                        ],
-
-                        // Exercise breakdown
-                        _buildExerciseBreakdown(),
-
-                        const SizedBox(height: 32),
-
-                        // Action button
-                        _buildFinishButton(),
+                        const Spacer(),
+                        TextButton.icon(
+                          onPressed: () => _shareWorkout(context),
+                          icon: const Icon(Icons.share),
+                          label: const Text('Share'),
+                        ),
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
 
-          // Confetti overlay
-          Align(
-            alignment: Alignment.topCenter,
-            child: ConfettiWidget(
-              confettiController: _confettiController,
-              blastDirection: pi / 2,
-              maxBlastForce: 5,
-              minBlastForce: 2,
-              emissionFrequency: 0.05,
-              numberOfParticles: 20,
-              gravity: 0.3,
-              colors: [
-                colorScheme.primary,
-                colorScheme.secondary,
-                colorScheme.tertiary,
-                Colors.orange,
-                Colors.green,
-              ],
+                  // Scrollable content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                      child: Column(
+                        children: [
+                          // Celebration icon
+                          _buildAnimatedIcon(),
+
+                          const SizedBox(height: 16),
+
+                          // Title
+                          _buildTitle(),
+
+                          const SizedBox(height: 8),
+
+                          // Subtitle
+                          Text(
+                            widget.summary.workoutName,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+
+                          const SizedBox(height: 32),
+
+                          // Main stats cards
+                          _buildMainStatsCards(),
+
+                          const SizedBox(height: 24),
+
+                          // PRs section
+                          if (widget.summary.prs.isNotEmpty) ...[
+                            _buildPRsSection(),
+                            const SizedBox(height: 24),
+                          ],
+
+                          // Achievements section
+                          if (widget
+                              .summary.achievements.hasAnyAchievement) ...[
+                            _buildAchievementsSection(),
+                            const SizedBox(height: 24),
+                          ],
+
+                          // Exercise breakdown
+                          _buildExerciseBreakdown(),
+
+                          const SizedBox(height: 32),
+
+                          // Action button
+                          _buildFinishButton(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+
+            // Confetti overlay
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirection: pi / 2,
+                maxBlastForce: 5,
+                minBlastForce: 2,
+                emissionFrequency: 0.05,
+                numberOfParticles: 20,
+                gravity: 0.3,
+                colors: [
+                  colorScheme.primary,
+                  colorScheme.secondary,
+                  colorScheme.tertiary,
+                  Colors.orange,
+                  Colors.green,
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -737,7 +738,7 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
 
   void _shareWorkout(BuildContext context) {
     final summary = widget.summary;
-    
+
     // Create a comprehensive workout summary text
     final buffer = StringBuffer();
     buffer.writeln('💪 Workout Complete! 💪');
@@ -746,17 +747,19 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
     buffer.writeln('Duration: ${_formatDuration(summary.duration)}');
     buffer.writeln('Total Sets: ${summary.totalSets}');
     buffer.writeln('Total Reps: ${summary.totalReps}');
-    buffer.writeln('Total Volume: ${summary.totalVolume.toStringAsFixed(1)} kg');
+    buffer
+        .writeln('Total Volume: ${summary.totalVolume.toStringAsFixed(1)} kg');
     buffer.writeln('');
-    
+
     if (summary.prs.isNotEmpty) {
       buffer.writeln('🏆 Personal Records:');
       for (final pr in summary.prs) {
-        buffer.writeln('• ${pr.exerciseName}: ${pr.value.toStringAsFixed(pr.type == PRType.maxReps ? 0 : 1)} ${pr.unit}');
+        buffer.writeln(
+            '• ${pr.exerciseName}: ${pr.value.toStringAsFixed(pr.type == PRType.maxReps ? 0 : 1)} ${pr.unit}');
       }
       buffer.writeln('');
     }
-    
+
     if (summary.achievements.hasAnyAchievement) {
       buffer.writeln('⭐ Achievements:');
       final ach = summary.achievements;
@@ -767,18 +770,20 @@ class _WorkoutSummaryScreenState extends ConsumerState<WorkoutSummaryScreen>
       if (ach.streak > 1) buffer.writeln('• ${ach.streak} Day Streak');
       buffer.writeln('');
     }
-    
+
     buffer.writeln('Exercises:');
     for (final exercise in summary.exercises) {
-      buffer.writeln('• ${exercise.exerciseName}: ${exercise.sets} sets, ${exercise.totalReps} reps');
+      buffer.writeln(
+          '• ${exercise.exerciseName}: ${exercise.sets} sets, ${exercise.totalReps} reps');
       if (exercise.maxWeight != null) {
-        buffer.writeln('  Max Weight: ${exercise.maxWeight!.toStringAsFixed(1)} kg');
+        buffer.writeln(
+            '  Max Weight: ${exercise.maxWeight!.toStringAsFixed(1)} kg');
       }
     }
-    
+
     buffer.writeln('');
     buffer.writeln('Generated by HERQ - Your AI Fitness Coach');
-    
+
     Share.share(
       buffer.toString(),
       subject: 'My ${summary.workoutName} Workout',

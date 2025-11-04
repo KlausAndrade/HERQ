@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:herq/src/features/workout/presentation/providers/active_workout_provider.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('ActiveWorkoutProvider Tests', () {
     late ProviderContainer container;
 
@@ -19,9 +21,9 @@ void main() {
       expect(activeWorkout, isNull);
     });
 
-    test('should create workout from template', () {
+    test('should create workout from template', () async {
       final notifier = container.read(activeWorkoutProvider.notifier);
-      notifier.startWorkoutFromTemplate('push_day');
+      await notifier.startWorkoutFromTemplate('push_day');
 
       final activeWorkout = container.read(activeWorkoutProvider);
       expect(activeWorkout, isNotNull);
@@ -29,18 +31,18 @@ void main() {
       expect(activeWorkout.exercises.length, greaterThan(0));
     });
 
-    test('should set current exercise index', () {
+    test('should set current exercise index', () async {
       final notifier = container.read(activeWorkoutProvider.notifier);
-      notifier.startWorkoutFromTemplate('push_day');
+      await notifier.startWorkoutFromTemplate('push_day');
       notifier.setCurrentExercise(1);
 
       final activeWorkout = container.read(activeWorkoutProvider);
       expect(activeWorkout!.currentExerciseIndex, equals(1));
     });
 
-    test('should finish workout', () {
+    test('should finish workout', () async {
       final notifier = container.read(activeWorkoutProvider.notifier);
-      notifier.startWorkoutFromTemplate('push_day');
+      await notifier.startWorkoutFromTemplate('push_day');
       notifier.finishWorkout();
 
       final activeWorkout = container.read(activeWorkoutProvider);

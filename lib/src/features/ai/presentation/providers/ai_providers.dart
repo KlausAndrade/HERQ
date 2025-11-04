@@ -260,13 +260,17 @@ final workoutPatternAnalysisProvider =
 });
 
 // Generate next workout provider (fallback to mock if Groq fails)
-final generateNextWorkoutProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, bool>((ref, isAdminMode) async {
-  final userId = isAdminMode ? null : 'default_user'; // Admin mode = system-wide, User mode = user-specific
-  
+final generateNextWorkoutProvider = FutureProvider.autoDispose
+    .family<Map<String, dynamic>, bool>((ref, isAdminMode) async {
+  final userId = isAdminMode
+      ? null
+      : 'default_user'; // Admin mode = system-wide, User mode = user-specific
+
   try {
     final aiService = ref.read(groqAICoachingServiceProvider);
     if (aiService != null) {
-      final result = await aiService.generateNextWorkout(userId ?? 'default_user');
+      final result =
+          await aiService.generateNextWorkout(userId ?? 'default_user');
       print('✅ Groq next workout generated (Real API)');
       return result;
     }
@@ -278,7 +282,8 @@ final generateNextWorkoutProvider = FutureProvider.autoDispose.family<Map<String
 });
 
 // Optimize workout folder provider (NO fallback to mock - show real errors)
-final optimizeFolderProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, String>((ref, folderId) async {
+final optimizeFolderProvider = FutureProvider.autoDispose
+    .family<Map<String, dynamic>, String>((ref, folderId) async {
   try {
     final aiService = ref.read(groqAICoachingServiceProvider);
     if (aiService != null) {
@@ -299,15 +304,16 @@ class EvaluateProgressParams {
     required this.isAdminMode,
     required this.languageCode,
   });
-  
+
   final bool isAdminMode;
   final String languageCode;
 }
 
 // Evaluate progress provider - AI analyzes user's training history
-final evaluateProgressProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, EvaluateProgressParams>((ref, params) async {
+final evaluateProgressProvider = FutureProvider.autoDispose
+    .family<Map<String, dynamic>, EvaluateProgressParams>((ref, params) async {
   final userId = params.isAdminMode ? null : 'default_user';
-  
+
   try {
     final aiService = ref.read(groqAICoachingServiceProvider);
     if (aiService != null) {

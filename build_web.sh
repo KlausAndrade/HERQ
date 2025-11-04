@@ -5,8 +5,13 @@
 
 echo "🌐 Building Web for GitHub Pages..."
 
-# Load environment variables from .env file
-export $(cat .env | grep -v '^#' | xargs)
+# Load environment variables from .env file (if it exists)
+if [ -f .env ]; then
+  echo "📋 Loading environment variables from .env..."
+  export $(cat .env | grep -v '^#' | xargs)
+else
+  echo "⚠️  No .env file found. Using environment variables or compile-time constants."
+fi
 
 # Get version from package.json
 VERSION=$(node -p "require('./package.json').version")
@@ -30,6 +35,15 @@ flutter build web --release \
 
 # Create CNAME file for custom domain
 echo "herq.app" > build/web/CNAME
+
+# Copy APK to web directory if it exists (for download link)
+if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+  echo "📱 Copying APK to web directory..."
+  cp build/app/outputs/flutter-apk/app-release.apk build/web/herq-release.apk
+  echo "✅ APK copied successfully!"
+else
+  echo "⚠️  APK not found. Build APK first with './build_apk.sh' if you need the download link."
+fi
 
 echo "✅ Web build completed successfully!"
 echo "📁 Location: build/web/"

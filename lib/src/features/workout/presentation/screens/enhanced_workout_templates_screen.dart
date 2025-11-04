@@ -898,24 +898,37 @@ class _WorkoutTemplatesScreenState
   bool _canDeleteTemplate(WorkoutTemplate template) {
     // System template IDs that should not be deletable
     const systemTemplateIds = {
-      'ppl_push', 'ppl_pull', 'ppl_legs',
-      'phul_upper_power', 'phul_lower_power', 'phul_upper_hyp', 'phul_lower_hyp',
-      'full_body_beginner', 'full_body_intermediate', 'full_body_advanced',
-      'upper_lower_upper', 'upper_lower_lower',
-      'strength_beginner', 'strength_intermediate', 'strength_advanced',
-      'bodybuilding_chest', 'bodybuilding_back', 'bodybuilding_legs', 'bodybuilding_arms',
+      'ppl_push',
+      'ppl_pull',
+      'ppl_legs',
+      'phul_upper_power',
+      'phul_lower_power',
+      'phul_upper_hyp',
+      'phul_lower_hyp',
+      'full_body_beginner',
+      'full_body_intermediate',
+      'full_body_advanced',
+      'upper_lower_upper',
+      'upper_lower_lower',
+      'strength_beginner',
+      'strength_intermediate',
+      'strength_advanced',
+      'bodybuilding_chest',
+      'bodybuilding_back',
+      'bodybuilding_legs',
+      'bodybuilding_arms',
     };
-    
+
     // Don't allow deletion of system templates
     if (systemTemplateIds.contains(template.id)) {
       return false;
     }
-    
+
     // Allow deletion of AI-generated templates (start with 'ai_gen_')
     if (template.id.startsWith('ai_gen_')) {
       return true;
     }
-    
+
     // Allow deletion of user-created templates (not system templates)
     // This is a fallback for any other user-created templates
     return true;

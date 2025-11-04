@@ -6,7 +6,11 @@ import 'package:herq/src/features/ai/presentation/providers/ai_providers.dart';
 void main() {
   group('Provider Fix Test', () {
     setUpAll(() async {
-      await dotenv.load();
+      try {
+        await dotenv.load();
+      } catch (e) {
+        // .env file not found, skip loading
+      }
     });
 
     test('should test AIActions with null Groq service', () async {

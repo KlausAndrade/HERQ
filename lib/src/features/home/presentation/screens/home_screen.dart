@@ -116,18 +116,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       Expanded(
                         child: Consumer(
                           builder: (context, ref, child) {
-                            final firstTimeUser = ref.watch(firstTimeUserProvider);
-                            
+                            final firstTimeUser =
+                                ref.watch(firstTimeUserProvider);
+
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   firstTimeUser.when(
-                                    data: (isFirstTime) => isFirstTime 
+                                    data: (isFirstTime) => isFirstTime
                                         ? S.of(context)!.welcomeFirstTime
                                         : S.of(context)!.welcomeBack,
                                     loading: () => S.of(context)!.welcomeBack,
-                                    error: (_, __) => S.of(context)!.welcomeBack,
+                                    error: (_, __) =>
+                                        S.of(context)!.welcomeBack,
                                   ),
                                   style: Theme.of(context)
                                       .textTheme
@@ -141,11 +143,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   firstTimeUser.when(
-                                    data: (isFirstTime) => isFirstTime 
+                                    data: (isFirstTime) => isFirstTime
                                         ? S.of(context)!.readyForFirstWorkout
                                         : S.of(context)!.readyForWorkout,
-                                    loading: () => S.of(context)!.readyForWorkout,
-                                    error: (_, __) => S.of(context)!.readyForWorkout,
+                                    loading: () =>
+                                        S.of(context)!.readyForWorkout,
+                                    error: (_, __) =>
+                                        S.of(context)!.readyForWorkout,
                                   ),
                                   style: Theme.of(context)
                                       .textTheme

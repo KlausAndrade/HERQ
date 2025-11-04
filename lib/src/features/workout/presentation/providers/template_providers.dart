@@ -23,7 +23,9 @@ final workoutTemplatesProvider =
   final needsGlobalSync = await ref.read(needsGlobalContentSyncProvider.future);
   if (needsGlobalSync) {
     print('🌍 Global content updates available, syncing...');
-    await ref.read(globalContentSyncTriggerProvider.notifier).syncGlobalContent();
+    await ref
+        .read(globalContentSyncTriggerProvider.notifier)
+        .syncGlobalContent();
   }
 
   // 🌩️ SYNC: Fetch folders from Supabase first
@@ -44,7 +46,8 @@ final workoutTemplatesProvider =
           await database.into(database.templateFolders).insertOnConflictUpdate(
                 TemplateFoldersCompanion.insert(
                   id: folder['id'],
-                  userId: Value(UserContextService.instance.getCurrentUserId()), // ✅ USER ISOLATION
+                  userId: Value(UserContextService.instance
+                      .getCurrentUserId()), // ✅ USER ISOLATION
                   name: folder['name'],
                   description: Value(folder['description']),
                   color: Value(folder['color']),
@@ -93,7 +96,8 @@ final workoutTemplatesProvider =
                   name: template['name'],
                   description: template['description'],
                   category: 'Custom', // Keep category as 'Custom' for templates
-                  folderId: template['folder_id'], // Use folder_id for folder assignment
+                  folderId: template[
+                      'folder_id'], // Use folder_id for folder assignment
                   sortOrder:
                       template['sort_order'] ?? 0, // Use cloud sort order
                   exerciseIds:
