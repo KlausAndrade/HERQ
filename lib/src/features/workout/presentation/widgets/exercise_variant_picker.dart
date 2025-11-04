@@ -95,10 +95,16 @@ class ExerciseVariantPicker extends StatelessWidget {
       isScrollControlled: true,
       isDismissible: true,
       enableDrag: true,
-      builder: (context) => _VariantPickerSheet(
-        currentEquipment: currentEquipment,
-        currentVariant: currentVariant,
-        onChanged: onChanged,
+      useSafeArea: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: _VariantPickerSheet(
+          currentEquipment: currentEquipment,
+          currentVariant: currentVariant,
+          onChanged: onChanged,
+        ),
       ),
     );
   }
@@ -203,166 +209,260 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final screenHeight = MediaQuery.of(context).size.height;
+    final maxHeight = screenHeight * 0.85;
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header with close button
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    S.of(context)?.exerciseVariant ?? 'Exercise Variant',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                    tooltip: S.of(context)?.close ?? 'Close',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Equipment Selection
-              Text(
-                S.of(context)?.equipment ?? 'Equipment',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Wrap(
-                spacing: 8,
-                runSpacing: 2,
-                children: equipmentOptions.map((equipment) {
-                  final isSelected = equipment == selectedEquipment;
-                  return FilterChip(
-                    label: Text(_formatEquipmentLabel(equipment, context)),
-                    avatar: Icon(
-                      _getEquipmentIconForType(equipment),
-                      size: 16,
-                    ),
-                    selected: isSelected,
-                    showCheckmark: false,
-                    onSelected: (selected) {
-                      final newEquipment = selected ? equipment : null;
-                      setState(() {
-                        selectedEquipment = newEquipment;
-                      });
-                      // Apply change immediately
-                      final combinedVariant = _combineVariantAndPosition(
-                        selectedVariant ?? 'weight_reps',
-                        selectedPosition == 'standard' ? null : selectedPosition,
-                      );
-                      widget.onChanged(
-                        newEquipment,
-                        combinedVariant == 'weight_reps' ? null : combinedVariant,
-                      );
-                    },
-                    selectedColor: theme.colorScheme.primaryContainer,
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 6),
-              const Divider(),
-              const SizedBox(height: 6),
-
-              // Execution Type Selection
-              Text(
-                S.of(context)?.executionType ?? 'Execution Type',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Wrap(
-                spacing: 8,
-                runSpacing: 2,
-                children: executionTypeOptions.map((executionType) {
-                  final isSelected = executionType == selectedVariant;
-                  return FilterChip(
-                    label: Text(_formatExecutionTypeLabel(executionType, context)),
-                    selected: isSelected,
-                    showCheckmark: false,
-                    onSelected: (selected) {
-                      final newExecutionType =
-                          selected ? executionType : 'weight_reps';
-                      setState(() {
-                        selectedVariant = newExecutionType;
-                      });
-                      // Apply change immediately
-                      final combinedVariant = _combineVariantAndPosition(
-                        newExecutionType,
-                        selectedPosition == 'standard' ? null : selectedPosition,
-                      );
-                      widget.onChanged(
-                        selectedEquipment,
-                        combinedVariant == 'weight_reps' ? null : combinedVariant,
-                      );
-                    },
-                    selectedColor: theme.colorScheme.primaryContainer,
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 6),
-              const Divider(),
-              const SizedBox(height: 6),
-
-              // Position/Angle Selection
-              Text(
-                S.of(context)?.positionAngle ?? 'Position / Angle',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Wrap(
-                spacing: 8,
-                runSpacing: 2,
-                children: positionVariantOptions.map((position) {
-                  final isSelected = position == selectedPosition;
-                  return FilterChip(
-                    label: Text(_formatPositionLabel(position, context)),
-                    avatar: Icon(
-                      _getPositionIcon(position),
-                      size: 16,
-                    ),
-                    selected: isSelected,
-                    showCheckmark: false,
-                    onSelected: (selected) {
-                      final newPosition = selected ? position : 'standard';
-                      setState(() {
-                        selectedPosition = newPosition;
-                      });
-                      // Apply change immediately
-                      final combinedVariant = _combineVariantAndPosition(
-                        selectedVariant ?? 'weight_reps',
-                        newPosition == 'standard' ? null : newPosition,
-                      );
-                      widget.onChanged(
-                        selectedEquipment,
-                        combinedVariant == 'weight_reps' ? null : combinedVariant,
-                      );
-                    },
-                    selectedColor: theme.colorScheme.primaryContainer,
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 16),
-            ],
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: maxHeight,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle indicator
+          Container(
+            margin: const EdgeInsets.only(top: 8, bottom: 8),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[400],
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
-        ),
+          // Header with close button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  S.of(context)?.exerciseVariant ?? 'Exercise Variant',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                  tooltip: S.of(context)?.close ?? 'Close',
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Scrollable content
+          Flexible(
+            child: SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Equipment Selection
+                    Text(
+                      S.of(context)?.equipment ?? 'Equipment',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 2,
+                      children: equipmentOptions.map((equipment) {
+                        final isSelected = equipment == selectedEquipment;
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () {
+                              final selected = !isSelected;
+                              final newEquipment = selected ? equipment : null;
+                              setState(() {
+                                selectedEquipment = newEquipment;
+                              });
+                              // Apply change immediately
+                              final combinedVariant = _combineVariantAndPosition(
+                                selectedVariant ?? 'weight_reps',
+                                selectedPosition == 'standard' ? null : selectedPosition,
+                              );
+                              widget.onChanged(
+                                newEquipment,
+                                combinedVariant == 'weight_reps' ? null : combinedVariant,
+                              );
+                            },
+                            child: FilterChip(
+                              label: Text(
+                                _formatEquipmentLabel(equipment, context),
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
+                                      : theme.colorScheme.onSurface,
+                                ),
+                              ),
+                              avatar: Icon(
+                                _getEquipmentIconForType(equipment),
+                                size: 16,
+                                color: isSelected
+                                    ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
+                                    : theme.colorScheme.onSurface,
+                              ),
+                              selected: isSelected,
+                              showCheckmark: false,
+                              onSelected: null,
+                              selectedColor: theme.colorScheme.primaryContainer,
+                              labelStyle: TextStyle(
+                                color: isSelected
+                                    ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
+                                    : theme.colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 6),
+                    const Divider(),
+                    const SizedBox(height: 6),
+
+                    // Execution Type Selection
+                    Text(
+                      S.of(context)?.executionType ?? 'Execution Type',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 2,
+                      children: executionTypeOptions.map((executionType) {
+                        final isSelected = executionType == selectedVariant;
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () {
+                              final selected = !isSelected;
+                              final newExecutionType =
+                                  selected ? executionType : 'weight_reps';
+                              setState(() {
+                                selectedVariant = newExecutionType;
+                              });
+                              // Apply change immediately
+                              final combinedVariant = _combineVariantAndPosition(
+                                newExecutionType,
+                                selectedPosition == 'standard' ? null : selectedPosition,
+                              );
+                              widget.onChanged(
+                                selectedEquipment,
+                                combinedVariant == 'weight_reps' ? null : combinedVariant,
+                              );
+                            },
+                            child: FilterChip(
+                              label: Text(
+                                _formatExecutionTypeLabel(executionType, context),
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
+                                      : theme.colorScheme.onSurface,
+                                ),
+                              ),
+                              selected: isSelected,
+                              showCheckmark: false,
+                              onSelected: null,
+                              selectedColor: theme.colorScheme.primaryContainer,
+                              labelStyle: TextStyle(
+                                color: isSelected
+                                    ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
+                                    : theme.colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 6),
+                    const Divider(),
+                    const SizedBox(height: 6),
+
+                    // Position/Angle Selection
+                    Text(
+                      S.of(context)?.positionAngle ?? 'Position / Angle',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 2,
+                      children: positionVariantOptions.map((position) {
+                        final isSelected = position == selectedPosition;
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () {
+                              final selected = !isSelected;
+                              final newPosition = selected ? position : 'standard';
+                              setState(() {
+                                selectedPosition = newPosition;
+                              });
+                              // Apply change immediately
+                              final combinedVariant = _combineVariantAndPosition(
+                                selectedVariant ?? 'weight_reps',
+                                newPosition == 'standard' ? null : newPosition,
+                              );
+                              widget.onChanged(
+                                selectedEquipment,
+                                combinedVariant == 'weight_reps' ? null : combinedVariant,
+                              );
+                            },
+                            child: FilterChip(
+                              label: Text(
+                                _formatPositionLabel(position, context),
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
+                                      : theme.colorScheme.onSurface,
+                                ),
+                              ),
+                              avatar: Icon(
+                                _getPositionIcon(position),
+                                size: 16,
+                                color: isSelected
+                                    ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
+                                    : theme.colorScheme.onSurface,
+                              ),
+                              selected: isSelected,
+                              showCheckmark: false,
+                              onSelected: null,
+                              selectedColor: theme.colorScheme.primaryContainer,
+                              labelStyle: TextStyle(
+                                color: isSelected
+                                    ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
+                                    : theme.colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
