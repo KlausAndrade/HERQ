@@ -80,6 +80,8 @@ xcuserdata
 /android/app/release
 *.jks
 key.properties
+*.apk
+*.aab
 
 # iOS
 /ios/Flutter/Generated.xcconfig

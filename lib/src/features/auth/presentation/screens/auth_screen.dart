@@ -8,6 +8,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/telemetry_provider.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/utils/apk_selector.dart';
 import '../../../../core/utils/auth_error_handler.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
@@ -304,19 +305,42 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 // Download APK button (web only)
                 if (kIsWeb) ...[
                   const SizedBox(height: 16),
-                  OutlinedButton.icon(
-                    onPressed: _downloadApk,
-                    icon: const Icon(Icons.download),
-                    label: const Text('Download Android APK'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      backgroundColor: const Color(0xFF00BFA6).withValues(alpha: 0.1),
-                      foregroundColor: const Color(0xFF00BFA6),
-                      side: const BorderSide(color: Color(0xFF00BFA6)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _downloadApk,
+                          icon: const Icon(Icons.download),
+                          label: const Text('Download APK (Auto)'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            backgroundColor: const Color(0xFF00BFA6).withValues(alpha: 0.1),
+                            foregroundColor: const Color(0xFF00BFA6),
+                            side: const BorderSide(color: Color(0xFF00BFA6)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      OutlinedButton(
+                        onPressed: _showApkOptions,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
+                          backgroundColor: const Color(0xFF00BFA6).withValues(alpha: 0.1),
+                          foregroundColor: const Color(0xFF00BFA6),
+                          side: const BorderSide(color: Color(0xFF00BFA6)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Icon(Icons.more_vert),
+                      ),
+                    ],
                   ),
                 ],
               ],
@@ -329,13 +353,34 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   Future<void> _downloadApk() async {
     try {
-      final uri = Uri.parse('/herq-release.apk');
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        // Fallback: try to trigger download directly
-        final downloadUrl = Uri.parse('${Uri.base.origin}/herq-release.apk');
+      // Get the recommended APK based on device architecture
+      final apkInfo = ApkSelector.getRecommendedApkInfo();
+      final downloadUrl = ApkSelector.getRecommendedApkUrl();
+      
+      if (kDebugMode) {
+        print('Downloading APK: ${apkInfo.fileName}');
+        print('Architecture: ${apkInfo.displayName}');
+        print('URL: $downloadUrl');
+      }
+      
+      // Show info message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Downloading ${apkInfo.displayName} APK (${apkInfo.estimatedSize})',
+            ),
+            backgroundColor: const Color(0xFF00BFA6),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+      
+      // Trigger download
+      if (await canLaunchUrl(downloadUrl)) {
         await launchUrl(downloadUrl, mode: LaunchMode.externalApplication);
+      } else {
+        throw Exception('Cannot launch download URL');
       }
     } catch (e) {
       if (mounted) {
@@ -347,6 +392,135 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         );
       }
     }
+  }
+
+  void _showApkOptions() {
+    final variants = ApkSelector.getAllApkVariants();
+    final recommended = ApkSelector.getRecommendedApkInfo();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Choose APK Version'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Select the version that matches your device:',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 16),
+              ...variants.map((variant) {
+                final isRecommended = variant.fileName == recommended.fileName;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Material(
+                    color: isRecommended
+                        ? const Color(0xFF00BFA6).withValues(alpha: 0.1)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        final url = ApkSelector.getApkDownloadUrl(variant.fileName);
+                        try {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Failed to download: $e'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isRecommended ? Icons.star : Icons.phone_android,
+                              color: isRecommended
+                                  ? const Color(0xFF00BFA6)
+                                  : Colors.grey,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        variant.displayName,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: isRecommended
+                                              ? const Color(0xFF00BFA6)
+                                              : null,
+                                        ),
+                                      ),
+                                      if (isRecommended) ...[
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF00BFA6),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: const Text(
+                                            'RECOMMENDED',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  Text(
+                                    variant.description,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  Text(
+                                    variant.estimatedSize,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.download, size: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _handleSubmit() async {
