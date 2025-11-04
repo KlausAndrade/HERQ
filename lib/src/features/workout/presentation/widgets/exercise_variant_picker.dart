@@ -272,54 +272,30 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                       runSpacing: 2,
                       children: equipmentOptions.map((equipment) {
                         final isSelected = equipment == selectedEquipment;
-                        return Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () {
-                              final selected = !isSelected;
-                              final newEquipment = selected ? equipment : null;
-                              setState(() {
-                                selectedEquipment = newEquipment;
-                              });
-                              // Apply change immediately
-                              final combinedVariant = _combineVariantAndPosition(
-                                selectedVariant ?? 'weight_reps',
-                                selectedPosition == 'standard' ? null : selectedPosition,
-                              );
-                              widget.onChanged(
-                                newEquipment,
-                                combinedVariant == 'weight_reps' ? null : combinedVariant,
-                              );
-                            },
-                            child: FilterChip(
-                              label: Text(
-                                _formatEquipmentLabel(equipment, context),
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
-                                      : theme.colorScheme.onSurface,
-                                ),
-                              ),
-                              avatar: Icon(
-                                _getEquipmentIconForType(equipment),
-                                size: 16,
-                                color: isSelected
-                                    ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
-                                    : theme.colorScheme.onSurface,
-                              ),
-                              selected: isSelected,
-                              showCheckmark: false,
-                              onSelected: null,
-                              selectedColor: theme.colorScheme.primaryContainer,
-                              labelStyle: TextStyle(
-                                color: isSelected
-                                    ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
-                                    : theme.colorScheme.onSurface,
-                              ),
-                            ),
+                        return FilterChip(
+                          label: Text(_formatEquipmentLabel(equipment, context)),
+                          avatar: Icon(
+                            _getEquipmentIconForType(equipment),
+                            size: 16,
                           ),
+                          selected: isSelected,
+                          showCheckmark: false,
+                          onSelected: (selected) {
+                            final newEquipment = selected ? equipment : null;
+                            setState(() {
+                              selectedEquipment = newEquipment;
+                            });
+                            // Apply change immediately
+                            final combinedVariant = _combineVariantAndPosition(
+                              selectedVariant ?? 'weight_reps',
+                              selectedPosition == 'standard' ? null : selectedPosition,
+                            );
+                            widget.onChanged(
+                              newEquipment,
+                              combinedVariant == 'weight_reps' ? null : combinedVariant,
+                            );
+                          },
+                          selectedColor: theme.colorScheme.primaryContainer,
                         );
                       }).toList(),
                     ),
@@ -341,48 +317,27 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                       runSpacing: 2,
                       children: executionTypeOptions.map((executionType) {
                         final isSelected = executionType == selectedVariant;
-                        return Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () {
-                              final selected = !isSelected;
-                              final newExecutionType =
-                                  selected ? executionType : 'weight_reps';
-                              setState(() {
-                                selectedVariant = newExecutionType;
-                              });
-                              // Apply change immediately
-                              final combinedVariant = _combineVariantAndPosition(
-                                newExecutionType,
-                                selectedPosition == 'standard' ? null : selectedPosition,
-                              );
-                              widget.onChanged(
-                                selectedEquipment,
-                                combinedVariant == 'weight_reps' ? null : combinedVariant,
-                              );
-                            },
-                            child: FilterChip(
-                              label: Text(
-                                _formatExecutionTypeLabel(executionType, context),
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
-                                      : theme.colorScheme.onSurface,
-                                ),
-                              ),
-                              selected: isSelected,
-                              showCheckmark: false,
-                              onSelected: null,
-                              selectedColor: theme.colorScheme.primaryContainer,
-                              labelStyle: TextStyle(
-                                color: isSelected
-                                    ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
-                                    : theme.colorScheme.onSurface,
-                              ),
-                            ),
-                          ),
+                        return FilterChip(
+                          label: Text(_formatExecutionTypeLabel(executionType, context)),
+                          selected: isSelected,
+                          showCheckmark: false,
+                          onSelected: (selected) {
+                            final newExecutionType =
+                                selected ? executionType : 'weight_reps';
+                            setState(() {
+                              selectedVariant = newExecutionType;
+                            });
+                            // Apply change immediately
+                            final combinedVariant = _combineVariantAndPosition(
+                              newExecutionType,
+                              selectedPosition == 'standard' ? null : selectedPosition,
+                            );
+                            widget.onChanged(
+                              selectedEquipment,
+                              combinedVariant == 'weight_reps' ? null : combinedVariant,
+                            );
+                          },
+                          selectedColor: theme.colorScheme.primaryContainer,
                         );
                       }).toList(),
                     ),
@@ -404,54 +359,30 @@ class _VariantPickerSheetState extends State<_VariantPickerSheet> {
                       runSpacing: 2,
                       children: positionVariantOptions.map((position) {
                         final isSelected = position == selectedPosition;
-                        return Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () {
-                              final selected = !isSelected;
-                              final newPosition = selected ? position : 'standard';
-                              setState(() {
-                                selectedPosition = newPosition;
-                              });
-                              // Apply change immediately
-                              final combinedVariant = _combineVariantAndPosition(
-                                selectedVariant ?? 'weight_reps',
-                                newPosition == 'standard' ? null : newPosition,
-                              );
-                              widget.onChanged(
-                                selectedEquipment,
-                                combinedVariant == 'weight_reps' ? null : combinedVariant,
-                              );
-                            },
-                            child: FilterChip(
-                              label: Text(
-                                _formatPositionLabel(position, context),
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
-                                      : theme.colorScheme.onSurface,
-                                ),
-                              ),
-                              avatar: Icon(
-                                _getPositionIcon(position),
-                                size: 16,
-                                color: isSelected
-                                    ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
-                                    : theme.colorScheme.onSurface,
-                              ),
-                              selected: isSelected,
-                              showCheckmark: false,
-                              onSelected: null,
-                              selectedColor: theme.colorScheme.primaryContainer,
-                              labelStyle: TextStyle(
-                                color: isSelected
-                                    ? const Color(0xFF1B1D21) // herqGraphite - dark almost black
-                                    : theme.colorScheme.onSurface,
-                              ),
-                            ),
+                        return FilterChip(
+                          label: Text(_formatPositionLabel(position, context)),
+                          avatar: Icon(
+                            _getPositionIcon(position),
+                            size: 16,
                           ),
+                          selected: isSelected,
+                          showCheckmark: false,
+                          onSelected: (selected) {
+                            final newPosition = selected ? position : 'standard';
+                            setState(() {
+                              selectedPosition = newPosition;
+                            });
+                            // Apply change immediately
+                            final combinedVariant = _combineVariantAndPosition(
+                              selectedVariant ?? 'weight_reps',
+                              newPosition == 'standard' ? null : newPosition,
+                            );
+                            widget.onChanged(
+                              selectedEquipment,
+                              combinedVariant == 'weight_reps' ? null : combinedVariant,
+                            );
+                          },
+                          selectedColor: theme.colorScheme.primaryContainer,
                         );
                       }).toList(),
                     ),
