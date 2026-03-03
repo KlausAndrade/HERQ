@@ -12,9 +12,9 @@ Whether you're chasing your first pull-up or your next PR, HERQ helps you train 
 
 A production-ready, mobile-first workout tracker built with Flutter that runs seamlessly on iOS, Android, and Web. Designed to feel fast during workouts, flexible for power users, and ready to scale into social features and AI coaching.
 
-## 📱 Screenshots
+## 📱 Demo
 
-*[Screenshots will be added as the app develops]*
+https://youtube.com/shorts/n8AfpkKckw0
 
 ## ✨ Features
 

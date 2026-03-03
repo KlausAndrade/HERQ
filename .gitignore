@@ -2,6 +2,7 @@
 # Build outputs
 /build/
 /android/app/build/
+/ios/build/
 /ios/Runner.xcworkspace/
 /ios/Runner.xcarchive/
 
