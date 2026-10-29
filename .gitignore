@@ -31,6 +31,7 @@ coverage/
 .packages
 .pub-cache/
 .pub/
+node_modules/
 
 # Generated files
 *.g.dart
@@ -67,30 +68,3 @@ DerivedData
 *.hmap
 *.ipa
 xcuserdata
-.symlinks/
-
-# Windows
-/windows/flutter/ephemeral/
-
-# Linux
-/linux/flutter/ephemeral/
-
-# Android
-/android/app/debug
-/android/app/profile
-/android/app/release
-*.jks
-key.properties
-*.apk
-*.aab
-
-# iOS
-/ios/Flutter/Generated.xcconfig
-/ios/Flutter/flutter_export_environment.sh
-/ios/ServiceDefinitions.json
-/ios/Runner/GoogleService-Info.plist
-
-# Firebase
-google-services.json
-GoogleService-Info.plist
-firebase_options.dart
